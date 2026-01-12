@@ -11,10 +11,11 @@ import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstant
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import workbench.resources.shaders.WBenchShaderManager;
 
-public final class LocalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
+public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager scene_gluing;
     public WBenchShaderManager skybox;
     public WBenchShaderManager background;
@@ -46,6 +47,10 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public ShaderStorageBufferObject PointLightsData;
     public ShaderStorageBufferObject FogData;
 
+    public WBenchLocalShadersInitializer() {
+        super(JGems3D.GetSource.JAR);
+    }
+
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
         shaderStaticConstants.putConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES));
@@ -54,7 +59,6 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
         shaderStaticConstants.putConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
-
         shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
         shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsHelper.Render.NORMALS_CODE));
         shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsHelper.Render.EMISSION_CODE));
@@ -118,7 +122,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     }
 
     @Override
-    protected WBenchShaderManager createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
-        return new WBenchShaderManager(new ShadersContainer(shaderStaticConstants, shaderLibrary, shaderPath));
+    protected WBenchShaderManager createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+        return new WBenchShaderManager(new ShadersContainer(source, shaderStaticConstants, shaderLibrary, shaderPath));
     }
 }

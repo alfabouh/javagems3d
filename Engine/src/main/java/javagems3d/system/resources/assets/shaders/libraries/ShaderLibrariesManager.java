@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
+import javagems3d.JGems3D;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.util.HashMap;
@@ -9,8 +10,10 @@ import java.util.Set;
 
 public final class ShaderLibrariesManager {
     private final Map<String, ShaderLibrariesContainer> containerMap;
+    private final JGems3D.GetSource getSource;
 
-    public ShaderLibrariesManager() {
+    public ShaderLibrariesManager(JGems3D.GetSource getSource) {
+        this.getSource = getSource;
         this.containerMap = new HashMap<>();
     }
 
@@ -23,7 +26,7 @@ public final class ShaderLibrariesManager {
     }
 
     public void initLibrary(JGemsPath path) {
-        this.initLibrary(new ShaderLibrariesContainer(path));
+        this.initLibrary(new ShaderLibrariesContainer(this.getSource, path));
     }
 
     public void initLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
@@ -34,7 +37,7 @@ public final class ShaderLibrariesManager {
         Set<String> paths = new HashSet<>(this.getContainerMap().keySet());
         this.getContainerMap().clear();
         for (String s : paths) {
-            this.getContainerMap().put(s, new ShaderLibrariesContainer(new JGemsPath(s)));
+            this.getContainerMap().put(s, new ShaderLibrariesContainer(this.getSource, new JGemsPath(s)));
         }
     }
 

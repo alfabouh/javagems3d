@@ -21,15 +21,17 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.nodes.*;
@@ -56,6 +58,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     private static DearUIInterface mapEditorInterface;
     private static DearUIInterface projectInterface;
 
+    public static Model3D flatTerrain;
+
     protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected DearUIRenderer dearUIRenderer;
@@ -64,13 +68,16 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     private final DebugLinesDrawer debugLinesDrawer;
     private final FBOTexture2DProgram editorScenePreview;
+    private final FBOTexture2DProgram gameSceneObjectsPreview;
 
     public WBenchOpenGLRenderer(IWindow window, WBenchWorld wBenchWorld) {
         super(window, wBenchWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         this.editorScenePreview = new FBOTexture2DProgram(true, false);
-        WBenchOpenGLRenderer.gameEditorInterface = new GameEditorInterface(this, WBench.get().getMapProjectManager());
+        this.gameSceneObjectsPreview = new FBOTexture2DProgram(true, false);
+
+        WBenchOpenGLRenderer.gameEditorInterface = new GameEditorInterface(this, this.gameSceneObjectsPreview, WBench.get().getMapProjectManager());
         WBenchOpenGLRenderer.mapEditorInterface = new MapEditorInterface(this, this.editorScenePreview, WBench.get().getMapProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
@@ -144,10 +151,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     @Override
     public void onStartRender() {
         this.editorScenePreview.createFrameBuffer2DTexture(new Vector2i(256, 256), new T2DAttachmentContainer() {{add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);}}, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.gameSceneObjectsPreview.createFrameBuffer2DTexture(new Vector2i(1024, 1024), new T2DAttachmentContainer() {{add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);}}, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         this.constructScreenModel();
 
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, new JGemsPath("/assets/wbench/gamefont.ttf"), WBenchResourceManager.getGlobalGameResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, new JGemsPath("/assets/wbench/gamefont.ttf"), WBenchResourceManager.GetGlobalResources());
         IUIRenderNode uiRenderNode = new WBenchUIRenderNode(this.getDearUIRenderer(), this);
         uiRenderNode.setAnInterface(WBenchOpenGLRenderer.getProjectInterface());
         this.setUIRenderNode(uiRenderNode);
@@ -161,6 +169,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         if (this.getWorld().getCamera() == null) {
+            WBenchOpenGLRenderer.DebugLinesDrawer().render();
             OpenGLRenderer.setViewPort(this.getWindowSize());
             uiRenderNode.onRender(frameTicking);
             return;
@@ -218,16 +227,19 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getConveyorNodes().clear();
     }
 
+    public static void reloadModelResources() {
+        WBench.get().getResourceManager().writeResourcesDataCache();
+        WBench.get().getResourceManager().loadModelAnimationsInTexture();
+    }
+
     @Override
     public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
         this.setDefaultNodes();
         this.getDebugLinesDrawer().setup();
 
-        resourceManager.writeResourcesDataCache();
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(WBenchResourceManager.localShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(WBenchResourceManager.localShaderAssets.BindlessTexturesData);
-        resourceManager.loadModelAnimationsInTexture();
 
         this.getWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().stream().filter(e -> !(e instanceof IUIRenderNode)).forEach(IRenderNode::createResources);
@@ -279,10 +291,14 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     public void createResources() {
+        WBenchOpenGLRenderer.flatTerrain = MeshHelper.generatePlane3DModel(null, new Vector3f(-WBench.MAP_SIZE, -0.05f, -WBench.MAP_SIZE), new Vector3f(-WBench.MAP_SIZE, -0.05f, WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, -0.05f, -WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, -0.05f, WBench.MAP_SIZE));
         this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS).createResources();
     }
 
     public void destroyResources() {
+        if (WBenchOpenGLRenderer.flatTerrain != null) {
+            WBenchOpenGLRenderer.flatTerrain.clear();
+        }
         this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS).destroyResources();
     }
 

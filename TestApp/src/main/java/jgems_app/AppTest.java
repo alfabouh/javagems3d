@@ -152,7 +152,6 @@ public class AppTest extends JGemsApplication {
         //JGemsRenderProperties.getDefault().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false)
 
         manager.addResourceEntity("terrain", "flatgrass", () -> new WBenchObjectData(flatgrass), () -> new JGemsEntityData(flatgrass));
-
         manager.addResourceProp("terrain", "flatgrass_back", () -> new WBenchObjectData(flatgrass_back), () -> new JGemsPropData(flatgrass_back));
         manager.addResourceProp("trees", () -> new WBenchObjectData(trees), () -> new JGemsPropData(trees));
 

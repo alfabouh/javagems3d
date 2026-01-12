@@ -19,13 +19,13 @@ public class SoundAssetsInitializer implements IAssetsInitializer {
     public void load(SystemResources systemResources) {
         this.pl_step = new SoundBuffer[4];
 
-        this.zippo_o = systemResources.createSoundBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/zippo_o.ogg"), AL10.AL_FORMAT_MONO16);
-        this.zippo_c = systemResources.createSoundBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/zippo_c.ogg"), AL10.AL_FORMAT_MONO16);
-        this.pick = systemResources.createSoundBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "player/pick.ogg"), AL10.AL_FORMAT_MONO16);
-        this.button = systemResources.createSoundBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/button.ogg"), AL10.AL_FORMAT_MONO16);
+        this.zippo_o = systemResources.createSoundBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/zippo_o.ogg"), AL10.AL_FORMAT_MONO16);
+        this.zippo_c = systemResources.createSoundBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/zippo_c.ogg"), AL10.AL_FORMAT_MONO16);
+        this.pick = systemResources.createSoundBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "player/pick.ogg"), AL10.AL_FORMAT_MONO16);
+        this.button = systemResources.createSoundBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "ui/button.ogg"), AL10.AL_FORMAT_MONO16);
 
         for (int i = 0; i < 4; i++) {
-            this.pl_step[i] = systemResources.createSoundBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "player/pl_step" + (i + 1) + ".ogg"), AL10.AL_FORMAT_STEREO16);
+            this.pl_step[i] = systemResources.createSoundBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.SOUNDS, "player/pl_step" + (i + 1) + ".ogg"), AL10.AL_FORMAT_STEREO16);
         }
     }
 

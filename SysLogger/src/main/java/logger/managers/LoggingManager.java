@@ -116,6 +116,10 @@ public abstract class LoggingManager {
         });
     }
 
+    public static void showWindowWarn(String message) {
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message, "Warn", JOptionPane.WARNING_MESSAGE));
+    }
+
     public static void showWindowInfo(String message) {
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message, "Information", JOptionPane.INFORMATION_MESSAGE));
     }

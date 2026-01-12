@@ -51,7 +51,7 @@ public class Window implements IWindow {
             return;
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            try (InputStream inputStream = JGems3D.loadFileFromJar(iconPath)) {
+            try (InputStream inputStream = JGems3D.getInputStream(JGems3D.GetSource.JAR, iconPath)) {
                 IntBuffer width = stack.mallocInt(1);
                 IntBuffer height = stack.mallocInt(1);
                 IntBuffer channels = stack.mallocInt(1);

@@ -12,6 +12,7 @@ import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManag
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShaderManager> {
@@ -59,6 +60,10 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public ShaderStorageBufferObject TextureScan;
     public ShaderStorageBufferObject ModelVertexesData;
     public ShaderStorageBufferObject AABBResult;
+
+    public GlobalShadersInitializer(JGems3D.@NotNull GetSource source) {
+        super(source);
+    }
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
@@ -148,7 +153,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     }
 
     @Override
-    protected JGemsShaderManager createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShadersContainer(shaderStaticConstants, shaderLibrary, shaderPath));
+    protected JGemsShaderManager createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+        return new JGemsShaderManager(new ShadersContainer(source, shaderStaticConstants, shaderLibrary, shaderPath));
     }
 }

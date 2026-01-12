@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * The SystemResources class contains a cache, as well as tools for processing resources
+ * The SystemResources class contains a bindless_rendering_cache, as well as tools for processing resources
  */
 public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;
@@ -56,53 +56,53 @@ public abstract class SystemResources implements ISystemResources {
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
 
-    public SoundBuffer createSoundBuffer(JGemsPath soundPath, int soundFormat) {
-        return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
+    public SoundBuffer createSoundBuffer(@NotNull JGems3D.GetSource source, JGemsPath soundPath, int soundFormat) {
+        return SoundBuffer.createSoundBuffer(source, this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshBuffer(fabric, keepNodesInMemory));
+    public MeshBuffer createMeshBuffer(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshBuffer(fabric, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory));
+    public MeshGroup createMeshGroup(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup_Buffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory));
+    public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory));
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshBuffer(null, modelPath, keepNodesInMemory);
+    public MeshBuffer createMeshBuffer(@NotNull JGems3D.GetSource source, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshBuffer(source, null, modelPath, keepNodesInMemory);
     }
 
-    public MeshGroup createMeshGroup(JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshGroup(null, modelPath, keepNodesInMemory);
+    public MeshGroup createMeshGroup(@NotNull JGems3D.GetSource source, JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshGroup(source, null, modelPath, keepNodesInMemory);
     }
 
-    public MeshGroup createMeshGroup_Buffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshGroup_Buffer(null, modelPath, keepNodesInMemory);
+    public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGems3D.GetSource source, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshGroupWithBindlessBufferAttachment(source,null, modelPath, keepNodesInMemory);
     }
 
-    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
+    public ITexture2DProgram createTexture(@NotNull JGems3D.GetSource source, @Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(source, this, path.toString()).createImageTexture(textureProperties, path));
     }
 
-    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
+    public ITexture2DProgram createTexture(@NotNull JGems3D.GetSource source, @Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(source, this, name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
     }
 
-    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
+    public ITexture2DProgram createTexture(@NotNull JGems3D.GetSource source, @Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(source, this, name).createImageTexture(textureProperties, stream));
     }
 
-    public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
+    public ICubeMapProgram createCubeMapTexture(@NotNull JGems3D.GetSource source, @Nullable ICubeMapProgram returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new CubeMapsLoader(source, this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
     }
 
-    public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
+    public ICubeMapProgram createCubeMapTexture(@NotNull JGems3D.GetSource source, @Nullable ICubeMapProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
         JGemsPath path = new JGemsPath(pathToCubeMapFile, "sky_");
-        return this.loadTexture(returnDefault, path.toString(), () -> new CubeMapsLoader(this, path.toString()).createCubeMapTexture(textureProperties, path, textureDescriptor));
+        return this.loadTexture(returnDefault, path.toString(), () -> new CubeMapsLoader(source, this, path.toString()).createCubeMapTexture(textureProperties, path, textureDescriptor));
     }
 
     protected abstract @Nullable Consumer<Pair<String, Integer>> getMessagesConsumer();
@@ -154,7 +154,7 @@ public abstract class SystemResources implements ISystemResources {
     public static Font createFontFromJAR(JGemsPath path) {
         Font font1;
         try {
-            try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
+            try (InputStream inputStream = JGems3D.getInputStream(JGems3D.GetSource.JAR, path)) {
                 font1 = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             }
         } catch (FontFormatException | IOException e) {

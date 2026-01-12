@@ -1,8 +1,10 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
+import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.base.ShaderType;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 public final class ShaderLibrariesContainer {
     private final String path;
@@ -10,21 +12,21 @@ public final class ShaderLibrariesContainer {
     private final ShaderLibrary fragmentShaderLibrary;
     private final ShaderLibrary geometryShaderLibrary;
 
-    public ShaderLibrariesContainer(JGemsPath shaderPath) {
+    public ShaderLibrariesContainer(@NotNull JGems3D.GetSource source, JGemsPath shaderPath) {
         this.path = shaderPath.getFullPath();
 
         ShaderLibrary geometricShader1 = null;
         ShaderLibrary vertexShader1 = null;
         ShaderLibrary fragmentShader1 = null;
 
-        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
-            fragmentShader1 = new ShaderLibrary(ShaderType.FRAGMENT, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.FRAGMENT)) {
+            fragmentShader1 = new ShaderLibrary(source, ShaderType.FRAGMENT, shaderPath);
         }
-        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
-            vertexShader1 = new ShaderLibrary(ShaderType.VERTEX, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.VERTEX)) {
+            vertexShader1 = new ShaderLibrary(source, ShaderType.VERTEX, shaderPath);
         }
-        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
-            geometricShader1 = new ShaderLibrary(ShaderType.GEOMETRIC, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.GEOMETRIC)) {
+            geometricShader1 = new ShaderLibrary(source, ShaderType.GEOMETRIC, shaderPath);
         }
 
         this.vertexShaderLibrary = vertexShader1;

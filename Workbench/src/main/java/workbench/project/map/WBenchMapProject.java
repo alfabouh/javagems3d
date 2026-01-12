@@ -21,8 +21,12 @@ public class WBenchMapProject extends MapProjectData {
         this.currentProjectPath = null;
     }
 
+    public void setInformation(@NotNull String information) {
+        this.information = information;
+    }
+
     public JGemsPath getScriptPathTo(String name) {
-        return new JGemsPath(this.getCurrentProjectPath().getDirectory(), WBenchMapProjectManager.SCRIPTS_PATH, name);
+        return new JGemsPath(this.getCurrentProjectPath().getAbsolutePathDirectory(), WBenchMapProjectManager.SCRIPTS_PATH, name);
     }
 
     public void reviseScripts() {

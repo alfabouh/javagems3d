@@ -36,6 +36,7 @@ import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,13 +56,6 @@ public final class WBenchMapProjectManager {
         this.world = null;
     }
 
-    private void setCurrentProject(JGemsPath path, WBenchMapProject currentWBenchMapProject) {
-        this.currentMapProject = currentWBenchMapProject;
-        if (currentWBenchMapProject != null) {
-            currentWBenchMapProject.setCurrentProjectPath(path);
-        }
-    }
-
     public void setWorld(@NotNull WBenchWorld world) {
         this.world = world;
     }
@@ -69,23 +63,33 @@ public final class WBenchMapProjectManager {
     public boolean createMapProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
             WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name);
-            this.setCurrentProject(path, wBenchMapProject);
+            wBenchMapProject.setCurrentProjectPath(path);
+            //this.setCurrentProject(path, wBenchMapProject);
             this.createMapSystemFiles(absPath, name);
-            this.saveMapProjectFile();
+            this.saveMapProjectFile(wBenchMapProject);
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
 
             return true;
         } catch (JGemsIOException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't create object!", e);
             Log.get().exception(e);
-            this.setCurrentProject(null, null);
+            this.currentMapProject = null;
             return false;
         }
     }
 
-    private void saveMapProjectFile() {
+    public void editMapProjectDescription(@NotNull WBenchMapProject mapProjectData, @NotNull String newText) {
+        mapProjectData.setInformation(newText);
+        this.saveMapProjectFile(mapProjectData);
+    }
+
+    public void editMapProjectDescription(@NotNull String newText) {
+        this.editMapProjectDescription(this.getCurrentMapProject(), newText);
+    }
+
+    private void saveMapProjectFile(@NotNull WBenchMapProject wBenchMapProject) {
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        jsonFileManaging.writeToFile(this.getCurrentMapProject(), Objects.requireNonNull(this.getCurrentMapProject()).getCurrentProjectPath().toFile(), null);
+        jsonFileManaging.writeToFile(wBenchMapProject, wBenchMapProject.getCurrentProjectPath().toFile(), null);
     }
 
     private <T> void handleObjects(boolean background, Set<MapObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, MapObjectTemplate, WBenchObject> objectCreator) {
@@ -124,7 +128,7 @@ public final class WBenchMapProjectManager {
             return;
         }
 
-        final File file = new File(this.getCurrentMapProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile);
+        final File file = new File(this.getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath(), mapDataFile);
         if (!file.exists()) {
             return;
         }
@@ -291,8 +295,8 @@ public final class WBenchMapProjectManager {
 
                 final String mapDataFile = this.getCurrentMapProject().getProjectName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_FILE;
                 this.getCurrentMapProject().setMapDataFile(mapDataFile);
-                jsonFileManaging.writeToFile(mapObjectsDataPack, new File(this.getCurrentMapProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile), null);
-                this.saveMapProjectFile();
+                jsonFileManaging.writeToFile(mapObjectsDataPack, new File(this.getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath(), mapDataFile), null);
+                this.saveMapProjectFile(this.currentMapProject);
             } catch (Exception e) {
                 Log.get().exception(e);
                 LoggingManager.showExceptionDialog("Where was an error, while saving map!", e);
@@ -328,6 +332,10 @@ public final class WBenchMapProjectManager {
         }
     }
 
+    public boolean deleteMapProjectFolder(JGemsPath path) throws IOException {
+        return path.recursiveDelete();
+    }
+
     public boolean openMapProject(JGemsPath path) {
         try {
             File projectFolder = new File(path.getFullPath());
@@ -341,7 +349,7 @@ public final class WBenchMapProjectManager {
             }
 
             File projectFile = files[0];
-            WBenchMapProject wBenchMapProject = this.readMainFile(new JGemsPath(projectFile.getPath()));
+            WBenchMapProject wBenchMapProject = this.readMainFile(new JGemsPath(projectFile.getPath()), false);
             if (wBenchMapProject == null) {
                 return false;
             }
@@ -370,11 +378,14 @@ public final class WBenchMapProjectManager {
         }
     }
 
-    public WBenchMapProject readMainFile(JGemsPath path) {
+    public WBenchMapProject readMainFile(JGemsPath path, boolean preview) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(new File(path.toString()), WBenchMapProject.class, null);
-            this.setCurrentProject(path, wBenchMapProject);
+            wBenchMapProject.setCurrentProjectPath(path);
+            if (!preview) {
+                this.currentMapProject = wBenchMapProject;
+            }
             return wBenchMapProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't open project!", e);
@@ -385,10 +396,10 @@ public final class WBenchMapProjectManager {
 
     private void initLocalResources(WBenchMapProject wBenchMapProject) {
         LoadingInterfaceSwing.invoke();
-        WBenchResourceManager.createLocalShaders();
-        WBenchResourceManager.setDefaultRenderTableValues();
-        WBench.get().getResourceManager().initLocalResources();
-        WBench.get().getResourceManager().loadLocalResources();
+        //WBenchResourceManager.createLocalGameEditorShaders();
+        //WBenchResourceManager.setDefaultRenderTableValues();
+        WBench.get().getResourceManager().initLocalMapEditorResources();
+        WBench.get().getResourceManager().loadLocalMapEditorResources();
         this.getWorld().onWorldStart();
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), wBenchMapProject);
     }
@@ -396,7 +407,7 @@ public final class WBenchMapProjectManager {
     private void destroyLocalResources(WBenchMapProject wBenchMapProject) {
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), wBenchMapProject);
         this.getWorld().onWorldEnd();
-        WBench.get().getResourceManager().destroyLocalResources();
+        WBench.get().getResourceManager().destroyLocalMapEditorResources();
         this.getMapObjectTemplates().clear();
         ((MapEditorInterface) WBenchOpenGLRenderer.getMapEditorInterface()).clear();
     }

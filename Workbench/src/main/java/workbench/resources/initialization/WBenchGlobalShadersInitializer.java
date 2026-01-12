@@ -7,11 +7,16 @@ import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstant
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 import workbench.resources.shaders.WBenchShaderManager;
 
-public final class GlobalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
+public final class WBenchGlobalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager imgui;
     public WBenchShaderManager debug;
+
+    public WBenchGlobalShadersInitializer(JGems3D.@NotNull GetSource source) {
+        super(source);
+    }
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
@@ -27,7 +32,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<WBenchSha
     }
 
     @Override
-    protected WBenchShaderManager createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
-        return new WBenchShaderManager(new ShadersContainer(shaderStaticConstants, shaderLibrary, shaderPath));
+    protected WBenchShaderManager createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+        return new WBenchShaderManager(new ShadersContainer(source, shaderStaticConstants, shaderLibrary, shaderPath));
     }
 }

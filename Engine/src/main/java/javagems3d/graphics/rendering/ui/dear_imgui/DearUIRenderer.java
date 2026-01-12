@@ -63,7 +63,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImFontAtlas fontAtlas = imGuiIO.getFonts();
 
         if (pathToJarFont != null) {
-            try (InputStream stream = JGems3D.loadFileFromJar(pathToJarFont)) {
+            try (InputStream stream = JGems3D.getInputStream(JGems3D.GetSource.JAR, pathToJarFont)) {
                 byte[] fontData = JGemsHelper.files().toByteArray(stream);
                 ImFontConfig fontConfig = new ImFontConfig();
                 fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesCyrillic());
@@ -77,7 +77,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt width = new ImInt();
         ImInt height = new ImInt();
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = systemResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
+        this.textureSample = systemResources.createTexture(JGems3D.GetSource.JAR, null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
 
         this.dearImGuiMesh = new DearUIMesh();
     }

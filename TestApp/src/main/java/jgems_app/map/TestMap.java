@@ -1,5 +1,6 @@
 package jgems_app.map;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -30,7 +31,7 @@ public class TestMap extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.gltf"), false);
+        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath("/assets/models/sponza/sponza.gltf"), false);
         sceneWorld.addObject(new SceneWorldProp("sponza", sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);

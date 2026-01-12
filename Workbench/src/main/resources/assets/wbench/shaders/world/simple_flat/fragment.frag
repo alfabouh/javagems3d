@@ -10,7 +10,7 @@ void main()
 {
     vec2 pos = vertex_position.xz;
 
-    int scaling = 16;
+    int scaling = 4;
     int x = int(floor(pos.x / scaling));
     int y = int(floor(pos.y / scaling));
 

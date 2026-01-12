@@ -39,7 +39,7 @@ public class Graph implements Serializable {
 
     public static Graph readFromFile(JGemsPath path) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Reading NavMesh...");
-        try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
+        try (InputStream inputStream = JGems3D.getInputStream(JGems3D.GetSource.JAR, path)) {
             try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(Graph.class, new JSONGraphDeserializer());

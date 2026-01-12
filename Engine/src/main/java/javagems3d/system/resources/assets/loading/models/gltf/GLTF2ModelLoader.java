@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.loading.models.gltf;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -51,20 +52,22 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     private final JGemsPath path;
     private final SystemResources systemResources;
     public int countVertexes;
+    private final JGems3D.GetSource getSource;
 
-    public GLTF2ModelLoader(SystemResources systemResources, JGemsPath pathToMainFile) {
+    public GLTF2ModelLoader(@NotNull JGems3D.GetSource source, SystemResources systemResources, JGemsPath pathToMainFile) {
         this.path = pathToMainFile;
         this.systemResources = systemResources;
+        this.getSource = source;
     }
 
     public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean attachMeshBuffer, boolean keepNodesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPath());
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getSource, this.getPath());
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
         return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, attachMeshBuffer, keepNodesInMemory);
     }
 
     public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepNodesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPath());
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getSource, this.getPath());
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
         return this.createMeshBuffer(gltf2Scene, meshCollisionDataFabric, keepNodesInMemory);
     }
@@ -82,10 +85,10 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         String grString = this.getStr(MeshGroup.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
-            Log.get().info("Mesh " + this.getPath() + " picked from cache");
+            Log.get().info("Mesh " + this.getPath() + " picked from bindless_rendering_cache");
         } else {
             meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), attachMeshBuffer, keepNodesInMemory);
-            this.getResourceCache().addObjectInBuffer(grString, meshGroup);
+            this.getResourceCache().registerInCache(grString, meshGroup);
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while processing the model");
@@ -105,10 +108,10 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
-            Log.get().info("Mesh " + this.getPath() + " picked from cache");
+            Log.get().info("Mesh " + this.getPath() + " picked from bindless_rendering_cache");
         } else {
             meshBuffer = this.processMeshBuffer(gltf2Scene, this.getSystemResources(), keepNodesInMemory);
-            this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+            this.getResourceCache().registerInCache(bffString, meshBuffer);
         }
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while processing the model");
@@ -157,7 +160,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
         try {
             List<Animation> animations = this.readAnimations(scene);
-            List<Material> materials = readMaterials(scene, systemResources);
+            List<Material> materials = this.readMaterials(scene, systemResources);
             systemResources.processMessage("Building Mesh Buffer...", 0x00ff00);
 
             this.processNodes(scene.getNodes(), materials, null, node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node));
@@ -205,7 +208,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     private List<Material> readMaterials(GLTF2Scene gltf2Scene, SystemResources systemResources) {
         List<Material> materials = new ArrayList<>();
         for (GLTF2Material gltfMat : gltf2Scene.getMaterials()) {
-            Material mat = this.readMaterial(gltfMat, systemResources, this.getPath().getDirectory().getFullPath());
+            Material mat = this.readMaterial(gltfMat, systemResources, this.getPath().getAbsolutePathDirectory().getFullPath());
             systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(mat);
             materials.add(mat);
         }
@@ -450,7 +453,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             }
 
             if (diffuseTexture != null) {
-                diffuseMap = systemResources.createTexture(nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, new JGemsPath(fullPath, diffuseTexture.getUri()), imageProperties);
+                diffuseMap = systemResources.createTexture(this.getSource, nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, new JGemsPath(fullPath, diffuseTexture.getUri()), imageProperties);
                // if (computeTransparentPixels != null) {
                //     textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, diffuseMap);
                // }
@@ -458,7 +461,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture emissionTexture = gltf2Material.getEmissionTexture();
             if (emissionTexture != null) {
-                emissionMap = systemResources.createTexture(null, new JGemsPath(fullPath, emissionTexture.getUri()), imageProperties);
+                emissionMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, emissionTexture.getUri()), imageProperties);
                 if (emissionColorVec == null) {
                     emissionColor = new Color3Texture(new Vector3f(1.0f));
                 }
@@ -466,7 +469,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture metallicRoughnessTexture = gltf2Material.getMetallicRoughnessTexture();
             if (metallicRoughnessTexture != null) {
-                metallicRoughnessMap = systemResources.createTexture(null, new JGemsPath(fullPath, metallicRoughnessTexture.getUri()), imageProperties);
+                metallicRoughnessMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, metallicRoughnessTexture.getUri()), imageProperties);
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.5f;
             } else {
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.0f;
@@ -476,7 +479,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture normalsTexture = gltf2Material.getNormalTexture();
             if (normalsTexture != null) {
-                normalsMap = systemResources.createTexture(null, new JGemsPath(fullPath, normalsTexture.getUri()), imageProperties);
+                normalsMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, normalsTexture.getUri()), imageProperties);
             }
         } catch (JGemsException e) {
             Log.get().exception(e);

@@ -62,7 +62,7 @@ public interface IAssetsInitializer {
             1.0f, 0.0f, 0.0f
     };
 
-    static MeshBuffer createDefaultCubeBuffer() {
+    static MeshBuffer createDefaultCube_MBuffer() {
         DataMesh dataMesh = new DataMesh();
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_NORMALS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelNorm));
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelPos));
@@ -73,7 +73,7 @@ public interface IAssetsInitializer {
         return meshBuffer;
     }
 
-    static MeshGroup createDefaultCubeGroup() {
+    static MeshGroup createDefaultCube_MGroup() {
         try (RenderMesh renderMesh = new RenderMesh()) {
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_NORMALS).putArray(IAssetsInitializer.CubeModelNorm));
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(IAssetsInitializer.CubeModelPos));

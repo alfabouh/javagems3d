@@ -1,6 +1,7 @@
 package javagems3d.audio.sound;
 
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
 import javagems3d.audio.JGemsSoundManager;
@@ -21,24 +22,24 @@ public class SoundBuffer implements ICached {
         this.soundPath = soundPath;
     }
 
-    public static SoundBuffer createSoundBuffer(ResourceCache resourceCache, JGemsPath soundPath, int soundFormat) {
+    public static SoundBuffer createSoundBuffer(@NotNull JGems3D.GetSource source, ResourceCache resourceCache, JGemsPath soundPath, int soundFormat) {
         if (resourceCache.checkObjectInCache(soundPath)) {
             return (SoundBuffer) resourceCache.getCachedObject(soundPath);
         }
         SoundBuffer soundBuffer = new SoundBuffer(soundPath);
-        if (soundBuffer.loadSound(soundFormat)) {
-            resourceCache.addObjectInBuffer(soundPath, soundBuffer);
+        if (soundBuffer.loadSound(source, soundFormat)) {
+            resourceCache.registerInCache(soundPath, soundBuffer);
         } else {
             return null;
         }
         return soundBuffer;
     }
 
-    public boolean loadSound(int soundFormat) {
+    public boolean loadSound(@NotNull JGems3D.GetSource source, int soundFormat) {
         this.buffer = AL10.alGenBuffers();
         JGemsSoundManager.checkALonErrors();
         try {
-            try (InputStream inputStream = JGems3D.loadFileFromJar(this.getSoundPath())) {
+            try (InputStream inputStream = JGems3D.getInputStream(source, this.getSoundPath())) {
                 return this.readOgg(inputStream, soundFormat);
             }
         } catch (UnsupportedAudioFileException | IOException e) {

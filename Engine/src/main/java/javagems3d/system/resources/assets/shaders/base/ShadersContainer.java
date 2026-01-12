@@ -1,11 +1,13 @@
 package javagems3d.system.resources.assets.shaders.base;
 
+import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +27,11 @@ public final class ShadersContainer {
     private final ShaderObject computeShaderObject;
     private final String id;
 
-    public ShadersContainer(JGemsPath shaderPath) {
-        this(null, null, shaderPath);
+    public ShadersContainer(@NotNull JGems3D.GetSource source, JGemsPath shaderPath) {
+        this(source, null, null, shaderPath);
     }
 
-    public ShadersContainer(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+    public ShadersContainer(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
         this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
@@ -40,24 +42,24 @@ public final class ShadersContainer {
         ShaderObject tesselationControlShaderObject1 = null;
         ShaderObject tesselationEvaluationShaderObject1 = null;
 
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
-            fragmentShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.FRAGMENT, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.FRAGMENT)) {
+            fragmentShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.FRAGMENT, shaderPath);
         }
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
-            vertexShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.VERTEX, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.VERTEX)) {
+            vertexShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.VERTEX, shaderPath);
         }
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
-            geometricShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.GEOMETRIC)) {
+            geometricShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
         }
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_CONTROL)) {
-            tesselationControlShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.TESS_CONTROL)) {
+            tesselationControlShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
         }
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_EVALUATION)) {
-            tesselationEvaluationShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.TESS_EVALUATION)) {
+            tesselationEvaluationShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
         }
 
-        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
-            computeShaderObject1 = new ShaderObject(shaderStaticConstants, shaderLibrary, ShaderType.COMPUTE, shaderPath);
+        if (ShaderObject.checkIfShaderExistsFile(source, shaderPath, ShaderType.COMPUTE)) {
+            computeShaderObject1 = new ShaderObject(source, shaderStaticConstants, shaderLibrary, ShaderType.COMPUTE, shaderPath);
         }
 
         this.vertexShaderObject = vertexShaderObject1;

@@ -30,7 +30,7 @@ public class TestMapAnim extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), false);
+        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), false);
 
         SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp);

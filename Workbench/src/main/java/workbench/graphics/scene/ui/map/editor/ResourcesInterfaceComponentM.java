@@ -12,11 +12,13 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import workbench.WBench;
@@ -84,14 +86,14 @@ public class ResourcesInterfaceComponentM {
             }
             ImGui.separator();
             if (ImGui.collapsingHeader("Entities")) {
-                this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getEntityGroups());
+                this.renderObjectGroupsList("en_", WBench.get().getMapProjectManager().getMapObjectTemplates().getEntityGroups());
             }
         }
         if (ImGui.collapsingHeader("Props")) {
-            this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getPropGroups());
+            this.renderObjectGroupsList("pr_", WBench.get().getMapProjectManager().getMapObjectTemplates().getPropGroups());
         }
         if (ImGui.collapsingHeader("Markers")) {
-            this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkerGroups());
+            this.renderObjectGroupsList("mk_", WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkerGroups());
         }
         if (ImGui.collapsingHeader("Scripts")) {
             ImGui.treePush();
@@ -112,7 +114,7 @@ public class ResourcesInterfaceComponentM {
                     wBenchProject.reviseScripts();
                     try {
                         final JGemsPath path = wBenchProject.getScriptPathTo(scriptPaths.get(this.currentSelectedScript.get() - 1));
-                        final String readText = JGemsHelper.files().readTextFromFileOutsideJar(path);
+                        final String readText = JGemsHelper.files().readTextFromFile(JGems3D.GetSource.EXTERNAL, path);
                         this.getEditorInterface().getEditor().setText(readText);
                         this.scriptTextTemplate = this.getEditorInterface().getEditor().getText();
                     } catch (Exception e) {
@@ -374,14 +376,14 @@ public class ResourcesInterfaceComponentM {
         ImGui.treePop();
     }
 
-    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, ProjectMapObjectTemplates.TemplatesTable<T>> tableMap) {
+    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(@NotNull String unique_prefix, Map<String, ProjectMapObjectTemplates.TemplatesTable<T>> tableMap) {
         for (Map.Entry<String, ProjectMapObjectTemplates.TemplatesTable<T>> entry : tableMap.entrySet()) {
             String groupName = entry.getKey();
             Collection<T> objects = entry.getValue().getTemplateMap().values();
 
             ImGui.treePush();
-            String groupNameTree = groupName != null ? groupName : "Other";
-            if (ImGui.treeNode(groupNameTree)) {
+            String groupNameTree = (groupName != null ? groupName : "Other");
+            if (ImGui.treeNode(unique_prefix, groupNameTree)) {
                 ImGui.treePush();
                 for (T object : objects) {
                     boolean flag = this.getEditorInterface().getCurrentSelectedTemplate() == object;

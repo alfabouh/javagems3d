@@ -2,8 +2,8 @@ package javagems3d.system.resources.managing.resources.data;
 
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
-import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.BindlessTexturesDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

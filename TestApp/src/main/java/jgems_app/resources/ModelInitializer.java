@@ -14,7 +14,7 @@ public class ModelInitializer implements IAssetsInitializer {
 
     @Override
     public void load(SystemResources systemResources) {
-        this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), true);
+        this.test_anim = systemResources.createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), true);
     }
 
     @Override

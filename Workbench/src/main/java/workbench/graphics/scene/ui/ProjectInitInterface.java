@@ -73,7 +73,7 @@ public class ProjectInitInterface implements DearUIInterface {
 
         ImGui.sameLine();
         if (ImGui.button("View")) {
-            projectPath.set(JGemsHelper.files().openFolderViewer(""));
+            projectPath.set(JGemsHelper.files().openFolderViewChooser(""));
         }
 
         if (ImGui.button("Create project", 120, 30)) {
@@ -83,14 +83,14 @@ public class ProjectInitInterface implements DearUIInterface {
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
                 //WBench.get().getMapProjectManager().createMapProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE), projectName);
                 projectPath += "\\" + projectName;
-                WBench.get().getGameProjectManager().crateGameProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE), projectName);
+                WBench.get().getGameProjectManager().createGameProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE), projectName);
                 WBench.get().getSettings().addPath(projectPath);
             }
         }
         ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.2f, 0.9f, 1.0f);
         if (ImGui.button("Open project", 120, 30)) {
-            String projectPath = JGemsHelper.files().openFolderViewer("");
+            String projectPath = JGemsHelper.files().openFolderViewChooser("");
             if (!projectPath.isEmpty() && WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
                 //WBench.get().getMapProjectManager().openMapProject(new JGemsPath(projectPath));
                 WBench.get().getGameProjectManager().openGameProject(new JGemsPath(projectPath));

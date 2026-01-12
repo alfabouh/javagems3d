@@ -1,4 +1,4 @@
-package javagems3d.system.resources.managing.resources.data.cache;
+package javagems3d.system.resources.managing.resources.data.bindless_rendering_cache;
 
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class BindlessTexturesDataCache implements IDataCache {
+public final class BindlessTexturesDataCache implements IBindlessDataCache {
     private final Map<ITextureBindless, Integer> bindlessTexturesIdMap;
 
     public BindlessTexturesDataCache() {

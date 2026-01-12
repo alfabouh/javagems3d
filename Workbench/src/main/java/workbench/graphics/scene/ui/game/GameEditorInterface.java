@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
@@ -16,26 +17,35 @@ import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
+import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.ui.map.editor.SelectedScene;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.map.WBenchMapProjectManager;
 
 public class GameEditorInterface implements DearUIInterface {
+    public static boolean isCursorInsideScene;
     private final WBenchOpenGLRenderer openGLRenderer;
     private final WBenchMapProjectManager WBenchMapProjectManager;
     private final ResourcesInterfaceComponentG resourcesInterfaceComponentG;
+    private final ActionsInterfaceComponentG actionsInterfaceComponentG;
+    private final WindowInterfaceComponentG windowInterfaceComponentG;
 
-    public GameEditorInterface(WBenchOpenGLRenderer openGLRenderer, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
+    public GameEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
         this.WBenchMapProjectManager = WBenchMapProjectManager;
         this.openGLRenderer = openGLRenderer;
         this.resourcesInterfaceComponentG = new ResourcesInterfaceComponentG();
+        this.actionsInterfaceComponentG = new ActionsInterfaceComponentG(this.resourcesInterfaceComponentG);
+        this.windowInterfaceComponentG = new WindowInterfaceComponentG(this.getOpenGLRenderer(), this.actionsInterfaceComponentG, this.resourcesInterfaceComponentG, scenePreview);
         this.clear();
     }
 
     public void clear() {
         this.resourcesInterfaceComponentG.clear();
+        //this.actionsInterfaceComponentG.clear();
+        //this.windowInterfaceComponentG.clear();
     }
 
     @Override
@@ -52,7 +62,7 @@ public class GameEditorInterface implements DearUIInterface {
 
         final float YOffset = ImGui.getFrameHeight();
 
-        final float sceneWindowSizeX = windowSize.x * 0.6f;
+        final float sceneWindowSizeX = windowSize.x * 0.5f;
         final float sceneWindowSizeY = windowSize.y * 0.7f;
 
         final float consoleWindowSizeX = sceneWindowSizeX;
@@ -101,6 +111,14 @@ public class GameEditorInterface implements DearUIInterface {
         ImGui.endMainMenuBar();
 
         ImGui.begin("Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        if (ImGui.isWindowHovered()) {
+            if (ImGui.isMouseClicked(1)) {
+                ImGui.setWindowFocus();
+            }
+            GameEditorInterface.isCursorInsideScene = true;
+        } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
+            GameEditorInterface.isCursorInsideScene = false;
+        }
 
         ImGui.sameLine();
         int posX = (int) sceneWindowOffset;
@@ -109,7 +127,7 @@ public class GameEditorInterface implements DearUIInterface {
         int sizeY = (int) (sceneWindowSizeY - YOffset);
         ImGui.setWindowSize(sizeX, sizeY);
         ImGui.setWindowPos(posX, posY);
-        //this.getSceneComponent().sceneContent();
+        this.getWindowInterfaceComponentG().windowContent();
         ImGui.end();
 
         ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
@@ -118,7 +136,7 @@ public class GameEditorInterface implements DearUIInterface {
         MapEditorInterface.consoleContent();
         ImGui.end();
 
-        ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("JGemsResources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(resourcesWindowSizeX, resourcesWindowSizeY);
         ImGui.setWindowPos(0, 0);
         //this.getResourcesComponent().resourcesContent();
@@ -128,10 +146,18 @@ public class GameEditorInterface implements DearUIInterface {
         ImGui.begin("Actions", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(propertiesWindowSizeX, propertiesWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
-        //this.getActionsContent().actionsContent();
+        this.getActionsInterfaceComponentG().actionsContent();
         ImGui.end();
 
         //this.getContextComponent().context();
+    }
+
+    public WindowInterfaceComponentG getWindowInterfaceComponentG() {
+        return this.windowInterfaceComponentG;
+    }
+
+    public ActionsInterfaceComponentG getActionsInterfaceComponentG() {
+        return this.actionsInterfaceComponentG;
     }
 
     public ResourcesInterfaceComponentG getResourcesInterfaceComponentG() {

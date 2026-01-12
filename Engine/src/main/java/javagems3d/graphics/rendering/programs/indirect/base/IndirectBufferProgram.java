@@ -5,7 +5,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;

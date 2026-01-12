@@ -57,7 +57,7 @@ public final class JGemsCore implements ICore {
         this.requestsFromThreads = new RequestsFromThreads();
         this.exceptionsBuffer = SyncManager.createSyncronisedSet();
 
-        JGemsHelper.init(this);
+        JGemsHelper.initJGemsCore(this);
     }
 
     private void createMappingObject() {
@@ -153,7 +153,7 @@ public final class JGemsCore implements ICore {
         this.systemThread = new Thread(() -> {
             try {
                 JGemsAPI.APIAppData().preInit(this);
-                JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
+                JGems3D.get().getLocalisation().setLanguage(JGems3D.GetSource.JAR, JGems3D.get().getGameSettings().language.getCurrentLanguage());
                 this.getResourceManager().initGlobalResources();
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();

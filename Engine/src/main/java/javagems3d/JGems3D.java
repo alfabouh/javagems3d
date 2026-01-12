@@ -169,16 +169,35 @@ public final class JGems3D {
         return new File(JGems3D.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
-    public static boolean checkFileExistsInJar(JGemsPath path) {
-        try (InputStream inputStream = JGems3D.class.getResourceAsStream(path.getFullPath())) {
-            return inputStream != null;
-        } catch (IOException e) {
-            throw new JGemsIOException(e);
+    public static boolean checkIfFileExists(@NotNull JGems3D.GetSource source, JGemsPath path) {
+        try (InputStream stream = JGems3D.getInputStream(source, path)) {
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
-    public static InputStream loadFileFromJar(JGemsPath path) throws JGemsNotFoundException {
-        InputStream inputStream = JGems3D.class.getResourceAsStream(path.getFullPath());
+    public static InputStream getInputStream(@NotNull JGems3D.GetSource getSource, JGemsPath path) throws JGemsIOException {
+        InputStream inputStream = null;
+        try {
+            switch (getSource) {
+                case JAR: {
+                    inputStream = JGems3D.class.getResourceAsStream(path.getFullPath());
+                    break;
+                }
+                case EXTERNAL: {
+                    String p = path.getFullPath();
+                    if (p.startsWith("/") && p.length() > 2 && p.charAt(2) == ':') {
+                        p = p.substring(1);
+                    }
+                    inputStream = Files.newInputStream(Paths.get(p));
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            Log.get().error(getSource.name());
+            throw new JGemsIOException(e);
+        }
         if (inputStream == null) {
             throw new JGemsNotFoundException("Couldn't find: " + path);
         }
@@ -338,6 +357,11 @@ public final class JGems3D {
         public static final String ICONS = "/assets/jgems/icons/";
     }
 
+    public enum GetSource {
+        JAR,
+        EXTERNAL
+    }
+
     public static class IsolatedProcessLauncher {
         public static void EXEC(String[] args) {
             String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
@@ -351,7 +375,7 @@ public final class JGems3D {
             command.add("-XX:+UseG1GC");
             command.add("-cp");
             command.add(classpath);
-            command.add("javagems3d.JGems3DIsolatedProcessLauncher");
+            command.add("javagems3d.JGems3D.IsolatedProcessLauncher");
 
             if (args != null) {
                 command.addAll(Arrays.asList(args));

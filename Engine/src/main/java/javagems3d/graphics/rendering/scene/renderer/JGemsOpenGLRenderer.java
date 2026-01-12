@@ -5,7 +5,6 @@ import api.events.EventLauncher;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.lights.scene.LightScene;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
@@ -52,7 +51,7 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;

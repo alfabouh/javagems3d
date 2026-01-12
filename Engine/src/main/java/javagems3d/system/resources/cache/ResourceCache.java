@@ -2,6 +2,8 @@ package javagems3d.system.resources.cache;
 
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,11 +17,24 @@ public class ResourceCache {
 
     public ResourceCache(String cacheName) {
         this.cacheName = cacheName;
-        Log.get().info("Created cache: " + this);
+        Log.get().info("Created bindless_rendering_cache: " + this);
         this.cache = new LinkedHashMap<>();
     }
 
-    public void clearGroupInCache(Class<? extends ICached> clazz) {
+    public @Nullable ICached clearObjectFromCache(@NotNull JGemsPath objectKey) {
+        return this.clearObjectFromCache(objectKey.getFullPath());
+    }
+
+    public @Nullable ICached clearObjectFromCache(@NotNull String objectKey) {
+        ICached removed = this.cache.remove(objectKey);
+        if (removed != null) {
+            removed.onClearingCache(this);
+        }
+        return removed;
+    }
+
+    public void clearClassTypesInCache(Class<? extends ICached> clazz) {
+        int i = 0;
         Iterator<ICached> cachedIterator = this.cache.values().iterator();
         while (cachedIterator.hasNext()) {
             ICached cached = cachedIterator.next();
@@ -27,8 +42,9 @@ public class ResourceCache {
                 cached.onClearingCache(this);
                 cachedIterator.remove();
             }
+            i += 1;
         }
-        Log.get().info("Cleaned cache: " + this + ". Group " + clazz.getName());
+        Log.get().info("Cleaned bindless_rendering_cache: " + this + ". Group " + clazz.getName() + ". Total= " + i);
     }
 
     public void clearCache() {
@@ -37,26 +53,26 @@ public class ResourceCache {
         }
         this.cache.forEach((o, e) -> e.onClearingCache(this));
         this.cache.clear();
-        Log.get().info("Cleaned cache: " + this);
+        Log.get().info("Cleaned bindless_rendering_cache: " + this);
     }
 
     public Map<String, ICached> getCache() {
         return this.cache;
     }
 
-    public void addObjectInBuffer(JGemsPath key, ICached object) {
-        this.addObjectInBuffer(key.getFullPath(), object);
+    public void registerInCache(JGemsPath key, ICached object) {
+        this.registerInCache(key.getFullPath(), object);
     }
 
-    public void addObjectInBuffer(String key, ICached object) {
+    public void registerInCache(String key, ICached object) {
         if (object == null) {
-            Log.get().error("Couldn't add NULL object in system cache: " + key + this);
+            Log.get().error("Couldn't add NULL object in system bindless_rendering_cache: " + key + this);
             return;
         }
         if (this.cache.containsKey(key)) {
             return;
         }
-        Log.get().debug("Put object " + key + " in system cache " + this);
+        Log.get().debug("Put object " + key + " in system bindless_rendering_cache " + this);
         this.cache.put(key, object);
     }
 
@@ -72,7 +88,7 @@ public class ResourceCache {
     public ICached getCachedObject(String key) {
         ICached cached = this.cache.get(key);
         if (!this.checkObjectInCache(key)) {
-            Log.get().error("Object " + key + " doesn't exist in system cache " + this);
+            Log.get().error("Object " + key + " doesn't exist in system bindless_rendering_cache " + this);
             return null;
         }
         return cached;

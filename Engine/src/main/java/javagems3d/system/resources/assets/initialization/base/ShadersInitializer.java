@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.initialization.base;
 
+import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
@@ -7,18 +8,21 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
     private final ShaderStaticConstants shaderStaticConstants;
+    private final JGems3D.GetSource getSource;
 
-    public ShadersInitializer() {
-        this.shaderLibrary = new ShaderLibrariesManager();
+    public ShadersInitializer(@NotNull JGems3D.GetSource source) {
+        this.getSource = source;
+        this.shaderLibrary = new ShaderLibrariesManager(source);
         this.shaderStaticConstants = new ShaderStaticConstants();
     }
 
     protected abstract void initObjects(ResourceCache resourceCache);
-    protected abstract T createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath);
+    protected abstract T createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath);
     protected abstract void initStaticConstants(ShaderStaticConstants shaderStaticConstants);
     protected abstract void initShaderLibraries(ShaderLibrariesManager shaderLibrary);
 
@@ -29,8 +33,8 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         Log.get().info("Creating shader " + shaderPath + "...");
-        T shaderManager = this.createShaderObject(this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath);
-        resourceCache.addObjectInBuffer(shaderPath, shaderManager);
+        T shaderManager = this.createShaderObject(this.getSource, this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath);
+        resourceCache.registerInCache(shaderPath, shaderManager);
         return shaderManager;
     }
 
@@ -46,7 +50,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     }
 
     public void clearShaders(ResourceCache resourceCache) {
-        resourceCache.clearGroupInCache(ShaderManager.class);
+        resourceCache.clearClassTypesInCache(ShaderManager.class);
     }
 
     public void destroyShaderPrograms(ResourceCache resourceCache) {

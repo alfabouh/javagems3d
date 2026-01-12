@@ -1,4 +1,4 @@
-package workbench.resources.initialization;
+package workbench.resources.initialization.map;
 
 import api.application.workbench.manager.APIWBenchDataManager;
 import api.application.workbench.resources.APIResource;
@@ -8,6 +8,7 @@ import api.application.workbench.resources.ApiResourceProp;
 import api.application.workbench.resources.data.DefaultMarker;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
+import javagems3d.JGems3D;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
@@ -24,7 +25,7 @@ import workbench.resources.WBenchResourceManager;
 import java.util.Map;
 import java.util.Set;
 
-public class ObjectsAssetsInitializer implements IAssetsInitializer {
+public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializer {
     public void load(SystemResources systemResources) {
         APIWBenchDataManager apiwBenchDataManager = WBench.APIEditorResources().getEditorResourcesManager();
 
@@ -70,7 +71,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
     }
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, WBenchObject.ID objectId, WBenchObjectData wBenchObjectData) {
-        MeshGroup meshGroup = systemResources.createMeshGroup_Buffer(wBenchObjectData.getPathToModel(),true);
+        MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, wBenchObjectData.getPathToModel(),true);
         return new WBenchObjectTemplate(objectId, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 
@@ -79,7 +80,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroup_Buffer(wBenchMarkerData.getPathToModel(), false);
+            meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, wBenchMarkerData.getPathToModel(), false);
         }
         return new WBenchMarkerTemplate(objectId, meshGroup, wBenchMarkerData.getTagsContainer(), wBenchMarkerData.getTranslationConstraints(), wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent());
     }

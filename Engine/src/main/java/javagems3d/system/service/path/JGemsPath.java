@@ -1,8 +1,11 @@
 package javagems3d.system.service.path;
 
+import logger.Log;
+
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public final class JGemsPath implements Serializable {
     private static final long serialVersionUID = 142L;
@@ -45,6 +48,26 @@ public final class JGemsPath implements Serializable {
         return normalizedPath;
     }
 
+    public boolean recursiveDelete() {
+        return this.recursiveDelete(this.toFile());
+    }
+
+    private boolean recursiveDelete(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+        if (file.exists() && file.isDirectory()) {
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                this.recursiveDelete(f);
+            }
+        }
+        if (file.delete()) {
+            Log.get().debug("Deleted " + file.getPath());
+            return true;
+        }
+        return false;
+    }
+
     public File toFile() {
         return new File(this.getFullPath());
     }
@@ -53,7 +76,7 @@ public final class JGemsPath implements Serializable {
         return this.toFile().toPath();
     }
 
-    public JGemsPath getDirectory() {
+    public JGemsPath getAbsolutePathDirectory() {
         return new JGemsPath(this.getFullPath().substring(0, this.getFullPath().lastIndexOf('/')));
     }
 

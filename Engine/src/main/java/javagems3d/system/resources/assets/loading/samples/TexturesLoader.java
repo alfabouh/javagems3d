@@ -24,10 +24,12 @@ import java.nio.IntBuffer;
 public class TexturesLoader implements ILoadingHelper {
     private String hashId;
     private final SystemResources systemResources;
+    private final JGems3D.GetSource getSource;
 
-    public TexturesLoader(@Nullable SystemResources systemResources, @Nullable String hashId) {
+    public TexturesLoader(@NotNull JGems3D.GetSource source, @Nullable SystemResources systemResources, @Nullable String hashId) {
         this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.systemResources = systemResources;
+        this.getSource = source;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
@@ -37,7 +39,7 @@ public class TexturesLoader implements ILoadingHelper {
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                Log.get().info("Texture " + this.getHashId() + " picked from cache");
+                Log.get().info("Texture " + this.getHashId() + " picked from bindless_rendering_cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
@@ -45,9 +47,9 @@ public class TexturesLoader implements ILoadingHelper {
         Log.get().info("Texture " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
-                this.getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
+                this.getResourceCache().registerInCache(imageTexture.toString(), imageTexture);
             } else {
-                this.getResourceCache().addObjectInBuffer(name, imageTexture);
+                this.getResourceCache().registerInCache(name, imageTexture);
             }
             this.getGameResources().getResourceArrays().getBindlessTexturesArray().add(imageTexture);
         }
@@ -56,7 +58,7 @@ public class TexturesLoader implements ILoadingHelper {
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
         this.hashId = pathToTexture.toString();
-        try (InputStream inputStream = JGems3D.loadFileFromJar(pathToTexture)) {
+        try (InputStream inputStream = JGems3D.getInputStream(this.getSource, pathToTexture)) {
             return this.createImageTexture(textureProperties, inputStream);
         } catch (IOException e) {
             throw new JGemsIOException(e);

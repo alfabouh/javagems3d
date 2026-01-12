@@ -23,8 +23,8 @@ public final class JGemsResourceManager extends ResourceManager {
     public static SoundAssetsInitializer globalSoundAssets = null;
 
     public JGemsResourceManager() {
-        super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL));
-        JGemsResourceManager.globalShaderAssets = new GlobalShadersInitializer();
+        super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1));
+        JGemsResourceManager.globalShaderAssets = new GlobalShadersInitializer(JGems3D.GetSource.JAR);
     }
 
     public static void createShaders() {
@@ -95,7 +95,7 @@ public final class JGemsResourceManager extends ResourceManager {
     }
 
     public SystemResources getLocalResources() {
-        return this.getGameResources(ResourceManager.LOCAL);
+        return this.getGameResources(ResourceManager.LOCAL1);
     }
 
     public SystemResources getGlobalResources() {

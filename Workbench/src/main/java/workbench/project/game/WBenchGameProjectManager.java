@@ -3,23 +3,22 @@ package workbench.project.game;
 import com.google.gson.JsonSyntaxException;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.project.managing.WBenchGameResourcesManager;
 import workbench.project.map.WBenchMapProjectManager;
+import workbench.resources.WBenchResourceManager;
+import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.Objects;
 
 public class WBenchGameProjectManager {
@@ -27,13 +26,14 @@ public class WBenchGameProjectManager {
 
     private WBenchGameProject currentGameProject;
     private final WBenchMapProjectManager wBenchMapProjectManager;
+    private WBenchGameResourcesManager wBenchGameResourcesManager;
 
     public WBenchGameProjectManager() {
         this.currentGameProject = null;
         this.wBenchMapProjectManager = new WBenchMapProjectManager();
     }
 
-    public boolean crateGameProject(JGemsPath absPath, JGemsPath path, String name) {
+    public boolean createGameProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
             WBenchGameProject wBenchGameProject = new WBenchGameProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_VERSION, name);
             wBenchGameProject.init();
@@ -55,7 +55,7 @@ public class WBenchGameProjectManager {
 
     //TODO
     public void readGameProject() {
-        this.refreshAllGameFiles();
+        this.refreshMaps();
     }
 
     //TODO
@@ -63,13 +63,9 @@ public class WBenchGameProjectManager {
         this.saveGameProjectFile();
     }
 
-    public void refreshAllGameFiles() {
-        this.refreshMapsFolderData();
-    }
-
-    public void refreshMapsFolderData() {
+    public void refreshMaps() {
         this.getCurrentGameProject().getMaps().clear();
-        String absPath = this.getCurrentGameProject().getCurrentProjectPath().getDirectory().getFullPath() + "/maps";
+        String absPath = this.getCurrentGameProject().getCurrentProjectAbsolutePath().getFullPath() + "/maps";
         Log.get().debug("Looking in... " + absPath);
         File[] files = new File(absPath).listFiles();
         if (files != null) {
@@ -94,7 +90,45 @@ public class WBenchGameProjectManager {
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {
         this.saveGameProject(true);
+        this.destroyLocalGameResources();
         WBench.get().openInterface(dearUIInterface);
+    }
+
+    public void refreshModelFiles(boolean showLoadingScreen) {
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.invoke();
+        }
+        WBench.get().getResourceManager().getLocalGameEditorResources().getResourceCache().clearClassTypesInCache(MeshGroup.class);
+        this.getGameResourcesManager().refreshModels(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.dispose();
+        }
+    }
+
+    public void refreshTextureFiles(boolean showLoadingScreen) {
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.invoke();
+        }
+        WBench.get().getResourceManager().getLocalGameEditorResources().getResourceCache().clearClassTypesInCache(ImageTexture.class);
+        this.getGameResourcesManager().refreshTextures(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.dispose();
+        }
+    }
+
+    private void initLocalGameResources() {
+        LoadingInterfaceSwing.invoke();
+        this.wBenchGameResourcesManager = new WBenchGameResourcesManager(WBench.get().getResourceManager().getLocalGameEditorResources());
+        this.refreshModelFiles(false);
+        this.refreshTextureFiles(false);
+        WBenchResourceManager.createLocalGameEditorShaders();
+        WBenchResourceManager.setDefaultRenderTableValues();
+        WBench.get().getResourceManager().initLocalGameEditorResources();
+        WBench.get().getResourceManager().loadLocalGameEditorResources();
+    }
+
+    private void destroyLocalGameResources() {
+        WBench.get().getResourceManager().destroyLocalGameEditorResources();
     }
 
     public boolean openGameProject(JGemsPath path) {
@@ -121,8 +155,8 @@ public class WBenchGameProjectManager {
             Log.get().info("Opened WBenchGameProject: " + wBenchGameProject);
             Log.get().info(wBenchGameProject.getGameInfo());
 
-            //LoadingInterfaceSwing.invoke();
-            //LoadingInterfaceSwing.setResource("JSON Processing...");
+            this.initLocalGameResources();
+            LoadingInterfaceSwing.setResource("JSON Processing...");
             this.readGameProject();
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
 
@@ -133,7 +167,7 @@ public class WBenchGameProjectManager {
             Log.get().exception(e);
             return false;
         } finally {
-            //LoadingInterfaceSwing.dispose();
+            LoadingInterfaceSwing.dispose();
         }
     }
 
@@ -149,6 +183,10 @@ public class WBenchGameProjectManager {
             Log.get().exception(e);
             return null;
         }
+    }
+
+    public WBenchGameResourcesManager getGameResourcesManager() {
+        return this.wBenchGameResourcesManager;
     }
 
     private void initWorkingSpace(DearUIInterface dearUIInterface) {
@@ -173,7 +211,7 @@ public class WBenchGameProjectManager {
     }
 
     public JGemsPath getMapsPath() {
-        return new JGemsPath(this.getCurrentGameProject().getCurrentProjectPath().getDirectory(), WBenchGameProjectManager.MAPS_PATH);
+        return new JGemsPath(this.getCurrentGameProject().getCurrentProjectAbsolutePath(), WBenchGameProjectManager.MAPS_PATH);
     }
 
     public WBenchGameProject getCurrentGameProject() {

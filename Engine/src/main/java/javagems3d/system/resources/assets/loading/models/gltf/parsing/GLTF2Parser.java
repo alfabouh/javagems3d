@@ -29,11 +29,11 @@ import java.util.*;
 public abstract class GLTF2Parser {
     public static final String DEFAULT_IDENTIFIER = "unknown";
 
-    public static GLTF2RawData parse(JGemsPath pathToMainFile) {
-        try (InputStream jsonInput = JGems3D.loadFileFromJar(pathToMainFile)) {
+    public static GLTF2RawData parse(@NotNull JGems3D.GetSource source, JGemsPath pathToMainFile) {
+        try (InputStream jsonInput = JGems3D.getInputStream(source, pathToMainFile)) {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             JsonElement root = jsonFileManaging.read(jsonInput);
-            return GLTF2Parser.readStructure(pathToMainFile, root);
+            return GLTF2Parser.readStructure(source, pathToMainFile, root);
         } catch (JGemsException e) {
             Log.get().error("Failed to load: " + pathToMainFile);
             throw e;
@@ -43,7 +43,7 @@ public abstract class GLTF2Parser {
         }
     }
 
-    private static GLTF2RawData readStructure(JGemsPath pathToMainFile, JsonElement root) {
+    private static GLTF2RawData readStructure(@NotNull JGems3D.GetSource source, JGemsPath pathToMainFile, JsonElement root) {
         JsonObject rootObject = root.getAsJsonObject();
 
         List<ByteBuffer> buffersList = new ArrayList<>();
@@ -56,8 +56,8 @@ public abstract class GLTF2Parser {
                 byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
                 buffersList.add(ByteBuffer.wrap(decodedBytes));
             } else {
-                JGemsPath pathToBin = new JGemsPath(pathToMainFile.getDirectory(), bufferUri);
-                try (InputStream binInput = JGems3D.loadFileFromJar(pathToBin)) {
+                JGemsPath pathToBin = new JGemsPath(pathToMainFile.getAbsolutePathDirectory(), bufferUri);
+                try (InputStream binInput = JGems3D.getInputStream(source, pathToBin)) {
                     buffersList.add(JGemsHelper.files().toByteBufferSized(binInput, bufferObj.get("byteLength").getAsInt()));
                 } catch (IOException e) {
                     throw new JGemsIOException(e);

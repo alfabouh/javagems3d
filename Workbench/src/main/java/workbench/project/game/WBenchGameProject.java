@@ -31,6 +31,10 @@ public class WBenchGameProject extends GameProjectData {
         return this.maps;
     }
 
+    public JGemsPath getCurrentProjectAbsolutePath() {
+        return this.currentProjectPath.getAbsolutePathDirectory();
+    }
+
     public JGemsPath getCurrentProjectPath() {
         return this.currentProjectPath;
     }

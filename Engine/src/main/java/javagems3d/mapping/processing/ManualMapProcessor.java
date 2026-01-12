@@ -51,7 +51,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false);
+            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
             JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));

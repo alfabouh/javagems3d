@@ -27,10 +27,12 @@ public class CubeMapsLoader implements ILoadingHelper {
     public static final String DEFAULT_NAME = "unknown";
     private String hashId;
     private final SystemResources systemResources;
+    private final JGems3D.GetSource source;
 
-    public CubeMapsLoader(@Nullable SystemResources systemResources, @Nullable String hashId) {
+    public CubeMapsLoader(@NotNull JGems3D.GetSource source, @Nullable SystemResources systemResources, @Nullable String hashId) {
         this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.systemResources = systemResources;
+        this.source = source;
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
@@ -40,7 +42,7 @@ public class CubeMapsLoader implements ILoadingHelper {
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                Log.get().info("CubeMap " + this.getHashId() + " picked from cache");
+                Log.get().info("CubeMap " + this.getHashId() + " picked from bindless_rendering_cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
@@ -48,9 +50,9 @@ public class CubeMapsLoader implements ILoadingHelper {
         Log.get().info("CubeMap " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
-                this.getResourceCache().addObjectInBuffer(cubeMapTexture.toString(), cubeMapTexture);
+                this.getResourceCache().registerInCache(cubeMapTexture.toString(), cubeMapTexture);
             } else {
-                this.getResourceCache().addObjectInBuffer(name, cubeMapTexture);
+                this.getResourceCache().registerInCache(name, cubeMapTexture);
             }
         }
         return cubeMapTexture;
@@ -70,7 +72,7 @@ public class CubeMapsLoader implements ILoadingHelper {
             }
             builder.append(textureDescriptor);
             this.hashId = builder.toString();
-            try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(builder.toString()))) {
+            try (InputStream inputStream = JGems3D.getInputStream(this.source, new JGemsPath(builder.toString()))) {
                 Pair<ByteBuffer, Vector2i> pair = this.readTextureFromMemory(inputStream);
                 if (pair == null || pair.getFirst() == null) {
                     throw new JGemsIOException("Couldn't create texture " + this.getHashId() + ". \n" + STBImage.stbi_failure_reason());

@@ -9,6 +9,7 @@ import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrary;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
@@ -24,19 +25,21 @@ public class ShaderObject {
     private final ShaderLibrariesManager shaderLibrariesManager;
     private final ShaderStaticConstants shaderStaticConstants;
     private String shaderText;
+    protected final JGems3D.GetSource getSource;
 
-    public ShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
+    public ShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
         this.structs = new HashMap<>();
         this.shaderLibrariesManager = shaderLibrariesManager;
         this.shaderStaticConstants = shaderStaticConstants;
+        this.getSource = source;
         this.shaderText = "";
     }
 
-    public static boolean checkIfShaderExistsInJar(JGemsPath directoryPath, ShaderType shaderType) {
-        return JGems3D.checkFileExistsInJar(new JGemsPath(directoryPath, shaderType.getFile()));
+    public static boolean checkIfShaderExistsFile(@NotNull JGems3D.GetSource source, JGemsPath directoryPath, ShaderType shaderType) {
+        return JGems3D.checkIfFileExists(source, new JGemsPath(directoryPath, shaderType.getFile()));
     }
 
     public Map<String, Set<String>> getStructs() {
@@ -143,7 +146,7 @@ public class ShaderObject {
 
 
     private String readShaderText(JGemsPath shaderPath) {
-        return JGemsHelper.files().readTextFromFileInJar(new JGemsPath(shaderPath, this.getShaderType().getFile()));
+        return JGemsHelper.files().readTextFromFile(this.getSource, new JGemsPath(shaderPath, this.getShaderType().getFile()));
     }
 
     private String processIncludes(String shaderCode) {

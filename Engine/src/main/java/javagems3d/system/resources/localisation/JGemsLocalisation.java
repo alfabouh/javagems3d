@@ -5,6 +5,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,45 +30,45 @@ public class JGemsLocalisation {
         this.currentlang = null;
     }
 
-    public static Lang createLocalisation(String langName, JGemsPath path) {
+    public static Lang createLocalisation(@NotNull JGems3D.GetSource source, String langName, JGemsPath path) {
         if (Lang.checkLangInSet(langName)) {
             Lang l = Lang.getLangByName(langName);
-            JGemsLocalisation.setLangLocalisationPath(l, path);
+            JGemsLocalisation.setLangLocalisationPath(source, l, path);
             return l;
         } else {
             return Lang.createLang(langName, path);
         }
     }
 
-    public static void setLangLocalisationPath(Lang lang, JGemsPath path) {
+    public static void setLangLocalisationPath(@NotNull JGems3D.GetSource source, Lang lang, JGemsPath path) {
         lang.setFileDirectoryPath(path);
         if (JGemsHelper.localisation().getLocalisation().getCurrentlang() != null && JGemsHelper.localisation().getLocalisation().getCurrentlang().equals(lang)) {
-            JGemsHelper.localisation().getLocalisation().setLanguage(lang);
+            JGemsHelper.localisation().getLocalisation().setLanguage(source, lang);
         }
     }
 
-    public void setLanguage(Lang lang) {
+    public void setLanguage(@NotNull JGems3D.GetSource source, Lang lang) {
         if (lang == null) {
             Log.get().warn("Tried to set NULL language");
             lang = Lang.DefaultEnglish;
         }
-        this.readLangFileInTable(lang);
+        this.readLangFileInTable(source, lang);
         Log.get().info("Initialized language table "  + lang.getFullName());
         this.currentlang = lang;
     }
 
-    private void readLangFileInTable(Lang lang) {
+    private void readLangFileInTable(@NotNull JGems3D.GetSource source, Lang lang) {
         LangMap langMap = new LangMap();
         try {
-            this.readStream(langMap, new JGemsPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
+            this.readStream(source, langMap, new JGemsPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
         this.currentLangTable = langMap;
     }
 
-    private void readStream(LangMap langMap, JGemsPath filePath) throws IOException {
-        try (InputStream inputStream = JGems3D.loadFileFromJar(filePath)) {
+    private void readStream(@NotNull JGems3D.GetSource source, LangMap langMap, JGemsPath filePath) throws IOException {
+        try (InputStream inputStream = JGems3D.getInputStream(source, filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;

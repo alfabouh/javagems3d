@@ -100,7 +100,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
+                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), JGems3D.GetSource.EXTERNAL));
                    ui.setPanel(new DefaultGamePanel(null));
                });
 

@@ -2,6 +2,7 @@ package workbench.resources.frame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class LoadingInterfaceSwing {
     private static String resourceName = "";
@@ -9,8 +10,10 @@ public class LoadingInterfaceSwing {
     private static JLabel loadingLabel;
 
     public static void setResource(String name) {
-        LoadingInterfaceSwing.resourceName = name;
-        LoadingInterfaceSwing.loadingLabel.setText("<html>" + LoadingInterfaceSwing.resourceName + "</html>");
+        SwingUtilities.invokeLater(() -> {
+            LoadingInterfaceSwing.resourceName = name;
+            LoadingInterfaceSwing.loadingLabel.setText("<html>" + LoadingInterfaceSwing.resourceName + "</html>");
+        });
     }
 
     private static void create() {

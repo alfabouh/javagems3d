@@ -15,8 +15,8 @@ import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
-import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.BindlessTexturesDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.json.JSONFileManaging;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,11 @@ public abstract class ResourceManager {
     private static ITexture2DProgram DEFAULT_TEXTURE = null;
 
     public static final String GLOBAL = "Global";
-    public static final String LOCAL = "Local";
+    public static final String LOCAL1 = "Local1";
+    public static final String LOCAL2 = "Local2";
+    public static final String LOCAL3 = "Local3";
+    public static final String LOCAL4 = "Local4";
+
     private final Map<String, SystemResources> gameResourcesMap;
     private final ResourcesDataCache resourcesDataCache;
     private ITexture2DProgram animationMatricesTexture;

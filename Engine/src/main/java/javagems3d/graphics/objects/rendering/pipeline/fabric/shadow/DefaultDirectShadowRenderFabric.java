@@ -42,7 +42,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
 
     protected void renderModelForShadow(IModeled modeled, JGemsShaderManager shaderManager, Model3D model) {
         shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
-        JGemsHelper.render().performAnimationsInfo(shaderManager, modeled);
+        JGemsHelper.render().performAnimationsInfo(JGemsHelper.resources().getResourceManager(), shaderManager, modeled);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();

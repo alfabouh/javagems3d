@@ -5,6 +5,7 @@ import javagems3d.system.controller.base.ScanningMode;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import workbench.WBench;
+import workbench.graphics.scene.ui.game.GameEditorInterface;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 public class WBenchMouseKeyboardController extends MouseKeyboardController {
@@ -14,7 +15,7 @@ public class WBenchMouseKeyboardController extends MouseKeyboardController {
 
     @Override
     public boolean disableMouseScanning() {
-        return !MapEditorInterface.isCursorInsideScene;
+        return !MapEditorInterface.isCursorInsideScene && !GameEditorInterface.isCursorInsideScene;
     }
 
     @Override

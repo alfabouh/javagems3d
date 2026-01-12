@@ -74,63 +74,51 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     private MapObjectsDataPack mapObjectsDataPack;
     private MapProjectData mapProjectData;
 
-    public ExternalMapProcessor(JGemsPath pathToJG3DFile, boolean inJar) {
+    public ExternalMapProcessor(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
         super();
         this.pathToJG3DFile = pathToJG3DFile;
 
-        this.readMap(pathToJG3DFile, inJar);
+        this.readMap(pathToJG3DFile, source);
     }
 
 
-    protected void readMap(JGemsPath pathToJG3DFile, boolean inJar) {
+    protected void readMap(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
         final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
-            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, inJar, MapProjectData.class);
+            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, source, MapProjectData.class);
             if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
             this.mapProjectData.checkVersion();
 
-            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getDirectory(), this.mapProjectData.getMapDataFile()), inJar, MapObjectsDataPack.class);
+            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), source, MapObjectsDataPack.class);
             if (this.mapObjectsDataPack == null) {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
             Log.get().info("Found " + this.mapProjectData.getScriptFiles().size() + " scripts");
-            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles(), inJar);
+            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles(), source);
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
     }
 
-    private void loadScripts(JGemsPath pathToJG3DFile, List<String> scriptPaths, boolean isJar) {
+    private void loadScripts(JGemsPath pathToJG3DFile, List<String> scriptPaths, @NotNull JGems3D.GetSource source) {
         try {
             for (String path : scriptPaths) {
-                if (isJar) {
-                    JGemsAPI.executeScript(JGemsHelper.files().readTextFromFileInJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts", path)));
-                } else {
-                    JGemsAPI.executeScript(JGemsHelper.files().readTextFromFileOutsideJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts",path)));
-                }
+                JGemsAPI.executeScript(JGemsHelper.files().readTextFromFile(source, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), "scripts", path)));
             }
         } catch (JGemsIOException e) {
             Log.get().exception(e);
         }
     }
 
-    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPath path, boolean inJar, Class<T> clazz) {
-        if (inJar) {
-            try (InputStream stream = JGems3D.loadFileFromJar(path)) {
-                return jsonFileManaging.readFromInputStream(stream, clazz, null);
-            } catch (IOException e) {
-                throw new JGemsIOException(e);
-            }
-        } else {
-            File file = path.toFile();
-            if (!file.exists()) {
-                throw new JGemsNullException("File " + path + " does not exist");
-            }
-            return jsonFileManaging.readFromFile(file, clazz, null);
+    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPath path, @NotNull JGems3D.GetSource source, Class<T> clazz) {
+        try (InputStream stream = JGems3D.getInputStream(source, path)) {
+            return jsonFileManaging.readFromInputStream(stream, clazz, null);
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
         }
     }
 
@@ -223,7 +211,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         if (skyData != null) {
             final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
             if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
-                ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
+                ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(JGems3D.GetSource.EXTERNAL, null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
                 skyBox.setSky2DTexture(cubeMapProgram);
             } else {
                 Log.get().error("Couldn't create cubeMap: " + skyData.skyboxPath);
@@ -316,13 +304,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         protected Vector3f playerSpawnPoint;
         protected Vector3f playerSpawnRotation;
 
-        public Default(JGemsPath pathToJG3DFile, boolean inJar) {
-            super(pathToJG3DFile, inJar);
+        public Default(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
+            super(pathToJG3DFile, source);
         }
 
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(MapObjectTemplate template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, propData.getPathToModel(), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -333,7 +321,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, propData.getPathToModel(), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -352,7 +340,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable WorldItem onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, entityData.getPathToModel(), false);
 
             JGemsBody jGemsBody = null;
             if (tagPhysics == null || tagPhysics.getValues()[0].isFlag()) {

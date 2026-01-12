@@ -58,6 +58,7 @@ import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
@@ -83,7 +84,13 @@ public final class JGemsHelper {
         return JGemsHelper.INSTANCE;
     }
 
-    public static void init(@NotNull JGemsCore core) {
+    public static void initResourceManager(@NotNull ResourceManager resourceManager) {
+        JGemsHelper.get().resourceManager = resourceManager;
+    }
+
+    private ResourceManager resourceManager;
+
+    public static void initJGemsCore(@NotNull JGemsCore core) {
         JGemsHelper.get().core = core;
     }
 
@@ -91,7 +98,7 @@ public final class JGemsHelper {
 
     private final Files files;
     private final Math math;
-    private final Resources resources;
+    private final JGemsResources resources;
     private final Render render;
     private final UI ui;
     private final Localisation localisation;
@@ -105,7 +112,7 @@ public final class JGemsHelper {
     private JGemsHelper() {
         this.files = new Files();
         this.math = new Math();
-        this.resources = new Resources();
+        this.resources = new JGemsResources();
         this.render = new Render();
         this.ui = new UI();
         this.localisation = new Localisation();
@@ -125,7 +132,7 @@ public final class JGemsHelper {
         return JGemsHelper.get().files;
     }
 
-    public static Resources resources() {
+    public static JGemsResources resources() {
         return JGemsHelper.get().resources;
     }
 
@@ -402,12 +409,12 @@ public final class JGemsHelper {
         }
 
 
-        public Lang createLocalisation(String langName, JGemsPath path) {
-            return JGemsLocalisation.createLocalisation(langName, path);
+        public Lang createLocalisation(@NotNull JGems3D.GetSource source, String langName, JGemsPath path) {
+            return JGemsLocalisation.createLocalisation(source, langName, path);
         }
 
-        public void setLangLocalisationPath(Lang lang, JGemsPath path) {
-            JGemsLocalisation.setLangLocalisationPath(lang, path);
+        public void setLangLocalisationPath(@NotNull JGems3D.GetSource source, Lang lang, JGemsPath path) {
+            JGemsLocalisation.setLangLocalisationPath(source, lang, path);
         }
     }
 
@@ -542,12 +549,12 @@ public final class JGemsHelper {
             shaderManager.enableWarns();
         }
 
-        public boolean performAnimationsInfo(JGemsShaderManager shaderManager, IAnimated animated) {
+        public boolean performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
             shaderManager.disableWarns();
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
             if (animated.hasAnimationData()) {
-                shaderManager.performUniformTexture(new UniformString("animations_matrix"), JGemsHelper.this.resources().getAnimationsTextureBuffer());
+                shaderManager.performUniformTexture(new UniformString("animations_matrix"), resourceManager.getAnimationMatricesTexture());
                 shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
             }
             shaderManager.enableWarns();
@@ -578,7 +585,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Resources {
+    public final class JGemsResources {
         public SystemResources getLocalGameResources() {
             return this.getResourceManager().getLocalResources();
         }
@@ -602,7 +609,7 @@ public final class JGemsHelper {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
             JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
             JGems3D.get().getScreen().refreshSceneResources();
-            JGems3D.get().getLocalisation().setLanguage(JGemsHelper.this.getGameSettings().language.getCurrentLanguage());
+            JGems3D.get().getLocalisation().setLanguage(JGems3D.GetSource.JAR, JGemsHelper.this.getGameSettings().language.getCurrentLanguage());
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();
         }
@@ -648,22 +655,9 @@ public final class JGemsHelper {
     }
 
     public final class Files {
-        public String readTextFromFileInJar(JGemsPath path) {
+        public String readTextFromFile(@NotNull JGems3D.GetSource source, JGemsPath path) {
             StringBuilder textBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.loadFileFromJar(path), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    textBuilder.append(line).append(System.lineSeparator());
-                }
-            } catch (IOException e) {
-                throw new JGemsIOException(e);
-            }
-            return textBuilder.toString();
-        }
-
-        public String readTextFromFileOutsideJar(JGemsPath path) {
-            StringBuilder textBuilder = new StringBuilder();
-            try (BufferedReader reader = java.nio.file.Files.newBufferedReader(path.toFile().toPath(), StandardCharsets.UTF_8)) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.getInputStream(source, path), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     textBuilder.append(line).append(System.lineSeparator());
@@ -721,7 +715,7 @@ public final class JGemsHelper {
             return byteBuffer;
         }
 
-        public String openFolderViewer(@Nullable String defaultStr) {
+        public String openFolderViewChooser(@Nullable String defaultStr) {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogTitle("Choose folder");

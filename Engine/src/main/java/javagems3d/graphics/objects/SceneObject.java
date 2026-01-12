@@ -115,7 +115,11 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         if (!this.hasModel() || !this.getModel().getMeshStructure().isAnimatedStructure()) {
             return null;
         }
-        if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationsList().size()) {
+        if (id < 0) {
+            this.setAnimationData(null);
+            return null;
+        }
+        if (id >= this.getModel().getMeshStructure().getAnimationsList().size()) {
             Log.get().error("Couldn't set animation for: " + this);
             return null;
         }

@@ -1,4 +1,4 @@
-package javagems3d.system.resources.managing.resources.data.cache;
+package javagems3d.system.resources.managing.resources.data.bindless_rendering_cache;
 
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
@@ -6,7 +6,7 @@ import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDat
 
 import java.util.*;
 
-public final class MeshBuffersDataCache implements IDataCache {
+public final class MeshBuffersDataCache implements IBindlessDataCache {
     private final Map<Material, Integer> materialsIdMap;
     private final List<Material> materials;
     private final Set<MeshBuffer> meshBuffers;
