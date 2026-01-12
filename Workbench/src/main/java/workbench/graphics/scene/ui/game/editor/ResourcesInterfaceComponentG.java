@@ -205,7 +205,7 @@ public class ResourcesInterfaceComponentG {
                 if (name.isEmpty()) {
                     this.createMapContext.errTest = "Enter map name!";
                 }
-                if (!name.matches("[a-zA-Z\\d]+")) {
+                if (!name.matches("[a-zA-Z\\d\\s]+")) {
                     this.createMapContext.errTest = "Use valid symbols!";
                 }
                 for (String mapProject : new ArrayList<>(WBench.get().getGameProjectManager().getCurrentGameProject().getMaps())) {
@@ -277,8 +277,8 @@ public class ResourcesInterfaceComponentG {
 
     private static class CreateMapContext {
         private String errTest;
-        private ImString mapNamePopup;
-        private ImString mapDescriptionPopup;
+        private final ImString mapNamePopup;
+        private final ImString mapDescriptionPopup;
 
         public CreateMapContext() {
             this.mapNamePopup = new ImString();
