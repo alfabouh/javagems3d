@@ -6,23 +6,23 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.instances.GameResourceModelAsset;
 
-public class ModelPreviewAsset implements IAnimated {
-    private final WBenchGameResourcesManager.ModelAsset modelAsset;
+public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject<GameResourceModelAsset> {
+    private final GameResourceModelAsset modelAsset;
     private AnimationData animationData;
     private float animationSpeed;
     private double lastTick;
     private float animationProgress;
 
-    public ModelPreviewAsset(@NotNull WBenchGameResourcesManager.ModelAsset modelAsset) {
+    public ModelAssetPreview(@NotNull GameResourceModelAsset modelAsset) {
         this.modelAsset = modelAsset;
         this.animationData = null;
         this.animationSpeed = 1.0f;
         this.lastTick = JGems3D.glfwTime();
     }
 
-    public WBenchGameResourcesManager.ModelAsset getModelAsset() {
+    public GameResourceModelAsset getAsset() {
         return this.modelAsset;
     }
 
@@ -38,6 +38,11 @@ public class ModelPreviewAsset implements IAnimated {
 
     public void setAnimationSpeed(float animationSpeed) {
         this.animationSpeed = animationSpeed;
+    }
+
+    @Override
+    public float animationSpeedMultiplier() {
+        return this.animationSpeed;
     }
 
     public void updateAnimation() {
@@ -61,19 +66,19 @@ public class ModelPreviewAsset implements IAnimated {
 
     @Override
     public AnimationData setAnimationByID(int id) {
-        if (!this.getModelAsset().getMeshGroup().isAnimatedStructure()) {
+        if (!this.getAsset().getMeshGroup().isAnimatedStructure()) {
             return null;
         }
         if (id < 0) {
             this.setAnimationData(null);
             return null;
         }
-        if (id >= this.getModelAsset().getMeshGroup().getAnimationsList().size()) {
+        if (id >= this.getAsset().getMeshGroup().getAnimationsList().size()) {
             Log.get().error("Couldn't set animation for: " + this);
             return null;
         }
 
-        AnimationData animationData = new AnimationData(this.getModelAsset().getMeshGroup().getAnimationsList().get(id));
+        AnimationData animationData = new AnimationData(this.getAsset().getMeshGroup().getAnimationsList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         return animationData;

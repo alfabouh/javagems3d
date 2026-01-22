@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * The SystemResources class contains a bindless_rendering_cache, as well as tools for processing resources
+ * The SystemResources class contains a cache, as well as tools for processing resources
  */
 public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;

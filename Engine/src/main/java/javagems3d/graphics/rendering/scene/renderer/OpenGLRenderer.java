@@ -13,7 +13,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;

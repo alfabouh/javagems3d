@@ -1,7 +1,7 @@
 package javagems3d.mapping.tags.base;
 
 public enum AxisConstraints {
-    NULL(0),
+    NONE(0),
     AXIS_X(1),
     AXIS_Y(2),
     AXIS_Z(4),

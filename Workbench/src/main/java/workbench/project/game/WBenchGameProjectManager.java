@@ -1,10 +1,9 @@
 package workbench.project.game;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
@@ -22,7 +21,7 @@ import java.io.File;
 import java.util.Objects;
 
 public class WBenchGameProjectManager {
-    public static final String MAPS_PATH = "maps";
+    public static final String MAPS_PATH = WBenchGameResourcesManager.SYS_MAPS_FOLDER;
 
     private WBenchGameProject currentGameProject;
     private final WBenchMapProjectManager wBenchMapProjectManager;
@@ -36,7 +35,6 @@ public class WBenchGameProjectManager {
     public boolean createGameProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
             WBenchGameProject wBenchGameProject = new WBenchGameProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_VERSION, name);
-            wBenchGameProject.init();
             this.createGameSystemFiles(absPath, name);
             this.setCurrentProject(path, wBenchGameProject);
             this.saveGameProjectFile();
@@ -54,29 +52,8 @@ public class WBenchGameProjectManager {
     }
 
     //TODO
-    public void readGameProject() {
-        this.refreshMaps();
-    }
-
-    //TODO
     public void saveGameProject(boolean wait) {
         this.saveGameProjectFile();
-    }
-
-    public void refreshMaps() {
-        this.getCurrentGameProject().getMaps().clear();
-        String absPath = this.getCurrentGameProject().getCurrentProjectAbsolutePath().getFullPath() + "/maps";
-        Log.get().debug("Looking in... " + absPath);
-        File[] files = new File(absPath).listFiles();
-        if (files != null) {
-            for (File file : files) {
-                final String mapName = file.getName();
-                File mapFile = new File(file, mapName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE);
-                if (mapFile.exists()) {
-                    this.getCurrentGameProject().getMaps().add(mapName);
-                }
-            }
-        }
     }
 
     public void closeGameProject() {
@@ -94,11 +71,20 @@ public class WBenchGameProjectManager {
         WBench.get().openInterface(dearUIInterface);
     }
 
+    public void refreshMaps(boolean showLoadingScreen) {
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.invoke();
+        }
+        this.getGameResourcesManager().refreshMaps(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.dispose();
+        }
+    }
+
     public void refreshModelFiles(boolean showLoadingScreen) {
         if (showLoadingScreen) {
             LoadingInterfaceSwing.invoke();
         }
-        WBench.get().getResourceManager().getLocalGameEditorResources().getResourceCache().clearClassTypesInCache(MeshGroup.class);
         this.getGameResourcesManager().refreshModels(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
@@ -109,11 +95,14 @@ public class WBenchGameProjectManager {
         if (showLoadingScreen) {
             LoadingInterfaceSwing.invoke();
         }
-        WBench.get().getResourceManager().getLocalGameEditorResources().getResourceCache().clearClassTypesInCache(ImageTexture.class);
         this.getGameResourcesManager().refreshTextures(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
         }
+    }
+
+    public void saveResourceObjectFiles() {
+        this.getGameResourcesManager().saveCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
     }
 
     private void initLocalGameResources() {
@@ -121,6 +110,8 @@ public class WBenchGameProjectManager {
         this.wBenchGameResourcesManager = new WBenchGameResourcesManager(WBench.get().getResourceManager().getLocalGameEditorResources());
         this.refreshModelFiles(false);
         this.refreshTextureFiles(false);
+        this.refreshMaps(false);
+        this.getGameResourcesManager().readCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
         WBenchResourceManager.createLocalGameEditorShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
         WBench.get().getResourceManager().initLocalGameEditorResources();
@@ -148,7 +139,6 @@ public class WBenchGameProjectManager {
             if (wBenchGameProject == null) {
                 return false;
             }
-            wBenchGameProject.init();
             wBenchGameProject.checkVersion();
 
             this.createGameSystemFiles(path, wBenchGameProject.getGameTitle());
@@ -157,7 +147,6 @@ public class WBenchGameProjectManager {
 
             this.initLocalGameResources();
             LoadingInterfaceSwing.setResource("JSON Processing...");
-            this.readGameProject();
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
 
             return true;
@@ -174,8 +163,7 @@ public class WBenchGameProjectManager {
     public WBenchGameProject readMainFile(@NotNull JGemsPath path) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-            WBenchGameProject wBenchGameProject = jsonFileManaging.readFromFile(new File(path.toString()), WBenchGameProject.class, null);
-            wBenchGameProject.init();
+            WBenchGameProject wBenchGameProject = jsonFileManaging.readFromFile(new File(path.toString()), new TypeToken<WBenchGameProject>(){}, null);
             this.setCurrentProject(path, wBenchGameProject);
             return wBenchGameProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
@@ -201,6 +189,7 @@ public class WBenchGameProjectManager {
     private void saveGameProjectFile() {
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
         jsonFileManaging.writeToFile(this.getCurrentGameProject(), Objects.requireNonNull(this.getCurrentGameProject()).getCurrentProjectPath().toFile(), null);
+        this.getGameResourcesManager().saveCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
     }
 
     private void setCurrentProject(JGemsPath path, WBenchGameProject currentGameProject) {

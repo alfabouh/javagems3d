@@ -64,7 +64,6 @@ public interface IAPIWBenchDataManager {
         this.addResourceMarker(null, id, fabricWBench);
     }
 
-
     default void SET_DEFAULTS() {
         final Tag<TagRadioBoolean> TAG_PHYSICS = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
         final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf");

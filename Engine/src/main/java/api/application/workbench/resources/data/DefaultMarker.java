@@ -4,10 +4,10 @@ import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 
 public enum DefaultMarker {
-    CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.NULL)),
-    CURSOR_CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_Y, AxisConstraints.NULL)),
-    POINT(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.NULL)),
-    AABB_ZONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.AXIS_XYZ));
+    CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.NONE)),
+    CURSOR_CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_Y, AxisConstraints.NONE)),
+    POINT(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.NONE)),
+    AABB_ZONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.AXIS_XYZ));
 
     private final TranslationConstraints translationConstraints;
 

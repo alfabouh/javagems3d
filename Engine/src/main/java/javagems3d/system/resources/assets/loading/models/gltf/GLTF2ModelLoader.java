@@ -85,7 +85,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         String grString = this.getStr(MeshGroup.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
-            Log.get().info("Mesh " + this.getPath() + " picked from bindless_rendering_cache");
+            Log.get().info("Mesh " + this.getPath() + " picked from cache");
         } else {
             meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), attachMeshBuffer, keepNodesInMemory);
             this.getResourceCache().registerInCache(grString, meshGroup);
@@ -108,7 +108,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
-            Log.get().info("Mesh " + this.getPath() + " picked from bindless_rendering_cache");
+            Log.get().info("Mesh " + this.getPath() + " picked from cache");
         } else {
             meshBuffer = this.processMeshBuffer(gltf2Scene, this.getSystemResources(), keepNodesInMemory);
             this.getResourceCache().registerInCache(bffString, meshBuffer);

@@ -1,10 +1,12 @@
 package javagems3d.system.service.json;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -115,23 +117,23 @@ public class JSONFileManaging {
         }
     }
 
-    public <T> T read(String jsonString, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
-        Gson gson = createGson(metaData);
-        return gson.fromJson(jsonString, clazz);
+    public <T> T read(String jsonString, TypeToken<T> typeToken, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
+        Gson gson = this.createGson(metaData);
+        return gson.fromJson(jsonString, typeToken);
     }
 
-    public <T> T readFromInputStream(InputStream stream, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
+    public <T> T readFromInputStream(InputStream stream, TypeToken<T> typeToken, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
         try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             String string = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
-            return this.read(string, clazz, metaData);
+            return this.read(string, typeToken, metaData);
         } catch (IOException | JsonSyntaxException e) {
             throw new JGemsIOException(e);
         }
     }
 
-    public <T> T readFromFile(File file, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JGemsIOException, JsonSyntaxException {
+    public <T> T readFromFile(File file, TypeToken<T> typeToken, @Nullable ArbitraryArguments metaData) throws JGemsIOException, JsonSyntaxException {
         try {
-            return this.readFromInputStream(Files.newInputStream(file.toPath()), clazz, metaData);
+            return this.readFromInputStream(Files.newInputStream(file.toPath()), typeToken, metaData);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
@@ -153,6 +155,7 @@ public class JSONFileManaging {
         }
         try (Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
             writer.write(this.write(object, metaData));
+            Log.get().debug("Wrote file: " + file.getAbsolutePath());
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }

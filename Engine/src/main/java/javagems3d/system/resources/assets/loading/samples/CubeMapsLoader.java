@@ -42,7 +42,7 @@ public class CubeMapsLoader implements ILoadingHelper {
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                Log.get().info("CubeMap " + this.getHashId() + " picked from bindless_rendering_cache");
+                Log.get().info("CubeMap " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }

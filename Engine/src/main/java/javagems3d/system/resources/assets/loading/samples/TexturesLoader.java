@@ -39,7 +39,7 @@ public class TexturesLoader implements ILoadingHelper {
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                Log.get().info("Texture " + this.getHashId() + " picked from bindless_rendering_cache");
+                Log.get().info("Texture " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }

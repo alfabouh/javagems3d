@@ -1,4 +1,4 @@
-package javagems3d.system.resources.managing.resources.data.bindless_rendering_cache;
+package javagems3d.system.resources.managing.resources.data.cache;
 
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;

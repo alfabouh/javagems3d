@@ -110,7 +110,7 @@ public class GameEditorInterface implements DearUIInterface {
         }
         ImGui.endMainMenuBar();
 
-        ImGui.begin("Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.MenuBar);
         if (ImGui.isWindowHovered()) {
             if (ImGui.isMouseClicked(1)) {
                 ImGui.setWindowFocus();

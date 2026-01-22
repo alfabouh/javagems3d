@@ -56,7 +56,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         final RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());
         renderAttributes.getProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false);
         renderAttributes.getRenderTable().setMatch(Pipeline.SCENE, new RenderTable.Data(WBenchResourceManager.localShaderAssets.simple, new MarkerSimpleRenderFabric(Stage.FORWARD)));
-        final TranslationConstraints translationConstraints = new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.NULL);
+        final TranslationConstraints translationConstraints = new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.NONE);
 
         return new WBenchPointLightObject(new ID(name, null), wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, new Vector3f(1.0f), false);
     }

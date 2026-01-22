@@ -1,13 +1,11 @@
 package javagems3d.mapping.tags.items;
 
-import com.google.gson.reflect.TypeToken;
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Set;
 
 public class TagCheckBoolean extends TagItem {

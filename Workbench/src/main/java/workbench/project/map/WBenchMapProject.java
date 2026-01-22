@@ -6,6 +6,7 @@ import javagems3d.mapping.data.MapProjectData;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import workbench.project.managing.instances.IAsset;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,10 +20,6 @@ public class WBenchMapProject extends MapProjectData {
     public WBenchMapProject(@NotNull String version, @NotNull String projectName) {
         super(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_INFO, projectName, version, "");
         this.currentProjectPath = null;
-    }
-
-    public void setInformation(@NotNull String information) {
-        this.information = information;
     }
 
     public JGemsPath getScriptPathTo(String name) {

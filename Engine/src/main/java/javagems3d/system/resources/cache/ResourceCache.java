@@ -17,7 +17,7 @@ public class ResourceCache {
 
     public ResourceCache(String cacheName) {
         this.cacheName = cacheName;
-        Log.get().info("Created bindless_rendering_cache: " + this);
+        Log.get().info("Created cache: " + this);
         this.cache = new LinkedHashMap<>();
     }
 
@@ -44,7 +44,7 @@ public class ResourceCache {
             }
             i += 1;
         }
-        Log.get().info("Cleaned bindless_rendering_cache: " + this + ". Group " + clazz.getName() + ". Total= " + i);
+        Log.get().info("Cleaned cache: " + this + ". Group " + clazz.getName() + ". Total= " + i);
     }
 
     public void clearCache() {
@@ -53,7 +53,7 @@ public class ResourceCache {
         }
         this.cache.forEach((o, e) -> e.onClearingCache(this));
         this.cache.clear();
-        Log.get().info("Cleaned bindless_rendering_cache: " + this);
+        Log.get().info("Cleaned cache: " + this);
     }
 
     public Map<String, ICached> getCache() {
@@ -66,13 +66,13 @@ public class ResourceCache {
 
     public void registerInCache(String key, ICached object) {
         if (object == null) {
-            Log.get().error("Couldn't add NULL object in system bindless_rendering_cache: " + key + this);
+            Log.get().error("Couldn't add NULL object in system cache: " + key + this);
             return;
         }
         if (this.cache.containsKey(key)) {
             return;
         }
-        Log.get().debug("Put object " + key + " in system bindless_rendering_cache " + this);
+        Log.get().debug("Put object " + key + " in system cache " + this);
         this.cache.put(key, object);
     }
 
@@ -88,7 +88,7 @@ public class ResourceCache {
     public ICached getCachedObject(String key) {
         ICached cached = this.cache.get(key);
         if (!this.checkObjectInCache(key)) {
-            Log.get().error("Object " + key + " doesn't exist in system bindless_rendering_cache " + this);
+            Log.get().error("Object " + key + " doesn't exist in system cache " + this);
             return null;
         }
         return cached;

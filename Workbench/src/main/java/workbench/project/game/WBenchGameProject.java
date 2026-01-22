@@ -9,14 +9,9 @@ import java.util.List;
 
 public class WBenchGameProject extends GameProjectData {
     private transient JGemsPath currentProjectPath;
-    public transient List<String> maps;
 
     public WBenchGameProject(@NotNull String version, @NotNull String projectTitle) {
         super(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_INFO, projectTitle, version, "");
-    }
-
-    public void init() {
-        this.maps = new ArrayList<>();
     }
 
     public void setGameDataFile(String gameDataFile) {
@@ -25,10 +20,6 @@ public class WBenchGameProject extends GameProjectData {
 
     public void setCurrentProjectPath(JGemsPath currentProjectPath1) {
         this.currentProjectPath = currentProjectPath1;
-    }
-
-    public @NotNull List<String> getMaps() {
-        return this.maps;
     }
 
     public JGemsPath getCurrentProjectAbsolutePath() {

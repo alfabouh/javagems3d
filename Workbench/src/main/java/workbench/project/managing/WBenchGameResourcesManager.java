@@ -1,37 +1,60 @@
 package workbench.project.managing;
 
+import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.project.managing.instances.*;
+import workbench.project.managing.instances.group.GameResourceAssetsFolder;
+import workbench.project.map.WBenchMapProject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 public class WBenchGameResourcesManager {
     public static String SYS_ASSETS_FOLDER = "game_assets";
+    public static String SYS_MAPS_FOLDER = "game_maps";
     public static String MODEL_ASSETS_FOLDER = "models";
     public static String TEXTURE_ASSETS_FOLDER = "textures";
+    public static String OBJECT_ASSETS_FOLDER = "objects";
+
     private final SystemResources systemResources;
 
-    private AssetsFolder<ModelAsset> modelAssetAssetsFolder;
-    private AssetsFolder<TextureAsset> textureAssetAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceModelAsset> modelAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceTextureAsset> textureAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceMapAsset> mapAssetsFolder;
+    private GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceObjectTagData> tagAssetsFolder;
 
-    //private final Set<String> keysCache;
+    private final Map<String, GameResourceModelAsset> modelsKeysCache;
+    private final Map<String, GameResourceTextureAsset> texturesKeysCache;
 
     public WBenchGameResourcesManager(SystemResources systemResources) {
         this.systemResources = systemResources;
-        //this.keysCache = new HashSet<>();
+        this.modelsKeysCache = new HashMap<>();
+        this.texturesKeysCache = new HashMap<>();
+    }
+
+    public GameResourceModelAsset extractFromCacheModel(String relativePath) {
+        return this.modelsKeysCache.get(relativePath);
+    }
+
+    public GameResourceTextureAsset extractFromCacheTexture(String relativePath) {
+        return this.texturesKeysCache.get(relativePath);
+    }
+
+    public static JGemsPath getMapsFolder(JGemsPath pathToGameFolder) {
+        return new JGemsPath(pathToGameFolder, WBenchGameResourcesManager.SYS_MAPS_FOLDER);
     }
 
     public static JGemsPath getModelsFolder(JGemsPath pathToGameFolder) {
@@ -40,6 +63,10 @@ public class WBenchGameResourcesManager {
 
     public static JGemsPath getTexturesFolder(JGemsPath pathToGameFolder) {
         return new JGemsPath(pathToGameFolder, WBenchGameResourcesManager.SYS_ASSETS_FOLDER, WBenchGameResourcesManager.TEXTURE_ASSETS_FOLDER);
+    }
+
+    public static JGemsPath getObjectsFolder(JGemsPath pathToGameFolder) {
+        return new JGemsPath(pathToGameFolder, WBenchGameResourcesManager.SYS_ASSETS_FOLDER, WBenchGameResourcesManager.OBJECT_ASSETS_FOLDER);
     }
 
     public static void openTexturesFolder(JGemsPath pathToGameFolder) {
@@ -62,110 +89,210 @@ public class WBenchGameResourcesManager {
         });
     }
 
-    public File createSystemFolders(File file) {
-        File dir = new File(file, WBenchGameResourcesManager.SYS_ASSETS_FOLDER);
-        for (String s : new String[] {WBenchGameResourcesManager.MODEL_ASSETS_FOLDER, WBenchGameResourcesManager.TEXTURE_ASSETS_FOLDER}) {
-            File modelsFile = new File(dir, s);
-            if (!modelsFile.exists()) {
-                if (modelsFile.mkdirs()) {
-                    Log.get().debug("Created folder: " + modelsFile.getPath());
+    public static void openMapsFolder(JGemsPath pathToGameFolder) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Desktop.getDesktop().open(WBenchGameResourcesManager.getMapsFolder(pathToGameFolder).toFile());
+            } catch (Exception e) {
+                Log.get().exception(e);
+            }
+        });
+    }
+
+    public File[] createSystemFolders(File file) {
+        File dir1 = new File(file, WBenchGameResourcesManager.SYS_ASSETS_FOLDER);
+        File dir2 = new File(file, WBenchGameResourcesManager.SYS_MAPS_FOLDER);
+        {
+            for (String s : new String[]{WBenchGameResourcesManager.MODEL_ASSETS_FOLDER, WBenchGameResourcesManager.TEXTURE_ASSETS_FOLDER, WBenchGameResourcesManager.OBJECT_ASSETS_FOLDER}) {
+                File inFile = new File(dir1, s);
+                if (!inFile.exists()) {
+                    if (inFile.mkdirs()) {
+                        Log.get().debug("Created folder: " + inFile.getPath());
+                    }
                 }
             }
         }
-        return dir;
+        {
+            if (!dir2.exists()) {
+                if (dir2.mkdirs()) {
+                    Log.get().debug("Created folder: " + dir2.getPath());
+                }
+            }
+        }
+        return new File[]{dir1, dir2};
     }
 
     public void refreshTextures(JGemsPath pathToGameFolder) {
+        {
+            this.texturesKeysCache.values().forEach(e -> {
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(WBenchGameResourcesManager.getTexturesFolder(pathToGameFolder), e.getRelativePath()));
+            });
+            this.texturesKeysCache.clear();
+        }
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.textureAssetAssetsFolder = this.readTexturesFolder(WBenchGameResourcesManager.getTexturesFolder(pathToGameFolder));
+        this.textureAssetsFolder = this.readTexturesFolder(WBenchGameResourcesManager.getTexturesFolder(pathToGameFolder));
     }
 
     public void refreshModels(JGemsPath pathToGameFolder) {
+        {
+            this.modelsKeysCache.values().forEach(e -> {
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(WBenchGameResourcesManager.getModelsFolder(pathToGameFolder), e.getRelativePath() + MeshGroup.POSTFIX));
+            });
+            this.modelsKeysCache.clear();
+        }
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.modelAssetAssetsFolder = this.readModelsFolder(WBenchGameResourcesManager.getModelsFolder(pathToGameFolder));
+        this.modelAssetsFolder = this.readModelsFolder(WBenchGameResourcesManager.getModelsFolder(pathToGameFolder));
         WBenchOpenGLRenderer.reloadModelResources();
     }
 
-    protected AssetsFolder<TextureAsset> readTexturesFolder(JGemsPath pathToGameFolder) {
-        return this.readTexturesFolder(pathToGameFolder.toFile());
+    public void refreshMaps(JGemsPath pathToGameFolder) {
+        this.createSystemFolders(pathToGameFolder.toFile());
+        this.mapAssetsFolder = this.readMapsFolder(WBenchGameResourcesManager.getMapsFolder(pathToGameFolder));
     }
 
-    protected AssetsFolder<TextureAsset> readTexturesFolder(File rootFile) {
-        return this.readTexturesFolderRecursive(rootFile);
+    public void saveCreatableResourceObjects(JGemsPath folder) {
+        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        jsonFileManaging.writeToFile(this.getPropAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), null);
+        jsonFileManaging.writeToFile(this.getTagAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), null);
     }
 
-    protected AssetsFolder<TextureAsset> readTexturesFolderRecursive(File folder) {
-        AssetsFolder<TextureAsset> assetsFolder = new AssetsFolder<>(folder.getAbsolutePath());
+    public void readCreatableResourceObjects(JGemsPath folder) {
+        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        try {
+            this.propAssetsFolder = jsonFileManaging.readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>(){}, null);
+            this.tagAssetsFolder = jsonFileManaging.readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceObjectTagData>>(){}, null);
 
-        File[] files = folder.listFiles();
+            this.propAssetsFolder.buildRelations();
+            this.tagAssetsFolder.buildRelations();
+        } catch (Exception e) {
+            Log.get().exception(e);
+        }
+    }
+
+    protected GameResourceAssetsFolder<GameResourceTextureAsset> readTexturesFolder(JGemsPath folder) {
+        return this.readTexturesFolder(folder.toFile());
+    }
+
+    protected GameResourceAssetsFolder<GameResourceTextureAsset> readTexturesFolder(File rootFile) {
+        return this.readTexturesFolderRecursive(rootFile, rootFile);
+    }
+
+    protected GameResourceAssetsFolder<GameResourceTextureAsset> readTexturesFolderRecursive(File rootFolder, File relativeFolder) {
+        GameResourceAssetsFolder<GameResourceTextureAsset> assetsFolder = new GameResourceAssetsFolder<>(relativeFolder.getName());
+        File[] files = relativeFolder.listFiles();
         if (files == null) {
             return assetsFolder;
         }
-
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.getAssetsFoldersInside().add(this.readTexturesFolderRecursive(file));
+                assetsFolder.addFolderThere(this.readTexturesFolderRecursive(rootFolder, file));
             } else if (this.isTextureFile(file)) {
-                TextureAsset asset = this.loadTextureAsset(file);
+                GameResourceTextureAsset asset = this.loadTextureAsset(rootFolder, file);
                 if (asset != null) {
-                    assetsFolder.getAssetsThere().add(asset);
+                    assetsFolder.addAssetThere(asset);
                 }
             }
         }
-
         return assetsFolder;
     }
 
-    protected AssetsFolder<ModelAsset> readModelsFolder(JGemsPath pathToGameFolder) {
+    protected GameResourceAssetsFolder<GameResourceModelAsset> readModelsFolder(JGemsPath pathToGameFolder) {
         return this.readModelsFolder(pathToGameFolder.toFile());
     }
 
-    protected AssetsFolder<ModelAsset> readModelsFolder(File rootFile) {
-        return this.readModelsFolderRecursive(rootFile);
+    protected GameResourceAssetsFolder<GameResourceModelAsset> readModelsFolder(File rootFile) {
+        return this.readModelsFolderRecursive(rootFile, rootFile);
     }
 
-    protected AssetsFolder<ModelAsset> readModelsFolderRecursive(File folder) {
-        AssetsFolder<ModelAsset> assetsFolder = new AssetsFolder<>(folder.getAbsolutePath());
-
+    protected GameResourceAssetsFolder<GameResourceModelAsset> readModelsFolderRecursive(File rootFolder, File folder) {
+        GameResourceAssetsFolder<GameResourceModelAsset> assetsFolder = new GameResourceAssetsFolder<>(folder.getName());
         File[] files = folder.listFiles();
         if (files == null) {
             return assetsFolder;
         }
-
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.getAssetsFoldersInside().add(this.readModelsFolderRecursive(file));
+                assetsFolder.addFolderThere(this.readModelsFolderRecursive(rootFolder, file));
             } else if (this.isModelFile(file)) {
-                ModelAsset asset = this.loadModelAsset(file);
+                GameResourceModelAsset asset = this.loadModelAsset(rootFolder, file);
                 if (asset != null) {
-                    assetsFolder.getAssetsThere().add(asset);
+                    assetsFolder.addAssetThere(asset);
                 }
             }
         }
-
         return assetsFolder;
     }
 
-    private ModelAsset loadModelAsset(File file) {
+    protected GameResourceAssetsFolder<GameResourceMapAsset> readMapsFolder(JGemsPath pathToGameFolder) {
+        return this.readMapsFolder(pathToGameFolder.toFile());
+    }
+
+    protected GameResourceAssetsFolder<GameResourceMapAsset> readMapsFolder(File rootFile) {
+        return this.readMapsFolderRecursive(rootFile, rootFile);
+    }
+
+    protected GameResourceAssetsFolder<GameResourceMapAsset> readMapsFolderRecursive(File rootFolder, File relativeFolder) {
+        GameResourceAssetsFolder<GameResourceMapAsset> assetsFolder = new GameResourceAssetsFolder<>(relativeFolder.getName());
+        File[] files = relativeFolder.listFiles();
+        if (files == null) {
+            return assetsFolder;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                assetsFolder.addFolderThere(this.readMapsFolderRecursive(rootFolder, file));
+            } else if (this.isMapDefFile(file)) {
+                GameResourceMapAsset asset = this.loadMapAsset(rootFolder, file);
+                if (asset != null) {
+                    if (asset.getMapProject().getMapName() == null) {
+                        Log.get().error("Failed to get map: " + file.getPath() + ". It's name invalid!");
+                    } else {
+                        assetsFolder.addAssetThere(asset);
+                    }
+                }
+            }
+        }
+        return assetsFolder;
+    }
+
+    private GameResourceMapAsset loadMapAsset(File rootFolder, File fullPath) {
         try {
-            MeshGroup meshGroup = this.systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, new JGemsPath(file.getPath()),true);
-            //this.keysCache.add(file.getPath());
-            return new ModelAsset(file.getName(), meshGroup);
+            final WBenchMapProject mapProject1 = WBench.get().getMapProjectManager().readMainFile(fullPath, true);
+            return new GameResourceMapAsset(mapProject1);
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
         }
     }
 
-    private TextureAsset loadTextureAsset(File file) {
+    private GameResourceModelAsset loadModelAsset(File rootFolder, File fullPath) {
         try {
-            ITexture2DProgram texture2DProgram = this.systemResources.createTexture(JGems3D.GetSource.EXTERNAL, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath(file.getPath()),new ImageTexture.Properties(false, false, false, false, false));
-            //this.keysCache.add(file.getPath());
-            return new TextureAsset(file.getName(), texture2DProgram);
+            MeshGroup meshGroup = this.systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, new JGemsPath(fullPath.getPath()),true);
+            final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length());
+            final GameResourceModelAsset modelAsset = new GameResourceModelAsset(fullPath.getName(), relativePath, meshGroup);
+            this.modelsKeysCache.put(relativePath, modelAsset);
+            return modelAsset;
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
         }
+    }
+
+    private GameResourceTextureAsset loadTextureAsset(File rootFolder, File fullPath) {
+        try {
+            ITexture2DProgram texture2DProgram = this.systemResources.createTexture(JGems3D.GetSource.EXTERNAL, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath(fullPath.getPath()), new ImageTexture.Properties(false, false, false, false, false));
+            final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length());
+            final GameResourceTextureAsset textureAsset = new GameResourceTextureAsset(fullPath.getName(), relativePath, texture2DProgram);
+            this.texturesKeysCache.put(relativePath, textureAsset);
+            return textureAsset;
+        } catch (Exception e) {
+            Log.get().exception(e);
+            return null;
+        }
+    }
+
+    protected boolean isMapDefFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE);
     }
 
     protected boolean isTextureFile(File file) {
@@ -178,12 +305,24 @@ public class WBenchGameResourcesManager {
         return name.endsWith(".gltf");
     }
 
-    public AssetsFolder<ModelAsset> getModelAssetsFolder() {
-        return this.modelAssetAssetsFolder;
+    public GameResourceAssetsFolder<GameResourceObjectTagData> getTagAssetsFolder() {
+        return this.tagAssetsFolder;
     }
 
-    public AssetsFolder<TextureAsset> getTextureAssetsFolder() {
-        return this.textureAssetAssetsFolder;
+    public GameResourceAssetsFolder<GameResourceMapAsset> getMapAssetsFolder() {
+        return this.mapAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourcePropObjectAsset> getPropAssetsFolder() {
+        return this.propAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourceModelAsset> getModelAssetsFolder() {
+        return this.modelAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourceTextureAsset> getTextureAssetsFolder() {
+        return this.textureAssetsFolder;
     }
 
     //public void readModelsJSON(JGemsPath pathToGameFolder) {
@@ -205,66 +344,4 @@ public class WBenchGameResourcesManager {
     //        throw new JGemsIOException(e);
     //    }
     //}
-
-    private interface IAsset {}
-
-    public static class TextureAsset implements IAsset {
-        private final String name;
-        private final ITexture2DProgram texture2DProgram;
-
-        public TextureAsset(String name, ITexture2DProgram texture2DProgram) {
-            this.name = name;
-            this.texture2DProgram = texture2DProgram;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public ITexture2DProgram getTexture2DProgram() {
-            return this.texture2DProgram;
-        }
-    }
-
-    public static class ModelAsset implements IAsset {
-        private final String name;
-        private final MeshGroup meshGroup;
-
-        public ModelAsset(String name, MeshGroup meshGroup) {
-            this.name = name;
-            this.meshGroup = meshGroup;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public MeshGroup getMeshGroup() {
-            return this.meshGroup;
-        }
-    }
-
-    public static class AssetsFolder <T extends IAsset> {
-        private final String path;
-        private final List<T> assetsThere;
-        private final List<AssetsFolder<T>> assetsFoldersInside;
-
-        public AssetsFolder(String path) {
-            this.path = path;
-            this.assetsThere = new ArrayList<>();
-            this.assetsFoldersInside = new ArrayList<>();
-        }
-
-        public List<T> getAssetsThere() {
-            return this.assetsThere;
-        }
-
-        public List<AssetsFolder<T>> getAssetsFoldersInside() {
-            return this.assetsFoldersInside;
-        }
-
-        public String getPath() {
-            return this.path;
-        }
-    }
 }

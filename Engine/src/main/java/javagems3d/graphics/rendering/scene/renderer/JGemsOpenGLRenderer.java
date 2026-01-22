@@ -51,7 +51,7 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;

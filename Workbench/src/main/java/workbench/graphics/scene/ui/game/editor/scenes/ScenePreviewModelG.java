@@ -1,0 +1,122 @@
+package workbench.graphics.scene.ui.game.editor.scenes;
+
+import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.type.ImInt;
+import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
+import javagems3d.system.service.collections.Pair;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.instances.ModelAssetPreview;
+import workbench.project.managing.instances.GameResourceModelAsset;
+import workbench.project.managing.instances.group.GameResourceAssetsFolder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScenePreviewModelG {
+    private final ResourcesInterfaceComponentG resourcesInterfaceComponentG;
+    public float modelPreviewScaling;
+    private boolean showAABB;
+    private boolean showChessTerrain;
+    private boolean flipModel;
+
+    public ScenePreviewModelG(ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
+        this.resourcesInterfaceComponentG = resourcesInterfaceComponentG;
+        this.showChessTerrain = true;
+    }
+
+    private void parseModelsTree(GameResourceAssetsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
+        for (GameResourceModelAsset asset : folder.getAssetsThere()) {
+            allModelsAsset.add(new Pair<>(asset.getRelativePath(), asset));
+        }
+        for (GameResourceAssetsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
+            this.parseModelsTree(child, false, allModelsAsset);
+        }
+    }
+
+    public void render() {
+        ModelAssetPreview modelAssetPreview = this.resourcesInterfaceComponentG.getModelAssetsTreeDrawer().getPreviewWrapperObject();
+        if (modelAssetPreview != null) {
+            modelAssetPreview.updateAnimation();
+            if (ImGui.collapsingHeader(modelAssetPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.indent();
+                ImGui.bullet();
+                ImGui.text("Nodes");
+                int totalVertexes = 0;
+                int totalTriangles = 0;
+                for (MeshNode<?> node : modelAssetPreview.getAsset().getMeshGroup().getAllNodes()) {
+                    totalVertexes += node.getMeshData().totalVertexes();
+                    totalTriangles += node.getMeshData().numVertexIndexes() / 3;
+                }
+                ImGui.textWrapped("Total Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getAllNodes().size());
+                ImGui.textWrapped("Solid Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getSolidNodes().size());
+                ImGui.textWrapped("Transparent Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getBlendedTransparencyNodes().size());
+                ImGui.textWrapped("Total Vertexes: " + totalVertexes);
+                ImGui.textWrapped("Total Triangles: " + totalTriangles);
+                if (!modelAssetPreview.getAsset().getMeshGroup().getAnimationsList().isEmpty()) {
+                    boolean hasAnimation = modelAssetPreview.getAnimationData() != null && modelAssetPreview.getAnimationData().getCurrentAnimation() != null;
+
+                    ImGui.separator();
+                    ImGui.bullet();
+                    ImGui.text("Animations");
+                    ImGui.textWrapped("Total Animations: " + modelAssetPreview.getAsset().getMeshGroup().getAnimationsNum());
+                    List<String> animations = new ArrayList<>();
+                    if (hasAnimation) {
+                        animations.add("(*) " + modelAssetPreview.getAnimationData().getCurrentAnimation().getName());
+                        animations.add("* None");
+                    } else {
+                        animations.add("Select...");
+                        animations.add("* None");
+                    }
+                    for (Animation animation : modelAssetPreview.getAsset().getMeshGroup().getAnimationsList()) {
+                        animations.add(animation.getName());
+                    }
+                    ImInt currentAnimation = new ImInt(0);
+                    if (ImGui.combo("Animation", currentAnimation, animations.toArray(new String[]{}))) {
+                        modelAssetPreview.setAnimationByID(currentAnimation.get() - 2);
+                    } else {
+                        if (hasAnimation) {
+                            ImGui.indent();
+                            ImGui.text("FPS: " + modelAssetPreview.getAnimationData().getFps());
+                            ImGui.text("Duration: " + modelAssetPreview.getAnimationData().getCurrentAnimation().getDuration());
+                            ImGui.text("Frame Count: " + modelAssetPreview.getAnimationData().getCurrentAnimation().getFrameCount());
+                            ImGui.unindent();
+                        }
+                    }
+                }
+                ImGui.separator();
+                ImGui.text("Preview Tools:");
+                float[] f1 = new float[] {this.modelPreviewScaling};
+                if (ImGui.dragFloat("Distance", f1, 0.1f)) {
+                    this.modelPreviewScaling = f1[0];
+                }
+                if (ImGui.checkbox("Show AABB", this.showAABB)) {
+                    this.showAABB = !this.showAABB;
+                }
+                if (ImGui.checkbox("Show Chess Terrain", this.showChessTerrain)) {
+                    this.showChessTerrain = !this.showChessTerrain;
+                }
+                if (ImGui.checkbox("Flip Model", this.flipModel)) {
+                    this.flipModel = !this.flipModel;
+                }
+                ImGui.unindent();
+            }
+        }
+    }
+    public boolean isFlipModel() {
+        return this.flipModel;
+    }
+
+    public float getModelPreviewScaling() {
+        return this.modelPreviewScaling;
+    }
+
+    public boolean isShowChessTerrain() {
+        return this.showChessTerrain;
+    }
+
+    public boolean isShowAABB() {
+        return this.showAABB;
+    }
+}

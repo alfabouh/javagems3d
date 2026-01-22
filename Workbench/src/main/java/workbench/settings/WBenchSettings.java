@@ -1,5 +1,7 @@
 package workbench.settings;
 
+import com.google.gson.reflect.TypeToken;
+import javagems3d.mapping.data.MapProjectData;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
@@ -41,7 +43,7 @@ public class WBenchSettings implements Serializable {
             throw new JGemsIOException(e);
         }
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        WBenchSettings settings = jsonFileManaging.readFromFile(file, WBenchSettings.class, null);
+        WBenchSettings settings = jsonFileManaging.readFromFile(file, new TypeToken<WBenchSettings>(){}, null);
         return settings == null ? new WBenchSettings() : settings;
     }
 

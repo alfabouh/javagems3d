@@ -2,6 +2,7 @@ package workbench.project.map;
 
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
@@ -60,7 +61,7 @@ public final class WBenchMapProjectManager {
         this.world = world;
     }
 
-    public boolean createMapProject(JGemsPath absPath, JGemsPath path, String name) {
+    public WBenchMapProject createMapProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
             WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name);
             wBenchMapProject.setCurrentProjectPath(path);
@@ -69,17 +70,17 @@ public final class WBenchMapProjectManager {
             this.saveMapProjectFile(wBenchMapProject);
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
 
-            return true;
+            return wBenchMapProject;
         } catch (JGemsIOException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't create object!", e);
             Log.get().exception(e);
             this.currentMapProject = null;
-            return false;
+            return null;
         }
     }
 
     public void editMapProjectDescription(@NotNull WBenchMapProject mapProjectData, @NotNull String newText) {
-        mapProjectData.setInformation(newText);
+        mapProjectData.setMapDescription(newText);
         this.saveMapProjectFile(mapProjectData);
     }
 
@@ -136,7 +137,7 @@ public final class WBenchMapProjectManager {
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         MapObjectsDataPack mapObjectsDataPack;
         try {
-            mapObjectsDataPack = jsonFileManaging.readFromFile(file, MapObjectsDataPack.class, null);
+            mapObjectsDataPack = jsonFileManaging.readFromFile(file, new TypeToken<MapObjectsDataPack>(){}, null);
             final SkyData skyData = mapObjectsDataPack.getSkyData();
             final SunData sunData = mapObjectsDataPack.getSunData();
             final FogData fogData = mapObjectsDataPack.getFogData();
@@ -315,6 +316,9 @@ public final class WBenchMapProjectManager {
 
     @SuppressWarnings("all")
     private void createMapSystemFiles(JGemsPath path, String name) {
+        if (!path.toFile().exists()) {
+            path.toFile().mkdirs();
+        }
         File scripts = new File(new JGemsPath(path, WBenchMapProjectManager.SCRIPTS_PATH).getFullPath());
         scripts.mkdirs();
     }
@@ -379,10 +383,14 @@ public final class WBenchMapProjectManager {
     }
 
     public WBenchMapProject readMainFile(JGemsPath path, boolean preview) {
+        return this.readMainFile(path.toFile(), preview);
+    }
+
+    public WBenchMapProject readMainFile(File file, boolean preview) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-            WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(new File(path.toString()), WBenchMapProject.class, null);
-            wBenchMapProject.setCurrentProjectPath(path);
+            WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(file, new TypeToken<WBenchMapProject>(){}, null);
+            wBenchMapProject.setCurrentProjectPath(new JGemsPath(file.getPath()));
             if (!preview) {
                 this.currentMapProject = wBenchMapProject;
             }

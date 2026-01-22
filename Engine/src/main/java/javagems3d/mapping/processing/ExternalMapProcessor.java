@@ -11,6 +11,7 @@ import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.system.JGemsAPI;
+import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -86,13 +87,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
-            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, source, MapProjectData.class);
+            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, source, new TypeToken<MapProjectData>(){});
             if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
             this.mapProjectData.checkVersion();
 
-            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), source, MapObjectsDataPack.class);
+            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), source, new TypeToken<MapObjectsDataPack>(){});
             if (this.mapObjectsDataPack == null) {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
@@ -114,9 +115,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
     }
 
-    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPath path, @NotNull JGems3D.GetSource source, Class<T> clazz) {
+    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPath path, @NotNull JGems3D.GetSource source, TypeToken<T> typeToken) {
         try (InputStream stream = JGems3D.getInputStream(source, path)) {
-            return jsonFileManaging.readFromInputStream(stream, clazz, null);
+            return jsonFileManaging.readFromInputStream(stream, typeToken, null);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
