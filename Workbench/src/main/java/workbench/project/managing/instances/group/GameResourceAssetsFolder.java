@@ -1,6 +1,7 @@
 package workbench.project.managing.instances.group;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import workbench.project.managing.instances.IAsset;
 
 import java.util.*;
@@ -30,12 +31,12 @@ public class GameResourceAssetsFolder<T extends IAsset> {
     }
 
     public GameResourceAssetsFolder<T> getFolderThere(String group) {
-        return this.getAssetsFoldersInsideMap().get(group);
+        return this.getFoldersInsideMap().get(group);
     }
 
     public void addFolderThere(@NotNull GameResourceAssetsFolder<T> t) {
-        if (!this.getAssetsFoldersInsideMap().containsKey(t.getName())) {
-            this.getAssetsFoldersInsideMap().put(t.getName(), t);
+        if (!this.getFoldersInsideMap().containsKey(t.getName())) {
+            this.getFoldersInsideMap().put(t.getName(), t);
             t.setParent(this);
         }
     }
@@ -48,8 +49,20 @@ public class GameResourceAssetsFolder<T extends IAsset> {
         return this.parent.getHierarchy() + "/" + current;
     }
 
+    public @Nullable T find(String path) {
+        String[] strs = path.replaceFirst("/", "").split("/");
+        if (strs.length == 1) {
+            return this.getAsset(strs[0]);
+        }
+        final GameResourceAssetsFolder<T> assetsFolder = this.getFolderThere(strs[1]);
+        if (assetsFolder != null) {
+            return assetsFolder.find("/" + String.join("/", Arrays.copyOfRange(strs, 1, strs.length)));
+        }
+        return null;
+    }
+
     public void removeGroupFromThere(String group) {
-        this.getAssetsFoldersInsideMap().remove(group);
+        this.getFoldersInsideMap().remove(group);
     }
 
     public void addAssetThere(@NotNull T t) {
@@ -65,12 +78,12 @@ public class GameResourceAssetsFolder<T extends IAsset> {
     }
 
     public Collection<T> getAssetsThere() {
-        return this.assetsThere.values();
+        return this.getAssetsThereMap().values();
     }
 
     @SuppressWarnings("all")
     public Collection<GameResourceAssetsFolder<T>> getFoldersThere() {
-        return this.assetsFoldersInside == null ? new ArrayList<>() : this.assetsFoldersInside.values();
+        return this.getFoldersInsideMap().values();
     }
 
     public Map<String, T> getAssetsThereMap() {
@@ -80,7 +93,7 @@ public class GameResourceAssetsFolder<T extends IAsset> {
         return this.assetsThere;
     }
 
-    public Map<String, GameResourceAssetsFolder<T>> getAssetsFoldersInsideMap() {
+    public Map<String, GameResourceAssetsFolder<T>> getFoldersInsideMap() {
         if (this.assetsFoldersInside == null) {
             this.assetsFoldersInside = new LinkedHashMap<>();
         }

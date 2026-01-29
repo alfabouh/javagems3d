@@ -40,4 +40,11 @@ public class TagCheckBoolean extends TagItem {
             tagCheckBoolean.setFlag(!value);
         }
     }
+
+    @Override
+    public String toString() {
+        return "TagCheckBoolean{" +
+                "flag=" + flag +
+                '}';
+    }
 }

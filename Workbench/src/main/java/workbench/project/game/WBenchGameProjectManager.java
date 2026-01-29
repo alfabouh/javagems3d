@@ -101,8 +101,8 @@ public class WBenchGameProjectManager {
         }
     }
 
-    public void saveResourceObjectFiles() {
-        this.getGameResourcesManager().saveCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+    public void saveResourceObjectFiles(@NotNull WBenchGameResourcesManager.AssetsTarget assetsTarget) {
+        this.getGameResourcesManager().saveCreatableResourceObjects(assetsTarget, this.getCurrentGameProject().getCurrentProjectAbsolutePath());
     }
 
     private void initLocalGameResources() {
@@ -111,7 +111,7 @@ public class WBenchGameProjectManager {
         this.refreshModelFiles(false);
         this.refreshTextureFiles(false);
         this.refreshMaps(false);
-        this.getGameResourcesManager().readCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+        this.getGameResourcesManager().readCreatableResourceObjects(WBenchGameResourcesManager.AssetsTarget.ALL, this.getCurrentGameProject().getCurrentProjectAbsolutePath());
         WBenchResourceManager.createLocalGameEditorShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
         WBench.get().getResourceManager().initLocalGameEditorResources();
@@ -162,7 +162,7 @@ public class WBenchGameProjectManager {
 
     public WBenchGameProject readMainFile(@NotNull JGemsPath path) {
         try {
-            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+            JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
             WBenchGameProject wBenchGameProject = jsonFileManaging.readFromFile(new File(path.toString()), new TypeToken<WBenchGameProject>(){}, null);
             this.setCurrentProject(path, wBenchGameProject);
             return wBenchGameProject;
@@ -187,9 +187,9 @@ public class WBenchGameProjectManager {
     }
 
     private void saveGameProjectFile() {
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
         jsonFileManaging.writeToFile(this.getCurrentGameProject(), Objects.requireNonNull(this.getCurrentGameProject()).getCurrentProjectPath().toFile(), null);
-        this.getGameResourcesManager().saveCreatableResourceObjects(this.getCurrentGameProject().getCurrentProjectAbsolutePath());
+        this.getGameResourcesManager().saveCreatableResourceObjects(WBenchGameResourcesManager.AssetsTarget.ALL, this.getCurrentGameProject().getCurrentProjectAbsolutePath());
     }
 
     private void setCurrentProject(JGemsPath path, WBenchGameProject currentGameProject) {

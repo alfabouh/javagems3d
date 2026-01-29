@@ -123,7 +123,6 @@ public abstract class ResourceManager {
     }
 
     public void destroy() {
-        JSONFileManaging.CLEAR_RULES();
         ResourceManager.destroyDefaultTexture();
         ShaderStorageBufferProgram.clearAll();
         this.getResourceDataCache().clearAll();

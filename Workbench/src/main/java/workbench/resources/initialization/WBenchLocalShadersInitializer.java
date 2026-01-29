@@ -18,6 +18,7 @@ import workbench.resources.shaders.WBenchShaderManager;
 public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager scene_gluing;
     public WBenchShaderManager skybox;
+    public WBenchShaderManager simple_skybox_face;
     public WBenchShaderManager background;
     public WBenchShaderManager background_indirect;
     public WBenchShaderManager world_gbuffer;
@@ -117,6 +118,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.blur5 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"));
         this.hdr = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/hdr"));
 
+        this.simple_skybox_face = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_skybox_face"));
         this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
         this.simple_flat = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_flat"));
     }

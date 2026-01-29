@@ -66,7 +66,11 @@ public class SimplePlaneModel3D implements BasicModelCreator<Model3D> {
     @Override
     public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
-        List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
+        boolean reorder = true;
+        if (arguments != null && arguments.getterFunc().checkRowByTypes(Boolean.class)) {
+            reorder = Boolean.TRUE.equals(arguments.getterFunc().getObject(0));
+        }
+        List<Vector3f> list = reorder ? this.reorderPositions(this.v1, this.v2, this.v3, this.v4) : new ArrayList<Vector3f>() {{ add(SimplePlaneModel3D.this.v1); add(SimplePlaneModel3D.this.v2); add(SimplePlaneModel3D.this.v3); add(SimplePlaneModel3D.this.v4); }};
 
         Vector3f v1 = list.get(0);
         Vector3f v2 = list.get(1);

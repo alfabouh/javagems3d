@@ -1,6 +1,7 @@
-package workbench.project.managing.instances;
+package workbench.project.managing.instances.misc;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import workbench.project.managing.instances.IAsset;
 
 public class GameResourceTextureAsset implements IAsset {
     private final String name;

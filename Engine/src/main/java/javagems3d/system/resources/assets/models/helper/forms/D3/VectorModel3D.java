@@ -31,7 +31,6 @@ public class VectorModel3D implements BasicModelCreator<Model3D> {
     @Override
     public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
-
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
 
         vaPositions.put(this.v1.x);

@@ -1,6 +1,7 @@
-package workbench.graphics.scene.ui.game.editor.instances;
+package workbench.graphics.scene.ui.game.editor.instances.mapping;
 
-import workbench.project.managing.instances.GameResourceMapAsset;
+import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
+import workbench.project.managing.instances.mapping.GameResourceMapAsset;
 
 public final class MapProjectPreview implements IPreviewWrapperObject<GameResourceMapAsset> {
     private final GameResourceMapAsset mapProjectData;

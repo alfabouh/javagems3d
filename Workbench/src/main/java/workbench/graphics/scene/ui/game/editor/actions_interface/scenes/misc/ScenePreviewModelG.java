@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.scenes;
+package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -6,9 +6,9 @@ import imgui.type.ImInt;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.service.collections.Pair;
-import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.instances.ModelAssetPreview;
-import workbench.project.managing.instances.GameResourceModelAsset;
+import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
+import workbench.project.managing.instances.misc.GameResourceModelAsset;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 
 import java.util.ArrayList;
@@ -39,7 +39,8 @@ public class ScenePreviewModelG {
         ModelAssetPreview modelAssetPreview = this.resourcesInterfaceComponentG.getModelAssetsTreeDrawer().getPreviewWrapperObject();
         if (modelAssetPreview != null) {
             modelAssetPreview.updateAnimation();
-            if (ImGui.collapsingHeader(modelAssetPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Model: " + modelAssetPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.beginChild("##model_preview", ImGui.getColumnWidth(), 300, true);
                 ImGui.indent();
                 ImGui.bullet();
                 ImGui.text("Nodes");
@@ -101,6 +102,7 @@ public class ScenePreviewModelG {
                     this.flipModel = !this.flipModel;
                 }
                 ImGui.unindent();
+                ImGui.endChild();
             }
         }
     }

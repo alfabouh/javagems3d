@@ -44,7 +44,7 @@ public abstract class APIScriptsListing {
         onMapClear = APIScriptsListing.createNewFunction("onMapClear", "Called before map clear", new Pair<>(GameWorldJS.class, "gameworldjs"));
         onBackgroundClear = APIScriptsListing.createNewFunction("onBackgroundClear", "Called before background clear", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"));
         onPhysicsWorldUpdate = APIScriptsListing.createNewFunction("onPhysicsWorldUpdate", "Called on physics world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
-        onSceneWorldUpdate = APIScriptsListing.createNewFunction("onSceneWorldUpdate", "Called on scene world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onSceneWorldUpdate = APIScriptsListing.createNewFunction("onSceneWorldUpdate", "Called on scenes world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
         onMapSpawnedEntity = APIScriptsListing.createNewFunction("onMapSpawnedEntity", "Called when an entity is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(EntityJS.class, "entityjs"));
         onMapSpawnedProp = APIScriptsListing.createNewFunction("onMapSpawnedProp", "Called when a prop is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PropJS.class, "propjs"));
         onMapSpawnedBackgroundProp = APIScriptsListing.createNewFunction("onMapSpawnedBackgroundProp", "Called when a background prop is spawned from a map template into the background", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"), new Pair<>(BackgroundPropJS.class, "propjs"));

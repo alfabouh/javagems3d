@@ -2,27 +2,20 @@ package workbench.graphics.scene.ui.game;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.JGems3D;
-import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.system.core.JGemsLaunchArgsRegistry;
-import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
-import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.actions_interface.ActionsInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.window_interface.WindowInterfaceComponentG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.SelectedScene;
-import workbench.graphics.screen.WBenchScreen;
 import workbench.project.map.WBenchMapProjectManager;
 
 public class GameEditorInterface implements DearUIInterface {
@@ -136,9 +129,9 @@ public class GameEditorInterface implements DearUIInterface {
         MapEditorInterface.consoleContent();
         ImGui.end();
 
-        ImGui.begin("JGemsResources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(resourcesWindowSizeX, resourcesWindowSizeY);
-        ImGui.setWindowPos(0, 0);
+        ImGui.setWindowPos(0, posY);
         //this.getResourcesComponent().resourcesContent();
         this.getResourcesInterfaceComponentG().resourcesContent();
         ImGui.end();

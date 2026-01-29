@@ -50,6 +50,12 @@ public abstract class SystemResources implements ISystemResources {
     private final Set<IAssetsInitializer> assetsLoaderSet;
     private final ResourcesDataArrays resourcesDataArrays;
 
+    public enum ResLoadSysMessageType {
+        LOG,
+        ERR,
+        WARN
+    }
+
     public SystemResources(@NotNull ResourceCache resourceCache) {
         this.resourceCache = resourceCache;
         this.resourcesDataArrays = new ResourcesDataArrays(new MeshBuffersDataArray(), new BindlessTexturesDataArray());
@@ -105,34 +111,34 @@ public abstract class SystemResources implements ISystemResources {
         return this.loadTexture(returnDefault, path.toString(), () -> new CubeMapsLoader(source, this, path.toString()).createCubeMapTexture(textureProperties, path, textureDescriptor));
     }
 
-    protected abstract @Nullable Consumer<Pair<String, Integer>> getMessagesConsumer();
+    protected abstract @Nullable Consumer<ResLoadSysMessage> getMessagesConsumer();
 
-    public void processMessage(String text, int color) {
+    public void processMessage(@NotNull String text, int color, @NotNull ResLoadSysMessageType resLoadSysMessageType) {
         if (this.getMessagesConsumer() != null) {
-            this.getMessagesConsumer().accept(new Pair<>(text, color));
+            this.getMessagesConsumer().accept(new ResLoadSysMessage(color, text, resLoadSysMessageType));
         }
     }
 
     private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {
-        this.processMessage("Loading model: " + modelPath, 0xffffff);
+        this.processMessage("Loading model: " + modelPath, 0xffffff, ResLoadSysMessageType.LOG);
         try {
             T t = modelLoader.get();
-            this.processMessage("Successfully loaded model", 0x00ff00);
+            this.processMessage("Successfully loaded model", 0x00ff00, ResLoadSysMessageType.LOG);
             return t;
         } catch (Exception e) {
-            this.processMessage("Error, while processing model: " + modelPath, 0xff0000);
+            this.processMessage("Error, while processing model: " + modelPath, 0xff0000, ResLoadSysMessageType.ERR);
             throw e;
         }
     }
 
     private <T extends ITextureProgram> T loadTexture(@Nullable T returnDefault, @Nullable String name, Supplier<T> textureLoader) {
-        this.processMessage("Loading texture: " + name, 0xffffff);
+        this.processMessage("Loading texture: " + name, 0xffffff, ResLoadSysMessageType.LOG);
         try {
             T t = textureLoader.get();
-            this.processMessage("Successfully loaded texture", 0x00ff00);
+            this.processMessage("Successfully loaded texture", 0x00ff00, ResLoadSysMessageType.LOG);
             return t;
         } catch (Exception e) {
-            this.processMessage("Error, while processing texture: " + name + ". Default returned", 0xff0000);
+            this.processMessage("Error, while processing texture: " + name + ". Default returned", 0xff0000, ResLoadSysMessageType.ERR);
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -228,5 +234,29 @@ public abstract class SystemResources implements ISystemResources {
     @Override
     public ResourcesDataArrays getResourceArrays() {
         return this.resourcesDataArrays;
+    }
+
+    public static class ResLoadSysMessage {
+        private final int color;
+        private final String text;
+        private final ResLoadSysMessageType resLoadSysMessageType;
+
+        public ResLoadSysMessage(int color, @NotNull String text, @NotNull ResLoadSysMessageType resLoadSysMessageType) {
+            this.color = color;
+            this.text = text;
+            this.resLoadSysMessageType = resLoadSysMessageType;
+        }
+
+        public int getColor() {
+            return this.color;
+        }
+
+        public String getText() {
+            return this.text;
+        }
+
+        public ResLoadSysMessageType getResLoadSysMessageType() {
+            return this.resLoadSysMessageType;
+        }
     }
 }

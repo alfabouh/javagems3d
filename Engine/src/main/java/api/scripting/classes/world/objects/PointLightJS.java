@@ -11,7 +11,7 @@ import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-@JSTypeDoc(description = "Point light in scene world", priority = JSTypeDoc.Priority.MED)
+@JSTypeDoc(description = "Point light in scenes world", priority = JSTypeDoc.Priority.MED)
 public class PointLightJS extends ObjectJS {
     private final PointLight pointLight;
 

@@ -1,6 +1,7 @@
-package workbench.graphics.scene.ui.game.editor.instances;
+package workbench.graphics.scene.ui.game.editor.instances.misc;
 
-import workbench.project.managing.instances.GameResourceObjectTagData;
+import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
+import workbench.project.managing.instances.misc.GameResourceObjectTagData;
 
 public class ObjectTagPreview implements IPreviewWrapperObject<GameResourceObjectTagData> {
     private final GameResourceObjectTagData gameResourceObjectTagData;

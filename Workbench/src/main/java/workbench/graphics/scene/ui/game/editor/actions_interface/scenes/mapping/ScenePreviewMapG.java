@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.scenes;
+package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.mapping;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -6,8 +6,8 @@ import imgui.type.ImString;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.instances.MapProjectPreview;
+import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;
 
 import java.io.File;
 import java.time.Instant;
@@ -27,7 +27,8 @@ public class ScenePreviewMapG {
         final MapProjectPreview projectData = this.resourcesInterfaceComponentG.getMapResourceTreeDrawer().getPreviewWrapperObject();
         if (projectData != null && projectData.getAsset() != null) {
             final String mapProject = projectData.getAsset().getMapProject().getMapName();
-            if (ImGui.collapsingHeader(projectData.getAsset().getMapProject().getMapName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Map: " + projectData.getAsset().getMapProject().getMapName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.beginChild("##map_preview", ImGui.getColumnWidth(), 200, true);
                 ImGui.treePush();
                 if (ImGui.beginPopup("NewMapInfoPopup")) {
                     ImGui.text("New Description:");
@@ -69,6 +70,7 @@ public class ScenePreviewMapG {
                 if (ImGui.button("Edit Description")) {
                     ImGui.openPopup("NewMapInfoPopup");
                 }
+                ImGui.endChild();
                 ImGui.treePop();
             }
         }

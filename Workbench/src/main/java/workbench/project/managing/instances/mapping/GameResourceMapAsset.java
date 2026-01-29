@@ -1,5 +1,6 @@
-package workbench.project.managing.instances;
+package workbench.project.managing.instances.mapping;
 
+import workbench.project.managing.instances.IAsset;
 import workbench.project.map.WBenchMapProject;
 
 public class GameResourceMapAsset implements IAsset {

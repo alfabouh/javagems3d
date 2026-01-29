@@ -158,7 +158,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsHelper.resources().getGlobalGameResources());
 
         this.setDefaultNodes();
-        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.getName()));
         this.createResources();
 
         EventLauncher.pushEvent(new EventBus.OpenGLRendererState(EventBus.State.START, this));

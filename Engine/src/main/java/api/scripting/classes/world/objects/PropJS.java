@@ -10,7 +10,7 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-@JSTypeDoc(description = "Prop in scene world", priority = JSTypeDoc.Priority.MED)
+@JSTypeDoc(description = "Prop in scenes world", priority = JSTypeDoc.Priority.MED)
 public class PropJS extends ObjectJS {
     private final SceneProp sceneProp;
 

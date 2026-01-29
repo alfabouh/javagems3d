@@ -82,4 +82,14 @@ public class TagVector extends TagItem {
             vec.set(x, y, z, w);
         }
     }
+
+    @Override
+    public String toString() {
+        return "TagVector{" +
+                "vectorMode=" + vectorMode +
+                ", values=" + values +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }

@@ -3,6 +3,7 @@ package workbench.project.managing;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.ResourceManager;
@@ -10,10 +11,18 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.project.managing.instances.*;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
+import workbench.project.managing.instances.mapping.GameResourceMapAsset;
+import workbench.project.managing.instances.mapping.GameResourceSkyboxAsset;
+import workbench.project.managing.instances.misc.GameResourceModelAsset;
+import workbench.project.managing.instances.misc.GameResourceObjectTagData;
+import workbench.project.managing.instances.misc.GameResourceTextureAsset;
+import workbench.project.managing.instances.world.GameResourceEntityObjectAsset;
+import workbench.project.managing.instances.world.GameResourcePropObjectAsset;
 import workbench.project.map.WBenchMapProject;
 
 import javax.swing.*;
@@ -27,17 +36,27 @@ public class WBenchGameResourcesManager {
     public static String MODEL_ASSETS_FOLDER = "models";
     public static String TEXTURE_ASSETS_FOLDER = "textures";
     public static String OBJECT_ASSETS_FOLDER = "objects";
+    public static String ENVIRONMENT_ASSETS_FOLDER = "environment";
 
     private final SystemResources systemResources;
-
     private GameResourceAssetsFolder<GameResourceModelAsset> modelAssetsFolder;
     private GameResourceAssetsFolder<GameResourceTextureAsset> textureAssetsFolder;
     private GameResourceAssetsFolder<GameResourceMapAsset> mapAssetsFolder;
     private GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder;
     private GameResourceAssetsFolder<GameResourceObjectTagData> tagAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceSkyboxAsset> skyBoxesAssetsFolder;
 
     private final Map<String, GameResourceModelAsset> modelsKeysCache;
     private final Map<String, GameResourceTextureAsset> texturesKeysCache;
+
+    public enum AssetsTarget {
+        ALL,
+        PROPS,
+        ENTITIES,
+        TAGS,
+        SKYBOXES
+    }
 
     public WBenchGameResourcesManager(SystemResources systemResources) {
         this.systemResources = systemResources;
@@ -45,11 +64,11 @@ public class WBenchGameResourcesManager {
         this.texturesKeysCache = new HashMap<>();
     }
 
-    public GameResourceModelAsset extractFromCacheModel(String relativePath) {
+    public @Nullable GameResourceModelAsset extractFromCacheModel(String relativePath) {
         return this.modelsKeysCache.get(relativePath);
     }
 
-    public GameResourceTextureAsset extractFromCacheTexture(String relativePath) {
+    public @Nullable GameResourceTextureAsset extractFromCacheTexture(String relativePath) {
         return this.texturesKeysCache.get(relativePath);
     }
 
@@ -67,6 +86,10 @@ public class WBenchGameResourcesManager {
 
     public static JGemsPath getObjectsFolder(JGemsPath pathToGameFolder) {
         return new JGemsPath(pathToGameFolder, WBenchGameResourcesManager.SYS_ASSETS_FOLDER, WBenchGameResourcesManager.OBJECT_ASSETS_FOLDER);
+    }
+
+    public static JGemsPath getEnvironmentFolder(JGemsPath pathToGameFolder) {
+        return new JGemsPath(pathToGameFolder, WBenchGameResourcesManager.SYS_ASSETS_FOLDER, WBenchGameResourcesManager.ENVIRONMENT_ASSETS_FOLDER);
     }
 
     public static void openTexturesFolder(JGemsPath pathToGameFolder) {
@@ -150,22 +173,61 @@ public class WBenchGameResourcesManager {
         this.mapAssetsFolder = this.readMapsFolder(WBenchGameResourcesManager.getMapsFolder(pathToGameFolder));
     }
 
-    public void saveCreatableResourceObjects(JGemsPath folder) {
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        jsonFileManaging.writeToFile(this.getPropAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), null);
-        jsonFileManaging.writeToFile(this.getTagAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), null);
+    public void saveCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
+        if (assetsTarget.equals(AssetsTarget.SKYBOXES) || assetsTarget.equals(AssetsTarget.ALL)) {
+            JSONFileManaging.createSerializationRules().writeToFile(this.getSkyBoxesAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), null);
+        }
+        if (assetsTarget.equals(AssetsTarget.PROPS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            TagsContainer.createJSONFileManaging().writeToFile(this.getPropAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), null);
+        }
+        if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
+            TagsContainer.createJSONFileManaging().writeToFile(this.getPropAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_entities.json").toFile(), null);
+        }
+        if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            TagsContainer.createJSONFileManaging().writeToFile(this.getTagAssetsFolder(), new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), null);
+        }
     }
 
-    public void readCreatableResourceObjects(JGemsPath folder) {
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        try {
-            this.propAssetsFolder = jsonFileManaging.readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>(){}, null);
-            this.tagAssetsFolder = jsonFileManaging.readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceObjectTagData>>(){}, null);
-
-            this.propAssetsFolder.buildRelations();
-            this.tagAssetsFolder.buildRelations();
-        } catch (Exception e) {
-            Log.get().exception(e);
+    public void readCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
+        if (assetsTarget.equals(AssetsTarget.PROPS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            try {
+                this.propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>() {
+                }, null);
+                this.propAssetsFolder.buildRelations();
+            } catch (Exception e) {
+                this.propAssetsFolder = new GameResourceAssetsFolder<>("root");
+                Log.get().exception(e);
+            }
+        }
+        if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
+            try {
+                this.entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_entities.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceEntityObjectAsset>>() {
+                }, null);
+                this.entityAssetsFolder.buildRelations();
+            } catch (Exception e) {
+                this.entityAssetsFolder = new GameResourceAssetsFolder<>("root");
+                Log.get().exception(e);
+            }
+        }
+        if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            try {
+                this.tagAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(WBenchGameResourcesManager.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceObjectTagData>>() {
+                }, null);
+                this.tagAssetsFolder.buildRelations();
+            } catch (Exception e) {
+                this.tagAssetsFolder = new GameResourceAssetsFolder<>("root");
+                Log.get().exception(e);
+            }
+        }
+        if (assetsTarget.equals(AssetsTarget.SKYBOXES) || assetsTarget.equals(AssetsTarget.ALL)) {
+            try {
+                this.skyBoxesAssetsFolder = JSONFileManaging.createSerializationRules().readFromFile(new JGemsPath(WBenchGameResourcesManager.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceSkyboxAsset>>() {
+                }, null);
+                this.skyBoxesAssetsFolder.buildRelations();
+            } catch (Exception e) {
+                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>("root");
+                Log.get().exception(e);
+            }
         }
     }
 
@@ -303,6 +365,14 @@ public class WBenchGameResourcesManager {
     protected boolean isModelFile(File file) {
         String name = file.getName().toLowerCase();
         return name.endsWith(".gltf");
+    }
+
+    public GameResourceAssetsFolder<GameResourceSkyboxAsset> getSkyBoxesAssetsFolder() {
+        return this.skyBoxesAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourceEntityObjectAsset> getEntityAssetsFolder() {
+        return this.entityAssetsFolder;
     }
 
     public GameResourceAssetsFolder<GameResourceObjectTagData> getTagAssetsFolder() {

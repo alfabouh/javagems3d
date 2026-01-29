@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public final class TagID {
     private final String id;
-    private final String description;
-    private final String toolTip;
+    private String description;
+    private String toolTip;
 
     public TagID(@NotNull String id, @NotNull String description, @Nullable String toolTip) {
         this.id = id;
@@ -46,6 +46,16 @@ public final class TagID {
         }
         TagID tagID = (TagID) o;
         return Objects.equals(this.id, tagID.id);
+    }
+
+    public TagID setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public TagID setToolTip(String toolTip) {
+        this.toolTip = toolTip;
+        return this;
     }
 
     public String getToolTip() {

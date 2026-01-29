@@ -21,6 +21,7 @@ import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PlaneModel3D implements BasicModelCreator<Model3D> {
@@ -71,7 +72,11 @@ public class PlaneModel3D implements BasicModelCreator<Model3D> {
     @Override
     public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
-        List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
+        boolean reorder = true;
+        if (arguments != null && arguments.getterFunc().checkRowByTypes(Boolean.class)) {
+            reorder = Boolean.TRUE.equals(arguments.getterFunc().getObject(0));
+        }
+        List<Vector3f> list = reorder ? this.reorderPositions(this.v1, this.v2, this.v3, this.v4) : new ArrayList<Vector3f>() {{ add(PlaneModel3D.this.v1); add(PlaneModel3D.this.v2); add(PlaneModel3D.this.v3); add(PlaneModel3D.this.v4); }};
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);

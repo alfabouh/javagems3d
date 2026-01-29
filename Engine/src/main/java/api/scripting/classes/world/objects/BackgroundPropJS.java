@@ -5,7 +5,7 @@ import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 
-@JSTypeDoc(description = "Prop in scene world", priority = JSTypeDoc.Priority.MED)
+@JSTypeDoc(description = "Prop in scenes world", priority = JSTypeDoc.Priority.MED)
 public final class BackgroundPropJS extends PropJS {
     public BackgroundPropJS(@NotNull SceneProp sceneProp) {
         super(sceneProp);

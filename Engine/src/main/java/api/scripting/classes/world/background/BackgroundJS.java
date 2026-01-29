@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-@JSTypeDoc(description = "Background scene object", priority = JSTypeDoc.Priority.HIGH)
+@JSTypeDoc(description = "Background scenes object", priority = JSTypeDoc.Priority.HIGH)
 public final class BackgroundJS {
     public final Map<Integer, BackgroundPropJS> mapObjectsIdMap;
     private final JGemsAPIScriptingManaging scriptingManaging;

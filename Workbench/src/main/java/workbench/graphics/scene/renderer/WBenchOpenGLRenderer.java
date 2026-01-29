@@ -160,7 +160,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         uiRenderNode.setAnInterface(WBenchOpenGLRenderer.getProjectInterface());
         this.setUIRenderNode(uiRenderNode);
 
-        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.getName()));
         this.createResources();
     }
 
@@ -245,7 +245,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getConveyorNodes().values().stream().filter(e -> !(e instanceof IUIRenderNode)).forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
 
-        Log.get().info("Created scene data");
+        Log.get().info("Created scenes data");
 
      //   this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
     }
@@ -262,7 +262,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getSceneCulling().destroyResources();
         this.removeNodes();
 
-        Log.get().info("Cleared scene data");
+        Log.get().info("Cleared scenes data");
     }
 
     protected void constructScreenModel() {

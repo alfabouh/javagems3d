@@ -7,6 +7,7 @@ import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.exceptions.JGemsNotFoundException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -32,16 +33,24 @@ public class TexturesLoader implements ILoadingHelper {
         this.getSource = source;
     }
 
-    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
-        return this.createImageTexture(textureProperties, data, this.getHashId());
-    }
-
-    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
+    private ImageTexture checkCache(@NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
                 Log.get().info("Texture " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
+        }
+        return null;
+    }
+
+    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
+        return this.createImageTexture(textureProperties, data, this.getHashId());
+    }
+
+    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
+        final ImageTexture fromCache = this.checkCache(name);
+        if (fromCache != null) {
+            return fromCache;
         }
         ImageTexture imageTexture = new ImageTexture(textureProperties, data);
         Log.get().info("Texture " + this.getHashId() + " successfully created");
@@ -58,9 +67,13 @@ public class TexturesLoader implements ILoadingHelper {
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
         this.hashId = pathToTexture.toString();
+        final ImageTexture fromCache = this.checkCache(this.hashId);
+        if (fromCache != null) {
+            return fromCache;
+        }
         try (InputStream inputStream = JGems3D.getInputStream(this.getSource, pathToTexture)) {
             return this.createImageTexture(textureProperties, inputStream);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new JGemsIOException(e);
         }
     }

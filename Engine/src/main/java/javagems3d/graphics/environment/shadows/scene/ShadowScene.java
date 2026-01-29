@@ -224,7 +224,7 @@ public abstract class ShadowScene implements IShadowScene {
 
     public void unBindPointLightFromShadowScene(PointLight pointLight) {
         if (pointLight.getAttachedShadowSceneId() < 0) {
-            Log.get().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene");
+            Log.get().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scenes");
             return;
         }
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);

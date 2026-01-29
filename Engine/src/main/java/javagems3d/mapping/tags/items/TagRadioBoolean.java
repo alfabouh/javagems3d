@@ -9,6 +9,8 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
+
+import java.util.Arrays;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,5 +77,20 @@ public class TagRadioBoolean extends TagItem {
         public boolean isFlag() {
             return this.flag;
         }
+
+        @Override
+        public String toString() {
+            return "Info{" +
+                    "name='" + name + '\'' +
+                    ", flag=" + flag +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "TagRadioBoolean{" +
+                "values=" + Arrays.toString(values) +
+                '}';
     }
 }

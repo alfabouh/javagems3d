@@ -44,7 +44,7 @@ public class TagColor extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(@NotNull TagsContainer tagsContainer, @Nullable SceneObject currentSelected, @NotNull TagItem tagItem, @NotNull TagID tagID, @Nullable Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagColor tagColor = (TagColor) tagItem;
         Vector4f color = tagColor.getColorVector();
         ColorMode colorMode = tagColor.getColorMode();
@@ -59,5 +59,13 @@ public class TagColor extends TagItem {
                 tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], colorArray[3]));
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "TagColor{" +
+                "colorVector=" + colorVector +
+                ", colorMode=" + colorMode +
+                '}';
     }
 }

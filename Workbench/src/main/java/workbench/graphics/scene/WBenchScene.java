@@ -27,7 +27,7 @@ public class WBenchScene implements IScene {
     }
 
     public void preRender() {
-        Log.get().info("Starting scene rendering");
+        Log.get().info("Starting scenes rendering");
         this.getSceneRenderer().onStartRender();
     }
 
@@ -55,7 +55,7 @@ public class WBenchScene implements IScene {
     }
 
     public void postRender() {
-        Log.get().info("Stopping scene rendering");
+        Log.get().info("Stopping scenes rendering");
         this.getSceneRenderer().onStopRender();
     }
 

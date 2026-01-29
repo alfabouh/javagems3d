@@ -130,7 +130,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         try {
             List<Animation> animations = this.readAnimations(scene);
             List<Material> materials = readMaterials(scene, systemResources);
-            systemResources.processMessage("Building Mesh Group...", 0x00ff00);
+            systemResources.processMessage("Building Mesh Group...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
             this.processNodes(scene.getNodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), buffer != null ? node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node) : null);
 
             if (animations != null) {
@@ -161,7 +161,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         try {
             List<Animation> animations = this.readAnimations(scene);
             List<Material> materials = this.readMaterials(scene, systemResources);
-            systemResources.processMessage("Building Mesh Buffer...", 0x00ff00);
+            systemResources.processMessage("Building Mesh Buffer...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
 
             this.processNodes(scene.getNodes(), materials, null, node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node));
 
@@ -321,7 +321,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             animations.add(animation);
 
             Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath() + ". " + animation.getName());
-            systemResources.processMessage("Loaded animation(size:" + animations.size() + "). " + animation.getName(), 0xff00ff);
+            systemResources.processMessage("Loaded animation(size:" + animations.size() + "). " + animation.getName(), 0xff00ff, SystemResources.ResLoadSysMessageType.LOG);
         }
 
         return animations;

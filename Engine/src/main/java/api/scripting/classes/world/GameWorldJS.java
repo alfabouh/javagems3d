@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-@JSTypeDoc(description = "Game World. General realization of the scene and physics world", priority = JSTypeDoc.Priority.HIGH)
+@JSTypeDoc(description = "Game World. General realization of the scenes and physics world", priority = JSTypeDoc.Priority.HIGH)
 public final class GameWorldJS extends ObjectJS {
     public final Map<Integer, ObjectJS> mapObjectsIdMap;
     private final JGemsAPIScriptingManaging scriptingManaging;
@@ -119,7 +119,7 @@ public final class GameWorldJS extends ObjectJS {
         return new EntityJS(jGemsBody);
     }
 
-    @JSMethodDoc(description = "Spawn prop(decoration) in scene world", args = {"propTemplateJS", "position", "rotation", "scaling"}, order = 8)
+    @JSMethodDoc(description = "Spawn prop(decoration) in scenes world", args = {"propTemplateJS", "position", "rotation", "scaling"}, order = 8)
     public PropJS spawnProp(PropTemplateJS propTemplateJS, Vec3f position, Vec3f rotation, Vec3f scaling) {
         if (propTemplateJS == null) {
             Log.get().warn("Tried to spawn NULL prop from script");
@@ -137,21 +137,21 @@ public final class GameWorldJS extends ObjectJS {
         return new PropJS(sceneProp);
     }
 
-    @JSMethodDoc(description = "Spawn point light in scene world", args = {"brightness", "light position", "light color", "offset"}, order = 9)
+    @JSMethodDoc(description = "Spawn point light in scenes world", args = {"brightness", "light position", "light color", "offset"}, order = 9)
     public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor, @NotNull Vec3f offset) {
         PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, offset);
         JGemsHelper.world().addLight(UtilsJS.getPointlight(pointLightJS));
         return pointLightJS;
     }
 
-    @JSMethodDoc(description = "Spawn point light in scene world", args = {"brightness", "light position", "light color"}, order = 10)
+    @JSMethodDoc(description = "Spawn point light in scenes world", args = {"brightness", "light position", "light color"}, order = 10)
     public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor) {
         PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, new Vec3f(0.0f, 0.0f, 0.0f));
         JGemsHelper.world().addLight(UtilsJS.getPointlight(pointLightJS));
         return pointLightJS;
     }
 
-    @JSMethodDoc(description = "Remove point light from scene world", args = {"pointLightJS"}, order = 11)
+    @JSMethodDoc(description = "Remove point light from scenes world", args = {"pointLightJS"}, order = 11)
     public void removePointLight(PointLightJS pointLightJS) {
         pointLightJS.remove();
     }
@@ -161,7 +161,7 @@ public final class GameWorldJS extends ObjectJS {
         entityJS.remove();
     }
 
-    @JSMethodDoc(description = "Remove prop from scene world", args = {"propJS"}, order = 13)
+    @JSMethodDoc(description = "Remove prop from scenes world", args = {"propJS"}, order = 13)
     public void removeProp(PropJS propJS) {
         propJS.remove();
     }

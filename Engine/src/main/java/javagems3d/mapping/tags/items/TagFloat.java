@@ -53,4 +53,13 @@ public class TagFloat extends TagItem {
             tagFloat.setValue(JGemsHelper.math().clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
         }
     }
+
+    @Override
+    public String toString() {
+        return "TagFloat{" +
+                "value=" + value +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }

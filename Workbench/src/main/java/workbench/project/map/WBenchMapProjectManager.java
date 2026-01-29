@@ -33,7 +33,6 @@ import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import javagems3d.mapping.data.templates.MapObjectTemplate;
-import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
@@ -89,7 +88,7 @@ public final class WBenchMapProjectManager {
     }
 
     private void saveMapProjectFile(@NotNull WBenchMapProject wBenchMapProject) {
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
         jsonFileManaging.writeToFile(wBenchMapProject, wBenchMapProject.getCurrentProjectPath().toFile(), null);
     }
 
@@ -388,7 +387,7 @@ public final class WBenchMapProjectManager {
 
     public WBenchMapProject readMainFile(File file, boolean preview) {
         try {
-            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+            JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
             WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(file, new TypeToken<WBenchMapProject>(){}, null);
             wBenchMapProject.setCurrentProjectPath(new JGemsPath(file.getPath()));
             if (!preview) {

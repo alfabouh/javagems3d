@@ -69,4 +69,9 @@ public class TagObjectsList extends TagItem {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "TagObjectsList{}";
+    }
 }

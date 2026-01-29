@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.instances;
+package workbench.graphics.scene.ui.game.editor.instances.misc;
 
 import javagems3d.JGems3D;
 import javagems3d.graphics.objects.IAnimated;
@@ -6,7 +6,8 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
-import workbench.project.managing.instances.GameResourceModelAsset;
+import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
+import workbench.project.managing.instances.misc.GameResourceModelAsset;
 
 public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject<GameResourceModelAsset> {
     private final GameResourceModelAsset modelAsset;

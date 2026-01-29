@@ -31,7 +31,7 @@ public abstract class GLTF2Parser {
 
     public static GLTF2RawData parse(@NotNull JGems3D.GetSource source, JGemsPath pathToMainFile) {
         try (InputStream jsonInput = JGems3D.getInputStream(source, pathToMainFile)) {
-            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+            JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
             JsonElement root = jsonFileManaging.read(jsonInput);
             return GLTF2Parser.readStructure(source, pathToMainFile, root);
         } catch (JGemsException e) {

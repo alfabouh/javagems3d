@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.game.editor.utils;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
@@ -71,7 +72,9 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            ImGui.beginChild("##ResChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.5f, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.insides();
+            ImGui.endChild();
         }
     }
 

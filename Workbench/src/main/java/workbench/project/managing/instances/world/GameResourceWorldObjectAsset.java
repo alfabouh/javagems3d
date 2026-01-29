@@ -1,15 +1,16 @@
-package workbench.project.managing.instances;
+package workbench.project.managing.instances.world;
 
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
+import workbench.project.managing.instances.IAsset;
 
-public class GameResourcePropObjectAsset implements IAsset {
+public abstract class GameResourceWorldObjectAsset implements IAsset {
     private final String ID;
     private String modelAssetRelativePath;
     private TagsContainer tagsContainer;
     private TranslationConstraints axisConstraints;
 
-    public GameResourcePropObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, TranslationConstraints axisConstraints) {
+    public GameResourceWorldObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, TranslationConstraints axisConstraints) {
         this.ID = ID;
         this.modelAssetRelativePath = modelAssetRelativePath;
         this.tagsContainer = tagsContainer;
@@ -24,7 +25,7 @@ public class GameResourcePropObjectAsset implements IAsset {
         return this.modelAssetRelativePath;
     }
 
-    public GameResourcePropObjectAsset setModelAssetRelativePath(String modelAssetRelativePath) {
+    public GameResourceWorldObjectAsset setModelAssetRelativePath(String modelAssetRelativePath) {
         this.modelAssetRelativePath = modelAssetRelativePath;
         return this;
     }
@@ -33,7 +34,7 @@ public class GameResourcePropObjectAsset implements IAsset {
         return this.tagsContainer;
     }
 
-    public GameResourcePropObjectAsset setTagsContainer(TagsContainer tagsContainer) {
+    public GameResourceWorldObjectAsset setTagsContainer(TagsContainer tagsContainer) {
         this.tagsContainer = tagsContainer;
         return this;
     }
@@ -42,7 +43,7 @@ public class GameResourcePropObjectAsset implements IAsset {
         return this.axisConstraints;
     }
 
-    public GameResourcePropObjectAsset setAxisConstraints(TranslationConstraints axisConstraints) {
+    public GameResourceWorldObjectAsset setAxisConstraints(TranslationConstraints axisConstraints) {
         this.axisConstraints = axisConstraints;
         return this;
     }

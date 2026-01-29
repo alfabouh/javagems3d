@@ -1,6 +1,7 @@
-package workbench.project.managing.instances;
+package workbench.project.managing.instances.misc;
 
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import workbench.project.managing.instances.IAsset;
 
 public class GameResourceModelAsset implements IAsset {
     private final String relativePath;

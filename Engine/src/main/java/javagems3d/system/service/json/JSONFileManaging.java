@@ -26,7 +26,7 @@ public class JSONFileManaging {
     public static final Set<Pair<Class<?>, SerializationRules<?>>> DEFAULT_SERIALIZATION_RULES = new HashSet<>();
 
     static {
-        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(Vector3f.class, JSONFileManaging.create(
+        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(Vector3f.class, JSONFileManaging.createSerializationRules(
                 (object, context) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("x", object.x);
@@ -43,7 +43,7 @@ public class JSONFileManaging {
                 }
         )));
 
-        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(Vector4f.class, JSONFileManaging.create(
+        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(Vector4f.class, JSONFileManaging.createSerializationRules(
                 (object, context) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("x", object.x);
@@ -67,11 +67,6 @@ public class JSONFileManaging {
         JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(pair);
     }
 
-    public static void CLEAR_RULES() {
-        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.clear();
-        TagsContainer.TAG_ITEMS_SERIALIZATION_RULES.clear();
-    }
-
     private final Map<Class<?>, SerializationRules<?>> rulesMap;
 
     protected JSONFileManaging() {
@@ -82,7 +77,7 @@ public class JSONFileManaging {
     }
 
     @SafeVarargs
-    public static JSONFileManaging create(Pair<Class<?>, SerializationRules<?>>... pairs) {
+    public static JSONFileManaging createSerializationRules(Pair<Class<?>, SerializationRules<?>>... pairs) {
         JSONFileManaging jsonFileManaging = new JSONFileManaging();
         for (Pair<Class<?>, SerializationRules<?>> pair : pairs) {
             jsonFileManaging.getRulesMap().put(pair.getFirst(), pair.getSecond());
@@ -190,7 +185,7 @@ public class JSONFileManaging {
         }
     }
 
-    public static <E> SerializationRules<E> create(Serializer<E> serializer, Deserializer<E> deserializer) {
+    public static <E> SerializationRules<E> createSerializationRules(Serializer<E> serializer, Deserializer<E> deserializer) {
         return new SerializationRules<E>() {
 
             @Override

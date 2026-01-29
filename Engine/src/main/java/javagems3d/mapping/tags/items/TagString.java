@@ -44,4 +44,12 @@ public class TagString extends TagItem {
     public TagItem copy() {
         return new TagString(this.getText());
     }
+
+    @Override
+    public String toString() {
+        return "TagString{" +
+                "text='" + text + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

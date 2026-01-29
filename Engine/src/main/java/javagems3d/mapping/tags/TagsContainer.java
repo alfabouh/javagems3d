@@ -25,7 +25,7 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
     }
 
     public static JSONFileManaging createJSONFileManaging() {
-        final JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
+        final JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
         for (Map.Entry<Class<?>, JSONFileManaging.SerializationRules<?>> pair : TagsContainer.TAG_ITEMS_SERIALIZATION_RULES.entrySet()) {
             jsonFileManaging.setMatchUnsafe(pair.getKey(), pair.getValue());
         }
@@ -33,7 +33,7 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
     }
 
     public static final JSONFileManaging.SerializationRules<TagsContainer> TAGS_CONTAINER_SERIALIZATION_RULE =
-            JSONFileManaging.create(
+            JSONFileManaging.createSerializationRules(
                     (object, context) -> {
                         JsonArray tagsArray = new JsonArray();
                         for (Tag<? extends TagItem> tag : object.getTags().values()) {
@@ -97,16 +97,24 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
         return this.getTag(id) != null;
     }
 
-    public void replaceTag(TagID id, TagItem newValue) {
+    public TagsContainer replaceTag(TagID id, TagItem newValue) {
         this.getTags().replace(id, new Tag<>(id, newValue));
+        return this;
     }
 
-    public void removeTag(TagID id) {
+    public TagsContainer removeTag(TagID id) {
         this.getTags().remove(id);
+        return this;
     }
 
-    public void addTag(Tag<? extends TagItem> tag) {
+    public TagsContainer addTag(Tag<? extends TagItem> tag) {
         this.getTags().put(tag.getTagID(), tag);
+        return this;
+    }
+
+    public TagsContainer copyTagsFrom(@NotNull TagsContainer tagsContainer) {
+        this.getTags().putAll(tagsContainer.getTags());
+        return this;
     }
 
     public Tag<? extends TagItem> getTag(TagID id) {

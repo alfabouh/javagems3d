@@ -53,4 +53,13 @@ public class TagInt extends TagItem {
             tagInt.setValue(JGemsHelper.math().clamp(value[0], tagInt.getMin(), tagInt.getMax()));
         }
     }
+
+    @Override
+    public String toString() {
+        return "TagInt{" +
+                "value=" + value +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }

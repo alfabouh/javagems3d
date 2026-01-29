@@ -3,12 +3,14 @@ package workbench.graphics.scene.ui.game.editor.utils;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import workbench.project.managing.instances.IAsset;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
@@ -36,6 +38,8 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
     private @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> afterAssetDeleted;
     private @Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderCreated;
     private @Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderDeleted;
+    private @Nullable Consumer<Void> onRefreshButton;
+    private @Nullable Consumer<T> onContextOnItem;
     private final Function<T, E> previewInstanceFactory;
 
     public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<GameResourceAssetsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<GameResourceAssetsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<GameResourceAssetsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
@@ -48,7 +52,9 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         this.assetCreation = assetCreation;
         this.getSelectedGroup = new ImInt(-1);
         this.previewWrapperObject = null;
+        this.onRefreshButton = null;
         this.previewInstanceFactory = previewInstanceFactory;
+        this.onContextOnItem = null;
     }
 
     private void getFoldersToChoose(Map<String, GameResourceAssetsFolder<T>> init, GameResourceAssetsFolder<T> root) {
@@ -100,12 +106,14 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     if (this.getAfterAssetCreated() != null) {
                         this.getAfterAssetCreated().accept(new Pair<>(group1, t));
                     }
-                    Log.get().debug(this.tab + ": New Asset (folder)= " + group1 + " (asset)= " + this.popupCreateObjectContext.getInputStrings().get(0));
+                    Log.get().debug(this.tab + ": New Asset (folder) = " + group1.getHierarchy() + " (asset) = " + this.popupCreateObjectContext.getInputStrings().get(0));
                 }
+                this.popupCreateObjectContext.reset();
                 ImGui.closeCurrentPopup();
             }
             ImGui.sameLine();
             if (ImGui.button("Cancel")) {
+                this.popupCreateObjectContext.reset();
                 ImGui.closeCurrentPopup();
             }
             if (this.popupCreateObjectContext.getErrorText() != null) {
@@ -115,7 +123,6 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             }
             ImGui.endPopup();
         } else {
-            this.popupCreateObjectContext.reset();
             this.getSelectedGroup.set(-1);
         }
     }
@@ -130,6 +137,9 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 this.popupCreateGroupContext.setErrorText(null);
                 if (!group.matches("[a-zA-Z\\d]+")) {
                     this.popupCreateGroupContext.setErrorText("Digits, spec. symbols and spaces are not allowed in folder's name!");
+                }
+                if (placeIn.getFoldersInsideMap().containsKey(group)) {
+                    this.popupCreateGroupContext.setErrorText("This folder already exists!");
                 }
                 if (this.popupCreateGroupContext.getErrorText() == null) {
                     Log.get().debug(this.tab + ": New Folder " + group);
@@ -206,15 +216,11 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             }
             for (T asset : group.getAssetsThere()) {
                 String label = asset.getName();
+                if (label == null) {
+                    continue;
+                }
                 ImGui.pushID(this.tab + "_" + label);
                 final boolean selected = this.getPreviewWrapperObject() != null && this.getPreviewWrapperObject().getAsset().equals(asset);
-                if (selected && wantsToDeleteCurrentSelected) {
-                    group.removeAssetFromThere(asset.getName());
-                    if (this.getAfterAssetDeleted() != null) {
-                        this.getAfterAssetDeleted().accept(new Pair<>(group, asset));
-                    }
-                    Log.get().debug(this.tab + ": Removed Asset (group)=" + group.getName() + " (asset)= " + label);
-                }
                 ImGui.bullet();
                 if (ImGui.selectable("./" + label, selected)) {
                     if (!selected) {
@@ -222,6 +228,37 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     } else {
                         this.setPreviewWrapperObject(null);
                     }
+                }
+                if (ImGui.beginPopupContextItem("ctx_item" + "##" + group.getName())) {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
+                    if (ImGui.menuItem("* Select")) {
+                        this.setPreviewWrapperObject(this.getPreviewInstanceFactory().apply(asset));
+                    }
+                    ImGui.popStyleColor();
+
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff6868ff);
+                    if (ImGui.menuItem("- Delete")) {
+                        wantsToDeleteCurrentSelected = true;
+                    }
+                    ImGui.popStyleColor();
+
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
+                    if (this.getOnContextOnItem() != null) {
+                        ImGui.separator();
+                        this.getOnContextOnItem().accept(asset);
+                    }
+                    ImGui.popStyleColor();
+                    ImGui.endPopup();
+                }
+                if (selected && wantsToDeleteCurrentSelected) {
+                    group.removeAssetFromThere(asset.getName());
+                    if (this.getAfterAssetDeleted() != null) {
+                        this.getAfterAssetDeleted().accept(new Pair<>(group, asset));
+                    }
+                    if (this.getCurrentSelectedAsset() != null && asset.equals(this.getCurrentSelectedAsset())) {
+                        this.setPreviewWrapperObject(null);
+                    }
+                    Log.get().debug(this.tab + ": Removed Asset (folder) = " + group.getName() + " (asset) = " + label);
                 }
                 ImGui.popID();
             }
@@ -236,8 +273,17 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            ImGui.beginChild("##ObjChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.5f, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushID("##IDC" + this.tab);
             this.popUpObject("button", null);
+            if (this.getOnRefreshButton() != null) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8cff);
+                if (ImGui.button("Refresh")) {
+                    this.getOnRefreshButton().accept(null);
+                    this.setPreviewWrapperObject(null);
+                }
+                ImGui.popStyleColor();
+            }
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
             if (ImGui.button("+ Create")) {
                 ImGui.openPopup("button_popupDataCreation_" + this.tab);
@@ -253,7 +299,26 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             ImGui.spacing();
             this.drawObjectsTree(wantsToDelete, null, this.groupSupplier.get(), true);
             ImGui.popID();
+            ImGui.endChild();
         }
+    }
+
+    public @Nullable Consumer<Void> getOnRefreshButton() {
+        return this.onRefreshButton;
+    }
+
+    public CreatableResourcesTreeDrawerG<T, E> setOnRefreshButton(@Nullable Consumer<Void> onRefreshButton) {
+        this.onRefreshButton = onRefreshButton;
+        return this;
+    }
+
+    public @Nullable Consumer<T> getOnContextOnItem() {
+        return this.onContextOnItem;
+    }
+
+    public CreatableResourcesTreeDrawerG<T, E> setOnContextOnItem(@Nullable Consumer<T> onContextOnItem) {
+        this.onContextOnItem = onContextOnItem;
+        return this;
     }
 
     public @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> getAfterAssetCreated() {
