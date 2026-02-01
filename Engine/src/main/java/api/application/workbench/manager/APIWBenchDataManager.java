@@ -4,7 +4,13 @@ import api.application.workbench.resources.APIResource;
 import api.application.workbench.resources.ApiResourceEntity;
 import api.application.workbench.resources.ApiResourceMarker;
 import api.application.workbench.resources.ApiResourceProp;
+import api.application.workbench.resources.data.jgems.JGemsEntityData;
+import api.application.workbench.resources.data.jgems.JGemsMarkerData;
+import api.application.workbench.resources.data.jgems.JGemsPropData;
+import api.application.workbench.resources.data.wbench.WBenchMarkerData;
+import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import javagems3d.help.JGemsUtils;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -14,43 +20,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class APIWBenchDataManager implements IAPIWBenchDataManager {
-    private final Map<String, TemplatesTable<ApiResourceEntity>> resourceEntityMap;
-    private final Map<String, TemplatesTable<ApiResourceProp>> resourcePropMap;
-    private final Map<String, TemplatesTable<ApiResourceMarker>> resourceMarker;
+    private final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> entityApiResourceObjectsFolder;
+    private final ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> propApiResourceObjectsFolder;
+    private final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> markerApiResourceObjectsFolder;
     private final Map<String, Pair<String, JGemsPath>> skyBoxesMap;
 
     public APIWBenchDataManager() {
-        this.resourceEntityMap = new HashMap<>();
-        this.resourcePropMap = new HashMap<>();
-        this.resourceMarker = new HashMap<>();
+        this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+        this.propApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+        this.markerApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
         this.skyBoxesMap = new HashMap<>();
     }
 
     @Override
-    public void addResourceEntity(@Nullable String group, @NotNull ApiResourceEntity resourceEntity) {
-        resourceEntity.setGroupId(group);
-        JGemsUtils.putObjectInMapOrUpdate(this.getResourceEntityMap(), group, new TemplatesTable<>(resourceEntity), (ex, nw) -> {
-            ex.add(nw);
-            return ex;
-        }, resourceEntity);
+    public void addResourceEntity(@Nullable String path, @NotNull ApiResourceEntity resourceEntity) {
+        this.getEntities().putObjectInside(path == null ? "/" : path, resourceEntity, ApiResourceObjectsFolder::new);
     }
 
     @Override
-    public void addResourceProp(@Nullable String group, @NotNull ApiResourceProp resourceProp) {
-        resourceProp.setGroupId(group);
-        JGemsUtils.putObjectInMapOrUpdate(this.getResourcePropMap(), group, new TemplatesTable<>(resourceProp), (ex, nw) -> {
-            ex.add(nw);
-            return ex;
-        }, resourceProp);
+    public void addResourceProp(@Nullable String path, @NotNull ApiResourceProp resourceProp) {
+        this.getProps().putObjectInside(path == null ? "/": path, resourceProp, ApiResourceObjectsFolder::new);
     }
 
     @Override
-    public void addResourceMarker(@Nullable String group, @NotNull ApiResourceMarker resourceMarker) {
-        resourceMarker.setGroupId(group);
-        JGemsUtils.putObjectInMapOrUpdate(this.getResourceMarkerMap(), group, new TemplatesTable<>(resourceMarker), (ex, nw) -> {
-            ex.add(nw);
-            return ex;
-        }, resourceMarker);
+    public void addResourceMarker(@Nullable String path, @NotNull ApiResourceMarker resourceMarker) {
+        this.getMarkers().putObjectInside(path == null ? "/" : path, resourceMarker, ApiResourceObjectsFolder::new);
     }
 
     @Override
@@ -62,42 +56,15 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
         return this.skyBoxesMap;
     }
 
-    public Map<String, TemplatesTable<ApiResourceEntity>> getResourceEntityMap() {
-        return this.resourceEntityMap;
+    public ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> getEntities() {
+        return this.entityApiResourceObjectsFolder;
     }
 
-    public Map<String, TemplatesTable<ApiResourceProp>> getResourcePropMap() {
-        return this.resourcePropMap;
+    public ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> getProps() {
+        return this.propApiResourceObjectsFolder;
     }
 
-    public Map<String, TemplatesTable<ApiResourceMarker>> getResourceMarkerMap() {
-        return this.resourceMarker;
-    }
-
-    public static class TemplatesTable<T extends APIResource<?, ?>> {
-        private final Map<String, T> templateMap;
-
-        @SuppressWarnings("all")
-        public TemplatesTable(APIResource<?, ?> apiResource) {
-            this();
-            this.getTemplateMap().put(apiResource.getNameId(), (T) apiResource);
-        }
-
-        public TemplatesTable() {
-            this.templateMap = new HashMap<>();
-        }
-
-        @SuppressWarnings("all")
-        public void add(APIResource<?, ?> apiResource) {
-            this.getTemplateMap().put(apiResource.getNameId(), (T) apiResource);
-        }
-
-        public T find(String id) {
-            return this.getTemplateMap().get(id);
-        }
-
-        public Map<String, T> getTemplateMap() {
-            return this.templateMap;
-        }
+    public ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> getMarkers() {
+        return this.markerApiResourceObjectsFolder;
     }
 }

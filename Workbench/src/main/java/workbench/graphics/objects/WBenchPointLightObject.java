@@ -52,7 +52,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     }
 
     public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @NotNull TagsContainer tagsContainer) {
-        final MeshStructure3D<?> meshStructure3D = WBenchResourceManager.localModelAssets.markerCube;
+        final MeshStructure3D<?> meshStructure3D = WBenchResourceManager.gameEditorModelAssets.markerCube;
         final RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());
         renderAttributes.getProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false);
         renderAttributes.getRenderTable().setMatch(Pipeline.SCENE, new RenderTable.Data(WBenchResourceManager.localShaderAssets.simple, new MarkerSimpleRenderFabric(Stage.FORWARD)));

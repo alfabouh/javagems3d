@@ -8,18 +8,14 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
-import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
@@ -85,7 +81,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public @NotNull MeshGroup getCube() {
-        return WBenchResourceManager.localModelAssets.defaultCube_gr;
+        return WBenchResourceManager.DEFAULT_CUBE_MESHGROUP();
     }
 
     @Override

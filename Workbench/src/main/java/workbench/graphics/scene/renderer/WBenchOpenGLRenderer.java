@@ -24,6 +24,7 @@ import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -34,6 +35,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
+import workbench.graphics.objects.WBenchCommonObject;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 import workbench.graphics.scene.ui.game.GameEditorInterface;
@@ -237,6 +239,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.setDefaultNodes();
         this.getDebugLinesDrawer().setup();
 
+        resourceManager.writeResourcesDataCache();
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(WBenchResourceManager.localShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(WBenchResourceManager.localShaderAssets.BindlessTexturesData);
@@ -246,8 +249,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getSceneCulling().createResources();
 
         Log.get().info("Created scenes data");
-
-     //   this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
     }
 
     @Override

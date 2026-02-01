@@ -1,9 +1,9 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.mapping;
+package workbench.graphics.scene.ui.game.editor.scenes.mapping;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
 import workbench.project.managing.WBenchGameResourcesManager;

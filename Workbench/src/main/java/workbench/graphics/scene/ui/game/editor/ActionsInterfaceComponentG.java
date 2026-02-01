@@ -1,13 +1,12 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface;
+package workbench.graphics.scene.ui.game.editor;
 
 import imgui.ImGui;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.mapping.ScenePreviewMapG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.mapping.ScenePreviewSkyBoxG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc.ScenePreviewModelG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc.ScenePreviewTagG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc.ScenePreviewTextureG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.scenes.world.ScenePreviewWorldObjectG;
+import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewMapG;
+import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewSkyBoxG;
+import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewModelG;
+import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTagG;
+import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTextureG;
+import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
 import workbench.project.managing.instances.world.GameResourceEntityObjectAsset;
 import workbench.project.managing.instances.world.GameResourcePropObjectAsset;
 

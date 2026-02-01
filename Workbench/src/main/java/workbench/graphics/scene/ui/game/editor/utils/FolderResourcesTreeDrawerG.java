@@ -7,7 +7,7 @@ import imgui.flag.ImGuiWindowFlags;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.group.GameResourceAssetsFolder;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import workbench.project.managing.instances.IAsset;
 
 import java.util.function.Consumer;
@@ -18,23 +18,23 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
     private final String tab;
     private final Consumer<Void> openFolderAction;
     private T previewWrapperObject;
-    private final Supplier<GameResourceAssetsFolder<E>> gameResourceAssetsFolder;
+    private final Supplier<AbstractObjectsFolder<E>> gameResourceAssetsFolder;
     private final Function<E, T> previewInstanceFactory;
 
-    public FolderResourcesTreeDrawerG(@NotNull Supplier<GameResourceAssetsFolder<E>> gameResourceAssetsFolder, @NotNull String tab, @NotNull Consumer<Void> openFolderAction, @NotNull Function<E, T> previewInstanceFactory) {
+    public FolderResourcesTreeDrawerG(@NotNull Supplier<AbstractObjectsFolder<E>> gameResourceAssetsFolder, @NotNull String tab, @NotNull Consumer<Void> openFolderAction, @NotNull Function<E, T> previewInstanceFactory) {
         this.tab = tab;
         this.openFolderAction = openFolderAction;
         this.gameResourceAssetsFolder = gameResourceAssetsFolder;
         this.previewInstanceFactory = previewInstanceFactory;
     }
 
-    private void tree(GameResourceAssetsFolder<E> folder, boolean root) {
+    private void tree(AbstractObjectsFolder<E> folder, boolean root) {
         ImGui.pushID(this.tab + "_" + folder.getName());
         String folderName = root ? "View" : folder.getName();
         ImGui.pushStyleColor(ImGuiCol.Text, 0xffffb0b0);
         if (ImGui.treeNodeEx(folderName, ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.popStyleColor();
-            for (E asset : folder.getAssetsThere()) {
+            for (E asset : folder.getObjectsThere()) {
                 ImGui.pushID(asset.getName());
                 final boolean selected = this.getPreviewWrapperObject() != null && asset.equals(this.getPreviewWrapperObject().getAsset());
                 if (ImGui.selectable("./" + asset.getName(), selected)) {
@@ -42,7 +42,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
                 }
                 ImGui.popID();
             }
-            for (GameResourceAssetsFolder<E> child : folder.getFoldersThere()) {
+            for (AbstractObjectsFolder<E> child : folder.getFoldersThere()) {
                 this.tree(child, false);
             }
             ImGui.treePop();
@@ -82,7 +82,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         return this.previewInstanceFactory;
     }
 
-    public Supplier<GameResourceAssetsFolder<E>> getGameResourceAssetsFolder() {
+    public Supplier<AbstractObjectsFolder<E>> getGameResourceAssetsFolder() {
         return this.gameResourceAssetsFolder;
     }
 

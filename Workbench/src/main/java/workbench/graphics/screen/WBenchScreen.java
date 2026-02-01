@@ -61,7 +61,7 @@ public class WBenchScreen implements IScreen {
             if (JGems3D.DEBUG_MODE) {
                 OpenGLSysUtils.registerOGLDebugOutput();
             }
-            ResourceManager.initDefaultTexture();
+            ResourceManager.initDefaults();
             WBenchResourceManager.createGlobalShaders();
             this.setScreenCallbacks();
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());

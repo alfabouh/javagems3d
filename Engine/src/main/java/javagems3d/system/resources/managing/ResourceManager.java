@@ -6,10 +6,13 @@ import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
@@ -17,7 +20,6 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
-import javagems3d.system.service.json.JSONFileManaging;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
     private static ITexture2DProgram DEFAULT_TEXTURE = null;
+    private static MeshGroup DEFAULT_CUBE_MESHGROUP = null;
+    private static MeshBuffer DEFAULT_CUBE_MESHBUFFER = null;
 
     public static final String GLOBAL = "Global";
     public static final String LOCAL1 = "Local1";
@@ -123,7 +127,7 @@ public abstract class ResourceManager {
     }
 
     public void destroy() {
-        ResourceManager.destroyDefaultTexture();
+        ResourceManager.destroyDefaults();
         ShaderStorageBufferProgram.clearAll();
         this.getResourceDataCache().clearAll();
         this.clearAll();
@@ -204,14 +208,23 @@ public abstract class ResourceManager {
         return this.resourcesDataCache;
     }
 
-    public static void destroyDefaultTexture() {
+    public static void destroyDefaults() {
         if (ResourceManager.DEFAULT_TEXTURE != null) {
             ResourceManager.DEFAULT_TEXTURE.clear();
             ResourceManager.DEFAULT_TEXTURE = null;
         }
+        if (ResourceManager.DEFAULT_CUBE_MESHBUFFER != null) {
+            ResourceManager.DEFAULT_CUBE_MESHBUFFER.clear();
+            ResourceManager.DEFAULT_CUBE_MESHBUFFER = null;
+        }
+
+        if (ResourceManager.DEFAULT_CUBE_MESHGROUP != null) {
+            ResourceManager.DEFAULT_CUBE_MESHGROUP.clear();
+            ResourceManager.DEFAULT_CUBE_MESHGROUP = null;
+        }
     }
 
-    public static void initDefaultTexture() {
+    public static void initDefaults() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16 * 3);
             for (int y = 0; y < 4; y++) {
@@ -227,10 +240,21 @@ public abstract class ResourceManager {
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
             texture2DProgram.createTexture(new Vector2i(4, 4), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }
+        ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
+        ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
+        ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
     }
 
     public static @NotNull ITexture2DProgram DEFAULT_TEXTURE() {
         return ResourceManager.DEFAULT_TEXTURE;
+    }
+
+    public static @NotNull MeshGroup DEFAULT_CUBE_MESHGROUP() {
+        return ResourceManager.DEFAULT_CUBE_MESHGROUP;
+    }
+
+    public static @NotNull MeshBuffer DEFAULT_CUBE_MESHBUFFER() {
+        return ResourceManager.DEFAULT_CUBE_MESHBUFFER;
     }
 
     public interface Factory {

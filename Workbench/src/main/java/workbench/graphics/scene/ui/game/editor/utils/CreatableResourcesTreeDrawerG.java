@@ -10,9 +10,9 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import workbench.project.managing.instances.IAsset;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 
 import java.util.ArrayList;
@@ -30,19 +30,19 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
     private final PopupContext popupCreateObjectContext;
     private final PopupContext popupCreateGroupContext;
     private final List<PopupConstructorData> popupConstructorData;
-    private final Predicate<Pair<GameResourceAssetsFolder<T>, PopupContext>> existenceCheck;
-    private final Supplier<GameResourceAssetsFolder<T>> groupSupplier;
-    private final Function<Pair<GameResourceAssetsFolder<T>, PopupContext>, T> assetCreation;
+    private final Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> existenceCheck;
+    private final Supplier<AbstractObjectsFolder<T>> groupSupplier;
+    private final Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> assetCreation;
 
-    private @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> afterAssetCreated;
-    private @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> afterAssetDeleted;
-    private @Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderCreated;
-    private @Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderDeleted;
+    private @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetCreated;
+    private @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetDeleted;
+    private @Nullable Consumer<AbstractObjectsFolder<T>> afterFolderCreated;
+    private @Nullable Consumer<AbstractObjectsFolder<T>> afterFolderDeleted;
     private @Nullable Consumer<Void> onRefreshButton;
     private @Nullable Consumer<T> onContextOnItem;
     private final Function<T, E> previewInstanceFactory;
 
-    public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<GameResourceAssetsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<GameResourceAssetsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<GameResourceAssetsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
+    public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
         this.tab = tab;
         this.popupConstructorData = popupConstructorData;
         this.popupCreateObjectContext = new PopupContext(popupConstructorData.size());
@@ -57,11 +57,11 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         this.onContextOnItem = null;
     }
 
-    private void getFoldersToChoose(Map<String, GameResourceAssetsFolder<T>> init, GameResourceAssetsFolder<T> root) {
-        for (GameResourceAssetsFolder<T> inside : root.getFoldersThere()) {
+    private void getFoldersToChoose(Map<String, AbstractObjectsFolder<T>> init, AbstractObjectsFolder<T> root) {
+        for (AbstractObjectsFolder<T> inside : root.getFoldersThere()) {
             init.put(inside.getHierarchy(), inside);
         }
-        for (GameResourceAssetsFolder<T> inside : root.getFoldersThere()) {
+        for (AbstractObjectsFolder<T> inside : root.getFoldersThere()) {
             this.getFoldersToChoose(init, inside);
         }
     }
@@ -73,7 +73,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 ImGui.text(popupConstructorData1.getFieldName());
                 ImGui.inputText("##" + popupConstructorData1.getFieldName(), this.popupCreateObjectContext.getInputStrings().get(i++));
             }
-            final Map<String, GameResourceAssetsFolder<T>> groupsMap = new LinkedHashMap<>();
+            final Map<String, AbstractObjectsFolder<T>> groupsMap = new LinkedHashMap<>();
             this.getFoldersToChoose(groupsMap, this.getGroupSupplier().get());
             String[] groups = new String[groupsMap.size()];
             int j = 0;
@@ -88,7 +88,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             i = 0;
             if (ImGui.button("Create")) {
                 this.popupCreateObjectContext.resetErr();
-                final GameResourceAssetsFolder<T> group1 = this.getSelectedGroup.get() < 0 || this.getSelectedGroup.get() > groups.length ? this.getGroupSupplier().get() : groupsMap.get(groups[this.getSelectedGroup.get()]);
+                final AbstractObjectsFolder<T> group1 = this.getSelectedGroup.get() < 0 || this.getSelectedGroup.get() > groups.length ? this.getGroupSupplier().get() : groupsMap.get(groups[this.getSelectedGroup.get()]);
 
                 for (ImString input : this.popupCreateObjectContext.getInputStrings()) {
                     final PopupConstructorData context = this.popupConstructorData.get(i++);
@@ -102,7 +102,6 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 }
                 if (this.popupCreateObjectContext.getErrorText() == null) {
                     final T t = this.getAssetCreation().apply(new Pair<>(group1, this.popupCreateObjectContext));
-                    group1.addAssetThere(t);
                     if (this.getAfterAssetCreated() != null) {
                         this.getAfterAssetCreated().accept(new Pair<>(group1, t));
                     }
@@ -127,7 +126,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         }
     }
 
-    private void popUpFolder(GameResourceAssetsFolder<T> placeIn) {
+    private void popUpFolder(AbstractObjectsFolder<T> placeIn) {
         if (ImGui.beginPopup("popupGroupCreation_" + this.tab)) {
             ImGui.text("Group:");
             ImGui.inputText("##objectsGroup_" + this.tab, this.popupCreateGroupContext.inputStrings.get(0));
@@ -138,13 +137,13 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 if (!group.matches("[a-zA-Z\\d]+")) {
                     this.popupCreateGroupContext.setErrorText("Digits, spec. symbols and spaces are not allowed in folder's name!");
                 }
-                if (placeIn.getFoldersInsideMap().containsKey(group)) {
+                if (placeIn.getFoldersThereMap().containsKey(group)) {
                     this.popupCreateGroupContext.setErrorText("This folder already exists!");
                 }
                 if (this.popupCreateGroupContext.getErrorText() == null) {
                     Log.get().debug(this.tab + ": New Folder " + group);
                     final GameResourceAssetsFolder<T> gameResourceAssetsFolder = new GameResourceAssetsFolder<>(group);
-                    placeIn.addFolderThere(gameResourceAssetsFolder);
+                    placeIn.putFolderThere(gameResourceAssetsFolder);
                     if (this.getAfterFolderCreated() != null) {
                         this.getAfterFolderCreated().accept(gameResourceAssetsFolder);
                     }
@@ -166,7 +165,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         }
     }
 
-    private void drawObjectsTree(boolean wantsToDeleteCurrentSelected, GameResourceAssetsFolder<T> groupParent, GameResourceAssetsFolder<T> group, boolean root) {
+    private void drawObjectsTree(boolean wantsToDeleteCurrentSelected, AbstractObjectsFolder<T> groupParent, AbstractObjectsFolder<T> group, boolean root) {
         String folderName = group.getName();
         if (root) {
             folderName = "View";
@@ -188,10 +187,10 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     openGrCreate = true;
                 }
                 if (!root) {
-                    final boolean flag = !group.getAssetsThere().isEmpty() || !group.getFoldersThere().isEmpty();
+                    final boolean flag = !group.getObjectsThere().isEmpty() || !group.getFoldersThere().isEmpty();
                     ImGui.beginDisabled(flag);
                     if (ImGui.menuItem("- Delete Folder")) {
-                        groupParent.removeGroupFromThere(group.getName());
+                        groupParent.removeFolderFromThere(group.getName());
                         if (this.getAfterFolderDeleted() != null) {
                             this.getAfterFolderDeleted().accept(group);
                         }
@@ -214,7 +213,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             if (openObjCreate) {
                 ImGui.openPopup("short_popupDataCreation_" + this.tab);
             }
-            for (T asset : group.getAssetsThere()) {
+            for (T asset : group.getObjectsThere()) {
                 String label = asset.getName();
                 if (label == null) {
                     continue;
@@ -251,7 +250,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     ImGui.endPopup();
                 }
                 if (selected && wantsToDeleteCurrentSelected) {
-                    group.removeAssetFromThere(asset.getName());
+                    group.removeObjectFromThere(asset.getName());
                     if (this.getAfterAssetDeleted() != null) {
                         this.getAfterAssetDeleted().accept(new Pair<>(group, asset));
                     }
@@ -262,7 +261,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 }
                 ImGui.popID();
             }
-            for (GameResourceAssetsFolder<T> child : new ArrayList<>(group.getFoldersThere())) {
+            for (AbstractObjectsFolder<T> child : new ArrayList<>(group.getFoldersThere())) {
                 this.drawObjectsTree(wantsToDeleteCurrentSelected, group, child, false);
             }
             ImGui.treePop();
@@ -321,38 +320,38 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         return this;
     }
 
-    public @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> getAfterAssetCreated() {
+    public @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> getAfterAssetCreated() {
         return this.afterAssetCreated;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetCreated(@Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> afterAssetCreated) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetCreated(@Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetCreated) {
         this.afterAssetCreated = afterAssetCreated;
         return this;
     }
 
-    public @Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> getAfterAssetDeleted() {
+    public @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> getAfterAssetDeleted() {
         return this.afterAssetDeleted;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetDeleted(@Nullable Consumer<Pair<GameResourceAssetsFolder<T>, T>> afterAssetDeleted) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetDeleted(@Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetDeleted) {
         this.afterAssetDeleted = afterAssetDeleted;
         return this;
     }
 
-    public @Nullable Consumer<GameResourceAssetsFolder<T>> getAfterFolderCreated() {
+    public @Nullable Consumer<AbstractObjectsFolder<T>> getAfterFolderCreated() {
         return this.afterFolderCreated;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderCreated(@Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderCreated) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderCreated(@Nullable Consumer<AbstractObjectsFolder<T>> afterFolderCreated) {
         this.afterFolderCreated = afterFolderCreated;
         return this;
     }
 
-    public @Nullable Consumer<GameResourceAssetsFolder<T>> getAfterFolderDeleted() {
+    public @Nullable Consumer<AbstractObjectsFolder<T>> getAfterFolderDeleted() {
         return this.afterFolderDeleted;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderDeleted(@Nullable Consumer<GameResourceAssetsFolder<T>> afterFolderDeleted) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderDeleted(@Nullable Consumer<AbstractObjectsFolder<T>> afterFolderDeleted) {
         this.afterFolderDeleted = afterFolderDeleted;
         return this;
     }
@@ -361,15 +360,15 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         return this.previewInstanceFactory;
     }
 
-    public Function<Pair<GameResourceAssetsFolder<T>, PopupContext>, T> getAssetCreation() {
+    public Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> getAssetCreation() {
         return this.assetCreation;
     }
 
-    public Supplier<GameResourceAssetsFolder<T>> getGroupSupplier() {
+    public Supplier<AbstractObjectsFolder<T>> getGroupSupplier() {
         return this.groupSupplier;
     }
 
-    public Predicate<Pair<GameResourceAssetsFolder<T>, PopupContext>> getExistenceCheck() {
+    public Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> getExistenceCheck() {
         return this.existenceCheck;
     }
 

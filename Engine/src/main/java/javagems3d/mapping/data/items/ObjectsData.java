@@ -2,27 +2,27 @@ package javagems3d.mapping.data.items;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import javagems3d.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javagems3d.mapping.data.templates.MapObjectTemplate;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
 public class ObjectsData implements SectionData<ObjectsData> {
-    public Set<MapObjectTemplate> backgroundProps;
-    public Set<MapObjectTemplate> propObjects;
-    public Set<MapObjectTemplate> markerObjects;
-    public Set<MapObjectTemplate> entityObjects;
-    public Set<MapObjectTemplate> pointLights;
+    public Set<RowMapObjectData> backgroundProps;
+    public Set<RowMapObjectData> propObjects;
+    public Set<RowMapObjectData> markerObjects;
+    public Set<RowMapObjectData> entityObjects;
+    public Set<RowMapObjectData> pointLights;
 
     private ObjectsData() {
     }
 
-    public ObjectsData(Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights, Set<MapObjectTemplate> backgroundProps) {
+    public ObjectsData(Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, Set<RowMapObjectData> pointLights, Set<RowMapObjectData> backgroundProps) {
         this.propObjects = propObjects;
         this.markerObjects = markerObjects;
         this.entityObjects = entityObjects;
@@ -30,23 +30,23 @@ public class ObjectsData implements SectionData<ObjectsData> {
         this.backgroundProps = backgroundProps;
     }
 
-    public Set<MapObjectTemplate> getPropObjects() {
+    public Set<RowMapObjectData> getPropObjects() {
         return this.propObjects;
     }
 
-    public Set<MapObjectTemplate> getMarkerObjects() {
+    public Set<RowMapObjectData> getMarkerObjects() {
         return this.markerObjects;
     }
 
-    public Set<MapObjectTemplate> getEntityObjects() {
+    public Set<RowMapObjectData> getEntityObjects() {
         return this.entityObjects;
     }
 
-    public Set<MapObjectTemplate> getPointLights() {
+    public Set<RowMapObjectData> getPointLights() {
         return this.pointLights;
     }
 
-    public Set<MapObjectTemplate> getBackgroundProps() {
+    public Set<RowMapObjectData> getBackgroundProps() {
         return this.backgroundProps;
     }
 
@@ -76,11 +76,11 @@ public class ObjectsData implements SectionData<ObjectsData> {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     ObjectsData objectsData = new ObjectsData();
 
-                    objectsData.propObjects = context.deserialize(jsonObject.get("propObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
-                    objectsData.markerObjects = context.deserialize(jsonObject.get("markerObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
-                    objectsData.entityObjects = context.deserialize(jsonObject.get("entityObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
-                    objectsData.pointLights = context.deserialize(jsonObject.get("pointLights"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
-                    objectsData.backgroundProps = context.deserialize(jsonObject.get("backgroundProps"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
+                    objectsData.propObjects = context.deserialize(jsonObject.get("propObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
+                    objectsData.markerObjects = context.deserialize(jsonObject.get("markerObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
+                    objectsData.entityObjects = context.deserialize(jsonObject.get("entityObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
+                    objectsData.pointLights = context.deserialize(jsonObject.get("pointLights"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
+                    objectsData.backgroundProps = context.deserialize(jsonObject.get("backgroundProps"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
 
                     return objectsData;
                 } catch (Exception e) {

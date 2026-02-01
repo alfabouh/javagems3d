@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.window_interface.scenes;
+package workbench.graphics.scene.ui.game.editor.scenes.window;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -21,9 +21,8 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.graphics.scene.ui.game.editor.actions_interface.ActionsInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
-import workbench.graphics.scene.ui.game.editor.window_interface.WindowInterfaceComponentG;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.shaders.WBenchShaderManager;

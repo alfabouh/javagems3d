@@ -19,45 +19,42 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public interface IAPIWBenchDataManager {
-    void addResourceEntity(@Nullable String group, @NotNull ApiResourceEntity resourceEntity);
-
-    void addResourceProp(@Nullable String group, @NotNull ApiResourceProp resourceProp);
-
-    void addResourceMarker(@Nullable String group, @NotNull ApiResourceMarker resourceMarker);
-
+    void addResourceEntity(@Nullable String path, @NotNull ApiResourceEntity resourceEntity);
+    void addResourceProp(@Nullable String path, @NotNull ApiResourceProp resourceProp);
+    void addResourceMarker(@Nullable String path, @NotNull ApiResourceMarker resourceMarker);
     void addResourceSkyCubeMap(@NotNull String name, @NotNull String extension, @NotNull JGemsPath pathToCubeMapDirectory);
 
-    default void addResourceEntity(@Nullable String group, @NotNull String id, @NotNull JGemsPath modelPath) {
-        this.addResourceEntity(group, new ApiResourceEntity(id, () -> new WBenchObjectData(modelPath), () -> new JGemsEntityData(modelPath)));
+    default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull JGemsPath modelPath) {
+        this.addResourceEntity(path, new ApiResourceEntity(id, () -> new WBenchObjectData(modelPath), () -> new JGemsEntityData(modelPath)));
     }
 
-    default void addResourceProp(@Nullable String group, @NotNull String id, @NotNull JGemsPath modelPath) {
-        this.addResourceProp(group, new ApiResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)));
+    default void addResourceProp(@Nullable String path, @NotNull String id, @NotNull JGemsPath modelPath) {
+        this.addResourceProp(path, new ApiResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)));
     }
 
-    default void addResourceMarker(@Nullable String group, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
-        this.addResourceMarker(group, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent)));
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent)));
     }
 
 
-    default void addResourceEntity(@Nullable String group, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsEntityData> fabricGame) {
-        this.addResourceEntity(group, new ApiResourceEntity(id, fabricWBench, fabricGame));
+    default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsEntityData> fabricGame) {
+        this.addResourceEntity(path, new ApiResourceEntity(id, fabricWBench, fabricGame));
     }
 
     default void addResourceEntity(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsEntityData> fabricGame) {
         this.addResourceEntity(null, id, fabricWBench, fabricGame);
     }
 
-    default void addResourceProp(@Nullable String group, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsPropData> fabricGame) {
-        this.addResourceProp(group, new ApiResourceProp(id, fabricWBench, fabricGame));
+    default void addResourceProp(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsPropData> fabricGame) {
+        this.addResourceProp(path, new ApiResourceProp(id, fabricWBench, fabricGame));
     }
 
     default void addResourceProp(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsPropData> fabricGame) {
         this.addResourceProp(null, id, fabricWBench, fabricGame);
     }
 
-    default void addResourceMarker(@Nullable String group, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
-        this.addResourceMarker(group, new ApiResourceMarker(id, fabricWBench));
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, fabricWBench));
     }
 
     default void addResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {

@@ -8,6 +8,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -195,7 +196,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.propAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.propAssetsFolder = new GameResourceAssetsFolder<>("root");
+                this.propAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
                 Log.get().exception(e);
             }
         }
@@ -205,7 +206,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.entityAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.entityAssetsFolder = new GameResourceAssetsFolder<>("root");
+                this.entityAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
                 Log.get().exception(e);
             }
         }
@@ -215,7 +216,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.tagAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.tagAssetsFolder = new GameResourceAssetsFolder<>("root");
+                this.tagAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
                 Log.get().exception(e);
             }
         }
@@ -225,7 +226,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.skyBoxesAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>("root");
+                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
                 Log.get().exception(e);
             }
         }
@@ -247,11 +248,11 @@ public class WBenchGameResourcesManager {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.addFolderThere(this.readTexturesFolderRecursive(rootFolder, file));
+                assetsFolder.putFolderThere(this.readTexturesFolderRecursive(rootFolder, file));
             } else if (this.isTextureFile(file)) {
                 GameResourceTextureAsset asset = this.loadTextureAsset(rootFolder, file);
                 if (asset != null) {
-                    assetsFolder.addAssetThere(asset);
+                    assetsFolder.putObjectThere(asset);
                 }
             }
         }
@@ -274,11 +275,11 @@ public class WBenchGameResourcesManager {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.addFolderThere(this.readModelsFolderRecursive(rootFolder, file));
+                assetsFolder.putFolderThere(this.readModelsFolderRecursive(rootFolder, file));
             } else if (this.isModelFile(file)) {
                 GameResourceModelAsset asset = this.loadModelAsset(rootFolder, file);
                 if (asset != null) {
-                    assetsFolder.addAssetThere(asset);
+                    assetsFolder.putObjectThere(asset);
                 }
             }
         }
@@ -301,14 +302,14 @@ public class WBenchGameResourcesManager {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.addFolderThere(this.readMapsFolderRecursive(rootFolder, file));
+                assetsFolder.putFolderThere(this.readMapsFolderRecursive(rootFolder, file));
             } else if (this.isMapDefFile(file)) {
                 GameResourceMapAsset asset = this.loadMapAsset(rootFolder, file);
                 if (asset != null) {
                     if (asset.getMapProject().getMapName() == null) {
                         Log.get().error("Failed to get map: " + file.getPath() + ". It's name invalid!");
                     } else {
-                        assetsFolder.addAssetThere(asset);
+                        assetsFolder.putObjectThere(asset);
                     }
                 }
             }

@@ -5,6 +5,7 @@ import javagems3d.mapping.processing.ExternalMapProcessor;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.managing.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import workbench.graphics.objects.WBenchCommonObject;
@@ -38,7 +39,7 @@ public class WBenchObjectTemplate extends WBenchTemplate {
     }
 
     public MeshGroup getMeshGroup() {
-        return this.meshGroup;
+        return this.meshGroup == null ? ResourceManager.DEFAULT_CUBE_MESHGROUP() : this.meshGroup;
     }
 
     public RenderAttributes getRenderAttributes() {

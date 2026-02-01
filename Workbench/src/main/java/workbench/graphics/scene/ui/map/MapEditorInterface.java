@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 
 public class MapEditorInterface implements DearUIInterface {
     private SelectedScene selectedScene;
-    private final TextEditor editor;
+    private final TextEditor textEditor;
 
     public static boolean VIEW_SHADOWS = true;
     public static boolean VIEW_CHESS_TERRAIN = true;
@@ -82,7 +82,7 @@ public class MapEditorInterface implements DearUIInterface {
     public static boolean isCursorInsideScene;
 
     public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
-        this.editor = new TextEditor();
+        this.textEditor = new TextEditor();
 
         this.WBenchMapProjectManager = WBenchMapProjectManager;
         this.openGLRenderer = openGLRenderer;
@@ -304,10 +304,10 @@ public class MapEditorInterface implements DearUIInterface {
         ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
         ImGui.setWindowPos(sceneWindowOffset, windowSize.y - consoleWindowSizeY);
-        this.consoleContent();
+        MapEditorInterface.consoleContent();
         ImGui.end();
 
-        ImGui.begin("JGemsResources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(resourcesWindowSizeX, resourcesWindowSizeY);
         ImGui.setWindowPos(0, windowSize.y - entitiesWindowSizeY);
         this.getResourcesComponent().resourcesContent();
@@ -494,8 +494,8 @@ public class MapEditorInterface implements DearUIInterface {
         return this.oldCamera;
     }
 
-    public TextEditor getEditor() {
-        return this.editor;
+    public TextEditor getTextEditor() {
+        return this.textEditor;
     }
 
     public int getCurrentOperation() {

@@ -12,8 +12,6 @@ public class WBenchGameEditorModelAssetsInitializer implements IAssetsInitialize
     public MeshGroup markerCursor;
     public MeshGroup markerAabb;
     public MeshGroup markerCube;
-    public MeshGroup defaultCube_gr;
-    public MeshBuffer defaultCube_bff;
 
     public WBenchGameEditorModelAssetsInitializer() {
     }
@@ -24,13 +22,6 @@ public class WBenchGameEditorModelAssetsInitializer implements IAssetsInitialize
     }
 
     private void createDefaults(SystemResources systemResources) {
-        this.defaultCube_bff = IAssetsInitializer.createDefaultCube_MBuffer();
-        systemResources.getResourceCache().registerInCache("DEFAULT_CUBE_BFF", this.defaultCube_bff);
-        systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);
-
-        this.defaultCube_gr = IAssetsInitializer.createDefaultCube_MGroup();
-        systemResources.getResourceCache().registerInCache("DEFAULT_CUBE_GR", this.defaultCube_gr);
-
         this.markerDefault = systemResources.createMeshGroup(JGems3D.GetSource.JAR, new JGemsPath("/assets/jgems/models/marker/marker.gltf"), true);
         this.markerCursor = systemResources.createMeshGroup(JGems3D.GetSource.JAR, new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), true);
         this.markerAabb = systemResources.createMeshGroup(JGems3D.GetSource.JAR, new JGemsPath("/assets/jgems/models/marker_aabb/marker.gltf"), true);

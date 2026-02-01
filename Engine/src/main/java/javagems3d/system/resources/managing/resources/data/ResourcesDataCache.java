@@ -1,5 +1,7 @@
 package javagems3d.system.resources.managing.resources.data;
 
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
@@ -24,6 +26,12 @@ public final class ResourcesDataCache {
             bindlessTexturesDataArraySet.add(e.getBindlessTexturesArray());
             meshBuffersDataArraySet.add(e.getMeshBuffersDataArray());
         });
+        {
+            final MeshBuffersDataArray defCube = new MeshBuffersDataArray();
+            defCube.addMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER());
+            defCube.addMaterial(new Material());
+            meshBuffersDataArraySet.add(defCube);
+        }
         this.getBindlessTexturesCache().clear();
         this.getMeshBuffersDataCache().clear();
         this.getBindlessTexturesCache().writeData(bindlessTexturesDataArraySet);

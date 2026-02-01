@@ -12,23 +12,21 @@ import org.joml.Vector3f;
 
 import java.lang.reflect.Type;
 
-public final class MapObjectTemplate implements IJSONSerializable<MapObjectTemplate> {
+public final class RowMapObjectData implements IJSONSerializable<RowMapObjectData> {
     private int id;
     private String objectId;
-    private String objectGroup;
-
+    private String objectPath;
     private TagsContainer tagsContainer;
-
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scaling;
 
-    private MapObjectTemplate() {
+    private RowMapObjectData() {
     }
 
-    public MapObjectTemplate(int id, String objectId, String objectGroup, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
+    public RowMapObjectData(int id, String objectId, String objectPath, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
         this.id = id;
-        this.objectGroup = objectGroup;
+        this.objectPath = objectPath;
         this.objectId = objectId;
         this.tagsContainer = tagsContainer;
         this.position = position;
@@ -40,8 +38,8 @@ public final class MapObjectTemplate implements IJSONSerializable<MapObjectTempl
         return this.id;
     }
 
-    public String getObjectGroup() {
-        return this.objectGroup;
+    public String getObjectPath() {
+        return this.objectPath;
     }
 
     public String getObjectNameId() {
@@ -65,19 +63,19 @@ public final class MapObjectTemplate implements IJSONSerializable<MapObjectTempl
     }
 
     public boolean checkGroupName(String group, String name) {
-        return this.getObjectGroup().equals(group) && this.getObjectNameId().equals(name);
+        return this.getObjectPath().equals(group) && this.getObjectNameId().equals(name);
     }
 
     @Override
-    public JSONFileManaging.@NotNull SerializationRules<MapObjectTemplate> getSerializationRules() {
-        return new JSONFileManaging.SerializationRules<MapObjectTemplate>() {
+    public JSONFileManaging.@NotNull SerializationRules<RowMapObjectData> getSerializationRules() {
+        return new JSONFileManaging.SerializationRules<RowMapObjectData>() {
             @Override
-            public JsonElement write(MapObjectTemplate toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public JsonElement write(RowMapObjectData toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
 
                     jsonObject.add("id", context.serialize(toWrite.id));
-                    jsonObject.add("objectGroup", context.serialize(toWrite.objectGroup));
+                    jsonObject.add("objectPath", context.serialize(toWrite.objectPath));
                     jsonObject.add("objectId", context.serialize(toWrite.objectId));
                     jsonObject.add("position", context.serialize(toWrite.position));
                     jsonObject.add("rotation", context.serialize(toWrite.rotation));
@@ -91,21 +89,21 @@ public final class MapObjectTemplate implements IJSONSerializable<MapObjectTempl
             }
 
             @Override
-            public MapObjectTemplate read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public RowMapObjectData read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-                    MapObjectTemplate mapObjectTemplate = new MapObjectTemplate();
+                    RowMapObjectData rowMapObjectData = new RowMapObjectData();
 
-                    mapObjectTemplate.id = context.deserialize(jsonObject.get("id"), String.class);
-                    mapObjectTemplate.objectGroup = context.deserialize(jsonObject.get("objectGroup"), String.class);
-                    mapObjectTemplate.objectId = context.deserialize(jsonObject.get("objectId"), String.class);
-                    mapObjectTemplate.position = context.deserialize(jsonObject.get("position"), Vector3f.class);
-                    mapObjectTemplate.rotation = context.deserialize(jsonObject.get("rotation"), Vector3f.class);
-                    mapObjectTemplate.scaling = context.deserialize(jsonObject.get("scaling"), Vector3f.class);
-                    mapObjectTemplate.tagsContainer = context.deserialize(jsonObject.get("tagsContainer"), TagsContainer.class);
+                    rowMapObjectData.id = context.deserialize(jsonObject.get("id"), String.class);
+                    rowMapObjectData.objectPath = context.deserialize(jsonObject.get("objectPath"), String.class);
+                    rowMapObjectData.objectId = context.deserialize(jsonObject.get("objectId"), String.class);
+                    rowMapObjectData.position = context.deserialize(jsonObject.get("position"), Vector3f.class);
+                    rowMapObjectData.rotation = context.deserialize(jsonObject.get("rotation"), Vector3f.class);
+                    rowMapObjectData.scaling = context.deserialize(jsonObject.get("scaling"), Vector3f.class);
+                    rowMapObjectData.tagsContainer = context.deserialize(jsonObject.get("tagsContainer"), TagsContainer.class);
 
-                    return mapObjectTemplate;
+                    return rowMapObjectData;
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

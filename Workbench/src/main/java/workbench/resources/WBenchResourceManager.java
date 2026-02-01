@@ -12,18 +12,20 @@ import workbench.resources.initialization.*;
 import workbench.resources.initialization.game.WBenchGameEditorModelAssetsInitializer;
 import workbench.resources.initialization.map.WBenchMapEditorObjectsAssetsInitializer;
 import workbench.resources.initialization.game.WBenchGameEditorTextureAssetsInitializer;
+import workbench.resources.initialization.map.WBenchMapEditorTextureAssetsInitializer;
 
 public final class WBenchResourceManager extends ResourceManager {
     public static WBenchGlobalShadersInitializer globalShaderAssets = null;
     public static WBenchLocalShadersInitializer localShaderAssets = null;
 
-    public static WBenchGameEditorTextureAssetsInitializer localTextureAssets = null;
-    public static WBenchGameEditorModelAssetsInitializer localModelAssets = null;
+    public static WBenchGameEditorTextureAssetsInitializer gameEditorTextureAssets = null;
+    public static WBenchGameEditorModelAssetsInitializer gameEditorModelAssets = null;
 
-    public static WBenchMapEditorObjectsAssetsInitializer objectsAssetsInitializer = null;
+    public static WBenchMapEditorObjectsAssetsInitializer mapEditorObjectsAssets = null;
+    public static WBenchMapEditorTextureAssetsInitializer mapEditorTextureAssets = null;
 
     public WBenchResourceManager() {
-        super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1));
+        super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1), new Factory(ResourceManager.LOCAL2));
         WBenchResourceManager.globalShaderAssets = new WBenchGlobalShadersInitializer(JGems3D.GetSource.JAR);
         WBenchResourceManager.localShaderAssets = new WBenchLocalShadersInitializer();
     }
@@ -67,7 +69,7 @@ public final class WBenchResourceManager extends ResourceManager {
     }
 
     public static SystemResources GetLocalGameResources() {
-        return WBench.get().getResourceManager().getGlobalResources();
+        return WBench.get().getResourceManager().getLocalGameEditorResources();
     }
 
     public static SystemResources GetLocalMapEditorGameResources() {
@@ -107,14 +109,15 @@ public final class WBenchResourceManager extends ResourceManager {
     }
 
     public void initLocalGameEditorResources() {
-        WBenchResourceManager.localTextureAssets = new WBenchGameEditorTextureAssetsInitializer();
-        WBenchResourceManager.localModelAssets = new WBenchGameEditorModelAssetsInitializer();
-        this.getLocalGameEditorResources().addAssetsLoaders(WBenchResourceManager.localTextureAssets, WBenchResourceManager.localModelAssets);
+        WBenchResourceManager.gameEditorTextureAssets = new WBenchGameEditorTextureAssetsInitializer();
+        WBenchResourceManager.gameEditorModelAssets = new WBenchGameEditorModelAssetsInitializer();
+        this.getLocalGameEditorResources().addAssetsLoaders(WBenchResourceManager.gameEditorTextureAssets, WBenchResourceManager.gameEditorModelAssets);
     }
 
     public void initLocalMapEditorResources() {
-        WBenchResourceManager.objectsAssetsInitializer = new WBenchMapEditorObjectsAssetsInitializer();
-        this.getLocalMapEditorResources().addAssetsLoaders(WBenchResourceManager.objectsAssetsInitializer);
+        WBenchResourceManager.mapEditorTextureAssets = new WBenchMapEditorTextureAssetsInitializer();
+        WBenchResourceManager.mapEditorObjectsAssets = new WBenchMapEditorObjectsAssetsInitializer();
+        this.getLocalMapEditorResources().addAssetsLoaders(WBenchResourceManager.mapEditorTextureAssets, WBenchResourceManager.mapEditorObjectsAssets);
     }
 
     public SystemResources getGlobalResources() {

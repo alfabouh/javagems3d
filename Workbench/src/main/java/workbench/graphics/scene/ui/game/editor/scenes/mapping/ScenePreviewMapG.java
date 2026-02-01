@@ -1,15 +1,13 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.mapping;
+package workbench.graphics.scene.ui.game.editor.scenes.mapping;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
-import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;
 
-import java.io.File;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +27,6 @@ public class ScenePreviewMapG {
             final String mapProject = projectData.getAsset().getMapProject().getMapName();
             if (ImGui.collapsingHeader("Map: " + projectData.getAsset().getMapProject().getMapName(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##map_preview", ImGui.getColumnWidth(), 200, true);
-                ImGui.treePush();
                 if (ImGui.beginPopup("NewMapInfoPopup")) {
                     ImGui.text("New Description:");
                     ImGui.inputText("##mapDesc", this.imStringDesc);
@@ -59,10 +56,6 @@ public class ScenePreviewMapG {
                 ImGui.separator();
                 if (ImGui.button("Open")) {
                     final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
-                    File file = new File(pathToMap.getFullPath());
-                    if (!file.exists()) {
-                        throw new JGemsIOException("Couldn't open file: " + mapProject);
-                    }
                     WBench.get().getMapProjectManager().openMapProject(pathToMap);
                     WBench.get().getGameProjectManager().refreshMaps(true);
                 }
@@ -71,7 +64,6 @@ public class ScenePreviewMapG {
                     ImGui.openPopup("NewMapInfoPopup");
                 }
                 ImGui.endChild();
-                ImGui.treePop();
             }
         }
     }

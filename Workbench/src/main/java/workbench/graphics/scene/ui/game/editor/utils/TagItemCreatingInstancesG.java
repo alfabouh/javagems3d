@@ -8,7 +8,7 @@ import javagems3d.mapping.tags.base.VectorMode;
 import javagems3d.mapping.tags.items.*;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 
 import java.util.function.Supplier;
 import java.util.*;

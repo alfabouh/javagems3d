@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.window_interface;
+package workbench.graphics.scene.ui.game.editor;
 
 import imgui.ImGui;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -10,14 +10,12 @@ import javagems3d.system.service.collections.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.actions_interface.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
-import workbench.graphics.scene.ui.game.editor.window_interface.scenes.ModelPreviewEditorWindow;
-import workbench.graphics.scene.ui.game.editor.window_interface.scenes.SkyBoxPreviewEditorWindow;
-import workbench.graphics.scene.ui.game.editor.window_interface.scenes.TexturePreviewEditorWindow;
+import workbench.graphics.scene.ui.game.editor.scenes.window.ModelPreviewEditorWindow;
+import workbench.graphics.scene.ui.game.editor.scenes.window.SkyBoxPreviewEditorWindow;
+import workbench.graphics.scene.ui.game.editor.scenes.window.TexturePreviewEditorWindow;
 
 import java.lang.Math;
 import java.util.Arrays;

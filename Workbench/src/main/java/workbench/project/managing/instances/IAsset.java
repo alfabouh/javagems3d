@@ -1,5 +1,6 @@
 package workbench.project.managing.instances;
 
-public interface IAsset {
-    String getName();
+import javagems3d.system.service.collections.AbstractObjectsFolder;
+
+public interface IAsset extends AbstractObjectsFolder.ObjectWithName {
 }

@@ -4,15 +4,13 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
-import workbench.WBench;
 import workbench.project.managing.instances.IAsset;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
-import workbench.project.managing.instances.misc.GameResourceModelAsset;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -50,15 +48,15 @@ public class AssetsChooseCombo <T extends IAsset> {
         }
     }
 
-    private void parseTree(GameResourceAssetsFolder<T> folder, List<Pair<String, T>> allAssets) {
+    private void parseTree(AbstractObjectsFolder<T> folder, List<Pair<String, T>> allAssets) {
         AssetsChooseCombo.parseTreeS(folder, allAssets);
     }
 
-    public static <E extends IAsset> void parseTreeS(GameResourceAssetsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
-        for (E asset : folder.getAssetsThere()) {
+    public static <E extends IAsset> void parseTreeS(AbstractObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
+        for (E asset : folder.getObjectsThere()) {
             allModelsAsset.add(new Pair<>(folder.getHierarchy() + "/" + asset.getName(), asset));
         }
-        for (GameResourceAssetsFolder<E> child : folder.getFoldersThere()) {
+        for (AbstractObjectsFolder<E> child : folder.getFoldersThere()) {
             AssetsChooseCombo.parseTreeS(child, allModelsAsset);
         }
     }

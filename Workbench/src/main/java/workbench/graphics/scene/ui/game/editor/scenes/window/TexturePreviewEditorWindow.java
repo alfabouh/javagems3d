@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.window_interface.scenes;
+package workbench.graphics.scene.ui.game.editor.scenes.window;
 
 import imgui.ImGui;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;

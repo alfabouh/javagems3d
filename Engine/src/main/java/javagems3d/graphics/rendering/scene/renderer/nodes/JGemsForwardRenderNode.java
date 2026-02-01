@@ -32,7 +32,7 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public @NotNull MeshGroup getCube() {
-        return JGemsResourceManager.globalModelAssets.defaultCube_gr;
+        return JGemsResourceManager.DEFAULT_CUBE_MESHGROUP();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.world;
+package workbench.graphics.scene.ui.game.editor.scenes.world;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -8,7 +8,7 @@ import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.collections.Pair;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
 import workbench.project.managing.WBenchGameResourcesManager;

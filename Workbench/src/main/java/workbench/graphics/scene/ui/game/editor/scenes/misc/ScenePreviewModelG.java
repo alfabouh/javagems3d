@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc;
+package workbench.graphics.scene.ui.game.editor.scenes.misc;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -6,10 +6,10 @@ import imgui.type.ImInt;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.service.collections.Pair;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
+import javagems3d.system.service.collections.AbstractObjectsFolder;
 import workbench.project.managing.instances.misc.GameResourceModelAsset;
-import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,11 @@ public class ScenePreviewModelG {
         this.showChessTerrain = true;
     }
 
-    private void parseModelsTree(GameResourceAssetsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
-        for (GameResourceModelAsset asset : folder.getAssetsThere()) {
+    private void parseModelsTree(AbstractObjectsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
+        for (GameResourceModelAsset asset : folder.getObjectsThere()) {
             allModelsAsset.add(new Pair<>(asset.getRelativePath(), asset));
         }
-        for (GameResourceAssetsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
+        for (AbstractObjectsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
             this.parseModelsTree(child, false, allModelsAsset);
         }
     }

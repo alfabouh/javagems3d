@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.actions_interface.scenes.misc;
+package workbench.graphics.scene.ui.game.editor.scenes.misc;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -11,7 +11,7 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.items.*;
 import workbench.WBench;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ObjectTagPreview;
 import workbench.graphics.scene.ui.game.editor.utils.TagItemCreatingInstancesG;
 import workbench.project.managing.WBenchGameResourcesManager;

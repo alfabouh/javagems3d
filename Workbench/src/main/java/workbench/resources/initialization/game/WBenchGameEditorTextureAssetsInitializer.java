@@ -29,15 +29,6 @@ public class WBenchGameEditorTextureAssetsInitializer implements IAssetsInitiali
         WBenchGameEditorTextureAssetsInitializer.hintBOTTOM = systemResources.createTexture(JGems3D.GetSource.JAR, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath("/assets/wbench/textures/BOTTOM.png"), new ImageTexture.Properties(true, true));
         WBenchGameEditorTextureAssetsInitializer.hintRIGHT = systemResources.createTexture(JGems3D.GetSource.JAR, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath("/assets/wbench/textures/RIGHT.png"), new ImageTexture.Properties(true, true));
         WBenchGameEditorTextureAssetsInitializer.hintLEFT = systemResources.createTexture(JGems3D.GetSource.JAR, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath("/assets/wbench/textures/LEFT.png"), new ImageTexture.Properties(true, true));
-
-        //APIWBenchDataManager apiwBenchDataManager = WBench.APIEditorResources().getEditorResourcesManager();
-        //Map<String, Pair<String, JGemsPath>> map = apiwBenchDataManager.getSkyBoxesMap();
-        //for (Map.Entry<String, Pair<String, JGemsPath>> entry : map.entrySet()) {
-        //    ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(JGems3D.GetSource.EXTERNAL, null, entry.getValue().getSecond(), entry.getValue().getFirst(), new CubeMapTexture.Properties(true));
-        //    if (cubeMapProgram != null) {
-        //        WBench.get().getMapProjectManager().getMapObjectTemplates().addSkyBox(entry.getKey(), cubeMapProgram);
-        //    }
-        //}
     }
 
     @Override

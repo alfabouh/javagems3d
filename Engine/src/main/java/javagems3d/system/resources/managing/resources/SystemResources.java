@@ -16,7 +16,6 @@ import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -67,27 +66,63 @@ public abstract class SystemResources implements ISystemResources {
     }
 
     public MeshBuffer createMeshBuffer(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshBuffer(fabric, keepNodesInMemory));
+        try {
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshBuffer(fabric, keepNodesInMemory));
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MBuffer();
+        }
     }
 
     public MeshGroup createMeshGroup(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory));
+        try {
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory));
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MGroup();
+        }
     }
 
     public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGems3D.GetSource source, @Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory));
+        try {
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(source, this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory));
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MGroup();
+        }
     }
 
     public MeshBuffer createMeshBuffer(@NotNull JGems3D.GetSource source, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshBuffer(source, null, modelPath, keepNodesInMemory);
+        try {
+            return this.createMeshBuffer(source, null, modelPath, keepNodesInMemory);
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MBuffer();
+        }
     }
 
     public MeshGroup createMeshGroup(@NotNull JGems3D.GetSource source, JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshGroup(source, null, modelPath, keepNodesInMemory);
+        try {
+            return this.createMeshGroup(source, null, modelPath, keepNodesInMemory);
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MGroup();
+        }
     }
 
     public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGems3D.GetSource source, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
-        return this.createMeshGroupWithBindlessBufferAttachment(source,null, modelPath, keepNodesInMemory);
+        try {
+            return this.createMeshGroupWithBindlessBufferAttachment(source,null, modelPath, keepNodesInMemory);
+        } catch (Exception e) {
+            Log.get().exception(e);
+            Log.get().error("Returned default model");
+            return IAssetsInitializer.createDefaultCube_MGroup();
+        }
     }
 
     public ITexture2DProgram createTexture(@NotNull JGems3D.GetSource source, @Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
@@ -155,6 +190,26 @@ public abstract class SystemResources implements ISystemResources {
     @SuppressWarnings("all")
     public <S extends ICached> S getResource(String key) {
         return (S) this.getResourceCache().getCachedObject(key);
+    }
+
+    @SuppressWarnings("all")
+    public <S extends ICached> S getResourceOrDefault(JGemsPath key, @NotNull S defaultO) {
+        final S s = (S) this.getResourceCache().getCachedObject(key);
+        if (s == null) {
+            Log.get().warn("Couldn't get form cache " + key + ". Returned dafault!");
+            return defaultO;
+        }
+        return s;
+    }
+
+    @SuppressWarnings("all")
+    public <S extends ICached> S getResourceOrDefault(String key, @NotNull S defaultO) {
+        final S s = (S) this.getResourceCache().getCachedObject(key);
+        if (s == null) {
+            Log.get().warn("Couldn't get form cache " + key + ". Returned dafault!");
+            return defaultO;
+        }
+        return s;
     }
 
     public static Font createFontFromJAR(JGemsPath path) {

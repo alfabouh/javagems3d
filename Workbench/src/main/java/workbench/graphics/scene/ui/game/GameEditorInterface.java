@@ -12,9 +12,9 @@ import org.joml.Vector2i;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
-import workbench.graphics.scene.ui.game.editor.actions_interface.ActionsInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.resources_interface.ResourcesInterfaceComponentG;
-import workbench.graphics.scene.ui.game.editor.window_interface.WindowInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.project.map.WBenchMapProjectManager;
 

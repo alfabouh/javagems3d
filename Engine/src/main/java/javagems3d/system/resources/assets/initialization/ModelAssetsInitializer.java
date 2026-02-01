@@ -8,23 +8,11 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 
 public class ModelAssetsInitializer implements IAssetsInitializer {
-    public MeshGroup defaultCube_gr;
-    public MeshBuffer defaultCube_bff;
     public MeshBuffer grassCube;
 
     @Override
     public void load(SystemResources systemResources) {
-        this.createDefaults(systemResources);
         this.grassCube = systemResources.createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true);
-    }
-
-    private void createDefaults(SystemResources systemResources) {
-        this.defaultCube_bff = IAssetsInitializer.createDefaultCube_MBuffer();
-        systemResources.getResourceCache().registerInCache("DEFAULT_CUBE_BFF", this.defaultCube_bff);
-        systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);
-
-        this.defaultCube_gr = IAssetsInitializer.createDefaultCube_MGroup();
-        systemResources.getResourceCache().registerInCache("DEFAULT_CUBE_GR", this.defaultCube_gr);
     }
 
     @Override

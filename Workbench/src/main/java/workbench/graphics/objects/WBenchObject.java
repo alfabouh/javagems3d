@@ -3,22 +3,16 @@ package workbench.graphics.objects;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
-import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.world.WBenchWorld;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public abstract class WBenchObject extends SceneProp {
     private int id;
@@ -134,25 +128,28 @@ public abstract class WBenchObject extends SceneProp {
 
     public static final class ID {
         private final String nameId;
-        private final String groupId;
+        private final String objectPath;
 
-        public ID(@NotNull String nameId, @Nullable String groupId) {
+        public ID(@NotNull String nameId) {
+            this(nameId, null);
+        }
+
+        public ID(@NotNull String nameId, @Nullable String objectPath) {
             this.nameId = nameId;
-            this.groupId = groupId;
+            this.objectPath = objectPath == null ? "/" : objectPath;
         }
 
         public String getNameId() {
             return this.nameId;
         }
 
-        public String getGroupId() {
-            return this.groupId;
+        public String getObjectPath() {
+            return this.objectPath;
         }
 
         @Override
         public String toString() {
-            final String prefix = this.getGroupId() == null ? "" : this.getGroupId() + "/";
-            return prefix + this.getNameId();
+            return this.getObjectPath() + "/" + this.getNameId();
         }
     }
 }

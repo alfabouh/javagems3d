@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.game.editor.resources_interface;
+package workbench.graphics.scene.ui.game.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -20,6 +20,7 @@ import workbench.graphics.scene.ui.game.editor.instances.world.ObjectPropPreview
 import workbench.graphics.scene.ui.game.editor.utils.CreatableResourcesTreeDrawerG;
 import workbench.graphics.scene.ui.game.editor.utils.FolderResourcesTreeDrawerG;
 import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 import workbench.project.managing.instances.mapping.GameResourceMapAsset;
 import workbench.project.managing.instances.mapping.GameResourceSkyboxAsset;
 import workbench.project.managing.instances.misc.GameResourceModelAsset;
@@ -60,9 +61,11 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Prop's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersInsideMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
                 (e) -> {
-                    return new GameResourcePropObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    final GameResourcePropObjectAsset gameResourcePropObjectAsset = new GameResourcePropObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    e.getFirst().putObjectThere(gameResourcePropObjectAsset);
+                    return gameResourcePropObjectAsset;
                 },
                 ObjectPropPreview::new
         ).setAfterFolderCreated((e) -> {
@@ -90,9 +93,11 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Entity's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersInsideMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
                 (e) -> {
-                    return new GameResourceEntityObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    final GameResourceEntityObjectAsset gameResourceEntityObjectAsset = new GameResourceEntityObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    e.getFirst().putObjectThere(gameResourceEntityObjectAsset);
+                    return gameResourceEntityObjectAsset;
                 },
                 ObjectEntityPreview::new
         ).setAfterFolderCreated((e) -> {
@@ -120,9 +125,11 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Skybox's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersInsideMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
                 (e) -> {
-                    return new GameResourceSkyboxAsset(e.getSecond().getInputStrings().get(0).get());
+                    final GameResourceSkyboxAsset gameResourceSkyboxAsset = new GameResourceSkyboxAsset(e.getSecond().getInputStrings().get(0).get());
+                    e.getFirst().putObjectThere(gameResourceSkyboxAsset);
+                    return gameResourceSkyboxAsset;
                 },
                 SkyBoxAssetPreview::new
         ).setAfterFolderCreated((e) -> {
@@ -141,9 +148,11 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Tag's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersInsideMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
                 (e) -> {
-                    return new GameResourceObjectTagData(e.getSecond().getInputStrings().get(0).get(), new TagsContainer());
+                    final GameResourceObjectTagData gameResourceObjectTagData = new GameResourceObjectTagData(e.getSecond().getInputStrings().get(0).get(), new TagsContainer());
+                    e.getFirst().putObjectThere(gameResourceObjectTagData);
+                    return gameResourceObjectTagData;
                 },
                 ObjectTagPreview::new
         ).setAfterFolderCreated((e) -> {
@@ -162,12 +171,16 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Map's Name", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersInsideMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
                 (e) -> {
                     final String name = e.getSecond().getInputStrings().get(0).get();
                     final String mapNameFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE;
-                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), e.getFirst().getHierarchy());
-                    return new GameResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name));
+                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name, e.getFirst().getHierarchy());
+                    final GameResourceMapAsset gameResourceMapAsset = new GameResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name));
+                    final GameResourceAssetsFolder<GameResourceMapAsset> newFolder = new GameResourceAssetsFolder<>(name);
+                    newFolder.putObjectThere(gameResourceMapAsset);
+                    e.getFirst().putFolderThere(newFolder);
+                    return gameResourceMapAsset;
                 },
                 MapProjectPreview::new
         ).setAfterAssetDeleted((e) -> {

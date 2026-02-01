@@ -3,7 +3,7 @@ package jgems_app.map;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import javagems3d.JGems3D;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.mapping.data.templates.MapObjectTemplate;
+import javagems3d.mapping.data.templates.RowMapObjectData;
 import javagems3d.mapping.processing.ExternalMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
@@ -21,7 +21,7 @@ public class ExternalLoader extends ExternalMapProcessor.Default {
     }
 
     @Override
-    protected void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    protected void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         super.onProcessMarker(template, markerData, physicsWorld, sceneWorld);
     }
 }

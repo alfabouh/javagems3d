@@ -6,6 +6,7 @@ import imgui.extension.imguizmo.flag.Mode;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -53,8 +54,10 @@ public class SceneInterfaceComponentM {
         final float availableX = ImGui.getContentRegionAvailX();
         final float availableY = ImGui.getContentRegionAvailY();
 
+        final IDeferredRenderNode deferredRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
         IPostFXRenderNode postFXRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.POST_FX_RENDER_PASS);
         ImGui.image(postFXRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
+        //ImGui.image(deferredRenderNode.getOutGBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
         int imagePosX = (int) ImGui.getItemRectMinX();
         int imagePosY = (int) ImGui.getItemRectMinY();
         int imageSizeX = (int) (ImGui.getItemRectSizeX());

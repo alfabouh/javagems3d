@@ -1,11 +1,9 @@
-package workbench.graphics.scene.ui.game.editor.window_interface.scenes;
+package workbench.graphics.scene.ui.game.editor.scenes.window;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -20,10 +18,8 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
-import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.graphics.scene.ui.game.editor.actions_interface.ActionsInterfaceComponentG;
+import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
-import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.managing.instances.misc.GameResourceTextureAsset;
 import workbench.resources.WBenchResourceManager;

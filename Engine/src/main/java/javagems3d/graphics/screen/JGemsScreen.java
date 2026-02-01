@@ -88,7 +88,7 @@ public class JGemsScreen implements IScreen {
             if (JGems3D.DEBUG_MODE) {
                 OpenGLSysUtils.registerOGLDebugOutput();
             }
-            ResourceManager.initDefaultTexture();
+            ResourceManager.initDefaults();
             JGemsResourceManager.createShaders();
 
             this.showGameLoadingScreen("System01");
