@@ -51,7 +51,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), WBenchRenderProperties.getDefault());
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
         final TranslationConstraints translationConstraints = gameResourceWorldObjectAsset.getAxisConstraints();
-        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints);
+        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(gameResourceWorldObjectAsset.getModelAssetRelativePath());
     }
 
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp) {
@@ -61,7 +61,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchObjectData.getTranslationConstraints();
-        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints);
+        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(wBenchObjectData.getPathToModel().toString());
     }
 
     private WBenchMarkerTemplate createMapObjectTemplateFromApiMarkerSource(SystemResources systemResources, String path, APIResource<WBenchMarkerData, ?> apiResourceProp) {

@@ -97,6 +97,10 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
         return this.getTag(id) != null;
     }
 
+    public boolean isEmpty() {
+        return this.getTags().isEmpty();
+    }
+
     public TagsContainer replaceTag(TagID id, TagItem newValue) {
         this.getTags().replace(id, new Tag<>(id, newValue));
         return this;

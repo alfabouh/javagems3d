@@ -1,38 +1,26 @@
 package workbench.graphics.scene.ui.map;
 
 import imgui.ImGui;
-import imgui.extension.imguizmo.flag.Operation;
 import imgui.extension.texteditor.TextEditor;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
-import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
-import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
@@ -40,12 +28,11 @@ import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.editor.*;
+import workbench.graphics.scene.ui.map.editor.utils.GlobalSceneRenderingVars;
+import workbench.graphics.scene.world.WBenchWorld;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.map.WBenchMapProjectManager;
-import workbench.resources.WBenchResourceManager;
-import workbench.resources.shaders.WBenchShaderManager;
 
-import java.lang.Math;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,27 +40,16 @@ public class MapEditorInterface implements DearUIInterface {
     private SelectedScene selectedScene;
     private final TextEditor textEditor;
 
-    public static boolean VIEW_SHADOWS = true;
-    public static boolean VIEW_CHESS_TERRAIN = true;
-    public static boolean VIEW_HDR = true;
-    public static boolean VIEW_FOG = true;
-    public static boolean FULL_BRIGHT = false;
-
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
     private final WBenchMapProjectManager WBenchMapProjectManager;
 
-    private float previewDistance;
-
     private WBenchObject currentSelectedObject;
     private WBenchObjectTemplate currentSelectedTemplate;
-    private int currentOperation;
 
     private ICamera oldCamera;
     private final FBOTexture2DProgram scenePreview;
-    private Collection<SceneObject> visibleObjects;
 
-    private final ContextComponentM contextComponent;
     private final ActionsInterfaceComponentM actionsContent;
     private final ItemsInterfaceComponentM itemsComponent;
     private final ResourcesInterfaceComponentM resourcesComponent;
@@ -88,7 +64,6 @@ public class MapEditorInterface implements DearUIInterface {
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
 
-        this.contextComponent = new ContextComponentM(this);
         this.actionsContent = new ActionsInterfaceComponentM(this);
         this.itemsComponent = new ItemsInterfaceComponentM(this);
         this.resourcesComponent = new ResourcesInterfaceComponentM(this);
@@ -98,20 +73,16 @@ public class MapEditorInterface implements DearUIInterface {
     }
 
     public void clear() {
-        this.getContextComponent().clear();
         this.getSceneComponent().clear();
         this.getActionsContent().clear();
         this.getSceneComponent().clear();
         this.getItemsComponent().clear();
 
-        this.currentOperation = Operation.TRANSLATE;
         this.selectedScene = SelectedScene.MAIN;
 
         this.currentSelectedObject = null;
         this.currentSelectedTemplate = null;
         this.oldCamera = null;
-        this.previewDistance = 1.0f;
-        this.visibleObjects = null;
     }
 
     @Override
@@ -168,24 +139,12 @@ public class MapEditorInterface implements DearUIInterface {
             }
             ImGui.endMenu();
         }
-        if (ImGui.beginMenu("Environment")) {
-            if (ImGui.menuItem("Fog")) {
-                this.getContextComponent().setOpenEnvironmentFogSettings(!this.getContextComponent().isOpenEnvironmentFogSettings());
-            }
-            if (ImGui.menuItem("SkyBox")) {
-                this.getContextComponent().setOpenEnvironmentSkySettings(!this.getContextComponent().isOpenEnvironmentSkySettings());
-            }
-            if (ImGui.menuItem("Shadows")) {
-                this.getContextComponent().setOpenEnvironmentShadowsSettings(!this.getContextComponent().isOpenEnvironmentShadowsSettings());
-            }
-            ImGui.endMenu();
-        }
         if (ImGui.beginMenu("Scene")) {
             SelectedScene oldSelected = this.getSelectedScene();
             if (ImGui.checkbox("Main", this.getSelectedScene().equals(SelectedScene.MAIN))) {
                 this.selectedScene = SelectedScene.MAIN;
             }
-            if (ImGui.checkbox("JGemsSkyBackground", this.getSelectedScene().equals(SelectedScene.BACKGROUND))) {
+            if (ImGui.checkbox("SkyBox", this.getSelectedScene().equals(SelectedScene.BACKGROUND))) {
                 this.selectedScene = SelectedScene.BACKGROUND;
             }
             ISkyBackground background = this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground();
@@ -209,22 +168,22 @@ public class MapEditorInterface implements DearUIInterface {
                 this.setCurrentSelectedObject(null);
             }
         }
-        JGemsConfig.DEBUG.FULL_BRIGHT = MapEditorInterface.FULL_BRIGHT;
+        JGemsConfig.DEBUG.FULL_BRIGHT = GlobalSceneRenderingVars.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
-            if (ImGui.checkbox("Fog", MapEditorInterface.VIEW_FOG)) {
-                MapEditorInterface.VIEW_FOG = !MapEditorInterface.VIEW_FOG;
+            if (ImGui.checkbox("Fog", GlobalSceneRenderingVars.VIEW_FOG)) {
+                GlobalSceneRenderingVars.VIEW_FOG = !GlobalSceneRenderingVars.VIEW_FOG;
             }
-            if (ImGui.checkbox("Full Bright", MapEditorInterface.FULL_BRIGHT)) {
-                MapEditorInterface.FULL_BRIGHT = !MapEditorInterface.FULL_BRIGHT;
+            if (ImGui.checkbox("Full Bright", GlobalSceneRenderingVars.FULL_BRIGHT)) {
+                GlobalSceneRenderingVars.FULL_BRIGHT = !GlobalSceneRenderingVars.FULL_BRIGHT;
             }
-            if (ImGui.checkbox("Shadows", MapEditorInterface.VIEW_SHADOWS)) {
-                MapEditorInterface.VIEW_SHADOWS = !MapEditorInterface.VIEW_SHADOWS;
+            if (ImGui.checkbox("Shadows", GlobalSceneRenderingVars.VIEW_SHADOWS)) {
+                GlobalSceneRenderingVars.VIEW_SHADOWS = !GlobalSceneRenderingVars.VIEW_SHADOWS;
             }
-            if (ImGui.checkbox("Chess Terrain", MapEditorInterface.VIEW_CHESS_TERRAIN)) {
-                MapEditorInterface.VIEW_CHESS_TERRAIN = !MapEditorInterface.VIEW_CHESS_TERRAIN;
+            if (ImGui.checkbox("Chess Terrain", GlobalSceneRenderingVars.VIEW_CHESS_TERRAIN)) {
+                GlobalSceneRenderingVars.VIEW_CHESS_TERRAIN = !GlobalSceneRenderingVars.VIEW_CHESS_TERRAIN;
             }
-            if (ImGui.checkbox("HDR", MapEditorInterface.VIEW_HDR)) {
-                MapEditorInterface.VIEW_HDR = !MapEditorInterface.VIEW_HDR;
+            if (ImGui.checkbox("HDR", GlobalSceneRenderingVars.VIEW_HDR)) {
+                GlobalSceneRenderingVars.VIEW_HDR = !GlobalSceneRenderingVars.VIEW_HDR;
             }
             ImGui.endMenu();
         }
@@ -272,13 +231,32 @@ public class MapEditorInterface implements DearUIInterface {
         final float propertiesWindowSizeX = (windowSize.x - sceneWindowSizeX) - sceneWindowOffset;
         final float propertiesWindowSizeY =  windowSize.y;
 
-        ImGui.begin("Items",  ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY - YOffset);
         ImGui.setWindowPos(0, YOffset);
-        this.getItemsComponent().itemsContent();
+        {
+            ImGui.beginChild("##ItemsChild", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 40, true, ImGuiWindowFlags.HorizontalScrollbar);
+            this.getItemsComponent().itemsContent();
+            ImGui.endChild();
+        }
         ImGui.end();
 
-        ImGui.begin("Scene " + this.getSelectedScene().name(), ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Scene " + this.getSelectedScene().name(), ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.MenuBar);
+        ImGui.beginMenuBar();
+        ImGui.pushStyleColor(ImGuiCol.Text, 0xffaaff67);
+        if (ImGui.menuItem(SelectedScene.MAIN.name(), "##" + SelectedScene.MAIN.name(), this.getSelectedScene().equals(SelectedScene.MAIN))) {
+            this.selectedScene = SelectedScene.MAIN;
+        }
+        if (ImGui.menuItem(SelectedScene.BACKGROUND.name(), "##" + SelectedScene.BACKGROUND.name(), this.getSelectedScene().equals(SelectedScene.BACKGROUND))) {
+            this.selectedScene = SelectedScene.BACKGROUND;
+        }
+        ImGui.popStyleColor();
+        {
+            Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
+            ImGui.text(" ( FPS: " + WBenchScreen.RENDER_FPS + " | Cam: " + "[" + String.format("%.2f", camPos.x) + "; " + String.format("%.2f", camPos.y) + "; " + String.format("%.2f", camPos.z) + "] )");
+        }
+        ImGui.endMenuBar();
+
         if (ImGui.isWindowHovered()) {
             if (ImGui.isMouseClicked(1)) {
                 ImGui.setWindowFocus();
@@ -288,10 +266,6 @@ public class MapEditorInterface implements DearUIInterface {
             MapEditorInterface.isCursorInsideScene = false;
         }
 
-        Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
-        ImGui.text("FPS: " + WBenchScreen.RENDER_FPS);
-        ImGui.sameLine();
-        ImGui.text("[" + camPos.x + ", " + camPos.y + ", " + camPos.z + "]");
         int posX = (int) sceneWindowOffset;
         int posY = (int) YOffset;
         int sizeX = (int) sceneWindowSizeX;
@@ -318,93 +292,6 @@ public class MapEditorInterface implements DearUIInterface {
         ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
         this.getActionsContent().actionsContent();
         ImGui.end();
-
-        this.getContextComponent().context();
-    }
-
-    public int chooseDefaultGuizmoOperation() {
-        WBenchObject currentSelectedObject = this.getCurrentSelectedObject();
-        int f1 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
-        if (f1 != 0) {
-            return f1;
-        }
-        int f2 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
-        if (f2 != 0) {
-            return f2;
-        }
-        return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
-    }
-
-    public int chooseGuizmoOperation(boolean translation, boolean rotation, boolean scaling) {
-        WBenchObject currentSelectedObject = this.getCurrentSelectedObject();
-        if (translation) {
-            return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
-        }
-        if (rotation) {
-            return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
-        }
-        return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
-    }
-
-    private int getOperationMask(int flag, int xOp, int yOp, int zOp) {
-        if (flag == 0) {
-            return 0;
-        }
-        int result = 0;
-        if ((flag & 1) != 0) {
-            result |= xOp;
-        }
-        if ((flag & 2) != 0) {
-            result |= yOp;
-        }
-        if ((flag & 4) != 0) {
-            result |= zOp;
-        }
-        return result;
-    }
-
-    public void renderPreviewItem() {
-        if (this.currentSelectedTemplate == null) {
-            return;
-        }
-        OpenGLRenderer.setViewPort(new Vector2i(256, 256));
-        this.scenePreview.bindFBO();
-        GL46.glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.renderPreviewItem(this.getPreviewDistance(), WBenchResourceManager.localShaderAssets.preview, this.currentSelectedTemplate.getMeshGroup());
-        this.scenePreview.unBindFBO();
-        WBenchScreen.clearColor();
-        OpenGLRenderer.setViewPort(this.getOpenGLRenderer().getRenderingResolution());
-    }
-
-    private void renderPreviewItem(float distance, WBenchShaderManager shaderManager, MeshGroup meshGroup) {
-        final Pose3D pose3D = new Pose3D(new Vector3f(0.0f, 0.0f, -3.5f));
-        CullingAABB cullingAABB = meshGroup.getMeshAABBData().getNormalizedAABB(pose3D);
-        float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
-        float scale = diagonal / 5.0f;
-        pose3D.setScaling(new Vector3f(1.0f / scale).mul(distance));
-
-        shaderManager.beginShading();
-        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
-        shaderManager.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D).lookAt(new Vector3f(1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
-        shaderManager.performModel3DMatrix(new UniformString("view_matrix"), new Matrix4f().identity());
-        for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
-            ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
-            ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
-            if (diffuseMap != null) {
-                shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
-                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
-            } else {
-                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
-            }
-            GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
-            meshNode3D.getMeshData().enableAllMeshAttributes();
-            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-            meshNode3D.getMeshData().disableAllMeshAttributes();
-            GL46.glBindVertexArray(0);
-        }
-        shaderManager.endShading();
     }
 
     public void setNewCamera(@Nullable ICamera camera) {
@@ -468,26 +355,10 @@ public class MapEditorInterface implements DearUIInterface {
         this.currentSelectedTemplate = currentSelectedTemplate;
     }
 
-    public void setPreviewDistance(float previewDistance) {
-        this.previewDistance = previewDistance;
-    }
-
     public void setCurrentSelectedObject(WBenchObject currentSelectedObject) {
         synchronized (MapEditorInterface.monitor) {
             this.currentSelectedObject = currentSelectedObject;
         }
-    }
-
-    public void setVisibleObjects(Collection<SceneObject> visibleObjects) {
-        this.visibleObjects = visibleObjects;
-    }
-
-    public void setCurrentOperation(int currentOperation) {
-        this.currentOperation = currentOperation;
-    }
-
-    public float getPreviewDistance() {
-        return this.previewDistance;
     }
 
     public ICamera getOldCamera() {
@@ -498,16 +369,8 @@ public class MapEditorInterface implements DearUIInterface {
         return this.textEditor;
     }
 
-    public int getCurrentOperation() {
-        return this.currentOperation;
-    }
-
     public SelectedScene getSelectedScene() {
         return this.selectedScene;
-    }
-
-    public ContextComponentM getContextComponent() {
-        return this.contextComponent;
     }
 
     public ActionsInterfaceComponentM getActionsContent() {
@@ -538,15 +401,15 @@ public class MapEditorInterface implements DearUIInterface {
         return this.currentSelectedObject;
     }
 
-    public Collection<SceneObject> getVisibleObjects() {
-        return this.visibleObjects;
-    }
-
     public WBenchOpenGLRenderer getOpenGLRenderer() {
         return this.openGLRenderer;
     }
 
     public WBenchMapProjectManager getProjectManager() {
         return this.WBenchMapProjectManager;
+    }
+
+    public @NotNull WBenchWorld getWorld() {
+        return this.getOpenGLRenderer().getWorld();
     }
 }

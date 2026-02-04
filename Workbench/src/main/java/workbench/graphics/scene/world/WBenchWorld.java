@@ -21,12 +21,14 @@ public class WBenchWorld implements IRenderWorld {
     private final Queue<Integer> freeIds;
     private ICamera camera;
     private WBenchEnvironment environment;
+    private Set<? extends SceneObject> endFrameVisibleObjects;
     private final Set<WBenchObject> toRenderSet;
     private final Map<Integer, WBenchObject> idMap;
     private int ticks;
 
     public WBenchWorld() {
         this.camera = null;
+        this.endFrameVisibleObjects = new HashSet<>();
         this.toRenderSet = new HashSet<>();
         this.idMap = new HashMap<>();
         this.freeIds = new ArrayDeque<>();
@@ -156,6 +158,15 @@ public class WBenchWorld implements IRenderWorld {
                 free.add(i);
             }
         }
+    }
+
+    public Set<? extends SceneObject> getEndFrameVisibleObjects() {
+        return this.endFrameVisibleObjects;
+    }
+
+    public WBenchWorld setEndFrameVisibleObjects(Set<? extends SceneObject> endFrameVisibleObjects) {
+        this.endFrameVisibleObjects = endFrameVisibleObjects;
+        return this;
     }
 
     public Queue<Integer> getFreeIds() {

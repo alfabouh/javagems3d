@@ -32,8 +32,8 @@ public class WBenchMarkerTemplate extends WBenchObjectTemplate {
     }
 
     @Override
-    public WBenchMarkerObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer tagsContainer) {
-        return new WBenchMarkerObject(world, this, tagsContainer, this.getColor(), this.isTransparent());
+    public WBenchMarkerObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer overridedTagsContainer) {
+        return new WBenchMarkerObject(world, this, overridedTagsContainer, this.getColor(), this.isTransparent());
     }
 
     protected RenderAttributes createRenderAttributes(boolean transparent) {

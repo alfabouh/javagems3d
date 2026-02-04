@@ -36,7 +36,7 @@ public class CreatableObjectsTreeDrawerM <T extends WBenchObjectTemplate> {
                     if (selected) {
                         this.getMapEditorInterface().setCurrentSelectedTemplate(null);
                     } else {
-                        this.getMapEditorInterface().setPreviewDistance(1.0f);
+                        this.getMapEditorInterface().getActionsContent().resetTemplatePreview();
                         this.getMapEditorInterface().setCurrentSelectedTemplate(t);
                     }
                 }

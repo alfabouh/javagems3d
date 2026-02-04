@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldEntity;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.constructors.ISceneEntityConstructor;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class EntityRenderData {
     public static ISceneEntityConstructor DEFAULT_OBJECT_CONSTRUCTOR = (sceneWorld, worldItem, entityRenderData) -> new SceneWorldEntity(sceneWorld, worldItem, entityRenderData);
 
     private final ISceneEntityConstructor sceneObjectConstructor;
-    private IModelConstructor<WorldItem> entityModelConstructor;
+    private IModelConstructor<WorldItem, ? extends IMesh> entityModelConstructor;
     private MeshStructure3D<?> meshStructure;
     private RenderAttributes renderAttributes;
 
@@ -69,7 +70,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public EntityRenderData setEntityModelConstructor(IModelConstructor<WorldItem> entityModelConstructor) {
+    public EntityRenderData setEntityModelConstructor(IModelConstructor<WorldItem, ? extends IMesh> entityModelConstructor) {
         if (entityModelConstructor != null) {
             this.meshStructure = null;
         }
@@ -81,7 +82,7 @@ public class EntityRenderData {
         return this.meshStructure;
     }
 
-    public IModelConstructor<WorldItem> getEntityModelConstructor() {
+    public IModelConstructor<WorldItem, ? extends IMesh> getEntityModelConstructor() {
         return this.entityModelConstructor;
     }
 

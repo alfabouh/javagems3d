@@ -549,6 +549,14 @@ public final class JGemsHelper {
             shaderManager.enableWarns();
         }
 
+        public boolean performEmptyAnimationsInfo(@NotNull JGemsShaderManager shaderManager) {
+            shaderManager.disableWarns();
+            shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(-1));
+            shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(-1));
+            shaderManager.enableWarns();
+            return false;
+        }
+
         public boolean performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
             shaderManager.disableWarns();
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));

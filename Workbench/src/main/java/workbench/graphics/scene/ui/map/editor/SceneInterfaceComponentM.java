@@ -65,7 +65,7 @@ public class SceneInterfaceComponentM {
 
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
 
-        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
+        if (!this.getEditorInterface().getActionsContent().getInterfaceEnvSkyM().isCameraCheckBox()) {
             if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideScene) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -76,7 +76,7 @@ public class SceneInterfaceComponentM {
                                 WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
                                 this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
                                 if (wBenchObject != null) {
-                                    this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseDefaultGuizmoOperation());
+                                    this.getEditorInterface().getActionsContent().resetObjectPreview();
                                 }
                             } finally {
                                 this.isThreadInProcess.set(false);
@@ -86,14 +86,12 @@ public class SceneInterfaceComponentM {
                     }
                 }
             }
-        }
-        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
             if (this.getEditorInterface().getCurrentSelectedObject() != null) {
                 CullingAABB cullingAABB = this.getEditorInterface().getCurrentSelectedObject().pickAABBDataFromMesh();
                 if (cullingAABB != null) {
                     WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                     float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
-                    ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.001f, 0.001f, 0.001f});
+                    ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation(), Mode.WORLD, new float[]{0.001f, 0.001f, 0.001f});
 
                     if (ImGuizmo.isUsing()) {
                         Vector3f position = new Vector3f();
@@ -142,20 +140,18 @@ public class SceneInterfaceComponentM {
         camRay.normalize();
 
         Vector3f origin = this.getEditorInterface().getOpenGLRenderer().getCamera().getCamPosition();
-        List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjects(this.getEditorInterface().getVisibleObjects(), origin, camRay);
+        List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjects(this.getEditorInterface().getWorld().getEndFrameVisibleObjects(), origin, camRay);
         return sceneObjects.isEmpty() ? null : (WBenchObject) sceneObjects.get(0).getFirst();
     }
 
-    public List<Pair<SceneObject, Vector3f>> getIntersectedObjects(Collection<SceneObject> objects, Vector3f origin, Vector3f ray) {
+    public List<Pair<SceneObject, Vector3f>> getIntersectedObjects(Collection<? extends SceneObject> objects, Vector3f origin, Vector3f ray) {
         Set<SceneObject> intersectedAabbs = new HashSet<>();
-        if (this.getEditorInterface().getVisibleObjects() != null) {
-            for (SceneObject sceneObject : this.getEditorInterface().getVisibleObjects()) {
-                CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
-                if (cullingAABB != null) {
-                    Vector2f vector2f = new Vector2f();
-                    if (Intersectionf.intersectRayAab(origin, ray, cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), vector2f)) {
-                        intersectedAabbs.add(sceneObject);
-                    }
+        for (SceneObject sceneObject : objects) {
+            CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
+            if (cullingAABB != null) {
+                Vector2f vector2f = new Vector2f();
+                if (Intersectionf.intersectRayAab(origin, ray, cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), vector2f)) {
+                    intersectedAabbs.add(sceneObject);
                 }
             }
         }

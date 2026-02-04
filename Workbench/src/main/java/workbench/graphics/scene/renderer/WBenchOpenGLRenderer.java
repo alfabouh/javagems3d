@@ -209,10 +209,9 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         postRenderNode.onRender(frameTicking);
         GL46.glDepthMask(true);
 
-        mapEditorInterface1.setVisibleObjects(toRender);
+        this.getWorld().setEndFrameVisibleObjects(toRender);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
-        mapEditorInterface1.renderPreviewItem();
     }
 
     @Override

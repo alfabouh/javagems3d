@@ -54,7 +54,7 @@ public class ItemsInterfaceComponentM {
             if (ImGui.selectable(displayText, flag, ImGuiSelectableFlags.AllowItemOverlap, x, 18f)) {
                 if (!flag) {
                     this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
-                    this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseDefaultGuizmoOperation());
+                    this.getEditorInterface().getActionsContent().resetObjectPreview();
                 } else {
                     this.getEditorInterface().setCurrentSelectedObject(null);
                 }
@@ -129,7 +129,7 @@ public class ItemsInterfaceComponentM {
         aabb.getAabbMax().sub(aabb.getAabbMin(), halfSize).mul(0.5f);
 
         Vector3f origin = new Vector3f(center);
-        List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjects(this.getEditorInterface().getVisibleObjects(), origin, direction);
+        List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjects(this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
 
         if (hits.isEmpty()) {
             return;
@@ -179,7 +179,7 @@ public class ItemsInterfaceComponentM {
         if (cullingAABB != null) {
             Vector3f posToCopy = cloneObj.getPosition();
             posToCopy.y += (cullingAABB.getAabbMax().y - cullingAABB.getAabbMin().y) * cloneObj.getScaling().y+ 0.5f;
-            this.getEditorInterface().getActionsContent().spawnInWorld(cloneObj, posToCopy);
+            //this.getEditorInterface().getActionsContent().spawnInWorld(cloneObj, posToCopy);
             this.getEditorInterface().setCurrentSelectedObject(cloneObj);
             Log.get().trace("Cloned " + cloneObj);
         }

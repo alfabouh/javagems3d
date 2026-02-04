@@ -22,7 +22,6 @@ import org.joml.Vector2i;
 import workbench.WBench;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.ResourcesInterfaceComponentM;
 import workbench.project.map.WBenchMapProject;
 
 import java.awt.*;
@@ -33,17 +32,17 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class SceneResourcesScriptsM {
+public class InterfaceResourcesScriptsM {
     private static JGemsScriptingDocs scriptingDocs;
-    private static SceneResourcesScriptsM.CodeMode currentCodeMode;
+    private static InterfaceResourcesScriptsM.CodeMode currentCodeMode;
     private final ImInt currentSelectedScript;
     private final ImString newScriptName;
     private final MapEditorInterface mapEditorInterface;
     private String scriptTextTemplate;
 
     static {
-        SceneResourcesScriptsM.scriptingDocs = new JGemsScriptingDocs();
-        SceneResourcesScriptsM.currentCodeMode = SceneResourcesScriptsM.CodeMode.CODE;
+        InterfaceResourcesScriptsM.scriptingDocs = new JGemsScriptingDocs();
+        InterfaceResourcesScriptsM.currentCodeMode = InterfaceResourcesScriptsM.CodeMode.CODE;
     }
 
     enum CodeMode {
@@ -51,7 +50,7 @@ public class SceneResourcesScriptsM {
         CODE
     }
 
-    public SceneResourcesScriptsM(@NotNull MapEditorInterface mapEditorInterface) {
+    public InterfaceResourcesScriptsM(@NotNull MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.currentSelectedScript = new ImInt(-1);
         this.newScriptName = new ImString(64);
@@ -61,7 +60,7 @@ public class SceneResourcesScriptsM {
     public void reset() {
         this.getEditorInterface().getTextEditor().setPalette(this.getEditorInterface().getTextEditor().getDarkPalette());
         this.getEditorInterface().getTextEditor().setColorizerEnable(true);
-        this.getEditorInterface().getTextEditor().setLanguageDefinition(new SceneResourcesScriptsM.JSDefinition().getJsLang());
+        this.getEditorInterface().getTextEditor().setLanguageDefinition(new InterfaceResourcesScriptsM.JSDefinition().getJsLang());
     }
 
     public void render() {
@@ -140,11 +139,11 @@ public class SceneResourcesScriptsM {
                 if (ImGui.begin("Scripting", scriptingOpened, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar)) {
                     if (ImGui.beginMenuBar()) {
                         if (ImGui.beginMenu("View")) {
-                            if (ImGui.selectable("Code", SceneResourcesScriptsM.currentCodeMode == CodeMode.CODE)) {
-                                SceneResourcesScriptsM.currentCodeMode = CodeMode.CODE;
+                            if (ImGui.selectable("Code", InterfaceResourcesScriptsM.currentCodeMode == CodeMode.CODE)) {
+                                InterfaceResourcesScriptsM.currentCodeMode = CodeMode.CODE;
                             }
-                            if (ImGui.selectable("Documentary", SceneResourcesScriptsM.currentCodeMode == CodeMode.DOC)) {
-                                SceneResourcesScriptsM.currentCodeMode = CodeMode.DOC;
+                            if (ImGui.selectable("Documentary", InterfaceResourcesScriptsM.currentCodeMode == CodeMode.DOC)) {
+                                InterfaceResourcesScriptsM.currentCodeMode = CodeMode.DOC;
                             }
                             ImGui.endMenu();
                         }
@@ -176,7 +175,7 @@ public class SceneResourcesScriptsM {
                 if (!scriptingOpened.get()) {
                     this.currentSelectedScript.set(-1);
                 }
-                switch (SceneResourcesScriptsM.currentCodeMode) {
+                switch (InterfaceResourcesScriptsM.currentCodeMode) {
                     case CODE: {
                         this.getEditorInterface().getTextEditor().render("TextEditor");
                         break;
@@ -198,7 +197,7 @@ public class SceneResourcesScriptsM {
         ImGui.separator();
         ImGui.treePush();
 
-        for (JGemsScriptingDocs.ClassDesc classDesc : SceneResourcesScriptsM.scriptingDocs.getTypes()) {
+        for (JGemsScriptingDocs.ClassDesc classDesc : InterfaceResourcesScriptsM.scriptingDocs.getTypes()) {
             if (classDesc.parent() != null && !classDesc.parent().equals("Object")) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffc1);
                 ImGui.textWrapped(classDesc.parent() + " ->");
@@ -374,7 +373,7 @@ public class SceneResourcesScriptsM {
             for (APIScriptingFunction apiScriptingFunction : APIScriptsListing.getAllFunctions()) {
                 identifiers.put(apiScriptingFunction.getName(), apiScriptingFunction.getDescription());
             }
-            for (JGemsScriptingDocs.ClassDesc classDesc : SceneResourcesScriptsM.scriptingDocs.getTypes()) {
+            for (JGemsScriptingDocs.ClassDesc classDesc : InterfaceResourcesScriptsM.scriptingDocs.getTypes()) {
                 identifiers.put(classDesc.classSimpleName(), classDesc.description());
                 identifiers.put(classDesc.classVarName(), classDesc.description());
                 for (JGemsScriptingDocs.MethodDesc methodDesc : classDesc.getMethods()) {

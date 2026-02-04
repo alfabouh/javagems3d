@@ -29,7 +29,7 @@ public abstract class WBenchObject extends SceneProp {
     }
 
     public WBenchObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer) {
-        this(objectTemplate.getObjectId(), wBenchWorld, objectTemplate.getMeshGroup(), objectTemplate.getRenderAttributes(), tagsContainer == null ?objectTemplate.getTagsContainer() : tagsContainer, objectTemplate.getTranslationConstraints());
+        this(objectTemplate.getObjectId(), wBenchWorld, objectTemplate.getMeshGroup(), objectTemplate.getRenderAttributes(), tagsContainer == null ? objectTemplate.getTagsContainer() : tagsContainer, objectTemplate.getTranslationConstraints());
     }
 
     public void setPosition(Vector3f newPos) {
@@ -105,7 +105,7 @@ public abstract class WBenchObject extends SceneProp {
     }
 
     public String toString(boolean textPosition) {
-        return "[" + this.getId() + "]" + this.getObjectId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
+        return "[" + this.getId() + "] " + this.getObjectId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
     }
 
     @Override
@@ -136,7 +136,7 @@ public abstract class WBenchObject extends SceneProp {
 
         public ID(@NotNull String nameId, @Nullable String objectPath) {
             this.nameId = nameId;
-            this.objectPath = objectPath == null ? "/" : objectPath;
+            this.objectPath = objectPath == null ? "" : objectPath;
         }
 
         public String getNameId() {

@@ -10,6 +10,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public abstract class SceneProp extends SceneObject implements IWorldTicked {
     private final String name;
-    private final IModelConstructor<Void> propModelConstructor;
+    private final IModelConstructor<Void, ? extends IMesh> propModelConstructor;
     private boolean isVisible;
     private boolean isDead;
 
@@ -72,7 +73,7 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
         return this.hasModel() ? this.getModel().getPose().getPosition() : new Vector3f(0.0f);
     }
 
-    public IModelConstructor<Void> getPropModelConstructor() {
+    public IModelConstructor<Void, ? extends IMesh> getPropModelConstructor() {
         return this.propModelConstructor;
     }
 

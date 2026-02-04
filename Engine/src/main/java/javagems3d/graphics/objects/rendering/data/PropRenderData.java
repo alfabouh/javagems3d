@@ -9,6 +9,7 @@ import javagems3d.graphics.objects.rendering.constructors.IScenePropConstructor;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ public class PropRenderData {
     public static IScenePropConstructor DEFAULT_OBJECT_CONSTRUCTOR = (name, sceneWorld, propRenderData) -> new SceneWorldProp(name, sceneWorld, propRenderData);
 
     private final IScenePropConstructor sceneObjectConstructor;
-    private IModelConstructor<Void> propModelConstructor;
+    private IModelConstructor<Void, ? extends IMesh> propModelConstructor;
     private MeshStructure3D<?> meshStructure;
     private RenderAttributes renderAttributes;
 
@@ -67,7 +68,7 @@ public class PropRenderData {
         return this;
     }
 
-    public PropRenderData setPropModelConstructor(IModelConstructor<Void> propModelConstructor) {
+    public PropRenderData setPropModelConstructor(IModelConstructor<Void, ? extends IMesh> propModelConstructor) {
         if (propModelConstructor != null) {
             this.meshStructure = null;
         }
@@ -79,7 +80,7 @@ public class PropRenderData {
         return this.meshStructure;
     }
 
-    public IModelConstructor<Void> getPropModelConstructor() {
+    public IModelConstructor<Void, ? extends IMesh> getPropModelConstructor() {
         return this.propModelConstructor;
     }
 

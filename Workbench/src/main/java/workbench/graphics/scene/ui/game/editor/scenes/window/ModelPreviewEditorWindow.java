@@ -74,7 +74,7 @@ public class ModelPreviewEditorWindow {
     }
 
     private void renderPreviewModel(Matrix4f model, Matrix4f projection, Matrix4f view, WBenchShaderManager shaderManager, @NotNull ModelAssetPreview modelAsset) {
-        modelAsset.getAsset().getMeshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
+        //modelAsset.getAsset().getMeshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
         shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);

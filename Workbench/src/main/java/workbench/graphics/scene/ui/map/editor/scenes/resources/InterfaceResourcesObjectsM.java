@@ -1,12 +1,12 @@
 package workbench.graphics.scene.ui.map.editor.scenes.resources;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
-import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -14,13 +14,13 @@ import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.ui.map.editor.SelectedScene;
 import workbench.graphics.scene.ui.map.editor.utils.CreatableObjectsTreeDrawerM;
 
-public class SceneResourcesObjectsM {
+public class InterfaceResourcesObjectsM {
     private final MapEditorInterface mapEditorInterface;
     private final CreatableObjectsTreeDrawerM<WBenchObjectTemplate> props;
     private final CreatableObjectsTreeDrawerM<WBenchObjectTemplate> entities;
     private final CreatableObjectsTreeDrawerM<WBenchMarkerTemplate> markers;
 
-    public SceneResourcesObjectsM(@NotNull MapEditorInterface mapEditorInterface) {
+    public InterfaceResourcesObjectsM(@NotNull MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.props = new CreatableObjectsTreeDrawerM<>(mapEditorInterface, () -> WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), "Props");
         this.entities = new CreatableObjectsTreeDrawerM<>(mapEditorInterface, () -> WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), "Entities");
@@ -33,14 +33,14 @@ public class SceneResourcesObjectsM {
     public void render() {
         final boolean flag = this.getEditorInterface().getSelectedScene().equals(SelectedScene.MAIN);
         if (flag) {
-            if (ImGui.collapsingHeader("Generate Light")) {
+            if (ImGui.collapsingHeader("Generate Light", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.treePush();
-                if (ImGui.selectable("Point Light", false)) {
+                if (ImGui.selectable("+ Point Light", false)) {
                     ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
                     Vector3f posToSpawn = camera.getCamPosition();
                     posToSpawn.add(JGemsHelper.math().calcLookVector(camera.getCamRotation()).mul(3.0f));
 
-                    WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("plmarker", this.getEditorInterface().getOpenGLRenderer().getWorld());
+                    WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("obj", this.getEditorInterface().getOpenGLRenderer().getWorld());
                     pointLightObject.setPosition(posToSpawn);
                     this.getEditorInterface().addObjectInWorld(pointLightObject);
                 }

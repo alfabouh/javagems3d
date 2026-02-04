@@ -2,18 +2,18 @@ package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.scenes.resources.SceneResourcesObjectsM;
-import workbench.graphics.scene.ui.map.editor.scenes.resources.SceneResourcesScriptsM;
+import workbench.graphics.scene.ui.map.editor.scenes.resources.InterfaceResourcesObjectsM;
+import workbench.graphics.scene.ui.map.editor.scenes.resources.InterfaceResourcesScriptsM;
 
 public class ResourcesInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
-    private final SceneResourcesScriptsM sceneResourcesScriptsM;
-    private final SceneResourcesObjectsM sceneResourcesObjectsM;
+    private final InterfaceResourcesScriptsM interfaceResourcesScriptsM;
+    private final InterfaceResourcesObjectsM interfaceResourcesObjectsM;
 
     public ResourcesInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
-        this.sceneResourcesScriptsM = new SceneResourcesScriptsM(mapEditorInterface);
-        this.sceneResourcesObjectsM = new SceneResourcesObjectsM(mapEditorInterface);
+        this.interfaceResourcesScriptsM = new InterfaceResourcesScriptsM(mapEditorInterface);
+        this.interfaceResourcesObjectsM = new InterfaceResourcesObjectsM(mapEditorInterface);
     }
 
     public void clear() {
@@ -27,12 +27,12 @@ public class ResourcesInterfaceComponentM {
         this.getSceneResourcesScriptsM().render();
     }
 
-    public SceneResourcesObjectsM getSceneResourcesObjectsM() {
-        return this.sceneResourcesObjectsM;
+    public InterfaceResourcesObjectsM getSceneResourcesObjectsM() {
+        return this.interfaceResourcesObjectsM;
     }
 
-    public SceneResourcesScriptsM getSceneResourcesScriptsM() {
-        return this.sceneResourcesScriptsM;
+    public InterfaceResourcesScriptsM getSceneResourcesScriptsM() {
+        return this.interfaceResourcesScriptsM;
     }
 
     public MapEditorInterface getEditorInterface() {

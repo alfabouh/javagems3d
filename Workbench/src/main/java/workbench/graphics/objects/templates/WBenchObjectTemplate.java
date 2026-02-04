@@ -13,6 +13,7 @@ import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.world.WBenchWorld;
 
 public class WBenchObjectTemplate extends WBenchTemplate {
+    protected transient String modelDef;
     protected MeshGroup meshGroup;
     protected RenderAttributes renderAttributes;
     protected TagsContainer tagsContainer;
@@ -24,10 +25,20 @@ public class WBenchObjectTemplate extends WBenchTemplate {
         this.renderAttributes = renderAttributes;
         this.tagsContainer = tagsContainer;
         this.translationConstraints = translationConstraints;
+        this.modelDef = "NULL";
     }
 
-    public WBenchObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer tagsContainer) {
-        return new WBenchCommonObject(world, this, tagsContainer);
+    public WBenchObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer overridedTagsContainer) {
+        return new WBenchCommonObject(world, this, overridedTagsContainer);
+    }
+
+    public String getModelDef() {
+        return this.modelDef;
+    }
+
+    public WBenchObjectTemplate setModelDef(String modelDef) {
+        this.modelDef = modelDef;
+        return this;
     }
 
     public TranslationConstraints getTranslationConstraints() {

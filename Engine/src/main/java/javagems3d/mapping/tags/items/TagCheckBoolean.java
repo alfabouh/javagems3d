@@ -36,7 +36,7 @@ public class TagCheckBoolean extends TagItem {
     public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
         boolean value = tagCheckBoolean.isFlag();
-        if (ImGui.checkbox("##" + tagID.getDescription(), value)) {
+        if (ImGui.checkbox("Flag ##" + tagID.getId(), value)) {
             tagCheckBoolean.setFlag(!value);
         }
     }

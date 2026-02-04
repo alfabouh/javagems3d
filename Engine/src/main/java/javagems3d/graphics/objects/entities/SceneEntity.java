@@ -14,6 +14,7 @@ import javagems3d.physics.world.basic.WorldItem;
 
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
@@ -24,7 +25,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public abstract class SceneEntity extends SceneObject implements IWorldTicked {
-    private final IModelConstructor<WorldItem> entityModelConstructor;
+    private final IModelConstructor<WorldItem, ? extends IMesh> entityModelConstructor;
     private final WorldItem worldItem;
     private boolean isVisible;
     private boolean isDead;
@@ -144,7 +145,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         return this.getRenderPosition();
     }
 
-    protected IModelConstructor<WorldItem> getEntityModelConstructor() {
+    protected IModelConstructor<WorldItem, ? extends IMesh> getEntityModelConstructor() {
         return this.entityModelConstructor;
     }
 
