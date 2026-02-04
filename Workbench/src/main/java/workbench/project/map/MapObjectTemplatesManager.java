@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.objects.templates.WBenchTemplate;
+import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
+import workbench.project.managing.instances.mapping.GameResourceSkyboxAsset;
 
 public class MapObjectTemplatesManager {
     private final MapObjectTemplatesFolder<WBenchObjectTemplate> entities;
@@ -60,5 +62,62 @@ public class MapObjectTemplatesManager {
 
     public MapObjectTemplatesFolder<WBenchMarkerTemplate> getMarkers() {
         return this.markers;
+    }
+
+    public static class SkyBoxWrapperContainer {
+        private final String name;
+        private final String textureUPPath;
+        private final String textureBOTTOMPath;
+        private final String textureFRONTPath;
+        private final String textureBACKPath;
+        private final String textureLEFTPath;
+        private final String textureRIGHTPath;
+        private ICubeMapProgram cubeMapProgram;
+
+        public SkyBoxWrapperContainer(String name, String textureUPPath, String textureBOTTOMPath, String textureFRONTPath, String textureBACKPath, String textureLEFTPath, String textureRIGHTPath) {
+            this.name = name;
+            this.textureUPPath = textureUPPath;
+            this.textureBOTTOMPath = textureBOTTOMPath;
+            this.textureFRONTPath = textureFRONTPath;
+            this.textureBACKPath = textureBACKPath;
+            this.textureLEFTPath = textureLEFTPath;
+            this.textureRIGHTPath = textureRIGHTPath;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getTextureUPPath() {
+            return this.textureUPPath;
+        }
+
+        public String getTextureBOTTOMPath() {
+            return this.textureBOTTOMPath;
+        }
+
+        public String getTextureFRONTPath() {
+            return this.textureFRONTPath;
+        }
+
+        public String getTextureBACKPath() {
+            return this.textureBACKPath;
+        }
+
+        public String getTextureLEFTPath() {
+            return this.textureLEFTPath;
+        }
+
+        public String getTextureRIGHTPath() {
+            return this.textureRIGHTPath;
+        }
+
+        public ICubeMapProgram getCubeMapProgram() {
+            return this.cubeMapProgram;
+        }
+
+        public void setCubeMapProgram(ICubeMapProgram cubeMapProgram) {
+            this.cubeMapProgram = cubeMapProgram;
+        }
     }
 }

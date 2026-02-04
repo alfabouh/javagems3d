@@ -31,7 +31,7 @@ public class InterfaceEnvSkyM {
     }
 
     public void reset() {
-        this.mapEditorInterface.setNewCamera(null);
+        this.mapEditorInterface.overrideCamera(null);
         this.setCameraCheckBox(false);
     }
 
@@ -42,13 +42,13 @@ public class InterfaceEnvSkyM {
         if (ImGui.checkbox("Sun's View", this.isCameraCheckBox())) {
             if (this.isCameraCheckBox()) {
                 this.setCameraCheckBox(false);
-                this.mapEditorInterface.setNewCamera(null);
+                this.mapEditorInterface.overrideCamera(null);
             } else {
                 this.setCameraCheckBox(true);
                 Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
                 this.sunCamera.setCameraPosition(camData.getFirst());
                 this.sunCamera.setLookAt(camData.getSecond());
-                this.mapEditorInterface.setNewCamera(this.sunCamera);
+                this.mapEditorInterface.overrideCamera(this.sunCamera);
             }
         }
 

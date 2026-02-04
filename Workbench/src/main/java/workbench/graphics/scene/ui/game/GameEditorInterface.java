@@ -15,7 +15,6 @@ import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
-import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.project.map.WBenchMapProjectManager;
 
 public class GameEditorInterface implements DearUIInterface {
@@ -126,7 +125,7 @@ public class GameEditorInterface implements DearUIInterface {
         ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
         ImGui.setWindowPos(sceneWindowOffset, windowSize.y - consoleWindowSizeY);
-        MapEditorInterface.consoleContent();
+        ProjectUIUtils.consoleContent();
         ImGui.end();
 
         ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);

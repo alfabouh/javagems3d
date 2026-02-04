@@ -29,8 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SceneInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
-    private AtomicBoolean isThreadInProcess;
-    //private boolean wasWindowFocused;
+    private final AtomicBoolean isThreadInProcess;
 
     public SceneInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -40,7 +39,6 @@ public class SceneInterfaceComponentM {
 
     public void clear() {
         this.isThreadInProcess.set(false);
-        //this.wasWindowFocused = false;
     }
 
     public void sceneContent() {
@@ -110,15 +108,7 @@ public class SceneInterfaceComponentM {
             }
         }
 
-        if (ImGui.isWindowFocused()) {
-            if (ImGui.isMouseReleased(0)) {
-                //this.wasWindowFocused = false;
-            }
-            WBench.get().getScreen().getWindow().setFocus(true);
-        } else {
-            //this.wasWindowFocused = true;
-            WBench.get().getScreen().getWindow().setFocus(false);
-        }
+        WBench.get().getScreen().getWindow().setFocus(ImGui.isWindowFocused());
     }
 
     private WBenchObject tryToSelectObjectFromMouse(Vector2i sceneWindowPos, Vector2i sceneWindowSize, Vector2i mouseCoordinates) {

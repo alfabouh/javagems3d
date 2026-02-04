@@ -166,7 +166,7 @@ public class ItemsInterfaceComponentM {
         if (wBenchObject.equals(this.getEditorInterface().getCurrentSelectedObject())) {
             this.getEditorInterface().setCurrentSelectedObject(null);
         }
-        this.getEditorInterface().removeObjectFromWorld(wBenchObject);
+        wBenchObject.setDead();
     }
 
     private void cloneSelected(WBenchObject wBenchObject) {
