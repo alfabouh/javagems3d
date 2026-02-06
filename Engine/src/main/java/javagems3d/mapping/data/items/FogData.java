@@ -3,7 +3,7 @@ package javagems3d.mapping.data.items;
 import com.google.gson.*;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
+import javagems3d.system.service.files.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;

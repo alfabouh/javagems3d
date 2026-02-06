@@ -1,16 +1,20 @@
 package workbench.graphics.scene.ui.map.editor.scenes.resources.environment;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiSelectableFlags;
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
+import workbench.graphics.scene.ui.map.editor.SelectedScene;
+import workbench.project.map.MapObjectTemplatesManager;
 
 import java.util.Map;
 import java.util.Set;
@@ -70,19 +74,37 @@ public class InterfaceEnvSkyM {
             this.sunCamera.setLookAt(camData.getSecond());
         }
 
+        ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffa7);
+        final ISkyBackground background = this.mapEditorInterface.getWorld().getEnvironment().getSkyBox().getBackground();
+        final String[] scales = {"2.0", "4.0", "8.0", "16.0"};
+        ImGui.setNextItemWidth(60);
+        if (ImGui.beginCombo("SkyWorld Scale", String.valueOf(background.getViewScaling()))) {
+            for (String scale : scales) {
+                float selectedScaling = Float.parseFloat(scale);
+                if (ImGui.selectable(scale, background.getViewScaling() == selectedScaling)) {
+                    background.setViewScaling(selectedScaling);
+                }
+            }
+            ImGui.endCombo();
+        }
+        ImGui.popStyleColor();
+
         ImGui.separator();
         ImGui.text("Sky Texture");
-        Set<Map.Entry<String, ICubeMapProgram>> skyBoxes = WBench.get().getMapProjectManager().getMapObjectTemplates().getSkyBoxes().entrySet();
+        Set<Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate>> skyBoxes = WBench.get().getMapProjectManager().getMapObjectTemplates().getSkyBoxes().entrySet();
         if (!skyBoxes.isEmpty()) {
             SkyBox skyBox = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
             ICubeMapProgram currentSky = skyBox.getTexture();
             ImGui.treePush();
-            for (Map.Entry<String, ICubeMapProgram> cubeMapProgramPair : skyBoxes) {
-                boolean flag = currentSky == cubeMapProgramPair.getValue();
+            for (Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate> cubeMapProgramPair : skyBoxes) {
+                boolean flag = currentSky == cubeMapProgramPair.getValue().getCubeMapProgram();
                 ImGui.pushID(cubeMapProgramPair.getKey());
+                if (ImGui.selectable("None", currentSky == null, ImGuiSelectableFlags.AllowItemOverlap)) {
+                    skyBox.setSky2DTexture(null);
+                }
                 if (ImGui.selectable(cubeMapProgramPair.getKey(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
                     if (!flag) {
-                        skyBox.setSky2DTexture(cubeMapProgramPair.getValue());
+                        skyBox.setSky2DTexture(cubeMapProgramPair.getValue().getCubeMapProgram());
                     } else {
                         skyBox.setSky2DTexture(null);
                     }

@@ -1,28 +1,25 @@
 package workbench.project.map;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.help.JGemsUtils;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
-import workbench.graphics.objects.templates.WBenchTemplate;
-import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
-import workbench.project.managing.instances.mapping.GameResourceSkyboxAsset;
+import java.util.*;
 
 public class MapObjectTemplatesManager {
     private final MapObjectTemplatesFolder<WBenchObjectTemplate> entities;
     private final MapObjectTemplatesFolder<WBenchObjectTemplate> props;
     private final MapObjectTemplatesFolder<WBenchMarkerTemplate> markers;
-    private final BiMap<String, ICubeMapProgram> skyBoxes;
+    private final Map<String, SkyBoxTemplate> skyBoxes;
+    private final Map<ICubeMapProgram, SkyBoxTemplate> skyBoxesCache;
 
     public MapObjectTemplatesManager() {
         this.entities = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
         this.props = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
         this.markers = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
-        this.skyBoxes = HashBiMap.create();
+        this.skyBoxes = new LinkedHashMap<>();
+        this.skyBoxesCache = new HashMap<>();
     }
 
     public void putPropWithRawPath(@NotNull String path, @NotNull WBenchObjectTemplate wBenchObjectTemplate) {
@@ -37,8 +34,9 @@ public class MapObjectTemplatesManager {
         this.getMarkers().putObjectInside(path, wBenchObjectTemplate, MapObjectTemplatesFolder::new);
     }
 
-    public void addSkyBox(String name, ICubeMapProgram cubeMapProgram) {
+    public void addSkyBox(String name, SkyBoxTemplate cubeMapProgram) {
         this.getSkyBoxes().put(name, cubeMapProgram);
+        this.getSkyBoxesCache().put(cubeMapProgram.getCubeMapProgram(), cubeMapProgram);
     }
 
     public void clear() {
@@ -46,9 +44,14 @@ public class MapObjectTemplatesManager {
         this.getProps().reset();
         this.getMarkers().reset();
         this.getSkyBoxes().clear();
+        this.getSkyBoxesCache().clear();
     }
 
-    public BiMap<String, ICubeMapProgram> getSkyBoxes() {
+    public Map<ICubeMapProgram, SkyBoxTemplate> getSkyBoxesCache() {
+        return this.skyBoxesCache;
+    }
+
+    public Map<String, SkyBoxTemplate> getSkyBoxes() {
         return this.skyBoxes;
     }
 
@@ -64,60 +67,31 @@ public class MapObjectTemplatesManager {
         return this.markers;
     }
 
-    public static class SkyBoxWrapperContainer {
-        private final String name;
-        private final String textureUPPath;
-        private final String textureBOTTOMPath;
-        private final String textureFRONTPath;
-        private final String textureBACKPath;
-        private final String textureLEFTPath;
-        private final String textureRIGHTPath;
+    public static class SkyBoxTemplate {
+        private final String nameId;
+        private final ICubeMapProgram.CMTextures cmTextures;
         private ICubeMapProgram cubeMapProgram;
 
-        public SkyBoxWrapperContainer(String name, String textureUPPath, String textureBOTTOMPath, String textureFRONTPath, String textureBACKPath, String textureLEFTPath, String textureRIGHTPath) {
-            this.name = name;
-            this.textureUPPath = textureUPPath;
-            this.textureBOTTOMPath = textureBOTTOMPath;
-            this.textureFRONTPath = textureFRONTPath;
-            this.textureBACKPath = textureBACKPath;
-            this.textureLEFTPath = textureLEFTPath;
-            this.textureRIGHTPath = textureRIGHTPath;
+        public SkyBoxTemplate(String nameId, ICubeMapProgram.CMTextures cmTextures) {
+            this.nameId = nameId;
+            this.cmTextures = cmTextures;
         }
 
-        public String getName() {
-            return this.name;
+        public String getNameId() {
+            return this.nameId;
         }
 
-        public String getTextureUPPath() {
-            return this.textureUPPath;
-        }
-
-        public String getTextureBOTTOMPath() {
-            return this.textureBOTTOMPath;
-        }
-
-        public String getTextureFRONTPath() {
-            return this.textureFRONTPath;
-        }
-
-        public String getTextureBACKPath() {
-            return this.textureBACKPath;
-        }
-
-        public String getTextureLEFTPath() {
-            return this.textureLEFTPath;
-        }
-
-        public String getTextureRIGHTPath() {
-            return this.textureRIGHTPath;
+        public ICubeMapProgram.CMTextures getCmTextures() {
+            return this.cmTextures;
         }
 
         public ICubeMapProgram getCubeMapProgram() {
             return this.cubeMapProgram;
         }
 
-        public void setCubeMapProgram(ICubeMapProgram cubeMapProgram) {
+        public SkyBoxTemplate setCubeMapProgram(ICubeMapProgram cubeMapProgram) {
             this.cubeMapProgram = cubeMapProgram;
+            return this;
         }
     }
 }

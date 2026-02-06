@@ -8,7 +8,9 @@ import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesConta
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrary;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -20,26 +22,24 @@ public class ShaderObject {
     public static final String VERSION = "#version 460 core\n\n";
     private final Map<String, Set<String>> structs;
     private final List<Uniform> uniforms;
-    private final JGemsPath pathToShader;
+    private final JGemsPathSource pathToShader;
     private final ShaderType shaderType;
     private final ShaderLibrariesManager shaderLibrariesManager;
     private final ShaderStaticConstants shaderStaticConstants;
     private String shaderText;
-    protected final JGems3D.GetSource getSource;
 
-    public ShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
+    public ShaderObject(@NotNull JGemsPathSource pathToShader, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
         this.structs = new HashMap<>();
         this.shaderLibrariesManager = shaderLibrariesManager;
         this.shaderStaticConstants = shaderStaticConstants;
-        this.getSource = source;
         this.shaderText = "";
     }
 
-    public static boolean checkIfShaderExistsFile(@NotNull JGems3D.GetSource source, JGemsPath directoryPath, ShaderType shaderType) {
-        return JGems3D.checkIfFileExists(source, new JGemsPath(directoryPath, shaderType.getFile()));
+    public static boolean checkIfShaderExistsFile(@NotNull JGemsPathSource directoryPath, ShaderType shaderType) {
+        return JGems3D.checkIfFileExists(new JGemsPathSource(new JGemsPath(directoryPath.getPath(), shaderType.getFile()), directoryPath.getSource()));
     }
 
     public Map<String, Set<String>> getStructs() {
@@ -145,8 +145,8 @@ public class ShaderObject {
     }
 
 
-    private String readShaderText(JGemsPath shaderPath) {
-        return JGemsHelper.files().readTextFromFile(this.getSource, new JGemsPath(shaderPath, this.getShaderType().getFile()));
+    private String readShaderText(JGemsPathSource shaderPath) {
+        return JGemsHelper.files().readTextFromFile(new JGemsPathSource(new JGemsPath(shaderPath.getPath(), this.getShaderType().getFile()), shaderPath.getSource()));
     }
 
     private String processIncludes(String shaderCode) {
@@ -165,7 +165,7 @@ public class ShaderObject {
             if (this.shaderLibrariesManager == null) {
                 throw new JGemsNullException(this + " > Couldn't get global shader library data");
             }
-            ShaderLibrariesContainer shaderLibrariesContainer = this.shaderLibrariesManager.getShaderLibrariesContainer(new JGemsPath(includePath).getFullPath());
+            ShaderLibrariesContainer shaderLibrariesContainer = this.shaderLibrariesManager.getShaderLibrariesContainer(new JGemsStringSource(includePath, this.getShaderPath().getSource()));
             if (shaderLibrariesContainer == null) {
                 throw new JGemsNullException(this + " > Couldn't find shader libraries container with key: " + includePath);
             }
@@ -220,7 +220,7 @@ public class ShaderObject {
         return this.shaderText;
     }
 
-    public JGemsPath getShaderPath() {
+    public JGemsPathSource getShaderPath() {
         return this.pathToShader;
     }
 

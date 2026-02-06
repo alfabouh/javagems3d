@@ -2,6 +2,9 @@ package javagems3d.graphics.screen.window;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
 import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -51,7 +54,7 @@ public class Window implements IWindow {
             return;
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            try (InputStream inputStream = JGems3D.getInputStream(JGems3D.GetSource.JAR, iconPath)) {
+            try (InputStream inputStream = JGems3D.getInputStream(new JGemsPathSource(iconPath, ISource.Source.INSIDE_JAR))) {
                 IntBuffer width = stack.mallocInt(1);
                 IntBuffer height = stack.mallocInt(1);
                 IntBuffer channels = stack.mallocInt(1);

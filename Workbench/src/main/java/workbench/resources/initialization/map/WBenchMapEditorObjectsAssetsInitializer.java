@@ -11,16 +11,17 @@ import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
-import javagems3d.JGems3D;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
@@ -28,8 +29,7 @@ import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.objects.templates.WBenchTemplate;
-import workbench.project.managing.instances.IAsset;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 import workbench.project.managing.instances.misc.GameResourceModelAsset;
 import workbench.project.managing.instances.world.GameResourceEntityObjectAsset;
@@ -38,10 +38,7 @@ import workbench.project.managing.instances.world.GameResourceWorldObjectAsset;
 import workbench.project.map.MapObjectTemplatesFolder;
 import workbench.resources.WBenchResourceManager;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializer {
     private WBenchObjectTemplate createMapObjectTemplateFromGameSource(String prefix, String path, GameResourceWorldObjectAsset gameResourceWorldObjectAsset) {
@@ -57,7 +54,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp) {
         final WBenchObjectData wBenchObjectData = apiResourceProp.getFabricWBench().create();
         final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.getName(), path);
-        final MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.JAR, wBenchObjectData.getPathToModel(), true);
+        final MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(new JGemsPathSource(wBenchObjectData.getPathToModel(), ISource.Source.INSIDE_JAR), true);
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchObjectData.getTranslationConstraints();
@@ -71,7 +68,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, wBenchMarkerData.getPathToModel(), false);
+            meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(new JGemsPathSource(wBenchMarkerData.getPathToModel(), ISource.Source.OUTSIDE_JAR), false);
         }
         final TagsContainer tagsContainer = wBenchMarkerData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchMarkerData.getTranslationConstraints();

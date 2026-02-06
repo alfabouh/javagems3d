@@ -7,8 +7,9 @@ import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.exceptions.JGemsNotFoundException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,6 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -25,12 +25,10 @@ import java.nio.IntBuffer;
 public class TexturesLoader implements ILoadingHelper {
     private String hashId;
     private final SystemResources systemResources;
-    private final JGems3D.GetSource getSource;
 
-    public TexturesLoader(@NotNull JGems3D.GetSource source, @Nullable SystemResources systemResources, @Nullable String hashId) {
+    public TexturesLoader(@Nullable SystemResources systemResources, @Nullable String hashId) {
         this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.systemResources = systemResources;
-        this.getSource = source;
     }
 
     private ImageTexture checkCache(@NotNull String name) {
@@ -65,13 +63,13 @@ public class TexturesLoader implements ILoadingHelper {
         return imageTexture;
     }
 
-    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
+    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPathSource pathToTexture) {
         this.hashId = pathToTexture.toString();
         final ImageTexture fromCache = this.checkCache(this.hashId);
         if (fromCache != null) {
             return fromCache;
         }
-        try (InputStream inputStream = JGems3D.getInputStream(this.getSource, pathToTexture)) {
+        try (InputStream inputStream = JGems3D.getInputStream(pathToTexture)) {
             return this.createImageTexture(textureProperties, inputStream);
         } catch (Exception e) {
             throw new JGemsIOException(e);

@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.json.JSONFileManaging;
+import javagems3d.system.service.files.json.JSONFileManaging;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 

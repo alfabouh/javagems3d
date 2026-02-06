@@ -3,7 +3,10 @@ package javagems3d.system.resources.localisation;
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,24 +33,24 @@ public class JGemsLocalisation {
         this.currentlang = null;
     }
 
-    public static Lang createLocalisation(@NotNull JGems3D.GetSource source, String langName, JGemsPath path) {
+    public static Lang createLocalisation(@NotNull JGemsPathSource path, String langName) {
         if (Lang.checkLangInSet(langName)) {
             Lang l = Lang.getLangByName(langName);
-            JGemsLocalisation.setLangLocalisationPath(source, l, path);
+            JGemsLocalisation.setLangLocalisationPath(path, l);
             return l;
         } else {
-            return Lang.createLang(langName, path);
+            return Lang.createLang(langName, path.getPath());
         }
     }
 
-    public static void setLangLocalisationPath(@NotNull JGems3D.GetSource source, Lang lang, JGemsPath path) {
-        lang.setFileDirectoryPath(path);
+    public static void setLangLocalisationPath(@NotNull JGemsPathSource path, Lang lang) {
+        lang.setFileDirectoryPath(path.getPath());
         if (JGemsHelper.localisation().getLocalisation().getCurrentlang() != null && JGemsHelper.localisation().getLocalisation().getCurrentlang().equals(lang)) {
-            JGemsHelper.localisation().getLocalisation().setLanguage(source, lang);
+            JGemsHelper.localisation().getLocalisation().setLanguage(path.getSource(), lang);
         }
     }
 
-    public void setLanguage(@NotNull JGems3D.GetSource source, Lang lang) {
+    public void setLanguage(@NotNull ISource.Source source, Lang lang) {
         if (lang == null) {
             Log.get().warn("Tried to set NULL language");
             lang = Lang.DefaultEnglish;
@@ -57,18 +60,18 @@ public class JGemsLocalisation {
         this.currentlang = lang;
     }
 
-    private void readLangFileInTable(@NotNull JGems3D.GetSource source, Lang lang) {
+    private void readLangFileInTable(@NotNull ISource.Source source, Lang lang) {
         LangMap langMap = new LangMap();
         try {
-            this.readStream(source, langMap, new JGemsPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
+            this.readStream(new JGemsPathSource(new JGemsPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")), source), langMap);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
         this.currentLangTable = langMap;
     }
 
-    private void readStream(@NotNull JGems3D.GetSource source, LangMap langMap, JGemsPath filePath) throws IOException {
-        try (InputStream inputStream = JGems3D.getInputStream(source, filePath)) {
+    private void readStream(@NotNull JGemsPathSource path, LangMap langMap) throws IOException {
+        try (InputStream inputStream = JGems3D.getInputStream(path)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;
@@ -82,7 +85,7 @@ public class JGemsLocalisation {
                 if (strings.length == 2) {
                     langMap.addPair(strings[0], strings[1]);
                 } else {
-                    Log.get().warn("Error in lang path " + filePath + " on line: " + l);
+                    Log.get().warn("Error in lang files " + path + " on line: " + l);
                 }
             }
             reader.close();

@@ -1,39 +1,39 @@
 package javagems3d.system.resources.assets.initialization.base;
 
-import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
     private final ShaderStaticConstants shaderStaticConstants;
-    private final JGems3D.GetSource getSource;
 
-    public ShadersInitializer(@NotNull JGems3D.GetSource source) {
-        this.getSource = source;
-        this.shaderLibrary = new ShaderLibrariesManager(source);
+    public ShadersInitializer() {
+        this.shaderLibrary = new ShaderLibrariesManager();
         this.shaderStaticConstants = new ShaderStaticConstants();
     }
 
     protected abstract void initObjects(ResourceCache resourceCache);
-    protected abstract T createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath);
+    protected abstract T createShaderObject(@NotNull JGemsPathSource shaderPath, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary);
     protected abstract void initStaticConstants(ShaderStaticConstants shaderStaticConstants);
     protected abstract void initShaderLibraries(ShaderLibrariesManager shaderLibrary);
 
     @SuppressWarnings("unchecked")
-    public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
+    public T createShaderManager(ResourceCache resourceCache, JGemsPathSource shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
             Log.get().warn("Shader " + shaderPath + " already exists");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         Log.get().info("Creating shader " + shaderPath + "...");
-        T shaderManager = this.createShaderObject(this.getSource, this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath);
+        T shaderManager = this.createShaderObject(shaderPath, this.getShaderStaticConstants(), this.getShaderLibrariesManager());
         resourceCache.registerInCache(shaderPath, shaderManager);
         return shaderManager;
     }

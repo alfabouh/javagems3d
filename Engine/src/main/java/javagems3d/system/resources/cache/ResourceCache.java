@@ -1,6 +1,8 @@
 package javagems3d.system.resources.cache;
 
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,6 +62,10 @@ public class ResourceCache {
         return this.cache;
     }
 
+    public void registerInCache(JGemsPathSource key, ICached object) {
+        this.registerInCache(key.getPath(), object);
+    }
+
     public void registerInCache(JGemsPath key, ICached object) {
         this.registerInCache(key.getFullPath(), object);
     }
@@ -81,6 +87,10 @@ public class ResourceCache {
         return this.cache.values().stream().filter(tClass::isInstance).map(e -> (T) e).collect(Collectors.toList());
     }
 
+    public ICached getCachedObject(JGemsPathSource key) {
+        return this.getCachedObject(key.getPath());
+    }
+
     public ICached getCachedObject(JGemsPath key) {
         return this.getCachedObject(key.getFullPath());
     }
@@ -97,6 +107,10 @@ public class ResourceCache {
     @SuppressWarnings("all")
     public <T extends ICached> T getCachedObjectUnSafeCast(String key) {
         return (T) this.getCachedObject(key);
+    }
+
+    public boolean checkObjectInCache(JGemsPathSource key) {
+        return this.checkObjectInCache(key.getPath());
     }
 
     public boolean checkObjectInCache(JGemsPath key) {

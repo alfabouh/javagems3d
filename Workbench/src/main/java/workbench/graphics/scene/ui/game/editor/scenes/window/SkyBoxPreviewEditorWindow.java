@@ -44,7 +44,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f(-1.0f, 1.0f, 1.0f)
                 , new Vector3f(1.0f, 1.0f, 1.0f)
                 , new Vector3f(1.0f, 1.0f, -1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureUPRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureUPPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureUPPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintUP
         );
         this.renderSkyFace(projection, view
@@ -52,7 +52,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f(-1.0f, -1.0f, 1.0f)
                 , new Vector3f(-1.0f, 1.0f, 1.0f)
                 , new Vector3f(-1.0f, 1.0f, -1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureLEFTRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureLEFTPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureLEFTPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintLEFT
         );
         this.renderSkyFace(projection, view
@@ -60,7 +60,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f(1.0f, -1.0f, -1.0f)
                 , new Vector3f(1.0f, 1.0f, -1.0f)
                 , new Vector3f(1.0f, 1.0f, 1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureRIGHTRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureRIGHTPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureRIGHTPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintRIGHT
         );
         this.renderSkyFace(projection, view
@@ -68,7 +68,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f( 1.0f, -1.0f,  1.0f)
                 , new Vector3f( 1.0f,  1.0f,  1.0f)
                 , new Vector3f(-1.0f,  1.0f,  1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureFRONTRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureFRONTPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureFRONTPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintFRONT
         );
         this.renderSkyFace(projection, view
@@ -76,7 +76,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f(-1.0f, -1.0f, -1.0f)
                 , new Vector3f(-1.0f,  1.0f, -1.0f)
                 , new Vector3f( 1.0f,  1.0f, -1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureBACKRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureBACKPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureBACKPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintBACK
         );
         this.renderSkyFace(projection, view
@@ -84,7 +84,7 @@ public class SkyBoxPreviewEditorWindow {
                 , new Vector3f(1.0f, -1.0f, 1.0f)
                 , new Vector3f(-1.0f, -1.0f, 1.0f)
                 , new Vector3f(-1.0f, -1.0f, -1.0f)
-                , skyBoxAssetPreview.getAsset().getTextureBOTTOMRelativePath(),
+                , skyBoxAssetPreview.getAsset().getCmTextures().getTextureBOTTOMPath() == null ? null : skyBoxAssetPreview.getAsset().getCmTextures().getTextureBOTTOMPath().toString(),
                 WBenchGameEditorTextureAssetsInitializer.hintBOTTOM
         );
         OpenGLRenderer.setViewPort(this.openGLRenderer.getRenderingResolution());

@@ -28,7 +28,7 @@ out flat uint ent_id;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
-#include "assets/jgems/shaders/libs/animations"
+#include "/assets/jgems/shaders/libs/animations"
 
 void main()
 {

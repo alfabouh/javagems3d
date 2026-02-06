@@ -1,6 +1,5 @@
 package api.application.workbench.manager;
 
-import api.application.workbench.resources.APIResource;
 import api.application.workbench.resources.ApiResourceEntity;
 import api.application.workbench.resources.ApiResourceMarker;
 import api.application.workbench.resources.ApiResourceProp;
@@ -9,10 +8,10 @@ import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
-import javagems3d.help.JGemsUtils;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +22,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     private final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> entityApiResourceObjectsFolder;
     private final ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> propApiResourceObjectsFolder;
     private final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> markerApiResourceObjectsFolder;
-    private final Map<String, Pair<String, JGemsPath>> skyBoxesMap;
+    private final Map<String, ICubeMapProgram.CMTextures> skyBoxesMap;
 
     public APIWBenchDataManager() {
         this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
@@ -48,11 +47,11 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     }
 
     @Override
-    public void addResourceSkyCubeMap(@NotNull String name, @NotNull String extension, @NotNull JGemsPath pathToCubeMapDirectory) {
-        this.getSkyBoxesMap().put(name, new Pair<>(extension, pathToCubeMapDirectory));
+    public void addResourceSkyCubeMap(@NotNull String name, @NotNull ICubeMapProgram.CMTextures textures) {
+        this.getSkyBoxesMap().put(name, textures);
     }
 
-    public Map<String, Pair<String, JGemsPath>> getSkyBoxesMap() {
+    public Map<String, ICubeMapProgram.CMTextures> getSkyBoxesMap() {
         return this.skyBoxesMap;
     }
 

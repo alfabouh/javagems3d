@@ -3,8 +3,8 @@ package workbench.settings;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.json.JSONFileManaging;
+import javagems3d.system.service.files.JGemsPath;
 
 import java.io.File;
 import java.io.IOException;

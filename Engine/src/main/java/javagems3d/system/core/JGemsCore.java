@@ -11,6 +11,8 @@ import javagems3d.mapping.processing.callbacks.IMapActionCallback;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -153,7 +155,7 @@ public final class JGemsCore implements ICore {
         this.systemThread = new Thread(() -> {
             try {
                 JGemsAPI.APIAppData().preInit(this);
-                JGems3D.get().getLocalisation().setLanguage(JGems3D.GetSource.JAR, JGems3D.get().getGameSettings().language.getCurrentLanguage());
+                JGems3D.get().getLocalisation().setLanguage(ISource.Source.INSIDE_JAR, JGems3D.get().getGameSettings().language.getCurrentLanguage());
                 this.getResourceManager().initGlobalResources();
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();

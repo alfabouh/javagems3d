@@ -2,7 +2,6 @@ package javagems3d.system.resources.managing;
 
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -12,6 +11,7 @@ import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.files.source.JGemsStringSource;
 
 import java.util.function.Function;
 
@@ -24,7 +24,7 @@ public final class JGemsResourceManager extends ResourceManager {
 
     public JGemsResourceManager() {
         super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1));
-        JGemsResourceManager.globalShaderAssets = new GlobalShadersInitializer(JGems3D.GetSource.JAR);
+        JGemsResourceManager.globalShaderAssets = new GlobalShadersInitializer();
     }
 
     public static void createShaders() {

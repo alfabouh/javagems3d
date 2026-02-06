@@ -1,7 +1,7 @@
 package javagems3d.system.resources.localisation;
 
 import javagems3d.JGems3D;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 
 import java.util.ArrayList;

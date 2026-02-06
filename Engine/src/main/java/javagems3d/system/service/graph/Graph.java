@@ -3,11 +3,13 @@ package javagems3d.system.service.graph;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.system.service.json.JSONGraphDeserializer;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.json.JSONGraphDeserializer;
+import javagems3d.system.service.files.JGemsPath;
 import logger.managers.LoggingManager;
 
 import java.io.*;
@@ -37,9 +39,9 @@ public class Graph implements Serializable {
         }
     }
 
-    public static Graph readFromFile(JGemsPath path) {
+    public static Graph readFromFile(JGemsPathSource path) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Reading NavMesh...");
-        try (InputStream inputStream = JGems3D.getInputStream(JGems3D.GetSource.JAR, path)) {
+        try (InputStream inputStream = JGems3D.getInputStream(path)) {
             try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(Graph.class, new JSONGraphDeserializer());

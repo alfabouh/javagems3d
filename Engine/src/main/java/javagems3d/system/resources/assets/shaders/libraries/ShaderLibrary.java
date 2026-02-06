@@ -3,7 +3,9 @@ package javagems3d.system.resources.assets.shaders.libraries;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.base.ShaderType;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -16,14 +18,14 @@ public class ShaderLibrary {
     private final String libraryText;
     private final ShaderType shaderType;
 
-    public ShaderLibrary(@NotNull JGems3D.GetSource source, ShaderType shaderType, JGemsPath pathToLibrary) {
+    public ShaderLibrary(@NotNull JGemsPathSource pathToLibrary, ShaderType shaderType) {
         this.shaderType = shaderType;
-        this.libraryText = this.readLibrary(source, pathToLibrary);
+        this.libraryText = this.readLibrary(pathToLibrary);
     }
 
-    private String readLibrary(@NotNull JGems3D.GetSource source, JGemsPath pathToLibrary) {
+    private String readLibrary(@NotNull JGemsPathSource pathToLibrary) {
         StringBuilder stringBuilder = new StringBuilder();
-        try (InputStream inputStream = JGems3D.getInputStream(source, new JGemsPath(pathToLibrary, ShaderLibrary.interpretLibStr(this.getShaderType())))) {
+        try (InputStream inputStream = JGems3D.getInputStream(new JGemsPathSource(new JGemsPath(pathToLibrary.getPath(), ShaderLibrary.interpretLibStr(this.getShaderType())), pathToLibrary.getSource()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -35,8 +37,8 @@ public class ShaderLibrary {
         return stringBuilder.toString();
     }
 
-    public static boolean checkIfShaderExistsInJar(@NotNull JGems3D.GetSource source, JGemsPath directoryPath, ShaderType shaderType) {
-        return JGems3D.checkIfFileExists(source, new JGemsPath(directoryPath, ShaderLibrary.interpretLibStr(shaderType)));
+    public static boolean checkIfShaderExistsInJar(@NotNull JGemsPathSource directoryPath, ShaderType shaderType) {
+        return JGems3D.checkIfFileExists(new JGemsPathSource(new JGemsPath(directoryPath.getPath(), ShaderLibrary.interpretLibStr(shaderType)), directoryPath.getSource()));
     }
 
     public static String interpretLibStr(ShaderType s) {

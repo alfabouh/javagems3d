@@ -1,12 +1,11 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.files.source.JGemsStringSource;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -72,9 +71,9 @@ public class GuiFont {
             throw new JGemsIOException(e);
         }
         if (systemResources != null) {
-            this.texture = systemResources.createTexture(JGems3D.GetSource.JAR, null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
+            this.texture = systemResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
         } else {
-            this.texture = new TexturesLoader(JGems3D.GetSource.JAR, null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
+            this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
         }
         inputStream.close();
     }

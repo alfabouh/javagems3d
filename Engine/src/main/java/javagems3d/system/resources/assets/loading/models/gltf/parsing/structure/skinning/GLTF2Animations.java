@@ -79,7 +79,7 @@ public final class GLTF2Animations {
                         return WEIGHTS;
                     }
                     default: {
-                        throw new JGemsIOException("Couldn't find path: " + path);
+                        throw new JGemsIOException("Couldn't find files: " + path);
                     }
                 }
             }

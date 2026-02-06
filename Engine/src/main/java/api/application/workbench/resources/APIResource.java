@@ -1,6 +1,6 @@
 package api.application.workbench.resources;
 
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class APIResource<T, E> implements AbstractObjectsFolder.ObjectWithName {

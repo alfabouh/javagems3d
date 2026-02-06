@@ -72,7 +72,7 @@ public abstract class LoggingManager {
             try {
                 Desktop.getDesktop().open(new File(fileAppender.getFileName()));
             } catch (IOException ex) {
-                SystemLogging.get().getLogManager().error("Failed to open logs path", ex);
+                SystemLogging.get().getLogManager().error("Failed to open logs files", ex);
             }
         });
 

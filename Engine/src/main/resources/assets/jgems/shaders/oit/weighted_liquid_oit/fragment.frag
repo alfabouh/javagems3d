@@ -45,8 +45,8 @@ uniform uvec2 metallic_roughness_map;
 uniform int texturing_code;
 uniform vec2 texture_scaling;
 
-#include "assets/jgems/shaders/libs/shadows"
-#include "assets/jgems/shaders/libs/lighting"
+#include "/assets/jgems/shaders/libs/shadows"
+#include "/assets/jgems/shaders/libs/lighting"
 
 vec2 getScaledTexture() {
     const float speed = 5.;

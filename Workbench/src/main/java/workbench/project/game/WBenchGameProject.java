@@ -1,11 +1,8 @@
 package workbench.project.game;
 
 import javagems3d.JGems3D;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class WBenchGameProject extends GameProjectData {
     private transient JGemsPath currentProjectPath;

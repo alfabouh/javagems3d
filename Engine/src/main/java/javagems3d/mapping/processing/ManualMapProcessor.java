@@ -6,12 +6,7 @@ import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
-import javagems3d.graphics.objects.entities.world.SceneWorldProp;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
-import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
-import javagems3d.graphics.objects.rendering.data.PropRenderData;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
@@ -22,12 +17,13 @@ import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
-import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -51,7 +47,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false);
+            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), ISource.Source.INSIDE_JAR), false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
             JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));

@@ -22,8 +22,8 @@ import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import javagems3d.system.service.json.JSONFileManaging;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.json.JSONFileManaging;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,6 @@ import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
-import workbench.resources.initialization.game.WBenchGameEditorModelAssetsInitializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +72,7 @@ public final class WBenchMapProjectManager {
         try {
             WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name);
             wBenchMapProject.setCurrentProjectPath(path);
-            //this.setCurrentProject(path, wBenchMapProject);
+            //this.setCurrentProject(files, wBenchMapProject);
             this.createMapSystemFiles(absPath, name);
             this.saveMapProjectFile(wBenchMapProject);
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
@@ -161,8 +160,8 @@ public final class WBenchMapProjectManager {
             final ObjectsData objectsData = mapObjectsDataPack.getObjectsData();
             final ShadowsData shadowsData = mapObjectsDataPack.getShadowsData();
 
-            if (skyData != null) {
-                ICubeMapProgram cubeMapProgram = this.getMapObjectTemplates().getSkyBoxes().get(skyData.skyboxPath);
+            if (skyData != null && this.getMapObjectTemplates().getSkyBoxes().get(skyData.getNameId()) != null) {
+                ICubeMapProgram cubeMapProgram = this.getMapObjectTemplates().getSkyBoxes().get(skyData.getNameId()).getCubeMapProgram();
                 world.getEnvironment().getSkyBox().setSky2DTexture(cubeMapProgram);
                 world.getEnvironment().getSkyBox().getBackground().setViewScaling(skyData.backGroundScaling);
                 Log.get().debug("Read SkyData");
@@ -306,9 +305,11 @@ public final class WBenchMapProjectManager {
         final Set<RowMapObjectData> pointLights = new HashSet<>();
         final SkyBox skyBox = world.getEnvironment().getSkyBox();
 
+        final MapObjectTemplatesManager.SkyBoxTemplate skyBoxTemplate = this.getMapObjectTemplates().getSkyBoxesCache().get(skyBox.getTexture());
+
         final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
-        final SkyData skyData = new SkyData(this.getMapObjectTemplates().getSkyBoxes().inverse().get(skyBox.getTexture()), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
+        final SkyData skyData = new SkyData(skyBoxTemplate.getNameId(), skyBoxTemplate.getCmTextures(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
         final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -399,7 +400,7 @@ public final class WBenchMapProjectManager {
         try {
             File projectFolder = new File(path.getFullPath());
             if (!projectFolder.exists() || !projectFolder.isDirectory()) {
-                throw new JGemsIOException("Invalid path: " + path);
+                throw new JGemsIOException("Invalid files: " + path);
             }
 
             File[] files = projectFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE));

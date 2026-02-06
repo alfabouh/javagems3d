@@ -40,7 +40,7 @@ public abstract class Settings {
             try {
                 this.getOptionsFile().getParentFile().mkdirs();
                 if (!this.getOptionsFile().createNewFile()) {
-                    throw new JGemsRuntimeException("Failed to create settings path");
+                    throw new JGemsRuntimeException("Failed to create settings files");
                 }
             } catch (JGemsRuntimeException | IOException e) {
                 throw new JGemsRuntimeException(e);

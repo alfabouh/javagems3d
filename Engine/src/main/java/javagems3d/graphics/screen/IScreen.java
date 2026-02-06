@@ -1,7 +1,7 @@
 package javagems3d.graphics.screen;
 
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

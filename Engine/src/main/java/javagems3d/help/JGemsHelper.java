@@ -61,7 +61,10 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import javagems3d.system.settings.JGemsSettings;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -409,12 +412,12 @@ public final class JGemsHelper {
         }
 
 
-        public Lang createLocalisation(@NotNull JGems3D.GetSource source, String langName, JGemsPath path) {
-            return JGemsLocalisation.createLocalisation(source, langName, path);
+        public Lang createLocalisation(@NotNull JGemsPathSource path, String langName) {
+            return JGemsLocalisation.createLocalisation(path, langName);
         }
 
-        public void setLangLocalisationPath(@NotNull JGems3D.GetSource source, Lang lang, JGemsPath path) {
-            JGemsLocalisation.setLangLocalisationPath(source, lang, path);
+        public void setLangLocalisationPath(@NotNull JGemsPathSource path, Lang lang) {
+            JGemsLocalisation.setLangLocalisationPath(path, lang);
         }
     }
 
@@ -617,7 +620,7 @@ public final class JGemsHelper {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
             JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
             JGems3D.get().getScreen().refreshSceneResources();
-            JGems3D.get().getLocalisation().setLanguage(JGems3D.GetSource.JAR, JGemsHelper.this.getGameSettings().language.getCurrentLanguage());
+            JGems3D.get().getLocalisation().setLanguage(ISource.Source.INSIDE_JAR, JGemsHelper.this.getGameSettings().language.getCurrentLanguage());
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();
         }
@@ -663,9 +666,9 @@ public final class JGemsHelper {
     }
 
     public final class Files {
-        public String readTextFromFile(@NotNull JGems3D.GetSource source, JGemsPath path) {
+        public String readTextFromFile(@NotNull JGemsPathSource path) {
             StringBuilder textBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.getInputStream(source, path), StandardCharsets.UTF_8))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.getInputStream(path), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     textBuilder.append(line).append(System.lineSeparator());

@@ -8,9 +8,12 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
-import javagems3d.system.service.json.JSONFileManaging;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.json.JSONFileManaging;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -329,10 +332,10 @@ public class WBenchGameResourcesManager {
 
     private GameResourceModelAsset loadModelAsset(File rootFolder, File fullPath) {
         try {
-            MeshGroup meshGroup = this.systemResources.createMeshGroupWithBindlessBufferAttachment(JGems3D.GetSource.EXTERNAL, new JGemsPath(fullPath.getPath()),true);
+            MeshGroup meshGroup = this.systemResources.createMeshGroupWithBindlessBufferAttachment(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR),true);
             final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length());
             final GameResourceModelAsset modelAsset = new GameResourceModelAsset(fullPath.getName(), relativePath, meshGroup);
-            this.modelsKeysCache.put(relativePath, modelAsset);
+            this.modelsKeysCache.put(relativePath.replace("\\", "/"), modelAsset);
             return modelAsset;
         } catch (Exception e) {
             Log.get().exception(e);
@@ -342,10 +345,10 @@ public class WBenchGameResourcesManager {
 
     private GameResourceTextureAsset loadTextureAsset(File rootFolder, File fullPath) {
         try {
-            ITexture2DProgram texture2DProgram = this.systemResources.createTexture(JGems3D.GetSource.EXTERNAL, ResourceManager.DEFAULT_TEXTURE(), new JGemsPath(fullPath.getPath()), new ImageTexture.Properties(false, false, false, false, false));
+            ITexture2DProgram texture2DProgram = this.systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
             final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length());
             final GameResourceTextureAsset textureAsset = new GameResourceTextureAsset(fullPath.getName(), relativePath, texture2DProgram);
-            this.texturesKeysCache.put(relativePath, textureAsset);
+            this.texturesKeysCache.put(relativePath.replace("\\", "/"), textureAsset);
             return textureAsset;
         } catch (Exception e) {
             Log.get().exception(e);

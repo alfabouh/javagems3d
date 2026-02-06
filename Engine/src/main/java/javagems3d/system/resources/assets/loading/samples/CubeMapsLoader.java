@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.loading.samples;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -9,7 +10,9 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,12 +30,10 @@ public class CubeMapsLoader implements ILoadingHelper {
     public static final String DEFAULT_NAME = "unknown";
     private String hashId;
     private final SystemResources systemResources;
-    private final JGems3D.GetSource source;
 
-    public CubeMapsLoader(@NotNull JGems3D.GetSource source, @Nullable SystemResources systemResources, @Nullable String hashId) {
+    public CubeMapsLoader(@Nullable SystemResources systemResources, @Nullable String hashId) {
         this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.systemResources = systemResources;
-        this.source = source;
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
@@ -58,21 +59,12 @@ public class CubeMapsLoader implements ILoadingHelper {
         return cubeMapTexture;
     }
 
-    public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor) {
+    public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexturesContainer cubeMapTexturesContainer) {
         ImageTexture.Data[] dataSet = new ImageTexture.Data[6];
-        if (textureDescriptor.isEmpty()) {
-            textureDescriptor = "png";
-        }
         for (int i = 0; i < 6; i++) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(pathToCubeMapFile);
-            builder.append(i + 1);
-            if (!textureDescriptor.contains(".")) {
-                builder.append(".");
-            }
-            builder.append(textureDescriptor);
-            this.hashId = builder.toString();
-            try (InputStream inputStream = JGems3D.getInputStream(this.source, new JGemsPath(builder.toString()))) {
+            JGemsPathSource gemsPathSource = cubeMapTexturesContainer.getTextures()[i];
+            this.hashId = gemsPathSource.getPath().toString();
+            try (InputStream inputStream = JGems3D.getInputStream(gemsPathSource)) {
                 Pair<ByteBuffer, Vector2i> pair = this.readTextureFromMemory(inputStream);
                 if (pair == null || pair.getFirst() == null) {
                     throw new JGemsIOException("Couldn't create texture " + this.getHashId() + ". \n" + STBImage.stbi_failure_reason());
@@ -117,5 +109,17 @@ public class CubeMapsLoader implements ILoadingHelper {
 
     public String getHashId() {
         return this.hashId;
+    }
+
+    public static class CubeMapTexturesContainer {
+        private final JGemsPathSource[] textures;
+
+        public CubeMapTexturesContainer(@NotNull ICubeMapProgram.CMTextures textures) {
+            this.textures = new JGemsPathSource[] {textures.getTextureUPPath(), textures.getTextureBOTTOMPath(), textures.getTextureFRONTPath(), textures.getTextureBACKPath(), textures.getTextureLEFTPath(), textures.getTextureRIGHTPath()};
+        }
+
+        public JGemsPathSource[] getTextures() {
+            return this.textures;
+        }
     }
 }

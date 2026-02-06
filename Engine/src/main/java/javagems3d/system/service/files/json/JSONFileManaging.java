@@ -1,8 +1,7 @@
-package javagems3d.system.service.json;
+package javagems3d.system.service.files.json;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;

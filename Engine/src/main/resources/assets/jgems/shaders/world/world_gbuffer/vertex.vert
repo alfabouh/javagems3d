@@ -29,7 +29,7 @@ struct AnimationData {
 };
 uniform AnimationData animationData;
 
-#include "assets/jgems/shaders/libs/animations"
+#include "/assets/jgems/shaders/libs/animations"
 
 void main()
 {

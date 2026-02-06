@@ -1,4 +1,4 @@
-package javagems3d.system.service.json;
+package javagems3d.system.service.files.json;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;

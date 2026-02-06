@@ -7,8 +7,10 @@ import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsAPIException;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +28,7 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNotFoundException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.synchronizing.SyncManager;
 import javagems3d.system.settings.JGemsSettings;
 import logger.SystemLogging;
@@ -139,7 +141,7 @@ public final class JGems3D {
             Log.get().info("Starting system! Date: " + JGems3D.date());
             Log.get().info(JGems3D.get().toString());
             Log.get().separator();
-            Log.get().info("Loading settings from path...");
+            Log.get().info("Loading settings from files...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
                 JGems3D.FIRST_LAUNCH = true;
             } else {
@@ -169,24 +171,24 @@ public final class JGems3D {
         return new File(JGems3D.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
-    public static boolean checkIfFileExists(@NotNull JGems3D.GetSource source, JGemsPath path) {
-        try (InputStream stream = JGems3D.getInputStream(source, path)) {
+    public static boolean checkIfFileExists(@NotNull JGemsPathSource path) {
+        try (InputStream stream = JGems3D.getInputStream(path)) {
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static InputStream getInputStream(@NotNull JGems3D.GetSource getSource, JGemsPath path) throws JGemsIOException {
+    public static InputStream getInputStream(@NotNull JGemsPathSource path) throws JGemsIOException {
         InputStream inputStream = null;
         try {
-            switch (getSource) {
-                case JAR: {
-                    inputStream = JGems3D.class.getResourceAsStream(path.getFullPath());
+            switch (path.getSource()) {
+                case INSIDE_JAR: {
+                    inputStream = JGems3D.class.getResourceAsStream(path.getPath().getFullPath());
                     break;
                 }
-                case EXTERNAL: {
-                    String p = path.getFullPath();
+                case OUTSIDE_JAR: {
+                    String p = path.getPath().getFullPath();
                     if (p.startsWith("/") && p.length() > 2 && p.charAt(2) == ':') {
                         p = p.substring(1);
                     }
@@ -195,7 +197,7 @@ public final class JGems3D {
                 }
             }
         } catch (IOException e) {
-            Log.get().error(getSource.name());
+            Log.get().error(path.getSource().name());
             throw new JGemsIOException(e);
         }
         if (inputStream == null) {
@@ -357,15 +359,10 @@ public final class JGems3D {
         public static final String ICONS = "/assets/jgems/icons/";
     }
 
-    public enum GetSource {
-        JAR,
-        EXTERNAL
-    }
-
     public static class IsolatedProcessLauncher {
         public static void EXEC(String[] args) {
             String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            String classpath = System.getProperty("java.class.path");
+            String classpath = System.getProperty("java.class.files");
 
             List<String> command = new ArrayList<>();
             command.add(javaBin);

@@ -4,7 +4,7 @@ import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

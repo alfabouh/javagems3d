@@ -1,5 +1,7 @@
 package javagems3d.audio.sound;
 
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openal.AL10;
@@ -8,26 +10,26 @@ import javagems3d.audio.JGemsSoundManager;
 import javagems3d.audio.sound.loaders.ogg.Ogg;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class SoundBuffer implements ICached {
-    private final JGemsPath soundPath;
+    private final JGemsPathSource soundPath;
     private int buffer;
 
-    public SoundBuffer(JGemsPath soundPath) {
+    public SoundBuffer(JGemsPathSource soundPath) {
         this.soundPath = soundPath;
     }
 
-    public static SoundBuffer createSoundBuffer(@NotNull JGems3D.GetSource source, ResourceCache resourceCache, JGemsPath soundPath, int soundFormat) {
+    public static SoundBuffer createSoundBuffer(@NotNull JGemsPathSource soundPath, ResourceCache resourceCache, int soundFormat) {
         if (resourceCache.checkObjectInCache(soundPath)) {
             return (SoundBuffer) resourceCache.getCachedObject(soundPath);
         }
         SoundBuffer soundBuffer = new SoundBuffer(soundPath);
-        if (soundBuffer.loadSound(source, soundFormat)) {
+        if (soundBuffer.loadSound(soundFormat)) {
             resourceCache.registerInCache(soundPath, soundBuffer);
         } else {
             return null;
@@ -35,11 +37,11 @@ public class SoundBuffer implements ICached {
         return soundBuffer;
     }
 
-    public boolean loadSound(@NotNull JGems3D.GetSource source, int soundFormat) {
+    public boolean loadSound(int soundFormat) {
         this.buffer = AL10.alGenBuffers();
         JGemsSoundManager.checkALonErrors();
         try {
-            try (InputStream inputStream = JGems3D.getInputStream(source, this.getSoundPath())) {
+            try (InputStream inputStream = JGems3D.getInputStream(this.getSoundPath())) {
                 return this.readOgg(inputStream, soundFormat);
             }
         } catch (UnsupportedAudioFileException | IOException e) {
@@ -66,7 +68,7 @@ public class SoundBuffer implements ICached {
         return this.buffer;
     }
 
-    public JGemsPath getSoundPath() {
+    public JGemsPathSource getSoundPath() {
         return this.soundPath;
     }
 

@@ -24,9 +24,10 @@ import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,6 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
-import workbench.graphics.objects.WBenchCommonObject;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 import workbench.graphics.scene.ui.game.GameEditorInterface;
@@ -157,7 +157,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         this.constructScreenModel();
 
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, new JGemsPath("/assets/wbench/gamefont.ttf"), WBenchResourceManager.GetGlobalResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, new JGemsPathSource(new JGemsPath("/assets/wbench/gamefont.ttf"), ISource.Source.INSIDE_JAR), WBenchResourceManager.GetGlobalResources());
         IUIRenderNode uiRenderNode = new WBenchUIRenderNode(this.getDearUIRenderer(), this);
         uiRenderNode.setAnInterface(WBenchOpenGLRenderer.getProjectInterface());
         this.setUIRenderNode(uiRenderNode);

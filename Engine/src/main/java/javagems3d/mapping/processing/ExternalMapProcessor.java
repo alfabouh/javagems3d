@@ -48,8 +48,10 @@ import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.json.JSONFileManaging;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,52 +66,52 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
-    private final JGemsPath pathToJG3DFile;
+    private final JGemsPathSource pathToJG3DFile;
     private MapObjectsDataPack mapObjectsDataPack;
     private MapProjectData mapProjectData;
 
-    public ExternalMapProcessor(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
+    public ExternalMapProcessor(JGemsPathSource pathToJG3DFile) {
         super();
         this.pathToJG3DFile = pathToJG3DFile;
 
-        this.readMap(pathToJG3DFile, source);
+        this.readMap(pathToJG3DFile);
     }
 
 
-    protected void readMap(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
+    protected void readMap(JGemsPathSource pathToJG3DFile) {
         final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
-            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, source, new TypeToken<MapProjectData>(){});
+            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, new TypeToken<MapProjectData>(){});
             if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
             this.mapProjectData.checkVersion();
 
-            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), source, new TypeToken<MapObjectsDataPack>(){});
+            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPathSource(new JGemsPath(pathToJG3DFile.getPath().getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), pathToJG3DFile.getSource()), new TypeToken<MapObjectsDataPack>(){});
             if (this.mapObjectsDataPack == null) {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
             Log.get().info("Found " + this.mapProjectData.getScriptFiles().size() + " scripts");
-            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles(), source);
+            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles());
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
     }
 
-    private void loadScripts(JGemsPath pathToJG3DFile, List<String> scriptPaths, @NotNull JGems3D.GetSource source) {
+    private void loadScripts(JGemsPathSource pathToJG3DFile, List<String> scriptPaths) {
         try {
             for (String path : scriptPaths) {
-                JGemsAPI.executeScript(JGemsHelper.files().readTextFromFile(source, new JGemsPath(pathToJG3DFile.getAbsolutePathDirectory(), "scripts", path)));
+                JGemsAPI.executeScript(JGemsHelper.files().readTextFromFile(new JGemsPathSource(new JGemsPath(pathToJG3DFile.getPath().getAbsolutePathDirectory(), "scripts", path), pathToJG3DFile.getSource())));
             }
         } catch (JGemsIOException e) {
             Log.get().exception(e);
         }
     }
 
-    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPath path, @NotNull JGems3D.GetSource source, TypeToken<T> typeToken) {
-        try (InputStream stream = JGems3D.getInputStream(source, path)) {
+    private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPathSource path, TypeToken<T> typeToken) {
+        try (InputStream stream = JGems3D.getInputStream(path)) {
             return jsonFileManaging.readFromInputStream(stream, typeToken, null);
         } catch (IOException e) {
             throw new JGemsIOException(e);
@@ -202,13 +204,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
     protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
         if (skyData != null) {
-            final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
-            if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
-                ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(JGems3D.GetSource.EXTERNAL, null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
-                skyBox.setSky2DTexture(cubeMapProgram);
-            } else {
-                Log.get().error("Couldn't create cubeMap: " + skyData.skyboxPath);
-            }
+            //final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
+            //if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
+            //    ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(JGemsStringSource.GetSource.EXTERNAL, null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
+            //    skyBox.setSky2DTexture(cubeMapProgram);
+            //} else {
+            //    Log.get().error("Couldn't create cubeMap: " + skyData.skyboxPath);
+            //}
         }
 
         if (sunData != null) {
@@ -289,7 +291,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         return this.mapObjectsDataPack;
     }
 
-    public JGemsPath getPathToJG3DFile() {
+    public JGemsPathSource getPathToJG3DFile() {
         return this.pathToJG3DFile;
     }
 
@@ -297,13 +299,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         protected Vector3f playerSpawnPoint;
         protected Vector3f playerSpawnRotation;
 
-        public Default(JGemsPath pathToJG3DFile, @NotNull JGems3D.GetSource source) {
-            super(pathToJG3DFile, source);
+        public Default(JGemsPathSource pathToJG3DFile) {
+            super(pathToJG3DFile);
         }
 
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, propData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(new JGemsPathSource(propData.getPathToModel(), this.getPathToJG3DFile().getSource()), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -314,7 +316,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, propData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(new JGemsPathSource(propData.getPathToModel(), this.getPathToJG3DFile().getSource()), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -333,7 +335,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, entityData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(new JGemsPathSource(entityData.getPathToModel(), this.getPathToJG3DFile().getSource()), false);
 
             JGemsBody jGemsBody = null;
             if (tagPhysics == null || tagPhysics.getValues()[0].isFlag()) {

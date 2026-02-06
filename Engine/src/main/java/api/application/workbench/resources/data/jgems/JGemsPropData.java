@@ -2,7 +2,7 @@ package api.application.workbench.resources.data.jgems;
 
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

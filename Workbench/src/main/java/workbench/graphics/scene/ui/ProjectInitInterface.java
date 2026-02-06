@@ -11,7 +11,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
@@ -65,7 +65,7 @@ public class ProjectInitInterface implements DearUIInterface {
         if (f2) {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        ImGui.text("Game project path:");
+        ImGui.text("Game project files:");
         ImGui.inputText("##game_project_path", this.projectPath);
         if (f2) {
             ImGui.popStyleColor();

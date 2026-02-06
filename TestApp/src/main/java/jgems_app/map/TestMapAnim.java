@@ -15,9 +15,11 @@ import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -30,7 +32,7 @@ public class TestMapAnim extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(JGems3D.GetSource.JAR, new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), false);
+        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), ISource.Source.INSIDE_JAR), false);
 
         SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp);

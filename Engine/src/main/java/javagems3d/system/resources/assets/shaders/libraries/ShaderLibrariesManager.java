@@ -1,7 +1,10 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
-import javagems3d.JGems3D;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,35 +12,33 @@ import java.util.Map;
 import java.util.Set;
 
 public final class ShaderLibrariesManager {
-    private final Map<String, ShaderLibrariesContainer> containerMap;
-    private final JGems3D.GetSource getSource;
+    private final Map<JGemsStringSource, ShaderLibrariesContainer> containerMap;
 
-    public ShaderLibrariesManager(JGems3D.GetSource getSource) {
-        this.getSource = getSource;
+    public ShaderLibrariesManager() {
         this.containerMap = new HashMap<>();
     }
 
-    public boolean hasLibrary(String id) {
+    public boolean hasLibrary(JGemsStringSource id) {
         return this.getContainerMap().containsKey(id);
     }
 
-    public ShaderLibrariesContainer getShaderLibrariesContainer(String id) {
+    public ShaderLibrariesContainer getShaderLibrariesContainer(JGemsStringSource id) {
         return this.getContainerMap().get(id);
     }
 
-    public void initLibrary(JGemsPath path) {
-        this.initLibrary(new ShaderLibrariesContainer(this.getSource, path));
+    public void initLibrary(@NotNull JGemsPathSource pathSource) {
+        this.initLibrary(new ShaderLibrariesContainer(pathSource));
     }
 
     public void initLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
-        this.getContainerMap().put(shaderLibrariesContainer.getPath(), shaderLibrariesContainer);
+        this.getContainerMap().put(shaderLibrariesContainer.getStringSource(), shaderLibrariesContainer);
     }
 
     public void reload() {
-        Set<String> paths = new HashSet<>(this.getContainerMap().keySet());
+        Set<JGemsStringSource> paths = new HashSet<>(this.getContainerMap().keySet());
         this.getContainerMap().clear();
-        for (String s : paths) {
-            this.getContainerMap().put(s, new ShaderLibrariesContainer(this.getSource, new JGemsPath(s)));
+        for (JGemsStringSource s : paths) {
+            this.getContainerMap().put(s, new ShaderLibrariesContainer(new JGemsPathSource(new JGemsPath(s.getString()), s.getSource())));
         }
     }
 
@@ -45,7 +46,7 @@ public final class ShaderLibrariesManager {
         this.getContainerMap().clear();
     }
 
-    public Map<String, ShaderLibrariesContainer> getContainerMap() {
+    public Map<JGemsStringSource, ShaderLibrariesContainer> getContainerMap() {
         return this.containerMap;
     }
 }

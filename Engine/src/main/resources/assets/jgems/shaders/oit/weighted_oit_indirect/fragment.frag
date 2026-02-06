@@ -59,8 +59,8 @@ const int normals_code = CONST.NORMALS_CODE;
 const int emission_code = CONST.EMISSION_CODE;
 const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
-#include "assets/jgems/shaders/libs/shadows"
-#include "assets/jgems/shaders/libs/lighting"
+#include "/assets/jgems/shaders/libs/shadows"
+#include "/assets/jgems/shaders/libs/lighting"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;

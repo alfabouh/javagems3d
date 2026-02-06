@@ -1,40 +1,28 @@
 package javagems3d.mapping.data.items;
 
 import com.google.gson.*;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
+import javagems3d.system.service.files.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
 public class SkyData implements SectionData<SkyData> {
-    private String textureUPPath;
-    private String textureBOTTOMPath;
-    private String textureFRONTPath;
-    private String textureBACKPath;
-    private String textureLEFTPath;
-    private String textureRIGHTPath;
+    private final String nameId;
+    public ICubeMapProgram.CMTextures cmTextures;
     public float backGroundScaling;
 
-    private SkyData() {
+    public SkyData(@NotNull String nameId, @Nullable ICubeMapProgram.CMTextures cmTextures, float backGroundScaling) {
+        this.nameId = nameId;
+        this.cmTextures = cmTextures;
+        this.backGroundScaling = backGroundScaling;
     }
 
-    public SkyData(@Nullable String textureUPPath,
-                   @Nullable String textureBOTTOMPath,
-                   @Nullable String textureFRONTPath,
-                   @Nullable String textureBACKPath,
-                   @Nullable String textureLEFTPath,
-                   @Nullable String textureRIGHTPath,
-                   float backGroundScaling) {
-        this.textureUPPath = textureUPPath;
-        this.textureBOTTOMPath = textureBOTTOMPath;
-        this.textureFRONTPath = textureFRONTPath;
-        this.textureBACKPath = textureBACKPath;
-        this.textureLEFTPath = textureLEFTPath;
-        this.textureRIGHTPath = textureRIGHTPath;
-        this.backGroundScaling = backGroundScaling;
+    public String getNameId() {
+        return this.nameId;
     }
 
     @Override
@@ -44,12 +32,8 @@ public class SkyData implements SectionData<SkyData> {
             public JsonElement write(SkyData toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.add("textureUPPath", context.serialize(toWrite.textureUPPath));
-                    jsonObject.add("textureBOTTOMPath", context.serialize(toWrite.textureBOTTOMPath));
-                    jsonObject.add("textureFRONTPath", context.serialize(toWrite.textureFRONTPath));
-                    jsonObject.add("textureBACKPath", context.serialize(toWrite.textureBACKPath));
-                    jsonObject.add("textureLEFTPath", context.serialize(toWrite.textureLEFTPath));
-                    jsonObject.add("textureRIGHTPath", context.serialize(toWrite.textureRIGHTPath));
+                    jsonObject.add("nameId", context.serialize(toWrite.nameId));
+                    jsonObject.add("textures", context.serialize(toWrite.cmTextures));
                     jsonObject.add("backGroundScaling", context.serialize(toWrite.backGroundScaling));
                     return jsonObject;
                 } catch (Exception e) {
@@ -61,14 +45,10 @@ public class SkyData implements SectionData<SkyData> {
             public SkyData read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    final String textureUPPath = context.deserialize(jsonObject.get("textureUPPath"), String.class);
-                    final String textureBOTTOMPath = context.deserialize(jsonObject.get("textureBOTTOMPath"), String.class);
-                    final String textureFRONTPath = context.deserialize(jsonObject.get("textureFRONTPath"), String.class);
-                    final String textureBACKPath = context.deserialize(jsonObject.get("textureBACKPath"), String.class);
-                    final String textureLEFTPath = context.deserialize(jsonObject.get("textureLEFTPath"), String.class);
-                    final String textureRIGHTPath = context.deserialize(jsonObject.get("textureRIGHTPath"), String.class);
+                    final ICubeMapProgram.CMTextures textures = context.deserialize(jsonObject.get("textures"), ICubeMapProgram.CMTextures.class);
                     final float backGroundScaling = context.deserialize(jsonObject.get("backGroundScaling"), Float.class);
-                    return new SkyData(textureUPPath, textureBOTTOMPath, textureFRONTPath, textureBACKPath, textureLEFTPath, textureRIGHTPath, backGroundScaling);
+                    final String nameId = context.deserialize(jsonObject.get("nameId"), String.class);
+                    return new SkyData(nameId, textures, backGroundScaling);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

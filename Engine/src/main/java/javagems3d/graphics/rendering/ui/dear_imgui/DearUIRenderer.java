@@ -9,7 +9,9 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +41,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private final IWindow window;
     private int sampler;
 
-    public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @Nullable JGemsPath pathToJarFont, @NotNull SystemResources systemResources) {
+    public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @Nullable JGemsPathSource pathToJarFont, @NotNull SystemResources systemResources) {
         this.shaderManager = imguiShader;
         this.window = window;
         this.sampler = 0;
@@ -48,7 +50,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         this.createUICallbacks(this.getWindow());
     }
 
-    private void createUIResources(SystemResources systemResources, @Nullable JGemsPath pathToJarFont) {
+    private void createUIResources(SystemResources systemResources, @Nullable JGemsPathSource pathToJarFont) {
         this.sampler = GL46.glGenSamplers();
         GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
@@ -63,7 +65,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImFontAtlas fontAtlas = imGuiIO.getFonts();
 
         if (pathToJarFont != null) {
-            try (InputStream stream = JGems3D.getInputStream(JGems3D.GetSource.JAR, pathToJarFont)) {
+            try (InputStream stream = JGems3D.getInputStream(pathToJarFont)) {
                 byte[] fontData = JGemsHelper.files().toByteArray(stream);
                 ImFontConfig fontConfig = new ImFontConfig();
                 fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesCyrillic());
@@ -77,7 +79,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt width = new ImInt();
         ImInt height = new ImInt();
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = systemResources.createTexture(JGems3D.GetSource.JAR, null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
+        this.textureSample = systemResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
 
         this.dearImGuiMesh = new DearUIMesh();
     }

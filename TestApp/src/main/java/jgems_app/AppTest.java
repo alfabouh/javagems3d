@@ -4,32 +4,23 @@ import api.application.JGemsApplication;
 import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
 import api.application.workbench.manager.IAPIWBenchDataManager;
-import api.application.workbench.resources.data.DefaultMarker;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
-import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.scripting.JGemsAPIScriptingEngine;
 import api.scripting.functions.APIScriptingFunction;
-import api.system.JGemsAPI;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.items.TagRadioBoolean;
-import javagems3d.mapping.tags.items.TagString;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.binding.DefaultBindings;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import jgems_app.events.TestEvents;
 import jgems_app.gui.TestMainMenuPanel;
 import jgems_app.resources.ModelInitializer;
-import org.joml.Vector3f;
 
 @JGemsAppEntry(id = "DefaultGame")
 public class AppTest extends JGemsApplication {

@@ -3,7 +3,7 @@ package workbench.graphics.scene.ui.game.editor.scenes.mapping;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;

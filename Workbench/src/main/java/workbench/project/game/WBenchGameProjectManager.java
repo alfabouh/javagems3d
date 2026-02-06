@@ -5,8 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.json.JSONFileManaging;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -126,7 +126,7 @@ public class WBenchGameProjectManager {
         try {
             File projectFolder = new File(path.getFullPath());
             if (!projectFolder.exists() || !projectFolder.isDirectory()) {
-                throw new JGemsIOException("Invalid path: " + path);
+                throw new JGemsIOException("Invalid files: " + path);
             }
 
             File[] files = projectFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE));

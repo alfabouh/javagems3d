@@ -22,12 +22,13 @@ import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import jgems_app.entities.TestPlayer;
 import jgems_app.map.ExternalLoader;
-import jgems_app.map.TestMap;
 import jgems_app.map.TestMapAnim;
-import jgems_app.map.TestMapDirect;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -100,7 +101,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), JGems3D.GetSource.EXTERNAL));
+                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPathSource(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), ISource.Source.OUTSIDE_JAR)));
                    ui.setPanel(new DefaultGamePanel(null));
                });
 

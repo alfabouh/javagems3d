@@ -12,9 +12,11 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +85,7 @@ public class InterfaceResourcesScriptsM {
                     wBenchProject.reviseScripts();
                     try {
                         final JGemsPath path = wBenchProject.getScriptPathTo(scriptPaths.get(this.currentSelectedScript.get() - 1));
-                        final String readText = JGemsHelper.files().readTextFromFile(JGems3D.GetSource.EXTERNAL, path);
+                        final String readText = JGemsHelper.files().readTextFromFile(new JGemsPathSource(path, ISource.Source.OUTSIDE_JAR));
                         this.getEditorInterface().getTextEditor().setText(readText);
                         this.scriptTextTemplate = this.getEditorInterface().getTextEditor().getText();
                     } catch (Exception e) {

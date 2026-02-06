@@ -20,7 +20,7 @@ layout(std430, binding = 1) buffer IndirectBufferData {
     float animationFrameDelta[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
 
-#include "assets/jgems/shaders/libs/animations"
+#include "/assets/jgems/shaders/libs/animations"
 
 void main()
 {

@@ -1,7 +1,7 @@
 package api.application.workbench.manager;
 
 import api.application.workbench.resources.APIResource;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 
 public class ApiResourceObjectsFolder<A, B, T extends APIResource<A, B>> extends AbstractObjectsFolder<T> {

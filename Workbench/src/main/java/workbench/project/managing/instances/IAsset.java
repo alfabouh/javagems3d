@@ -1,6 +1,6 @@
 package workbench.project.managing.instances;
 
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 
 public interface IAsset extends AbstractObjectsFolder.ObjectWithName {
 }

@@ -6,6 +6,8 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.resources.managing.ResourceManager;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import logger.Log;
@@ -31,7 +33,7 @@ import javagems3d.system.core.JGemsCore;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -330,7 +332,7 @@ public class JGemsScreen implements IScreen {
         private int counter;
 
         public LoadingScreen(String title) {
-            Font gameFont = SystemResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
+            Font gameFont = SystemResources.createFontFromJAR(new JGemsPathSource(new JGemsPath("/assets/jgems/gamefont.ttf"), ISource.Source.INSIDE_JAR));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));

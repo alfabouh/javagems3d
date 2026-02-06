@@ -13,7 +13,7 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;

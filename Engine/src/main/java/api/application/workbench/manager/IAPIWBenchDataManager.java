@@ -10,10 +10,12 @@ import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.items.TagRadioBoolean;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -22,7 +24,7 @@ public interface IAPIWBenchDataManager {
     void addResourceEntity(@Nullable String path, @NotNull ApiResourceEntity resourceEntity);
     void addResourceProp(@Nullable String path, @NotNull ApiResourceProp resourceProp);
     void addResourceMarker(@Nullable String path, @NotNull ApiResourceMarker resourceMarker);
-    void addResourceSkyCubeMap(@NotNull String name, @NotNull String extension, @NotNull JGemsPath pathToCubeMapDirectory);
+    void addResourceSkyCubeMap(@NotNull String name, @NotNull ICubeMapProgram.CMTextures textures);
 
     default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull JGemsPath modelPath) {
         this.addResourceEntity(path, new ApiResourceEntity(id, () -> new WBenchObjectData(modelPath), () -> new JGemsEntityData(modelPath)));
@@ -68,6 +70,6 @@ public interface IAPIWBenchDataManager {
         this.addResourceEntity("generic_entity", "cube", () -> new WBenchObjectData(cube).addTag(TAG_PHYSICS), () -> new JGemsEntityData(cube));
         this.addResourceMarker("generic_marker", "player_spawn", () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false));
         this.addResourceMarker("generic_marker", "water", () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true));
-        this.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));
+        this.addResourceSkyCubeMap("SkyDay1", TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES);
     }
 }

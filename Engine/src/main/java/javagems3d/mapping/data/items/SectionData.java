@@ -1,6 +1,6 @@
 package javagems3d.mapping.data.items;
 
-import javagems3d.system.service.json.IJSONSerializable;
+import javagems3d.system.service.files.json.IJSONSerializable;
 
 public interface SectionData<T extends SectionData<?>> extends IJSONSerializable<T> {
 }

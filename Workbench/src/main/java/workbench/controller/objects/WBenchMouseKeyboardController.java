@@ -20,7 +20,7 @@ public class WBenchMouseKeyboardController extends MouseKeyboardController {
 
     @Override
     public boolean disableKeyboardScanning() {
-        return WBenchMouseKeyboardController.blockKeyboardMouseCamTransformInput();
+        return ProjectUIUtils.ctrlSPress();
     }
 
     @Override

@@ -1,32 +1,33 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
-import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.base.ShaderType;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 public final class ShaderLibrariesContainer {
-    private final String path;
+    private final JGemsStringSource path;
     private final ShaderLibrary vertexShaderLibrary;
     private final ShaderLibrary fragmentShaderLibrary;
     private final ShaderLibrary geometryShaderLibrary;
 
-    public ShaderLibrariesContainer(@NotNull JGems3D.GetSource source, JGemsPath shaderPath) {
-        this.path = shaderPath.getFullPath();
+    public ShaderLibrariesContainer(@NotNull JGemsPathSource shaderPath) {
+        this.path = new JGemsStringSource(shaderPath);
 
         ShaderLibrary geometricShader1 = null;
         ShaderLibrary vertexShader1 = null;
         ShaderLibrary fragmentShader1 = null;
 
-        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.FRAGMENT)) {
-            fragmentShader1 = new ShaderLibrary(source, ShaderType.FRAGMENT, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
+            fragmentShader1 = new ShaderLibrary(shaderPath, ShaderType.FRAGMENT);
         }
-        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.VERTEX)) {
-            vertexShader1 = new ShaderLibrary(source, ShaderType.VERTEX, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
+            vertexShader1 = new ShaderLibrary(shaderPath, ShaderType.VERTEX);
         }
-        if (ShaderLibrary.checkIfShaderExistsInJar(source, shaderPath, ShaderType.GEOMETRIC)) {
-            geometricShader1 = new ShaderLibrary(source, ShaderType.GEOMETRIC, shaderPath);
+        if (ShaderLibrary.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
+            geometricShader1 = new ShaderLibrary(shaderPath, ShaderType.GEOMETRIC);
         }
 
         this.vertexShaderLibrary = vertexShader1;
@@ -65,10 +66,10 @@ public final class ShaderLibrariesContainer {
 
     @Override
     public String toString() {
-        return this.getPath();
+        return this.getStringSource().toString();
     }
 
-    public String getPath() {
+    public JGemsStringSource getStringSource() {
         return this.path;
     }
 }

@@ -10,7 +10,10 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import workbench.resources.shaders.WBenchShaderManager;
@@ -49,7 +52,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public ShaderStorageBufferObject FogData;
 
     public WBenchLocalShadersInitializer() {
-        super(JGems3D.GetSource.JAR);
+        super();
     }
 
     @Override
@@ -68,9 +71,9 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
-        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/animations"));
-        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/lighting"));
+        shaderLibrary.initLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/shadows"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.initLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/animations"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.initLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/lighting"), ISource.Source.INSIDE_JAR));
     }
 
     protected void initObjects(ResourceCache resourceCache) {
@@ -98,33 +101,32 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.gui_image = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"));
-        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"));
-        this.skybox = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/skybox"));
-        this.background = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background"));
-        this.background_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"));
-        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"));
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"));
-        this.weighted_oit_simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_simple"));
-        this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"));
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"));
-        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"));
-        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred"));
-        this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple_gbuffer"));
-        this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple"));
-        this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"));
-        this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"));
-        this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"));
-        this.blur5 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"));
-        this.hdr = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/hdr"));
-
-        this.simple_skybox_face = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_skybox_face"));
-        this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
-        this.simple_flat = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_flat"));
+        this.gui_image = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"), ISource.Source.INSIDE_JAR));
+        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"), ISource.Source.INSIDE_JAR));
+        this.skybox = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/skybox"), ISource.Source.INSIDE_JAR));
+        this.background = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background"), ISource.Source.INSIDE_JAR));
+        this.background_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"), ISource.Source.INSIDE_JAR));
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"), ISource.Source.INSIDE_JAR));
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"), ISource.Source.INSIDE_JAR));
+        this.weighted_oit_simple = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_simple"), ISource.Source.INSIDE_JAR));
+        this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"), ISource.Source.INSIDE_JAR));
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"), ISource.Source.INSIDE_JAR));
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"), ISource.Source.INSIDE_JAR));
+        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred"), ISource.Source.INSIDE_JAR));
+        this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple_gbuffer"), ISource.Source.INSIDE_JAR));
+        this.simple = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple"), ISource.Source.INSIDE_JAR));
+        this.depth_sun = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"), ISource.Source.INSIDE_JAR));
+        this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"), ISource.Source.INSIDE_JAR));
+        this.depth_plight = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"), ISource.Source.INSIDE_JAR));
+        this.blur5 = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"), ISource.Source.INSIDE_JAR));
+        this.hdr = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/hdr"), ISource.Source.INSIDE_JAR));
+        this.simple_skybox_face = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_skybox_face"), ISource.Source.INSIDE_JAR));
+        this.preview = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/preview"), ISource.Source.INSIDE_JAR));
+        this.simple_flat = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_flat"), ISource.Source.INSIDE_JAR));
     }
 
     @Override
-    protected WBenchShaderManager createShaderObject(@NotNull JGems3D.GetSource source, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
-        return new WBenchShaderManager(new ShadersContainer(source, shaderStaticConstants, shaderLibrary, shaderPath));
+    protected WBenchShaderManager createShaderObject(@NotNull JGemsPathSource shaderPath, ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary) {
+        return new WBenchShaderManager(new ShadersContainer(shaderPath, shaderStaticConstants, shaderLibrary));
     }
 }

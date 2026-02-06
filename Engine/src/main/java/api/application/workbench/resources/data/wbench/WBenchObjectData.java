@@ -7,7 +7,7 @@ import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.mapping.tags.items.TagItem;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 
 public class WBenchObjectData extends WBenchData {

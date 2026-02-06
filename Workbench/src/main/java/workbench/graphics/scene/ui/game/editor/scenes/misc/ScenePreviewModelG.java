@@ -8,7 +8,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.service.collections.Pair;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import workbench.project.managing.instances.misc.GameResourceModelAsset;
 
 import java.util.ArrayList;

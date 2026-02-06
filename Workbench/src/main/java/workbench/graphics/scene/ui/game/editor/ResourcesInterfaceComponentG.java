@@ -6,7 +6,7 @@ import javagems3d.JGems3D;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import workbench.WBench;

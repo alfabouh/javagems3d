@@ -4,9 +4,8 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.system.service.collections.AbstractObjectsFolder;
+import javagems3d.system.service.files.AbstractObjectsFolder;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
-import workbench.graphics.objects.templates.WBenchTemplate;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.project.map.MapObjectTemplatesFolder;
 

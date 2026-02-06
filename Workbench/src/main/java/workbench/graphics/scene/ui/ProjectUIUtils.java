@@ -5,6 +5,14 @@ import logger.managers.LoggingManager;
 import org.lwjgl.glfw.GLFW;
 
 public abstract class ProjectUIUtils {
+    public static boolean ctrlSPress() {
+        return ImGui.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && ImGui.isKeyPressed(GLFW.GLFW_KEY_S);
+    }
+
+    public static boolean ctrlCPress() {
+        return ImGui.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && ImGui.isKeyPressed(GLFW.GLFW_KEY_C);
+    }
+
     public static boolean ctrlS() {
         return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_S, false);
     }

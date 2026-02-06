@@ -1,12 +1,12 @@
 package workbench.resources;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import workbench.WBench;
 import workbench.resources.initialization.*;
 import workbench.resources.initialization.game.WBenchGameEditorModelAssetsInitializer;
@@ -26,7 +26,7 @@ public final class WBenchResourceManager extends ResourceManager {
 
     public WBenchResourceManager() {
         super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1), new Factory(ResourceManager.LOCAL2));
-        WBenchResourceManager.globalShaderAssets = new WBenchGlobalShadersInitializer(JGems3D.GetSource.JAR);
+        WBenchResourceManager.globalShaderAssets = new WBenchGlobalShadersInitializer();
         WBenchResourceManager.localShaderAssets = new WBenchLocalShadersInitializer();
     }
 

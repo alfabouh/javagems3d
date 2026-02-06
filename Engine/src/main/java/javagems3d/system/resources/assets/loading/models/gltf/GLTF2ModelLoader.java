@@ -1,6 +1,5 @@
 package javagems3d.system.resources.assets.loading.models.gltf;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -35,7 +34,9 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
+import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,31 +50,29 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class GLTF2ModelLoader implements ILoadingHelper {
-    private final JGemsPath path;
     private final SystemResources systemResources;
     public int countVertexes;
-    private final JGems3D.GetSource getSource;
+    private final JGemsPathSource pathToMainFile;
 
-    public GLTF2ModelLoader(@NotNull JGems3D.GetSource source, SystemResources systemResources, JGemsPath pathToMainFile) {
-        this.path = pathToMainFile;
+    public GLTF2ModelLoader(@NotNull JGemsPathSource pathToMainFile, SystemResources systemResources) {
+        this.pathToMainFile = pathToMainFile;
         this.systemResources = systemResources;
-        this.getSource = source;
     }
 
     public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean attachMeshBuffer, boolean keepNodesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getSource, this.getPath());
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile());
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
         return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, attachMeshBuffer, keepNodesInMemory);
     }
 
     public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepNodesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getSource, this.getPath());
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile());
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
         return this.createMeshBuffer(gltf2Scene, meshCollisionDataFabric, keepNodesInMemory);
     }
 
     public String getStr(String postfix) {
-        return GLTF2ModelLoader.getModelStr(this.getPath(), postfix);
+        return GLTF2ModelLoader.getModelStr(this.getPathToMainFile().getPath(), postfix);
     }
 
     public static String getModelStr(JGemsPath path, String postfix) {
@@ -85,7 +84,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         String grString = this.getStr(MeshGroup.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
-            Log.get().info("Mesh " + this.getPath() + " picked from cache");
+            Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
             meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), attachMeshBuffer, keepNodesInMemory);
             this.getResourceCache().registerInCache(grString, meshGroup);
@@ -108,7 +107,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
-            Log.get().info("Mesh " + this.getPath() + " picked from cache");
+            Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
             meshBuffer = this.processMeshBuffer(gltf2Scene, this.getSystemResources(), keepNodesInMemory);
             this.getResourceCache().registerInCache(bffString, meshBuffer);
@@ -146,7 +145,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
                 systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(buffer);
             }
 
-            Log.get().info("Mesh " + this.getPath() + " successfully created");
+            Log.get().info("Mesh " + this.getPathToMainFile() + " successfully created");
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
@@ -172,7 +171,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             buffer.setKeepNodesInMemory(keepNodesInMemory);
             systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(buffer);
 
-            Log.get().info("Mesh " + this.getPath() + " successfully created");
+            Log.get().info("Mesh " + this.getPathToMainFile() + " successfully created");
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
@@ -208,7 +207,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     private List<Material> readMaterials(GLTF2Scene gltf2Scene, SystemResources systemResources) {
         List<Material> materials = new ArrayList<>();
         for (GLTF2Material gltfMat : gltf2Scene.getMaterials()) {
-            Material mat = this.readMaterial(gltfMat, systemResources, this.getPath().getAbsolutePathDirectory().getFullPath());
+            Material mat = this.readMaterial(gltfMat, systemResources, this.getPathToMainFile().getPath().getAbsolutePathDirectory().getFullPath());
             systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(mat);
             materials.add(mat);
         }
@@ -320,7 +319,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             Animation animation = new Animation(gltf2Animation.getName(), duration, 24.0f, animationFrames);
             animations.add(animation);
 
-            Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath() + ". " + animation.getName());
+            Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPathToMainFile() + ". " + animation.getName());
             systemResources.processMessage("Loaded animation(size:" + animations.size() + "). " + animation.getName(), 0xff00ff, SystemResources.ResLoadSysMessageType.LOG);
         }
 
@@ -453,7 +452,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             }
 
             if (diffuseTexture != null) {
-                diffuseMap = systemResources.createTexture(this.getSource, nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, new JGemsPath(fullPath, diffuseTexture.getUri()), imageProperties);
+                diffuseMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, diffuseTexture.getUri()), this.getPathToMainFile().getSource()), nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, imageProperties);
                // if (computeTransparentPixels != null) {
                //     textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, diffuseMap);
                // }
@@ -461,7 +460,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture emissionTexture = gltf2Material.getEmissionTexture();
             if (emissionTexture != null) {
-                emissionMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, emissionTexture.getUri()), imageProperties);
+                emissionMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, emissionTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
                 if (emissionColorVec == null) {
                     emissionColor = new Color3Texture(new Vector3f(1.0f));
                 }
@@ -469,7 +468,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture metallicRoughnessTexture = gltf2Material.getMetallicRoughnessTexture();
             if (metallicRoughnessTexture != null) {
-                metallicRoughnessMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, metallicRoughnessTexture.getUri()), imageProperties);
+                metallicRoughnessMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, metallicRoughnessTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.5f;
             } else {
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.0f;
@@ -479,7 +478,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture normalsTexture = gltf2Material.getNormalTexture();
             if (normalsTexture != null) {
-                normalsMap = systemResources.createTexture(this.getSource, null, new JGemsPath(fullPath, normalsTexture.getUri()), imageProperties);
+                normalsMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, normalsTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
             }
         } catch (JGemsException e) {
             Log.get().exception(e);
@@ -502,8 +501,8 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         return material;
     }
 
-    public JGemsPath getPath() {
-        return this.path;
+    public JGemsPathSource getPathToMainFile() {
+        return this.pathToMainFile;
     }
 
     public SystemResources getSystemResources() {

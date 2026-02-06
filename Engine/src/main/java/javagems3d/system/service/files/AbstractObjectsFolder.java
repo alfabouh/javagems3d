@@ -1,4 +1,4 @@
-package javagems3d.system.service.collections;
+package javagems3d.system.service.files;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
