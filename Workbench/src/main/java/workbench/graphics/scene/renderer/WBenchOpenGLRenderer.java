@@ -79,8 +79,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.editorScenePreview = new FBOTexture2DProgram(true, false);
         this.gameSceneObjectsPreview = new FBOTexture2DProgram(true, false);
 
-        WBenchOpenGLRenderer.gameEditorInterface = new GameEditorInterface(this, this.gameSceneObjectsPreview, WBench.get().getMapProjectManager());
-        WBenchOpenGLRenderer.mapEditorInterface = new MapEditorInterface(this, this.editorScenePreview, WBench.get().getMapProjectManager());
+        WBenchOpenGLRenderer.gameEditorInterface = new GameEditorInterface(this, this.gameSceneObjectsPreview);
+        WBenchOpenGLRenderer.mapEditorInterface = new MapEditorInterface(this, this.editorScenePreview);
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);

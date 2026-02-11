@@ -75,7 +75,7 @@ public class ActionsInterfaceComponentM {
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("SkyBox")) {
-                    ImGui.beginChild("##SkyContet", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##SkyContet", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceEnvSkyM.render();
                     ImGui.endChild();
                 }

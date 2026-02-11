@@ -197,9 +197,9 @@ public class TagItemCreatingInstancesG {
     };
 
     public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagColor>> colorTagItemResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<TagColor>() {
-        private Vector4f colorVector = new Vector4f();
+        private final Vector4f colorVector = new Vector4f();
         private ColorMode colorMode;
-        private ImInt imInt = new ImInt(0);
+        private final ImInt imInt = new ImInt(0);
 
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {

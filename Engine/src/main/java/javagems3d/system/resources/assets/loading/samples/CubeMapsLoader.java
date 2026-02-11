@@ -27,7 +27,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class CubeMapsLoader implements ILoadingHelper {
-    public static final String DEFAULT_NAME = "unknown";
     private String hashId;
     private final SystemResources systemResources;
 
@@ -114,8 +113,19 @@ public class CubeMapsLoader implements ILoadingHelper {
     public static class CubeMapTexturesContainer {
         private final JGemsPathSource[] textures;
 
+        public CubeMapTexturesContainer(@NotNull JGemsPath parent, @NotNull ICubeMapProgram.CMTextures textures) {
+            this.textures = new JGemsPathSource[] {
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureFRONTPath().getPath().toString()), textures.getTextureFRONTPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureBACKPath().getPath().toString()), textures.getTextureBACKPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureUPPath().getPath().toString()), textures.getTextureUPPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureBOTTOMPath().getPath().toString()), textures.getTextureBOTTOMPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureLEFTPath().getPath().toString()), textures.getTextureLEFTPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(parent, textures.getTextureRIGHTPath().getPath().toString()), textures.getTextureRIGHTPath().getSource())
+            };
+        }
+
         public CubeMapTexturesContainer(@NotNull ICubeMapProgram.CMTextures textures) {
-            this.textures = new JGemsPathSource[] {textures.getTextureUPPath(), textures.getTextureBOTTOMPath(), textures.getTextureFRONTPath(), textures.getTextureBACKPath(), textures.getTextureLEFTPath(), textures.getTextureRIGHTPath()};
+            this.textures = new JGemsPathSource[] {textures.getTextureFRONTPath(), textures.getTextureBACKPath(), textures.getTextureUPPath(), textures.getTextureBOTTOMPath(), textures.getTextureLEFTPath(), textures.getTextureRIGHTPath()};
         }
 
         public JGemsPathSource[] getTextures() {

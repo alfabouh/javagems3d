@@ -37,6 +37,8 @@ import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.objects.templates.WBenchTemplate;
 import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.asnapshots.WBenchSnapshotsTrace;
+import workbench.graphics.scene.ui.asnapshots.instances.WBenchSnapshotsContainer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
@@ -57,6 +59,7 @@ public final class WBenchMapProjectManager {
     private final MapObjectTemplatesManager mapObjectTemplates;
     private WBenchMapProject currentMapProject;
     private WBenchWorld world;
+    private WBenchSnapshotsTrace snapshotsTrace;
 
     public WBenchMapProjectManager() {
         this.mapObjectTemplates = new MapObjectTemplatesManager();
@@ -66,6 +69,28 @@ public final class WBenchMapProjectManager {
 
     public void setWorld(@NotNull WBenchWorld world) {
         this.world = world;
+        this.snapshotsTrace = new WBenchSnapshotsTrace((MapEditorInterface) WBenchOpenGLRenderer.getMapEditorInterface(), this.world);
+    }
+
+    public void pushSnapshot(WBenchSnapshotsContainer snapshotsContainer) {
+        this.getSnapshotsTrace().pushSnapshot(snapshotsContainer);
+    }
+
+    public void takeSnapshot() {
+        Log.get().debug("New snapshot!");
+        this.getSnapshotsTrace().pushSnapshot(this.snapshotsTrace.takeSnapshot());
+    }
+
+    public void redo() {
+        this.getSnapshotsTrace().redo();
+    }
+
+    public void undo() {
+        this.getSnapshotsTrace().undo();
+    }
+
+    public WBenchSnapshotsTrace getSnapshotsTrace() {
+        return this.snapshotsTrace;
     }
 
     public WBenchMapProject createMapProject(JGemsPath absPath, JGemsPath path, String name) {
@@ -100,7 +125,7 @@ public final class WBenchMapProjectManager {
         jsonFileManaging.writeToFile(wBenchMapProject, wBenchMapProject.getCurrentProjectPath().toFile(), null);
     }
 
-    private <T extends WBenchTemplate> void handleObjects(boolean background, @NotNull Set<RowMapObjectData> templates, @NotNull BiFunction<String, String, T> templateFinder, @NotNull BiFunction<T, RowMapObjectData, WBenchObject> objectCreator, @NotNull List<WBenchObject> defaultObjectsToCreate, Function<RowMapObjectData, T> functionCreateDefault) {
+    private <T extends WBenchTemplate> void handleObjects(boolean background, @NotNull Set<RowMapObjectData> templates, @NotNull BiFunction<String, String, T> templateFinder, @NotNull BiFunction<T, RowMapObjectData, WBenchObject<?>> objectCreator, @NotNull List<WBenchObject<?>> defaultObjectsToCreate, Function<RowMapObjectData, T> functionCreateDefault) {
         for (RowMapObjectData rowMapObjectData : templates) {
             final String name = rowMapObjectData.getObjectNameId();
             final String path = rowMapObjectData.getObjectPath();
@@ -113,7 +138,7 @@ public final class WBenchMapProjectManager {
                 }
             } catch (Exception e) {
                 {
-                    WBenchObject DEFAULT_object = objectCreator.apply(functionCreateDefault.apply(rowMapObjectData), rowMapObjectData);
+                    WBenchObject<?> DEFAULT_object = objectCreator.apply(functionCreateDefault.apply(rowMapObjectData), rowMapObjectData);
                     DEFAULT_object.setPosition(rowMapObjectData.getPosition() == null ? new Vector3f(0.0f) : rowMapObjectData.getPosition());
                     DEFAULT_object.setRotation(rowMapObjectData.getRotation() == null ? new Vector3f(0.0f) : rowMapObjectData.getRotation());
                     DEFAULT_object.setScaling(rowMapObjectData.getScaling() == null ? new Vector3f(0.0f) : rowMapObjectData.getScaling());
@@ -125,7 +150,7 @@ public final class WBenchMapProjectManager {
                 continue;
             }
 
-            WBenchObject object = objectCreator.apply(tpl, rowMapObjectData);
+            WBenchObject<?> object = objectCreator.apply(tpl, rowMapObjectData);
             object.setPosition(rowMapObjectData.getPosition() == null ? new Vector3f(0.0f) : rowMapObjectData.getPosition());
             object.setRotation(rowMapObjectData.getRotation() == null ? new Vector3f(0.0f) : rowMapObjectData.getRotation());
             object.setScaling(rowMapObjectData.getScaling() == null ? new Vector3f(0.0f) : rowMapObjectData.getScaling());
@@ -195,10 +220,10 @@ public final class WBenchMapProjectManager {
             }
 
             if (objectsData != null) {
-                final List<WBenchObject> defaultBackgroundPropsToCreate = new ArrayList<>();
-                final List<WBenchObject> defaultPropsToCreate = new ArrayList<>();
-                final List<WBenchObject> defaultEntitiesToCreate = new ArrayList<>();
-                final List<WBenchObject> defaultMarkersToCreate = new ArrayList<>();
+                final List<WBenchObject<?>> defaultBackgroundPropsToCreate = new ArrayList<>();
+                final List<WBenchObject<?>> defaultPropsToCreate = new ArrayList<>();
+                final List<WBenchObject<?>> defaultEntitiesToCreate = new ArrayList<>();
+                final List<WBenchObject<?>> defaultMarkersToCreate = new ArrayList<>();
 
                 if (objectsData.propObjects != null) {
                     this.handleObjects(
@@ -307,7 +332,7 @@ public final class WBenchMapProjectManager {
 
         final MapObjectTemplatesManager.SkyBoxTemplate skyBoxTemplate = this.getMapObjectTemplates().getSkyBoxesCache().get(skyBox.getTexture());
 
-        final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
+        final SunData sunData = new SunData(world.getEnvironment().getSkyBox().isDrawSunOnSkyBox(), sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(skyBoxTemplate.getNameId(), skyBoxTemplate.getCmTextures(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
         final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
@@ -325,12 +350,12 @@ public final class WBenchMapProjectManager {
                 for (SceneObject sceneObject : objectsCopy) {
                     if (sceneObject instanceof WBenchObject) {
                         WBenchObject wBenchObject = (WBenchObject) sceneObject;
-                        final WBenchObject.ID objectId = wBenchObject.getObjectId();
+                        final WBenchObject.ID objectId = wBenchObject.getObjectNameId();
                         final String nameId = objectId.getNameId();
 
                         for (Map.Entry<String, Set<RowMapObjectData>> entry : categoryMap.entrySet()) {
                             if (nameId.startsWith(entry.getKey())) {
-                                entry.getValue().add(new RowMapObjectData(wBenchObject.getId(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                                entry.getValue().add(new RowMapObjectData(wBenchObject.getListID(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                                 break;
                             }
                         }
@@ -339,9 +364,9 @@ public final class WBenchMapProjectManager {
                 for (SceneObject sceneObject : backgroundCopy) {
                     if (sceneObject instanceof WBenchObject) {
                         WBenchObject wBenchObject = (WBenchObject) sceneObject;
-                        final WBenchObject.ID objectId = wBenchObject.getObjectId();
+                        final WBenchObject.ID objectId = wBenchObject.getObjectNameId();
                         final String nameId = objectId.getNameId();
-                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getId(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getListID(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                     }
                 }
 

@@ -6,6 +6,7 @@ import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -13,13 +14,14 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.function.Consumer;
 
-public class WBenchShadowScene extends ShadowScene {
+public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatible<WBenchShadowScene.WBenchShadowSceneSnapshotData> {
     public WBenchShadowScene(IEnvironment environment) {
         super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
     }
@@ -69,5 +71,23 @@ public class WBenchShadowScene extends ShadowScene {
             shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
             shaderManager.performUniform(new UniformString("lightPos"), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPosition()));
         };
+    }
+
+    @Override
+    public WBenchShadowSceneSnapshotData takeSnapshot() {
+        return new WBenchShadowSceneSnapshotData(new Vector3f(this.getSunLightShadow().getCascadeSplits()));
+    }
+
+    @Override
+    public void fixSnapshot(WBenchShadowSceneSnapshotData wBenchShadowSceneSnapshotData) {
+        this.getSunLightShadow().setCascadeSplits(wBenchShadowSceneSnapshotData.cascadeSplits);
+    }
+
+    public static class WBenchShadowSceneSnapshotData implements ISnapshotCompatible.SnapshotData {
+        public final Vector3f cascadeSplits;
+
+        public WBenchShadowSceneSnapshotData(Vector3f cascadeSplits) {
+            this.cascadeSplits = cascadeSplits;
+        }
     }
 }

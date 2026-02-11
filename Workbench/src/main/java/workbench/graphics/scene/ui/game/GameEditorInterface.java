@@ -20,13 +20,11 @@ import workbench.project.map.WBenchMapProjectManager;
 public class GameEditorInterface implements DearUIInterface {
     public static boolean isCursorInsideScene;
     private final WBenchOpenGLRenderer openGLRenderer;
-    private final WBenchMapProjectManager WBenchMapProjectManager;
     private final ResourcesInterfaceComponentG resourcesInterfaceComponentG;
     private final ActionsInterfaceComponentG actionsInterfaceComponentG;
     private final WindowInterfaceComponentG windowInterfaceComponentG;
 
-    public GameEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
-        this.WBenchMapProjectManager = WBenchMapProjectManager;
+    public GameEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
         this.openGLRenderer = openGLRenderer;
         this.resourcesInterfaceComponentG = new ResourcesInterfaceComponentG();
         this.actionsInterfaceComponentG = new ActionsInterfaceComponentG(this.resourcesInterfaceComponentG);
@@ -158,9 +156,5 @@ public class GameEditorInterface implements DearUIInterface {
 
     public WBenchOpenGLRenderer getOpenGLRenderer() {
         return this.openGLRenderer;
-    }
-
-    public WBenchMapProjectManager getProjectManager() {
-        return this.WBenchMapProjectManager;
     }
 }

@@ -2,11 +2,14 @@ package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class TagCheckBoolean extends TagItem {
     public static final String TYPE_STRING = "TagCheckBoolean";
@@ -33,10 +36,13 @@ public class TagCheckBoolean extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
         boolean value = tagCheckBoolean.isFlag();
         if (ImGui.checkbox("Flag ##" + tagID.getId(), value)) {
+            if (trackingHelper != null) {
+                trackingHelper.get().takeSnapshot();
+            }
             tagCheckBoolean.setFlag(!value);
         }
     }

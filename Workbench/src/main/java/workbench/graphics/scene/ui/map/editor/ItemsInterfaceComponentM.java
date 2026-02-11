@@ -11,35 +11,46 @@ import logger.Log;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.ProjectUIUtils;
+import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class ItemsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
-
+    public int sortingMode; //0 = ID; 1 = NAME; 2 = TYPE
     public ItemsInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.clear();
+        this.sortingMode = 0;
     }
 
     public void clear() {
     }
 
+    @SuppressWarnings("all")
     public void itemsContent() {
         if (ProjectUIUtils.ctrlC()) {
             this.cloneSelected(this.getEditorInterface().getCurrentSelectedObject());
         }
-
-        for (WBenchObject wBenchObject : new HashSet<>(this.getEditorInterface().setOfSceneObjects())) {
+        final List<WBenchObject<?>> sortedSet = new ArrayList<>(this.getEditorInterface().setOfSceneObjects());
+        Comparator<WBenchObject<?>> comparator;
+        if (this.sortingMode == 0) {
+            comparator = Comparator.comparing(WBenchObject::getListID);
+        } else if (this.sortingMode == 1) {
+            comparator = Comparator.<WBenchObject<?>, String>comparing(WBenchObject::getName).thenComparing(WBenchObject::getListID);
+        } else {
+            comparator = Comparator.<WBenchObject<?>, Integer>comparing(WBenchObject::orderInList).thenComparing(WBenchObject::getListID);
+        }
+        sortedSet.sort(comparator);
+        for (WBenchObject<?> wBenchObject : sortedSet) {
             boolean flag = this.getEditorInterface().getCurrentSelectedObject() == wBenchObject;
             float x = ImGui.getContentRegionAvailX() - 50f;
-            ImGui.pushID(wBenchObject.getId());
+            ImGui.pushID(wBenchObject.getListID());
             Vector3f color = wBenchObject.textInMenuColor();
             ImGui.pushStyleColor(ImGuiCol.Text, color.x, color.y, color.z, 1.0f);
 
-            String fullText = wBenchObject.toString(false);
+            String fullText = "[" + wBenchObject.getListID() + "] " + wBenchObject.getObjectNameId().getNameId();
             String displayText = fullText;
             float textWidth = ImGui.calcTextSize(displayText).x;
             float maxWidth = Math.max(x, 0.0f);
@@ -50,18 +61,19 @@ public class ItemsInterfaceComponentM {
                 int endIndex = (int) (fullText.length() / (ratio + 0.1f));
                 endIndex = Math.max(endIndex, 0);
                 displayText = fullText.substring(0, endIndex);
+                displayText += "...";
             }
             if (ImGui.selectable(displayText, flag, ImGuiSelectableFlags.AllowItemOverlap, x, 18f)) {
                 if (!flag) {
-                    this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
+                    this.getEditorInterface().setCurrentSelectedObject(true, wBenchObject);
                     this.getEditorInterface().getActionsContent().resetObjectPreview();
                 } else {
-                    this.getEditorInterface().setCurrentSelectedObject(null);
+                    this.getEditorInterface().setCurrentSelectedObject(true, null);
                 }
             }
             if (ImGui.beginPopupContextItem(displayText)) {
                 if (ImGui.menuItem("Remove")) {
-                    this.deleteSelected(wBenchObject);
+                    this.mapEditorInterface.deleteObject(wBenchObject);
                 }
                 if (ImGui.menuItem("Clone")) {
                     this.cloneSelected(wBenchObject);
@@ -100,23 +112,24 @@ public class ItemsInterfaceComponentM {
             ImGui.popStyleColor();
             ImGui.sameLine();
             if (ImGui.button("X")) {
-                this.deleteSelected(wBenchObject);
+                this.mapEditorInterface.deleteObject(wBenchObject);
             }
             if (ImGui.isItemHovered()) {
-                ImGui.setTooltip("Remove. id: " + wBenchObject.getId());
+                ImGui.setTooltip("Remove. id: " + wBenchObject.getListID());
             }
             ImGui.sameLine();
             if (ImGui.button("C")) {
                 this.cloneSelected(wBenchObject);
             }
             if (ImGui.isItemHovered()) {
-                ImGui.setTooltip("Clone. id: " + wBenchObject.getId());
+                ImGui.setTooltip("Clone. id: " + wBenchObject.getListID());
             }
             ImGui.popID();
         }
     }
 
-    private void snap(WBenchObject wBenchObject, Vector3f direction) {
+    private void snap(WBenchObject<?> wBenchObject, Vector3f direction) {
+        WBenchUITrackingHelper.instantlyTrackAndPush();
         CullingAABB aabb = wBenchObject.getCullingData();
         if (aabb == null) {
             return;
@@ -162,25 +175,19 @@ public class ItemsInterfaceComponentM {
         wBenchObject.setPosition(hitPoint);
     }
 
-    private void deleteSelected(WBenchObject wBenchObject) {
-        if (wBenchObject.equals(this.getEditorInterface().getCurrentSelectedObject())) {
-            this.getEditorInterface().setCurrentSelectedObject(null);
-        }
-        wBenchObject.setDead();
-    }
-
-    private void cloneSelected(WBenchObject wBenchObject) {
+    private void cloneSelected(WBenchObject<?> wBenchObject) {
         if (wBenchObject == null) {
             return;
         }
-        WBenchObject cloneObj = wBenchObject.clone();
+        WBenchObject<?> cloneObj = wBenchObject.clone();
         CullingAABB cullingAABB = cloneObj.getCullingData();
 
         if (cullingAABB != null) {
             Vector3f posToCopy = cloneObj.getPosition();
             posToCopy.y += (cullingAABB.getAabbMax().y - cullingAABB.getAabbMin().y) * cloneObj.getScaling().y+ 0.5f;
-            //this.getEditorInterface().getActionsContent().spawnInWorld(cloneObj, posToCopy);
-            this.getEditorInterface().setCurrentSelectedObject(cloneObj);
+            cloneObj.setPosition(posToCopy);
+            this.getEditorInterface().addObjectInWorld(cloneObj);
+            this.getEditorInterface().setCurrentSelectedObject(false, cloneObj);
             Log.get().trace("Cloned " + cloneObj);
         }
     }

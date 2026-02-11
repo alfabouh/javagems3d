@@ -6,9 +6,9 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
@@ -26,24 +26,23 @@ import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
+import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.editor.*;
 import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.graphics.screen.WBenchScreen;
-import workbench.project.map.WBenchMapProjectManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapEditorInterface implements DearUIInterface {
+public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<MapEditorInterface.MapEditorInterfaceSnapshotData> {
     private SelectedScene selectedScene;
     private final TextEditor textEditor;
 
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
-    private final WBenchMapProjectManager WBenchMapProjectManager;
 
-    private WBenchObject currentSelectedObject;
+    private WBenchObject<?> currentSelectedObject;
     private WBenchObjectTemplate currentSelectedTemplate;
 
     private ICamera oldCamera;
@@ -56,10 +55,9 @@ public class MapEditorInterface implements DearUIInterface {
 
     public static boolean isCursorInsideScene;
 
-    public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
+    public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
         this.textEditor = new TextEditor();
 
-        this.WBenchMapProjectManager = WBenchMapProjectManager;
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
 
@@ -72,8 +70,8 @@ public class MapEditorInterface implements DearUIInterface {
     }
 
     public void resetSelected() {
-        this.setCurrentSelectedTemplate(null);
-        this.setCurrentSelectedObject(null);
+        this.currentSelectedTemplate = null;
+        this.currentSelectedObject = null;
     }
 
     public void clear() {
@@ -106,13 +104,13 @@ public class MapEditorInterface implements DearUIInterface {
 
         boolean deleteCurrentObject = ImGui.isKeyPressed(WBench.get().getBindingManager().keyDelete.getKeyCode(), false);
         if (deleteCurrentObject) {
-            this.getCurrentSelectedObject().setDead();
+            this.deleteObject(this.getCurrentSelectedObject());
         }
 
         boolean removeObjectSelection1 = this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead();
         boolean removeObjectSelection2 = ImGui.isKeyPressed(WBench.get().getBindingManager().keyEsc.getKeyCode(), false);
         if (removeObjectSelection1 || removeObjectSelection2) {
-            this.setCurrentSelectedObject(null);
+            this.setCurrentSelectedObject(true, null);
         }
 
         ImGui.beginMainMenuBar();
@@ -146,21 +144,27 @@ public class MapEditorInterface implements DearUIInterface {
         JGemsConfig.DEBUG.FULL_BRIGHT = GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
             if (ImGui.checkbox("Fog", GlobalWBenchSceneRenderingVars.VIEW_FOG)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.VIEW_FOG = !GlobalWBenchSceneRenderingVars.VIEW_FOG;
             }
             if (ImGui.checkbox("Full Bright", GlobalWBenchSceneRenderingVars.FULL_BRIGHT)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.FULL_BRIGHT = !GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
             }
             if (ImGui.checkbox("Shadows", GlobalWBenchSceneRenderingVars.VIEW_SHADOWS)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.VIEW_SHADOWS = !GlobalWBenchSceneRenderingVars.VIEW_SHADOWS;
             }
             if (ImGui.checkbox("Chess Terrain", GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN = !GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
             }
             if (ImGui.checkbox("HDR", GlobalWBenchSceneRenderingVars.VIEW_HDR)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.VIEW_HDR = !GlobalWBenchSceneRenderingVars.VIEW_HDR;
             }
             if (ImGui.checkbox("Animations", GlobalWBenchSceneRenderingVars.ANIMATIONS)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.ANIMATIONS = !GlobalWBenchSceneRenderingVars.ANIMATIONS;
             }
             ImGui.endMenu();
@@ -190,6 +194,32 @@ public class MapEditorInterface implements DearUIInterface {
             }
             ImGui.endMenu();
         }
+        ImGui.pushStyleColor(ImGuiCol.Text, 0xff45ff9a);
+        {
+            ImGui.beginDisabled(WBench.get().getMapProjectManager().getSnapshotsTrace().getUndoStack().isEmpty());
+            if (ImGui.button("<---")) {
+                WBench.get().getMapProjectManager().undo();
+            }
+            ImGui.endDisabled();
+            if (ImGui.isItemHovered()) {
+                ImGui.beginTooltip();
+                ImGui.setTooltip("Undo");
+                ImGui.endTooltip();
+            }
+        }
+        {
+            ImGui.beginDisabled(WBench.get().getMapProjectManager().getSnapshotsTrace().getRedoStack().isEmpty());
+            if (ImGui.button("--->")) {
+                WBench.get().getMapProjectManager().redo();
+            }
+            ImGui.endDisabled();
+            if (ImGui.isItemHovered()) {
+                ImGui.beginTooltip();
+                ImGui.setTooltip("Redo");
+                ImGui.endTooltip();
+            }
+        }
+        ImGui.popStyleColor();
         ImGui.endMainMenuBar();
         final float YOffset = ImGui.getFrameHeight();
 
@@ -209,11 +239,28 @@ public class MapEditorInterface implements DearUIInterface {
         final float propertiesWindowSizeX = (windowSize.x - sceneWindowSizeX) - sceneWindowOffset;
         final float propertiesWindowSizeY =  windowSize.y;
 
-        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.MenuBar);
+        {
+            ImGui.beginMenuBar();
+            if (ImGui.beginMenu("Organize")) {
+                if (ImGui.checkbox("Sort By ID", this.getItemsComponent().sortingMode == 0)) {
+                    this.getItemsComponent().sortingMode = 0;
+                }
+                if (ImGui.checkbox("Sort By Name", this.getItemsComponent().sortingMode == 1)) {
+                    this.getItemsComponent().sortingMode = 1;
+                }
+                if (ImGui.checkbox("Sort By Type", this.getItemsComponent().sortingMode == 2)) {
+                    this.getItemsComponent().sortingMode = 2;
+                }
+                ImGui.separator();
+                ImGui.endMenu();
+            }
+            ImGui.endMenuBar();
+        }
         ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY - YOffset);
         ImGui.setWindowPos(0, YOffset);
         {
-            ImGui.beginChild("##ItemsChild", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 40, true, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.beginChild("##ItemsChild", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 54, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.getItemsComponent().itemsContent();
             ImGui.endChild();
         }
@@ -223,11 +270,11 @@ public class MapEditorInterface implements DearUIInterface {
         ImGui.beginMenuBar();
         ImGui.pushStyleColor(ImGuiCol.Text, 0xffaaff67);
         if (ImGui.menuItem(SelectedScene.MAIN.name(), "##" + SelectedScene.MAIN.name(), this.getSelectedScene().equals(SelectedScene.MAIN))) {
-            this.selectedScene = SelectedScene.MAIN;
+            this.setSelectedScene(SelectedScene.MAIN);
             this.resetSelected();
         }
         if (ImGui.menuItem(SelectedScene.BACKGROUND.name(), "##" + SelectedScene.BACKGROUND.name(), this.getSelectedScene().equals(SelectedScene.BACKGROUND))) {
-            this.selectedScene = SelectedScene.BACKGROUND;
+            this.setSelectedScene(SelectedScene.BACKGROUND);
             this.resetSelected();
         }
         ImGui.popStyleColor();
@@ -286,7 +333,8 @@ public class MapEditorInterface implements DearUIInterface {
         }
     }
 
-    public void addObjectInWorld(WBenchObject wBenchObject) {
+    public void addObjectInWorld(WBenchObject<?> wBenchObject) {
+        WBenchUITrackingHelper.instantlyTrackAndPush();
         switch (this.getSelectedScene()) {
             case MAIN: {
                 this.getOpenGLRenderer().getWorld().addObject(wBenchObject);
@@ -299,13 +347,21 @@ public class MapEditorInterface implements DearUIInterface {
         }
     }
 
-    public Set<WBenchObject> setOfSceneObjects() {
+    public void deleteObject(WBenchObject<?> wBenchObject) {
+        WBenchUITrackingHelper.instantlyTrackAndPush();
+        if (wBenchObject.equals(this.getCurrentSelectedObject())) {
+            this.setCurrentSelectedObject(true, null);
+        }
+        wBenchObject.setDead();
+    }
+
+    public Set<WBenchObject<?>> setOfSceneObjects() {
         switch (this.getSelectedScene()) {
             case MAIN: {
                 return this.getOpenGLRenderer().getWorld().getSceneObjects();
             }
             case BACKGROUND: {
-                return this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects().stream().map(e -> (WBenchObject) e).collect(Collectors.toSet());
+                return this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects().stream().map(e -> (WBenchObject<?>) e).collect(Collectors.toSet());
             }
             default: {
                 return null;
@@ -313,12 +369,22 @@ public class MapEditorInterface implements DearUIInterface {
         }
     }
 
+    public MapEditorInterface setSelectedScene(SelectedScene selectedScene) {
+        WBenchUITrackingHelper.instantlyTrackAndPush();
+        this.selectedScene = selectedScene;
+        return this;
+    }
+
     public void setCurrentSelectedTemplate(WBenchObjectTemplate currentSelectedTemplate) {
+        WBenchUITrackingHelper.instantlyTrackAndPush();
         this.currentSelectedTemplate = currentSelectedTemplate;
     }
 
-    public void setCurrentSelectedObject(WBenchObject currentSelectedObject) {
+    public void setCurrentSelectedObject(boolean snapshot, WBenchObject<?> currentSelectedObject) {
         synchronized (MapEditorInterface.monitor) {
+            if (snapshot) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
+            }
             this.currentSelectedObject = currentSelectedObject;
         }
     }
@@ -359,7 +425,7 @@ public class MapEditorInterface implements DearUIInterface {
         return this.currentSelectedTemplate;
     }
 
-    public WBenchObject getCurrentSelectedObject() {
+    public WBenchObject<?> getCurrentSelectedObject() {
         return this.currentSelectedObject;
     }
 
@@ -367,11 +433,52 @@ public class MapEditorInterface implements DearUIInterface {
         return this.openGLRenderer;
     }
 
-    public WBenchMapProjectManager getProjectManager() {
-        return this.WBenchMapProjectManager;
-    }
-
     public @NotNull WBenchWorld getWorld() {
         return this.getOpenGLRenderer().getWorld();
+    }
+
+    @Override
+    public MapEditorInterfaceSnapshotData takeSnapshot() {
+        return new MapEditorInterfaceSnapshotData(this.getSelectedScene(), this.getCurrentSelectedObject(), this.getCurrentSelectedTemplate());
+    }
+
+    @Override
+    public void fixSnapshot(MapEditorInterfaceSnapshotData mapEditorInterfaceSnapshotData) {
+        this.selectedScene = mapEditorInterfaceSnapshotData.selectedScene;
+        this.currentSelectedTemplate = mapEditorInterfaceSnapshotData.currentSelectedTemplate;
+        this.currentSelectedObject = mapEditorInterfaceSnapshotData.currentSelectedObject;
+        {
+            JGemsConfig.DEBUG.SHOW_CASCADES = mapEditorInterfaceSnapshotData.globalVars.SHOW_CASCADES;
+            GlobalWBenchSceneRenderingVars.VIEW_FOG = mapEditorInterfaceSnapshotData.globalVars.VIEW_FOG;
+            GlobalWBenchSceneRenderingVars.FULL_BRIGHT = mapEditorInterfaceSnapshotData.globalVars.FULL_BRIGHT;
+            GlobalWBenchSceneRenderingVars.VIEW_SHADOWS = mapEditorInterfaceSnapshotData.globalVars.VIEW_SHADOWS;
+            GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN = mapEditorInterfaceSnapshotData.globalVars.VIEW_CHESS_TERRAIN;
+            GlobalWBenchSceneRenderingVars.VIEW_HDR = mapEditorInterfaceSnapshotData.globalVars.VIEW_HDR;
+            GlobalWBenchSceneRenderingVars.ANIMATIONS = mapEditorInterfaceSnapshotData.globalVars.ANIMATIONS;
+        }
+    }
+
+    public static class MapEditorInterfaceSnapshotData implements ISnapshotCompatible.SnapshotData {
+        public SelectedScene selectedScene;
+        public WBenchObject<?> currentSelectedObject;
+        public WBenchObjectTemplate currentSelectedTemplate;
+        public GlobalVars globalVars;
+
+        public MapEditorInterfaceSnapshotData(SelectedScene selectedScene, WBenchObject<?> currentSelectedObject, WBenchObjectTemplate currentSelectedTemplate) {
+            this.selectedScene = selectedScene;
+            this.currentSelectedObject = currentSelectedObject;
+            this.currentSelectedTemplate = currentSelectedTemplate;
+            this.globalVars = new GlobalVars();
+        }
+
+        public static class GlobalVars {
+            public final boolean SHOW_CASCADES = JGemsConfig.DEBUG.SHOW_CASCADES;
+            public final boolean VIEW_FOG = GlobalWBenchSceneRenderingVars.VIEW_FOG;
+            public final boolean FULL_BRIGHT = GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
+            public final boolean VIEW_SHADOWS = GlobalWBenchSceneRenderingVars.VIEW_SHADOWS;
+            public final boolean VIEW_CHESS_TERRAIN = GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
+            public final boolean VIEW_HDR = GlobalWBenchSceneRenderingVars.VIEW_HDR;
+            public final boolean ANIMATIONS = GlobalWBenchSceneRenderingVars.ANIMATIONS;
+        }
     }
 }

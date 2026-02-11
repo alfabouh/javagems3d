@@ -11,6 +11,7 @@ public interface ISkyBox {
     void updateSkyBox(IWorld world, ICamera camera);
     void createSkyBox(IWorld world);
     void destroySkyBox(IWorld world);
+    boolean isDrawSunOnSkyBox();
 
     ISkyBackground getBackground();
     ICubeMapProgram getTexture();

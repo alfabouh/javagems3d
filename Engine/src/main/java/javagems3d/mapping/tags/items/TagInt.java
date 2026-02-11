@@ -1,6 +1,7 @@
 package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagID;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +9,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class TagInt extends TagItem {
     public static final String TYPE_STRING = "TagInt";
@@ -46,11 +48,16 @@ public class TagInt extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagInt tagInt = (TagInt) tagItem;
-        int[] value = new int[] {tagInt.getValue()};
-        if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
-            tagInt.setValue(JGemsHelper.math().clamp(value[0], tagInt.getMin(), tagInt.getMax()));
+        if (trackingHelper != null && currentSelected != null) {
+            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagIntTAG_" + currentSelected, trackingHelper)) {
+                int[] value = new int[]{tagInt.getValue()};
+                if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
+                    uiTrackingHelper.saveSnapshot();
+                    tagInt.setValue(JGemsHelper.math().clamp(value[0], tagInt.getMin(), tagInt.getMax()));
+                }
+            }
         }
     }
 

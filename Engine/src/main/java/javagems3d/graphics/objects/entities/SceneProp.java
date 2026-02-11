@@ -22,9 +22,9 @@ import java.util.List;
 
 public abstract class SceneProp extends SceneObject implements IWorldTicked {
     private final String name;
-    private final IModelConstructor<Void, ? extends IMesh> propModelConstructor;
-    private boolean isVisible;
-    private boolean isDead;
+    protected final IModelConstructor<Void, ? extends IMesh> propModelConstructor;
+    protected boolean isVisible;
+    protected boolean isDead;
 
     public SceneProp(@NotNull String name, @NotNull IRenderWorld world, @NotNull PropRenderData propRenderData) {
         super(world, new Model3D(new Pose3D(), propRenderData.getMeshDataGroup()), propRenderData.getObjectRenderAttributes());

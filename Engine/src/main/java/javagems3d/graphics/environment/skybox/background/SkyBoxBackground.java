@@ -16,11 +16,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 public abstract class SkyBoxBackground implements ISkyBackground {
-    private final Set<SceneProp> toRenderSet;
-    private final FixedCamera scaledCameraBackground;
+    protected final Set<SceneProp> toRenderSet;
+    protected final FixedCamera scaledCameraBackground;
     private final IWorld world;
-    private float viewScaling;
-    private final SceneCulling sceneCulling;
+    protected float viewScaling;
+    protected final SceneCulling sceneCulling;
 
     public SkyBoxBackground(IWorld world, float viewScaling) {
         this.toRenderSet = new HashSet<>();

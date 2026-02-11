@@ -14,11 +14,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class AssetsChooseCombo <T extends IAsset> {
-    private final Supplier<GameResourceAssetsFolder<T>> folderSupplier;
+public class AssetsChooseCombo <T extends AbstractObjectsFolder.ObjectWithName> {
+    private final Supplier<AbstractObjectsFolder<T>> folderSupplier;
     private final String tab;
 
-    public AssetsChooseCombo(@NotNull String tab, @NotNull Supplier<GameResourceAssetsFolder<T>> folderSupplier) {
+    public AssetsChooseCombo(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> folderSupplier) {
         this.folderSupplier = folderSupplier;
         this.tab = tab;
     }
@@ -52,7 +52,7 @@ public class AssetsChooseCombo <T extends IAsset> {
         AssetsChooseCombo.parseTreeS(folder, allAssets);
     }
 
-    public static <E extends IAsset> void parseTreeS(AbstractObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
+    public static <E extends AbstractObjectsFolder.ObjectWithName> void parseTreeS(AbstractObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
         for (E asset : folder.getObjectsThere()) {
             allModelsAsset.add(new Pair<>(folder.getHierarchy() + "/" + asset.getName(), asset));
         }
@@ -65,7 +65,7 @@ public class AssetsChooseCombo <T extends IAsset> {
         return this.tab;
     }
 
-    public Supplier<GameResourceAssetsFolder<T>> getFolderSupplier() {
+    public Supplier<AbstractObjectsFolder<T>> getFolderSupplier() {
         return this.folderSupplier;
     }
 }

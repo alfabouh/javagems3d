@@ -2,8 +2,8 @@ package workbench.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
 import org.lwjgl.system.MemoryStack;
@@ -14,7 +14,7 @@ import workbench.graphics.environment.components.WBenchSkyBox;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
-public class WBenchEnvironment implements IEnvironment {
+public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBenchEnvironment.WBenchEnvironmentSnapshotData> {
     private final WBenchShadowScene shadowScene;
     private final WBenchLightScene lightManager;
     private final WBenchSkyBox skyBox;
@@ -72,7 +72,31 @@ public class WBenchEnvironment implements IEnvironment {
         return this.fogManager;
     }
 
-    public SkyBox getSkyBox() {
+    public WBenchSkyBox getSkyBox() {
         return this.skyBox;
+    }
+
+    @Override
+    public WBenchEnvironmentSnapshotData takeSnapshot() {
+        return new WBenchEnvironmentSnapshotData(this.getShadowScene().takeSnapshot(), this.getSkyBox().takeSnapshot(), this.getFogScene().takeSnapshot());
+    }
+
+    @Override
+    public void fixSnapshot(WBenchEnvironmentSnapshotData wBenchEnvironmentSnapshotData) {
+        this.getShadowScene().fixSnapshot(wBenchEnvironmentSnapshotData.shadowScene);
+        this.getSkyBox().fixSnapshot(wBenchEnvironmentSnapshotData.skyBox);
+        this.getFogScene().fixSnapshot(wBenchEnvironmentSnapshotData.fogManager);
+    }
+
+    public static class WBenchEnvironmentSnapshotData implements ISnapshotCompatible.SnapshotData {
+        public final WBenchShadowScene.WBenchShadowSceneSnapshotData shadowScene;
+        public final WBenchSkyBox.WBenchSkyBoxSnapshotData skyBox;
+        public final WBenchFogScene.WBenchFogSceneSnapshotData fogManager;
+
+        public WBenchEnvironmentSnapshotData(WBenchShadowScene.WBenchShadowSceneSnapshotData shadowScene, WBenchSkyBox.WBenchSkyBoxSnapshotData skyBox, WBenchFogScene.WBenchFogSceneSnapshotData fogManager) {
+            this.shadowScene = shadowScene;
+            this.skyBox = skyBox;
+            this.fogManager = fogManager;
+        }
     }
 }

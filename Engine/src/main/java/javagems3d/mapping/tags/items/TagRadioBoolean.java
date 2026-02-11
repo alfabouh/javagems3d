@@ -2,6 +2,7 @@ package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
 import imgui.ImGui;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,9 @@ import javagems3d.system.service.collections.Pair;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 public class TagRadioBoolean extends TagItem {
@@ -43,12 +47,15 @@ public class TagRadioBoolean extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
         TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
         for (int i = 0; i < infos.length; i++) {
             boolean selected = infos[i].isFlag();
             if (ImGui.radioButton(infos[i].getName(), selected)) {
+                if (trackingHelper != null) {
+                    trackingHelper.get().takeSnapshot();
+                }
                 for (int j = 0; j < infos.length; j++) {
                     infos[j].setFlag(j == i);
                 }

@@ -3,6 +3,7 @@ package workbench.graphics.objects;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
+import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
@@ -16,10 +17,10 @@ import workbench.graphics.scene.world.WBenchWorld;
 
 import java.util.Objects;
 
-public abstract class WBenchObject extends SceneProp {
+public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> extends SceneProp implements ISnapshotCompatible<E> {
     private int id;
     private final WBenchObject.ID objectId;
-    private final TagsContainer tagsContainer;
+    private TagsContainer tagsContainer;
     private final TranslationConstraints translationConstraints;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
@@ -69,6 +70,7 @@ public abstract class WBenchObject extends SceneProp {
     protected abstract void onRotate(Vector3f rotation);
     protected abstract void onScale(Vector3f scaling);
     public abstract Vector3f textInMenuColor();
+    public abstract int orderInList();
 
     public synchronized Vector3f getPosition() {
         return this.getModel().getPose().getPosition();
@@ -84,6 +86,11 @@ public abstract class WBenchObject extends SceneProp {
 
     public synchronized TagsContainer getTagsContainer() {
         return this.tagsContainer;
+    }
+
+    public synchronized WBenchObject<E> setTagsContainer(TagsContainer tagsContainer) {
+        this.tagsContainer = tagsContainer;
+        return this;
     }
 
     public WBenchObject setId(int id) {
@@ -112,7 +119,7 @@ public abstract class WBenchObject extends SceneProp {
     }
 
     public String toString(boolean textPosition) {
-        return "[" + this.getId() + "] " + this.getObjectId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
+        return "[" + this.getListID() + "] " + this.getObjectNameId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
     }
 
     @Override
@@ -125,11 +132,11 @@ public abstract class WBenchObject extends SceneProp {
         return Objects.hashCode(this.id);
     }
 
-    public ID getObjectId() {
+    public ID getObjectNameId() {
         return this.objectId;
     }
 
-    public int getId() {
+    public int getListID() {
         return this.id;
     }
 
@@ -157,6 +164,27 @@ public abstract class WBenchObject extends SceneProp {
         @Override
         public String toString() {
             return this.getObjectPath() + "/" + this.getNameId();
+        }
+    }
+
+    public abstract static class WBenchObjectSnapshotData implements ISnapshotCompatible.SnapshotData {
+        public final TagsContainer tagsContainer;
+        public final TranslationConstraints translationConstraints;
+        public final boolean isVisible;
+        public final boolean isDead;
+
+        public final Vector3f pos;
+        public final Vector3f rot;
+        public final Vector3f scale;
+
+        public WBenchObjectSnapshotData(TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+            this.tagsContainer = tagsContainer;
+            this.translationConstraints = translationConstraints;
+            this.isVisible = isVisible;
+            this.isDead = isDead;
+            this.pos = pos;
+            this.rot = rot;
+            this.scale = scale;
         }
     }
 }

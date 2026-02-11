@@ -2,6 +2,7 @@ package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
@@ -10,6 +11,8 @@ import javagems3d.system.service.collections.Pair;
 import org.joml.Vector4f;
 import org.jetbrains.annotations.Nullable;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class TagVector extends TagItem {
     public static final String TYPE_STRING = "TagVector";
@@ -54,7 +57,7 @@ public class TagVector extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagVector tagVector = (TagVector) tagItem;
         Vector4f vec = tagVector.getValues();
         float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};
@@ -74,6 +77,9 @@ public class TagVector extends TagItem {
         }
 
         if (changed) {
+            if (trackingHelper != null) {
+                trackingHelper.get().takeSnapshot();
+            }
             float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
             float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
             float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());

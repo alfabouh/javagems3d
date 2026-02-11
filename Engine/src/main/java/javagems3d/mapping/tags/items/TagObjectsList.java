@@ -3,6 +3,7 @@ package javagems3d.mapping.tags.items;
 import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
@@ -10,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class TagObjectsList extends TagItem {
     public static final String TYPE_STRING = "TagObjectsList";
@@ -40,7 +43,7 @@ public class TagObjectsList extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagObjectsList tagList = (TagObjectsList) tagItem;
 
         List<Pair<Integer, SceneObject>> objectList = new ArrayList<>(sceneObjectsIDSet);
@@ -61,6 +64,9 @@ public class TagObjectsList extends TagItem {
 
         ImInt curr = new ImInt(currentIndex);
         if (ImGui.combo("##" + tagID.getDescription(), curr, items, 6)) {
+            if (trackingHelper != null) {
+                trackingHelper.get().takeSnapshot();
+            }
             currentIndex = curr.get();
             if (currentIndex == 0) {
                 tagList.setValue(-1);

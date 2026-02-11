@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 import java.lang.reflect.Type;
 
 public class SunData implements SectionData<SunData> {
+    public boolean drawSunOnSkyBox;
     public float brightness;
     public Vector3f color;
     public Vector3f position;
@@ -18,7 +19,8 @@ public class SunData implements SectionData<SunData> {
     private SunData() {
     }
 
-    public SunData(float brightness, Vector3f color, Vector3f position) {
+    public SunData(boolean drawSunOnSkyBox, float brightness, Vector3f color, Vector3f position) {
+        this.drawSunOnSkyBox = drawSunOnSkyBox;
         this.brightness = brightness;
         this.color = color;
         this.position = position;
@@ -31,6 +33,7 @@ public class SunData implements SectionData<SunData> {
             public JsonElement write(SunData toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
+                    jsonObject.add("drawSunOnSkyBox", context.serialize(toWrite.drawSunOnSkyBox));
                     jsonObject.add("brightness", context.serialize(toWrite.brightness));
                     jsonObject.add("color", context.serialize(toWrite.color));
                     jsonObject.add("position", context.serialize(toWrite.position));
@@ -47,7 +50,8 @@ public class SunData implements SectionData<SunData> {
                     float brightness = context.deserialize(jsonObject.get("brightness"), Float.class);
                     Vector3f color = context.deserialize(jsonObject.get("color"), Vector3f.class);
                     Vector3f position = context.deserialize(jsonObject.get("position"), Vector3f.class);
-                    return new SunData(brightness, color, position);
+                    boolean drawSunOnSkyBox = context.deserialize(jsonObject.get("drawSunOnSkyBox"), Boolean.class);
+                    return new SunData(drawSunOnSkyBox, brightness, color, position);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

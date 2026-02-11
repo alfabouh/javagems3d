@@ -6,6 +6,7 @@ import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -17,13 +18,13 @@ import workbench.graphics.objects.WBenchObject;
 
 import java.util.*;
 
-public class WBenchWorld implements IRenderWorld {
+public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorld.WBenchWorldSnapshotData> {
     private final Queue<Integer> freeIds;
     private ICamera camera;
     private WBenchEnvironment environment;
     private Set<? extends SceneObject> endFrameVisibleObjects;
-    private final Set<WBenchObject> toRenderSet;
-    private final Map<Integer, WBenchObject> idMap;
+    private final Set<WBenchObject<?>> toRenderSet;
+    private final Map<Integer, WBenchObject<?>> idMap;
     private int ticks;
 
     public WBenchWorld() {
@@ -57,12 +58,12 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void updateWorldObjects(FrameTicking frameTicking) {
-        Iterator<WBenchObject> iterator = this.getSceneObjects().iterator();
+        Iterator<WBenchObject<?>> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
-            WBenchObject sceneObject = iterator.next();
+            WBenchObject<?> sceneObject = iterator.next();
             if (sceneObject.isDead()) {
                 Log.get().info("Removed object: " + sceneObject);
-                int id = sceneObject.getId();
+                int id = sceneObject.getListID();
                 if (this.getIdMap().remove(id) != null) {
                     this.getFreeIds().add(id);
                 } else {
@@ -79,7 +80,7 @@ public class WBenchWorld implements IRenderWorld {
 
     private void clearAll() {
         this.getFreeIds().clear();
-        Iterator<WBenchObject> iterator = this.getSceneObjects().iterator();
+        Iterator<WBenchObject<?>> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
             sceneObject.onDestroy(this);
@@ -102,8 +103,8 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void addObject(SceneObject renderObject) {
-        WBenchObject wBenchObject = (WBenchObject) renderObject;
-        int id = wBenchObject.getId();
+        WBenchObject<?> wBenchObject = (WBenchObject<?>) renderObject;
+        int id = wBenchObject.getListID();
         if (id < 0) {
             if (!this.getFreeIds().isEmpty()) {
                 Integer freeId = this.getFreeIds().poll();
@@ -123,8 +124,8 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void removeObject(SceneObject renderObject) {
-        WBenchObject wBenchObject = (WBenchObject) renderObject;
-        int id = wBenchObject.getId();
+        WBenchObject<?> wBenchObject = (WBenchObject<?>) renderObject;
+        int id = wBenchObject.getListID();
         if (this.getIdMap().remove(id) != null) {
             this.getFreeIds().add(id);
         } else {
@@ -143,9 +144,9 @@ public class WBenchWorld implements IRenderWorld {
         int maxId = -1;
 
         for (SceneProp sceneObject : wBenchObjects) {
-            WBenchObject wBenchObject = (WBenchObject) sceneObject;
+            WBenchObject<?> wBenchObject = (WBenchObject<?>) sceneObject;
             if (sceneObject != null) {
-                int id = wBenchObject.getId();
+                int id = wBenchObject.getListID();
                 if (id >= 0) {
                     usedIds.set(id);
                     maxId = Math.max(maxId, id);
@@ -177,7 +178,7 @@ public class WBenchWorld implements IRenderWorld {
         this.camera = camera;
     }
 
-    public Map<Integer, WBenchObject> getIdMap() {
+    public Map<Integer, WBenchObject<?>> getIdMap() {
         return this.idMap;
     }
 
@@ -189,11 +190,59 @@ public class WBenchWorld implements IRenderWorld {
         return this.camera;
     }
 
-    public Set<WBenchObject> getSceneObjects() {
+    public Set<WBenchObject<?>> getSceneObjects() {
         return this.toRenderSet;
     }
 
     public int getTicks() {
         return this.ticks;
+    }
+
+    @Override
+    public WBenchWorldSnapshotData takeSnapshot() {
+        return new WBenchWorldSnapshotData(new ArrayDeque<>(this.freeIds), new HashSet<>(this.getSceneObjects()), new HashMap<>(this.idMap), this.getEnvironment().takeSnapshot());
+    }
+
+    @SuppressWarnings("all")
+    @Override
+    public void fixSnapshot(WBenchWorldSnapshotData wBenchWorldSnapshotData) {
+        this.freeIds.clear();
+        this.freeIds.addAll(wBenchWorldSnapshotData.freeIds);
+        this.idMap.clear();
+        this.idMap.putAll(wBenchWorldSnapshotData.idMap);
+        this.toRenderSet.clear();
+        this.toRenderSet.addAll(wBenchWorldSnapshotData.toRenderSet);
+        this.getEnvironment().fixSnapshot(wBenchWorldSnapshotData.environment);
+
+        for (WBenchObject<?> wBenchObject : this.toRenderSet) {
+            if (wBenchWorldSnapshotData.snapshotDataMap.containsKey(wBenchObject)) {
+                WBenchObject<WBenchObject.WBenchObjectSnapshotData> wBenchObject1 = (WBenchObject<WBenchObject.WBenchObjectSnapshotData>) wBenchObject;
+                wBenchObject1.fixSnapshot(wBenchWorldSnapshotData.snapshotDataMap.get(wBenchObject));
+            }
+        }
+    }
+
+    public static class WBenchWorldSnapshotData implements ISnapshotCompatible.SnapshotData {
+        public final Queue<Integer> freeIds;
+        public final Set<WBenchObject<?>> toRenderSet;
+        public final Map<Integer, WBenchObject<?>> idMap;
+
+        public final WBenchEnvironment.WBenchEnvironmentSnapshotData environment;
+        public final Map<WBenchObject<?>, WBenchObject.WBenchObjectSnapshotData> snapshotDataMap;
+
+        @SuppressWarnings("all")
+        public WBenchWorldSnapshotData(Queue<Integer> freeIds, Set<WBenchObject<?>> toRenderSet, Map<Integer, WBenchObject<?>> idMap, WBenchEnvironment.WBenchEnvironmentSnapshotData environment) {
+            this.freeIds = freeIds;
+            this.toRenderSet = toRenderSet;
+            this.idMap = idMap;
+            this.environment = environment;
+
+            this.snapshotDataMap = new HashMap<>();
+
+            for (WBenchObject<?> wBenchObject : this.toRenderSet) {
+                WBenchObject<? extends WBenchObject.WBenchObjectSnapshotData> wBenchObject1 = (WBenchObject<? extends WBenchObject.WBenchObjectSnapshotData>) wBenchObject;
+                this.snapshotDataMap.put(wBenchObject, wBenchObject1.takeSnapshot());
+            }
+        }
     }
 }

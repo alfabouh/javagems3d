@@ -28,6 +28,7 @@ uniform sampler2D skybox_background;
 uniform uvec2 skybox_cube;
 uniform mat4 view_mat_inverted;
 uniform bool covered_by_fog;
+uniform float draw_sun_mult;
 
 void main()
 {
@@ -44,7 +45,7 @@ void main()
     vec2 texel_size = textureSize(skybox_background, 0);
     vec4 background = texture(skybox_background, gl_FragCoord.xy / texel_size);
 
-    vec3 sunEffect = color.xyz * brightness * sunFactor;
+    vec3 sunEffect = color.xyz * brightness * sunFactor * draw_sun_mult;
     vec4 tex2d_colors = vec4((diffuse.rgb * brightness) + sunEffect, 1.0);
 
     frag_color = tex2d_colors;

@@ -8,12 +8,13 @@ import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
+import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.SelectedScene;
 import workbench.project.map.MapObjectTemplatesManager;
 
 import java.util.Map;
@@ -41,7 +42,7 @@ public class InterfaceEnvSkyM {
 
     public void render() {
         WBenchEnvironment environment = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment();
-        ImGui.text("Sun");
+        ImGui.bulletText("Sun Adjusting");
 
         if (ImGui.checkbox("Sun's View", this.isCameraCheckBox())) {
             if (this.isCameraCheckBox()) {
@@ -55,23 +56,34 @@ public class InterfaceEnvSkyM {
                 this.mapEditorInterface.overrideCamera(this.sunCamera);
             }
         }
-
-        float[] brightness = new float[] {environment.getSkyBox().getSun().getSunBrightness()};
-        if (ImGui.sliderFloat("Brightness", brightness, 0.0f, 5.0f)) {
-            environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
+        if (ImGui.checkbox("Render Sun Effect", environment.getSkyBox().isDrawSunOnSkyBox())) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            environment.getSkyBox().setDrawSunOnSkyBox(!environment.getSkyBox().isDrawSunOnSkyBox());
+        }
+        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_brightness", WBenchUITrackingHelper::INSTANCE)) {
+            float[] brightness = new float[]{environment.getSkyBox().getSun().getSunBrightness()};
+            if (ImGui.sliderFloat("Brightness", brightness, 0.0f, 5.0f)) {
+                uiTrackingHelper.saveSnapshot();
+                environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
+            }
+        }
+        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_fogColor", WBenchUITrackingHelper::INSTANCE)) {
+            float[] fogColor = new float[]{environment.getSkyBox().getSun().getLightColor().x, environment.getSkyBox().getSun().getLightColor().y, environment.getSkyBox().getSun().getLightColor().z};
+            if (ImGui.colorEdit3("Color", fogColor)) {
+                uiTrackingHelper.saveSnapshot();
+                environment.getSkyBox().getSun().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+            }
         }
 
-        float[] fogColor = new float[] {environment.getSkyBox().getSun().getLightColor().x, environment.getSkyBox().getSun().getLightColor().y, environment.getSkyBox().getSun().getLightColor().z};
-        if (ImGui.colorEdit3("Color", fogColor)) {
-            environment.getSkyBox().getSun().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
-        }
-
-        float[] sunPosition = {environment.getSkyBox().getSun().getLightPosition().x, environment.getSkyBox().getSun().getLightPosition().y, environment.getSkyBox().getSun().getLightPosition().z};
-        if (ImGui.sliderFloat3("Angle", sunPosition, -1.0f, 1.0f)) {
-            environment.getSkyBox().getSun().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
-            Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
-            this.sunCamera.setCameraPosition(camData.getFirst());
-            this.sunCamera.setLookAt(camData.getSecond());
+        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_sunPosition", WBenchUITrackingHelper::INSTANCE)) {
+            float[] sunPosition = {environment.getSkyBox().getSun().getLightPosition().x, environment.getSkyBox().getSun().getLightPosition().y, environment.getSkyBox().getSun().getLightPosition().z};
+            if (ImGui.sliderFloat3("Angle", sunPosition, -1.0f, 1.0f)) {
+                uiTrackingHelper.saveSnapshot();
+                environment.getSkyBox().getSun().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
+                Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
+                this.sunCamera.setCameraPosition(camData.getFirst());
+                this.sunCamera.setLookAt(camData.getSecond());
+            }
         }
 
         ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffa7);
@@ -82,6 +94,7 @@ public class InterfaceEnvSkyM {
             for (String scale : scales) {
                 float selectedScaling = Float.parseFloat(scale);
                 if (ImGui.selectable(scale, background.getViewScaling() == selectedScaling)) {
+                    WBenchUITrackingHelper.instantlyTrackAndPush();
                     background.setViewScaling(selectedScaling);
                 }
             }
@@ -90,30 +103,34 @@ public class InterfaceEnvSkyM {
         ImGui.popStyleColor();
 
         ImGui.separator();
-        ImGui.text("Sky Texture");
-        Set<Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate>> skyBoxes = WBench.get().getMapProjectManager().getMapObjectTemplates().getSkyBoxes().entrySet();
-        if (!skyBoxes.isEmpty()) {
-            SkyBox skyBox = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
-            ICubeMapProgram currentSky = skyBox.getTexture();
-            ImGui.treePush();
-            for (Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate> cubeMapProgramPair : skyBoxes) {
-                boolean flag = currentSky == cubeMapProgramPair.getValue().getCubeMapProgram();
-                ImGui.pushID(cubeMapProgramPair.getKey());
+        if (ImGui.treeNodeEx("Sky Textures")) {
+            Set<Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate>> skyBoxes = WBench.get().getMapProjectManager().getMapObjectTemplates().getSkyBoxes().entrySet();
+            if (!skyBoxes.isEmpty()) {
+                SkyBox skyBox = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
+                ICubeMapProgram currentSky = skyBox.getTexture();
+                ImGui.treePush();
                 if (ImGui.selectable("None", currentSky == null, ImGuiSelectableFlags.AllowItemOverlap)) {
+                    WBenchUITrackingHelper.instantlyTrackAndPush();
                     skyBox.setSky2DTexture(null);
                 }
-                if (ImGui.selectable(cubeMapProgramPair.getKey(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
-                    if (!flag) {
-                        skyBox.setSky2DTexture(cubeMapProgramPair.getValue().getCubeMapProgram());
-                    } else {
-                        skyBox.setSky2DTexture(null);
+                for (Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate> cubeMapProgramPair : skyBoxes) {
+                    boolean flag = currentSky == cubeMapProgramPair.getValue().getCubeMapProgram();
+                    ImGui.pushID(cubeMapProgramPair.getKey());
+                    if (ImGui.selectable(cubeMapProgramPair.getKey(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
+                        WBenchUITrackingHelper.instantlyTrackAndPush();
+                        if (!flag) {
+                            skyBox.setSky2DTexture(cubeMapProgramPair.getValue().getCubeMapProgram());
+                        } else {
+                            skyBox.setSky2DTexture(null);
+                        }
                     }
+                    ImGui.popID();
                 }
-                ImGui.popID();
+                ImGui.treePop();
+            } else {
+                ImGui.text("Empty");
             }
             ImGui.treePop();
-        } else {
-            ImGui.text("Empty");
         }
     }
 

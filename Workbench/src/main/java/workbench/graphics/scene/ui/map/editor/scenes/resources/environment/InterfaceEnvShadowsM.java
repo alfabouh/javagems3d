@@ -1,9 +1,11 @@
 package workbench.graphics.scene.ui.map.editor.scenes.resources.environment;
 
 import imgui.ImGui;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.system.global.JGemsConfig;
 import org.joml.Vector3f;
 import workbench.graphics.environment.WBenchEnvironment;
+import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 public class InterfaceEnvShadowsM {
@@ -14,12 +16,16 @@ public class InterfaceEnvShadowsM {
     }
 
     public void render() {
-        WBenchEnvironment environment = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment();
-        float[] shadowSplits = new float[]{environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
-        if (ImGui.dragFloat2("LOD Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
-            environment.getShadowScene().getSunLightShadow().setCascadeSplits(new Vector3f(shadowSplits));
+        WBenchEnvironment environment = this.mapEditorInterface.getWorld().getEnvironment();
+        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_shadowSplits", WBenchUITrackingHelper::INSTANCE)) {
+            float[] shadowSplits = new float[]{environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
+            if (ImGui.dragFloat2("LOD Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
+                uiTrackingHelper.saveSnapshot();
+                environment.getShadowScene().getSunLightShadow().setCascadeSplits(new Vector3f(shadowSplits));
+            }
         }
         if (ImGui.checkbox("Show Cascades", JGemsConfig.DEBUG.SHOW_CASCADES)) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
             JGemsConfig.DEBUG.SHOW_CASCADES = !JGemsConfig.DEBUG.SHOW_CASCADES;
         }
         if (ImGui.treeNodeEx("Level 1 (Shadow Map)")) {

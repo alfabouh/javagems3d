@@ -7,14 +7,14 @@ public interface ICubeMapProgram extends ITextureProgram {
     Vector2i[] getSize();
 
     class CMTextures {
-        private JGemsPathSource textureUPPath;
-        private JGemsPathSource textureBOTTOMPath;
         private JGemsPathSource textureFRONTPath;
         private JGemsPathSource textureBACKPath;
+        private JGemsPathSource textureUPPath;
+        private JGemsPathSource textureBOTTOMPath;
         private JGemsPathSource textureLEFTPath;
         private JGemsPathSource textureRIGHTPath;
 
-        public CMTextures(JGemsPathSource textureUPPath, JGemsPathSource textureBOTTOMPath, JGemsPathSource textureFRONTPath, JGemsPathSource textureBACKPath, JGemsPathSource textureLEFTPath, JGemsPathSource textureRIGHTPath) {
+        public CMTextures(JGemsPathSource textureFRONTPath, JGemsPathSource textureBACKPath, JGemsPathSource textureUPPath, JGemsPathSource textureBOTTOMPath, JGemsPathSource textureLEFTPath, JGemsPathSource textureRIGHTPath) {
             this.textureUPPath = textureUPPath;
             this.textureBOTTOMPath = textureBOTTOMPath;
             this.textureFRONTPath = textureFRONTPath;

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public interface ISkyBackground{
+public interface ISkyBackground {
     @NotNull FixedCamera getScaledCameraBackground();
 
     @NotNull Set<? extends SceneProp> getSkySceneObjectsFiltered();

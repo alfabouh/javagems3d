@@ -10,7 +10,7 @@ import org.joml.Vector3f;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.world.WBenchWorld;
 
-public class WBenchCommonObject extends WBenchObject {
+public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCommonObjectSnapshotData> {
     public WBenchCommonObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
         super(objectId, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints);
     }
@@ -21,7 +21,7 @@ public class WBenchCommonObject extends WBenchObject {
 
     @Override
     public WBenchCommonObject clone() {
-        WBenchCommonObject commonObject = new WBenchCommonObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
+        WBenchCommonObject commonObject = new WBenchCommonObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
         commonObject.setPosition(this.getPosition());
         commonObject.setRotation(this.getRotation());
         commonObject.setScaling(this.getScaling());
@@ -31,6 +31,11 @@ public class WBenchCommonObject extends WBenchObject {
     @Override
     public Vector3f textInMenuColor() {
         return new Vector3f(1.0f);
+    }
+
+    @Override
+    public int orderInList() {
+        return 0;
     }
 
 
@@ -47,5 +52,26 @@ public class WBenchCommonObject extends WBenchObject {
     @Override
     protected void onScale(Vector3f scaling) {
 
+    }
+
+    @Override
+    public WBenchCommonObject.WBenchCommonObjectSnapshotData takeSnapshot() {
+        return new WBenchCommonObject.WBenchCommonObjectSnapshotData(this.getTagsContainer().copy(), this.getTranslationConstraints(), this.isVisible, this.isDead, new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
+    }
+
+    @Override
+    public void fixSnapshot(WBenchCommonObjectSnapshotData wBenchCommonObjectSnapshotData) {
+        this.setTagsContainer(wBenchCommonObjectSnapshotData.tagsContainer);
+        this.setVisible(wBenchCommonObjectSnapshotData.isVisible);
+        this.isDead = wBenchCommonObjectSnapshotData.isDead;
+        this.setPosition(wBenchCommonObjectSnapshotData.pos);
+        this.setRotation(wBenchCommonObjectSnapshotData.rot);
+        this.setScaling(wBenchCommonObjectSnapshotData.scale);
+    }
+
+    public static class WBenchCommonObjectSnapshotData extends WBenchObject.WBenchObjectSnapshotData {
+        public WBenchCommonObjectSnapshotData(TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+            super(tagsContainer, translationConstraints, isVisible, isDead, pos, rot, scale);
+        }
     }
 }

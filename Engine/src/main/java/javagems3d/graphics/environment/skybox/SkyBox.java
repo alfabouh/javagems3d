@@ -15,14 +15,20 @@ import org.joml.Vector3f;
 public abstract class SkyBox implements ISkyBox {
     private ICubeMapProgram sky2DTexture;
     private ISkyBackground background;
-    private final SunLight sunLight;
+    protected SunLight sunLight;
     private boolean isSkyCoveredByFog;
+    private boolean drawSunOnSkyBox;
 
     public SkyBox(@NotNull ISkyBackground skyBackground, @Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
-        this.sunLight = new SunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
         this.isSkyCoveredByFog = true;
         this.background = skyBackground;
+        this.drawSunOnSkyBox = true;
+        this.setSunLight();
+    }
+
+    protected void setSunLight() {
+        this.sunLight = new SunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
     }
 
     @Override
@@ -69,5 +75,14 @@ public abstract class SkyBox implements ISkyBox {
     @Override
     public void destroySkyBox(IWorld world) {
         this.getBackground().destroy(world);
+    }
+
+    public boolean isDrawSunOnSkyBox() {
+        return this.drawSunOnSkyBox;
+    }
+
+    public SkyBox setDrawSunOnSkyBox(boolean drawSunOnSkyBox) {
+        this.drawSunOnSkyBox = drawSunOnSkyBox;
+        return this;
     }
 }

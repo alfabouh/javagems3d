@@ -44,7 +44,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public WBenchPointLightObject clone() {
         TagsContainer tagsContainer = this.getTagsContainer().copy();
         tagsContainer.replaceTag(TagID.DEFAULT.OBJECT_LIST, new TagObjectsList());
-        WBenchPointLightObject wBenchPointLightObject = new WBenchPointLightObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        WBenchPointLightObject wBenchPointLightObject = new WBenchPointLightObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
         wBenchPointLightObject.setPosition(this.getPosition());
         wBenchPointLightObject.setRotation(this.getRotation());
         wBenchPointLightObject.setScaling(this.getScaling());
@@ -112,7 +112,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
 
         final WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
         SceneObject sceneObject = wBenchWorld.getIdMap().get(attachedTo);
-        boolean flag = !(sceneObject instanceof WBenchMarkerObject) && (sceneObject != null && attachedTo != this.getId());
+        boolean flag = !(sceneObject instanceof WBenchMarkerObject) && (sceneObject != null && attachedTo != this.getListID());
         if (flag) {
             if (!WBenchOpenGLRenderer.isRenderingBackgroundScene()) {
                 WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.LineRequest(this.getPosition(), sceneObject.getPositionToAttachLights(), new Vector3f(this.getColor()).mul(6.0f), DebugLinesDrawer.Depth(), DebugLinesDrawer.Depth()));
@@ -157,6 +157,11 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     @Override
     public Vector3f textInMenuColor() {
         return new Vector3f(1.0f, 0.0f, 1.0f);
+    }
+
+    @Override
+    public int orderInList() {
+        return 2;
     }
 
     @Override

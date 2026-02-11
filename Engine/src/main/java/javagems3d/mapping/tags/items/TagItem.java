@@ -2,6 +2,7 @@ package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
@@ -14,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class TagItem implements ICopyable<TagItem> {
     public static final Map<String, TypeToken<? extends TagItem>> tokensMap = new HashMap<>();
@@ -47,7 +50,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagsContainer.addLazyItemSerializationRule(this);
     }
 
-    public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet);
+    public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper);
 
     public @Nullable JSONFileManaging.SerializationRules<? extends TagItem> getSerializationRule() {
         return null;
