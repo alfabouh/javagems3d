@@ -8,11 +8,7 @@ public class WBenchGameProject extends GameProjectData {
     private transient JGemsPath currentProjectPath;
 
     public WBenchGameProject(@NotNull String version, @NotNull String projectTitle) {
-        super(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_INFO, projectTitle, version, "");
-    }
-
-    public void setGameDataFile(String gameDataFile) {
-        this.gameDataFile = gameDataFile;
+        super(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_INFO, projectTitle, version);
     }
 
     public void setCurrentProjectPath(JGemsPath currentProjectPath1) {

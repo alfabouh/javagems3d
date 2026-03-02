@@ -89,6 +89,7 @@ public final class JGemsLaunchArgsRegistry {
         MAP_PATH("map_path", (args -> args), null),
         NO_FULL_SCREEN("no_full_screen", (args -> args.equals("true")), false),
         WORKBENCH("workbench", (args -> args.equals("true")), false),
+        EXTERNAL_GAME_DEF("external_def", (args -> args), null),
         NO_SOUND("no_sound", (args -> args.equals("true")), false),
         DEBUG("debug", (args -> args.equals("true")), false);
 

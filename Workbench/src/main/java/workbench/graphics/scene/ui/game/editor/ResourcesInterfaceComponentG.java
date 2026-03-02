@@ -3,9 +3,9 @@ package workbench.graphics.scene.ui.game.editor;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.JGems3D;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.AxisConstraints;
-import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
@@ -20,14 +20,14 @@ import workbench.graphics.scene.ui.game.editor.instances.world.ObjectPropPreview
 import workbench.graphics.scene.ui.game.editor.utils.CreatableResourcesTreeDrawerG;
 import workbench.graphics.scene.ui.game.editor.utils.FolderResourcesTreeDrawerG;
 import workbench.project.managing.WBenchGameResourcesManager;
-import workbench.project.managing.instances.group.GameResourceAssetsFolder;
-import workbench.project.managing.instances.mapping.GameResourceMapAsset;
-import workbench.project.managing.instances.mapping.GameResourceSkyboxAsset;
-import workbench.project.managing.instances.misc.GameResourceModelAsset;
-import workbench.project.managing.instances.misc.GameResourceObjectTagData;
-import workbench.project.managing.instances.misc.GameResourceTextureAsset;
-import workbench.project.managing.instances.world.GameResourceEntityObjectAsset;
-import workbench.project.managing.instances.world.GameResourcePropObjectAsset;
+import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
+import workbench.project.managing.instances.mapping.WBenchResourceMapAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceSkyboxAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceObjectTagData;
+import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
+import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
+import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class ResourcesInterfaceComponentG {
     private CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
     private CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
     private CreatableResourcesTreeDrawerG<GameResourceObjectTagData, ObjectTagPreview> tagResourceTreeDrawer;
-    private CreatableResourcesTreeDrawerG<GameResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
+    private CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
     private CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> skyBoxResourceTreeDrawer;
 
     public ResourcesInterfaceComponentG() {
@@ -176,8 +176,8 @@ public class ResourcesInterfaceComponentG {
                     final String name = e.getSecond().getInputStrings().get(0).get();
                     final String mapNameFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE;
                     final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name, e.getFirst().getHierarchy());
-                    final GameResourceMapAsset gameResourceMapAsset = new GameResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name));
-                    final GameResourceAssetsFolder<GameResourceMapAsset> newFolder = new GameResourceAssetsFolder<>(name);
+                    final WBenchResourceMapAsset gameResourceMapAsset = new WBenchResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name));
+                    final GameResourceAssetsFolder<WBenchResourceMapAsset> newFolder = new GameResourceAssetsFolder<>(name);
                     newFolder.putObjectThere(gameResourceMapAsset);
                     e.getFirst().putFolderThere(newFolder);
                     return gameResourceMapAsset;
@@ -219,7 +219,7 @@ public class ResourcesInterfaceComponentG {
         return this.propResourceTreeDrawer;
     }
 
-    public CreatableResourcesTreeDrawerG<GameResourceMapAsset, MapProjectPreview> getMapResourceTreeDrawer() {
+    public CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> getMapResourceTreeDrawer() {
         return this.mapResourceTreeDrawer;
     }
 

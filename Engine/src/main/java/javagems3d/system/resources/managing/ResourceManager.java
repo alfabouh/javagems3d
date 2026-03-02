@@ -1,6 +1,9 @@
 package javagems3d.system.resources.managing;
 
+import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
+import javagems3d.help.JGemsUtils;
+import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
@@ -243,6 +246,13 @@ public abstract class ResourceManager {
         ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
         ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
         ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
+    }
+
+    public static void CREATE_PHYS_FOR_DEFAULT_MODELS() {
+        if (DynamicsSystem.VALID) {
+            JGemsUtils.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHBUFFER, null);
+            JGemsUtils.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHGROUP, null);
+        }
     }
 
     public static @NotNull ITexture2DProgram DEFAULT_TEXTURE() {

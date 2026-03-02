@@ -2,29 +2,31 @@ package api.application.workbench.resources.data.wbench;
 
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.AxisConstraints;
-import javagems3d.mapping.tags.base.TranslationConstraints;
-import javagems3d.mapping.tags.items.TagItem;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagItem;
 import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WBenchObjectData extends WBenchData {
-    private final JGemsPath pathToModel;
+    private final JGemsPathSource pathToModel;
     private final RenderProperties renderProperties;
 
-    public WBenchObjectData(@NotNull JGemsPath pathToModel, @NotNull RenderProperties renderProperties, @NotNull TranslationConstraints translationConstraints) {
+    public WBenchObjectData(@Nullable JGemsPathSource pathToModel, @NotNull RenderProperties renderProperties, @NotNull TranslationConstraints translationConstraints) {
         super(new TagsContainer(), translationConstraints);
         this.pathToModel = pathToModel;
         this.renderProperties = renderProperties;
     }
 
-    public WBenchObjectData(@NotNull JGemsPath pathToModel, @NotNull RenderProperties renderProperties) {
+    public WBenchObjectData(@Nullable JGemsPathSource pathToModel, @NotNull RenderProperties renderProperties) {
         this(pathToModel, renderProperties, new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
     }
 
-    public WBenchObjectData(@NotNull JGemsPath pathToModel) {
+    public WBenchObjectData(@Nullable JGemsPathSource pathToModel) {
         this(pathToModel, WBenchRenderProperties.getDefault());
     }
 
@@ -39,7 +41,7 @@ public class WBenchObjectData extends WBenchData {
         return (WBenchObjectData) super.addTag(tag);
     }
 
-    public JGemsPath getPathToModel() {
+    public JGemsPathSource getPathToModel() {
         return this.pathToModel;
     }
 

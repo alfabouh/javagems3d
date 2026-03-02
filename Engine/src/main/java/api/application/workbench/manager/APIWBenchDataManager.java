@@ -25,9 +25,9 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     private final Map<String, ICubeMapProgram.CMTextures> skyBoxesMap;
 
     public APIWBenchDataManager() {
-        this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
-        this.propApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
-        this.markerApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+        this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.propApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.markerApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
         this.skyBoxesMap = new HashMap<>();
     }
 

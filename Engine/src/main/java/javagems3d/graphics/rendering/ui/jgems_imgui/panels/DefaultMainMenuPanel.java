@@ -4,7 +4,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
-import javagems3d.mapping.processing.ManualMapProcessor;
+import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;

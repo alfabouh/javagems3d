@@ -13,6 +13,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.assets.texturing.ISample;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
@@ -67,63 +68,81 @@ public abstract class SystemResources implements ISystemResources {
         return SoundBuffer.createSoundBuffer(soundPath, this.getResourceCache(), soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
+    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshBuffer(fabric, keepNodesInMemory));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MBuffer();
+            return ResourceManager.DEFAULT_CUBE_MESHBUFFER();
         }
     }
 
-    public MeshGroup createMeshGroup(@NotNull JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
+    public MeshGroup createMeshGroup(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, false, keepNodesInMemory));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MGroup();
+            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
         }
     }
 
-    public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
+    public MeshGroup createMeshGroupWithBindlessBufferAttachment(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, true, keepNodesInMemory));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MGroup();
+            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
         }
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPathSource modelPath, boolean keepNodesInMemory) {
+    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.createMeshBuffer(modelPath, null, keepNodesInMemory);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MBuffer();
+            return ResourceManager.DEFAULT_CUBE_MESHBUFFER();
         }
     }
 
-    public MeshGroup createMeshGroup(@NotNull JGemsPathSource modelPath, boolean keepNodesInMemory) {
+    public MeshGroup createMeshGroup(JGemsPathSource modelPath, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.createMeshGroup(modelPath, null, keepNodesInMemory);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MGroup();
+            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
         }
     }
 
-    public MeshGroup createMeshGroupWithBindlessBufferAttachment(@NotNull JGemsPathSource modelPath, boolean keepNodesInMemory) {
+    public MeshGroup createMeshGroupWithBindlessBufferAttachment(JGemsPathSource modelPath, boolean keepNodesInMemory) {
         try {
+            if (modelPath == null) {
+                throw  new JGemsNullException("Null model");
+            }
             return this.createMeshGroupWithBindlessBufferAttachment(modelPath, null, keepNodesInMemory);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
-            return IAssetsInitializer.createDefaultCube_MGroup();
+            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
         }
     }
 
@@ -144,7 +163,7 @@ public abstract class SystemResources implements ISystemResources {
     }
 
     public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull CubeMapsLoader.CubeMapTexturesContainer cubeMapTexturesContainer, @Nullable CubeMapTexture.Properties textureProperties) {
-        final String name =cubeMapTexturesContainer.getTextures()[0].toString();
+        final String name = cubeMapTexturesContainer.getTextures()[0].toString();
         return this.loadTexture(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, cubeMapTexturesContainer));
     }
 

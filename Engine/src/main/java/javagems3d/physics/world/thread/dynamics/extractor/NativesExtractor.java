@@ -24,7 +24,7 @@ public abstract class NativesExtractor {
             throw new JGemsIOException("Internal Native lib picking error");
         }
         pathToFile.toFile().mkdirs();
-        try (InputStream is = JGems3D.getInputStream(new JGemsPathSource(new JGemsPath(file.getFirst() + file.getSecond()), ISource.Source.OUTSIDE_JAR))) {
+        try (InputStream is = JGems3D.getInputStream(new JGemsPathSource(new JGemsPath(file.getFirst() + file.getSecond()), ISource.Source.INSIDE_JAR))) {
             Path path = Paths.get(pathToFile.toString(), file.getSecond());
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
             Log.get().info("Extracted Native: " + file);

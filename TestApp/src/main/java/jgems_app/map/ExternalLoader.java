@@ -2,13 +2,11 @@ package jgems_app.map;
 
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.mapping.data.templates.RowMapObjectData;
-import javagems3d.mapping.processing.ExternalMapProcessor;
+import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import jgems_app.entities.TestPlayer;
 import org.joml.Vector3f;
 

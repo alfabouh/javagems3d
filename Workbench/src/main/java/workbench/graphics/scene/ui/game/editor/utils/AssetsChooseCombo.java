@@ -4,9 +4,7 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
-import workbench.project.managing.instances.IAsset;
 import javagems3d.system.service.files.AbstractObjectsFolder;
-import workbench.project.managing.instances.group.GameResourceAssetsFolder;
 
 import java.util.ArrayList;
 import java.util.List;

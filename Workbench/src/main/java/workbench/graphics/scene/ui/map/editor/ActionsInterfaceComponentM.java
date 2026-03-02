@@ -1,30 +1,15 @@
 package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
-import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.help.JGemsHelper;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.items.*;
-import javagems3d.system.service.collections.Pair;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
 import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedTemplateM;
 import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvFogM;
 import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvShadowsM;
 import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvSkyM;
-
-import java.util.*;
 
 public class ActionsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
@@ -45,7 +30,7 @@ public class ActionsInterfaceComponentM {
     }
 
     public void clear() {
-        this.interfaceActionsSelectedObjectM.reset(this.getEditorInterface().getCurrentSelectedObject());
+        this.interfaceActionsSelectedObjectM.reset(this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects());
         this.interfaceActionsSelectedTemplateM.reset();
         this.resetEnvInterfaces();
     }
@@ -55,7 +40,7 @@ public class ActionsInterfaceComponentM {
     }
 
     public void resetObjectPreview() {
-        this.interfaceActionsSelectedObjectM.reset(this.getEditorInterface().getCurrentSelectedObject());
+        this.interfaceActionsSelectedObjectM.reset(this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects());
         this.interfaceActionsSelectedTemplateM.reset();
     }
 

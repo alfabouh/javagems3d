@@ -1,9 +1,9 @@
 package api.application.workbench.resources.data.wbench;
 
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.TranslationConstraints;
-import javagems3d.mapping.tags.items.TagItem;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagItem;
 
 public abstract class WBenchData {
     private final TagsContainer tagsContainer;

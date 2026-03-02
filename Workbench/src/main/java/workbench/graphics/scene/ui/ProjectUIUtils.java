@@ -21,6 +21,18 @@ public abstract class ProjectUIUtils {
         return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_C, false);
     }
 
+    public static boolean ctrlZ() {
+        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_Z, false);
+    }
+
+    public static boolean ctrlY() {
+        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_Y, false);
+    }
+
+    public static boolean ctrl() {
+        return ImGui.getIO().getKeyCtrl();
+    }
+
     public static void consoleContent() {
         String[] textLines = LoggingManager.consoleText().split("\n");
         for (String s : textLines) {

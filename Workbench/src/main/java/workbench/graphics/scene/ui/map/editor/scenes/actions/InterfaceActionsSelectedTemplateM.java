@@ -12,7 +12,7 @@ import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
-import javagems3d.mapping.tags.TagID;
+import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;

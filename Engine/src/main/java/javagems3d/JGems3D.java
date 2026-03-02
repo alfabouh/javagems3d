@@ -10,7 +10,6 @@ import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -104,18 +103,20 @@ public final class JGems3D {
         if (JGems3D.mainObject != null) {
             throw new JGemsRuntimeException("Couldn't launch JavaGems more than 1 times");
         }
+        String externalGameDef = null;
         try {
             JGems3D.mainObject = new JGems3D();
-            JGems3D.LAUNCH_ARGS_RESOLVE(argsRegistry);
+            JGems3D.LAUNCH_STATIC_ARGS_RESOLVE(argsRegistry);
+            externalGameDef = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF);
         } catch (JGemsRuntimeException e) {
             LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!", e);
             Log.get().exception(e);
             return;
         }
-        JGems3D.start();
+        JGems3D.start(externalGameDef);
     }
 
-    public static void LAUNCH_ARGS_RESOLVE(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
+    public static void LAUNCH_STATIC_ARGS_RESOLVE(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
         if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
             JGems3D.DEBUG_MODE = true;
         }
@@ -134,7 +135,7 @@ public final class JGems3D {
         }
     }
 
-    private static void start() {
+    private static void start(@Nullable String externalGamePath) {
         try {
             JGemsLaunchArgsRegistry.INSTANCE.printArgs();
             Log.get().debug("BEGIN");
@@ -148,7 +149,7 @@ public final class JGems3D {
                 JGems3D.get().getGameSettings().loadOptions();
             }
             JGems3D.get().core = new JGemsCore();
-            JGems3D.get().getCore().startSystem();
+            JGems3D.get().getCore().startSystem(externalGamePath);
         } catch (Exception e) {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.", e);
@@ -361,33 +362,53 @@ public final class JGems3D {
 
     public static class IsolatedProcessLauncher {
         public static void EXEC(String[] args) {
-            String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            String classpath = System.getProperty("java.class.files");
+            try {
+                String javaBin = Paths.get(
+                        System.getProperty("java.home"),
+                        "bin",
+                        "java"
+                ).toString();
 
-            List<String> command = new ArrayList<>();
-            command.add(javaBin);
-            command.add("-Dfile.encoding=UTF-8");
-            command.add("-Xms512m");
-            command.add("-Xmx2048m");
-            command.add("-XX:+UseG1GC");
-            command.add("-cp");
-            command.add(classpath);
-            command.add("javagems3d.JGems3D.IsolatedProcessLauncher");
+                File location = new File(
+                        JGemsBootstrap.class
+                                .getProtectionDomain()
+                                .getCodeSource()
+                                .getLocation()
+                                .toURI()
+                );
 
-            if (args != null) {
-                command.addAll(Arrays.asList(args));
+                List<String> command = new ArrayList<>();
+
+                command.add(javaBin);
+                command.add("-Dfile.encoding=UTF-8");
+                command.add("-Xms512m");
+                command.add("-Xmx2048m");
+                command.add("-XX:+UseG1GC");
+
+                if (location.isFile()) {
+                    command.add("-jar");
+                    command.add(location.getAbsolutePath());
+                } else {
+                    String classpath = System.getProperty("java.class.path");
+                    command.add("-cp");
+                    command.add(classpath);
+                    command.add("javagems3d.JGemsBootstrap");
+                }
+
+                if (args != null) {
+                    command.addAll(Arrays.asList(args));
+                }
+
+                Log.get().info("Fork command: " + String.join(" ", command));
+                NuProcessBuilder pb = new NuProcessBuilder(command);
+                pb.setProcessListener(new SimpleProcessHandler());
+                pb.environment().putAll(System.getenv());
+                pb.setCwd(Paths.get("."));
+                pb.start();
+
+            } catch (Exception e) {
+                Log.get().exception(e);
             }
-
-            NuProcessBuilder pb = new NuProcessBuilder(command);
-            pb.setProcessListener(new SimpleProcessHandler());
-            pb.environment().putAll(System.getenv());
-            pb.setCwd(Paths.get("."));
-            pb.start();
-        }
-
-        public static void main(String[] args) {
-            JGemsLaunchArgsRegistry.INSTANCE.read(args);
-            JGems3D.launch(JGemsLaunchArgsRegistry.INSTANCE);
         }
 
         private static class SimpleProcessHandler extends NuAbstractProcessHandler {

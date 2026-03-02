@@ -1,7 +1,7 @@
 package api.application.workbench.resources.data;
 
-import javagems3d.mapping.tags.base.AxisConstraints;
-import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 
 public enum DefaultMarker {
     CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.NONE)),

@@ -7,8 +7,8 @@ import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewModelG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTagG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTextureG;
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
-import workbench.project.managing.instances.world.GameResourceEntityObjectAsset;
-import workbench.project.managing.instances.world.GameResourcePropObjectAsset;
+import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
+import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 
 public class ActionsInterfaceComponentG {
     private final ScenePreviewMapG scenePreviewMapG;

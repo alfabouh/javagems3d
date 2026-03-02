@@ -1,17 +1,17 @@
 package workbench.graphics.scene.ui.game.editor.instances.mapping;
 
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.mapping.GameResourceMapAsset;
+import workbench.project.managing.instances.mapping.WBenchResourceMapAsset;
 
-public final class MapProjectPreview implements IPreviewWrapperObject<GameResourceMapAsset> {
-    private final GameResourceMapAsset mapProjectData;
+public final class MapProjectPreview implements IPreviewWrapperObject<WBenchResourceMapAsset> {
+    private final WBenchResourceMapAsset mapProjectData;
 
-    public MapProjectPreview(GameResourceMapAsset mapProjectData) {
+    public MapProjectPreview(WBenchResourceMapAsset mapProjectData) {
         this.mapProjectData = mapProjectData;
     }
 
     @Override
-    public GameResourceMapAsset getAsset() {
+    public WBenchResourceMapAsset getAsset() {
         return this.mapProjectData;
     }
 }

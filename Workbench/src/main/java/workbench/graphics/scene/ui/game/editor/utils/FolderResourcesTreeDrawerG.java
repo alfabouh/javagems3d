@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import javagems3d.system.service.files.AbstractObjectsFolder;
-import workbench.project.managing.instances.IAsset;
+import javagems3d.system.external.gaming.def.IAsset;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

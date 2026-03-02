@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.programs.textures.base;
 
+import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import org.joml.Vector2i;
 
@@ -13,6 +14,17 @@ public interface ICubeMapProgram extends ITextureProgram {
         private JGemsPathSource textureBOTTOMPath;
         private JGemsPathSource textureLEFTPath;
         private JGemsPathSource textureRIGHTPath;
+
+        public CMTextures(JGemsPath absPath, CMTextures another) {
+            this(
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureFRONTPath().toString()), another.getTextureFRONTPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureBACKPath().toString()), another.getTextureBACKPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureUPPath().toString()), another.getTextureUPPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureBOTTOMPath().toString()), another.getTextureBOTTOMPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureLEFTPath().toString()), another.getTextureLEFTPath().getSource()),
+                    new JGemsPathSource(new JGemsPath(absPath, another.getTextureRIGHTPath().toString()), another.getTextureRIGHTPath().getSource())
+            );
+        }
 
         public CMTextures(JGemsPathSource textureFRONTPath, JGemsPathSource textureBACKPath, JGemsPathSource textureUPPath, JGemsPathSource textureBOTTOMPath, JGemsPathSource textureLEFTPath, JGemsPathSource textureRIGHTPath) {
             this.textureUPPath = textureUPPath;

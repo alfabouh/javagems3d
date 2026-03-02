@@ -121,7 +121,13 @@ public final class JGemsUtils {
     @SuppressWarnings("all")
     public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric fabric) {
         if (meshStructure != null) {
-            meshStructure.setMeshCollisionData(new MeshCollisionData(meshStructure, fabric == null ? new MeshCollisionData.DefaultFabric() : fabric));
+            final MeshCollisionData meshCollisionData = new MeshCollisionData(meshStructure, fabric == null ? new MeshCollisionData.DefaultFabric() : fabric);
+            if (MeshCollisionData.GLOBAL_CACHE.containsKey(meshStructure)) {
+                meshStructure.setMeshCollisionData(MeshCollisionData.GLOBAL_CACHE.get(meshStructure));
+            } else {
+                meshStructure.setMeshCollisionData(meshCollisionData);
+                MeshCollisionData.GLOBAL_CACHE.put(meshStructure, meshCollisionData);
+            }
             return true;
         }
         return false;

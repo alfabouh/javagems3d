@@ -1,7 +1,7 @@
 package workbench.graphics.scene.ui.game.editor.instances.misc;
 
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.misc.GameResourceTextureAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
 
 public final class TextureAssetPreview implements IPreviewWrapperObject<GameResourceTextureAsset> {
     private final GameResourceTextureAsset textureAsset;

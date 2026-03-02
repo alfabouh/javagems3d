@@ -9,6 +9,7 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
@@ -42,7 +43,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
 
-    private WBenchObject<?> currentSelectedObject;
+    private SelectedObjectsManager selectedObjectsManager;
     private WBenchObjectTemplate currentSelectedTemplate;
 
     private ICamera oldCamera;
@@ -56,6 +57,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     public static boolean isCursorInsideScene;
 
     public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
+        this.selectedObjectsManager = new SelectedObjectsManager(new HashSet<>());
         this.textEditor = new TextEditor();
 
         this.openGLRenderer = openGLRenderer;
@@ -71,7 +73,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
     public void resetSelected() {
         this.currentSelectedTemplate = null;
-        this.currentSelectedObject = null;
+        this.selectedObjectsManager.clear();
     }
 
     public void clear() {
@@ -82,7 +84,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
         this.selectedScene = SelectedScene.MAIN;
 
-        this.currentSelectedObject = null;
+        this.selectedObjectsManager.clear();
         this.currentSelectedTemplate = null;
         this.oldCamera = null;
     }
@@ -96,21 +98,25 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             ImGui.setNextWindowFocus();
             ImGui.showDemoWindow();
         }
+        this.getSelectedObjectsManager().preFrame();
 
         if (ProjectUIUtils.ctrlS()) {
             WBench.get().getMapProjectManager().saveMapProject(false);
             Log.get().info("Saved...");
         }
-
+        if (ProjectUIUtils.ctrlZ()) {
+            WBench.get().getMapProjectManager().undo();
+        }
+        if (ProjectUIUtils.ctrlY()) {
+            WBench.get().getMapProjectManager().redo();
+        }
         boolean deleteCurrentObject = ImGui.isKeyPressed(WBench.get().getBindingManager().keyDelete.getKeyCode(), false);
         if (deleteCurrentObject) {
-            this.deleteObject(this.getCurrentSelectedObject());
+            this.getSelectedObjectsManager().deleteSelected();
         }
 
-        boolean removeObjectSelection1 = this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead();
-        boolean removeObjectSelection2 = ImGui.isKeyPressed(WBench.get().getBindingManager().keyEsc.getKeyCode(), false);
-        if (removeObjectSelection1 || removeObjectSelection2) {
-            this.setCurrentSelectedObject(true, null);
+        if (ImGui.isKeyPressed(WBench.get().getBindingManager().keyEsc.getKeyCode(), false)) {
+            this.getSelectedObjectsManager().clear();
         }
 
         ImGui.beginMainMenuBar();
@@ -190,6 +196,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                 ImGui.text("Right Mouse Key - Move Camera/Action");
                 ImGui.text("Ctrl+S - Save");
                 ImGui.text("Ctrl+C - Clone Selected Object");
+                ImGui.text("Ctrl+Z - Undo");
+                ImGui.text("Ctrl+Y - Redo");
                 ImGui.treePop();
             }
             ImGui.endMenu();
@@ -197,7 +205,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         ImGui.pushStyleColor(ImGuiCol.Text, 0xff45ff9a);
         {
             ImGui.beginDisabled(WBench.get().getMapProjectManager().getSnapshotsTrace().getUndoStack().isEmpty());
-            if (ImGui.button("<---")) {
+            if (ImGui.button("<--- [" + WBench.get().getMapProjectManager().getSnapshotsTrace().getUndoStack().size() + "]")) {
                 WBench.get().getMapProjectManager().undo();
             }
             ImGui.endDisabled();
@@ -209,7 +217,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         }
         {
             ImGui.beginDisabled(WBench.get().getMapProjectManager().getSnapshotsTrace().getRedoStack().isEmpty());
-            if (ImGui.button("--->")) {
+            if (ImGui.button("[" + WBench.get().getMapProjectManager().getSnapshotsTrace().getRedoStack().size() + "] --->")) {
                 WBench.get().getMapProjectManager().redo();
             }
             ImGui.endDisabled();
@@ -319,6 +327,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
         this.getActionsContent().actionsContent();
         ImGui.end();
+
+        this.getSelectedObjectsManager().postFrame();
     }
 
     public void overrideCamera(@Nullable ICamera camera) {
@@ -347,14 +357,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         }
     }
 
-    public void deleteObject(WBenchObject<?> wBenchObject) {
-        WBenchUITrackingHelper.instantlyTrackAndPush();
-        if (wBenchObject.equals(this.getCurrentSelectedObject())) {
-            this.setCurrentSelectedObject(true, null);
-        }
-        wBenchObject.setDead();
-    }
-
     public Set<WBenchObject<?>> setOfSceneObjects() {
         switch (this.getSelectedScene()) {
             case MAIN: {
@@ -376,17 +378,14 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     }
 
     public void setCurrentSelectedTemplate(WBenchObjectTemplate currentSelectedTemplate) {
-        WBenchUITrackingHelper.instantlyTrackAndPush();
+        if ((currentSelectedTemplate != null && this.currentSelectedTemplate == null) || (this.currentSelectedTemplate != null && !this.currentSelectedTemplate.equals(currentSelectedTemplate))) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+        }
         this.currentSelectedTemplate = currentSelectedTemplate;
     }
 
-    public void setCurrentSelectedObject(boolean snapshot, WBenchObject<?> currentSelectedObject) {
-        synchronized (MapEditorInterface.monitor) {
-            if (snapshot) {
-                WBenchUITrackingHelper.instantlyTrackAndPush();
-            }
-            this.currentSelectedObject = currentSelectedObject;
-        }
+    public SelectedObjectsManager getSelectedObjectsManager() {
+        return this.selectedObjectsManager;
     }
 
     public ICamera getOldCamera() {
@@ -425,10 +424,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         return this.currentSelectedTemplate;
     }
 
-    public WBenchObject<?> getCurrentSelectedObject() {
-        return this.currentSelectedObject;
-    }
-
     public WBenchOpenGLRenderer getOpenGLRenderer() {
         return this.openGLRenderer;
     }
@@ -439,14 +434,14 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
     @Override
     public MapEditorInterfaceSnapshotData takeSnapshot() {
-        return new MapEditorInterfaceSnapshotData(this.getSelectedScene(), this.getCurrentSelectedObject(), this.getCurrentSelectedTemplate());
+        return new MapEditorInterfaceSnapshotData(this.getSelectedScene(), this.getSelectedObjectsManager().takeSnapshot(), this.getCurrentSelectedTemplate());
     }
 
     @Override
     public void fixSnapshot(MapEditorInterfaceSnapshotData mapEditorInterfaceSnapshotData) {
         this.selectedScene = mapEditorInterfaceSnapshotData.selectedScene;
         this.currentSelectedTemplate = mapEditorInterfaceSnapshotData.currentSelectedTemplate;
-        this.currentSelectedObject = mapEditorInterfaceSnapshotData.currentSelectedObject;
+        this.selectedObjectsManager.fixSnapshot(mapEditorInterfaceSnapshotData.selectedObjectsManageSnapshot);
         {
             JGemsConfig.DEBUG.SHOW_CASCADES = mapEditorInterfaceSnapshotData.globalVars.SHOW_CASCADES;
             GlobalWBenchSceneRenderingVars.VIEW_FOG = mapEditorInterfaceSnapshotData.globalVars.VIEW_FOG;
@@ -456,17 +451,18 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             GlobalWBenchSceneRenderingVars.VIEW_HDR = mapEditorInterfaceSnapshotData.globalVars.VIEW_HDR;
             GlobalWBenchSceneRenderingVars.ANIMATIONS = mapEditorInterfaceSnapshotData.globalVars.ANIMATIONS;
         }
+        this.getItemsComponent().scrollToSelection();
     }
 
     public static class MapEditorInterfaceSnapshotData implements ISnapshotCompatible.SnapshotData {
         public SelectedScene selectedScene;
-        public WBenchObject<?> currentSelectedObject;
+        public SelectedObjectsManager.SelectedObjectsManageSnapshot selectedObjectsManageSnapshot;
         public WBenchObjectTemplate currentSelectedTemplate;
         public GlobalVars globalVars;
 
-        public MapEditorInterfaceSnapshotData(SelectedScene selectedScene, WBenchObject<?> currentSelectedObject, WBenchObjectTemplate currentSelectedTemplate) {
+        public MapEditorInterfaceSnapshotData(SelectedScene selectedScene, SelectedObjectsManager.SelectedObjectsManageSnapshot currentSelectedObjects, WBenchObjectTemplate currentSelectedTemplate) {
             this.selectedScene = selectedScene;
-            this.currentSelectedObject = currentSelectedObject;
+            this.selectedObjectsManageSnapshot = currentSelectedObjects;
             this.currentSelectedTemplate = currentSelectedTemplate;
             this.globalVars = new GlobalVars();
         }
@@ -479,6 +475,227 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             public final boolean VIEW_CHESS_TERRAIN = GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
             public final boolean VIEW_HDR = GlobalWBenchSceneRenderingVars.VIEW_HDR;
             public final boolean ANIMATIONS = GlobalWBenchSceneRenderingVars.ANIMATIONS;
+        }
+    }
+
+    public static class SelectedObjectsManager implements ISnapshotCompatible<SelectedObjectsManager.SelectedObjectsManageSnapshot> {
+        private final Set<WBenchObject<?>> currentSelectedObjects;
+        private final Vector3f prevGroupPosition;
+        private final Vector3f prevGroupRotation;
+        private final Vector3f prevGroupScaling;
+        private final Vector3f groupPosition;
+        private final Vector3f groupRotation;
+        private final Vector3f groupScaling;
+        private Vector3f savedCenter;
+        private boolean rotateGroupAroundOwnCenter;
+
+        public SelectedObjectsManager(Set<WBenchObject<?>> currentSelectedObjects) {
+            this.currentSelectedObjects = currentSelectedObjects;
+            this.savedCenter = new Vector3f();
+            this.groupPosition = new Vector3f();
+            this.groupRotation = new Vector3f();
+            this.groupScaling = new Vector3f();
+            this.prevGroupPosition = new Vector3f();
+            this.prevGroupRotation = new Vector3f();
+            this.prevGroupScaling = new Vector3f(1.0f);
+            this.rotateGroupAroundOwnCenter = false;
+        }
+
+        public boolean isRotateGroupAroundOwnCenter() {
+            return this.rotateGroupAroundOwnCenter;
+        }
+
+        public SelectedObjectsManager setRotateGroupAroundOwnCenter(boolean rotateGroupAroundOwnCenter) {
+            this.rotateGroupAroundOwnCenter = rotateGroupAroundOwnCenter;
+            return this;
+        }
+
+        public void reset() {
+            this.groupPosition.set(this.center());
+            this.groupRotation.set(0.0f);
+            this.groupScaling.set(1.0f);
+            this.prevGroupPosition.set(this.groupPosition);
+            this.prevGroupRotation.set(this.groupRotation);
+            this.prevGroupScaling.set(this.groupScaling);
+        }
+
+        public void clear() {
+            this.currentSelectedObjects.clear();
+            this.reset();
+        }
+
+        public void setGroupPosition(Vector3f pos) {
+            this.groupPosition.set(pos);
+        }
+
+        public void setGroupRotation(Vector3f rot) {
+            this.groupRotation.set(rot);
+        }
+
+        public void setGroupScaling(Vector3f scaling) {
+            this.groupScaling.set(scaling);
+        }
+
+        public Vector3f getRealGroupPosition() {
+            return new Vector3f(this.groupPosition);
+        }
+
+        public Vector3f getGroupPosition() {
+            return new Vector3f(this.savedCenter);
+        }
+
+        public Vector3f getGroupRotation() {
+            return new Vector3f(this.groupRotation);
+        }
+
+        public Vector3f getGroupScaling() {
+            return new Vector3f(this.groupScaling);
+        }
+
+        public Vector3f center() {
+            if (this.currentSelectedObjects.isEmpty()) {
+                return new Vector3f(0.0f);
+            }
+            final Vector3f center = new Vector3f();
+            for (WBenchObject<?> thisObj : this.currentSelectedObjects) {
+                center.add(thisObj.getPosition());
+            }
+            center.div(this.currentSelectedObjects.size());
+            return center;
+        }
+
+        public void preFrame() {
+            this.savedCenter.set(this.center());
+        }
+
+        public void postFrame() {
+            this.update();
+        }
+
+        public void update() {
+            this.currentSelectedObjects.removeIf(WBenchObject::isDead);
+            this.updateMultipleObjectsTransforms();
+            this.prevGroupPosition.set(this.getRealGroupPosition());
+            this.prevGroupRotation.set(this.groupRotation);
+            this.prevGroupScaling.set(this.groupScaling);
+        }
+
+        private void updateMultipleObjectsTransforms() {
+            if (currentSelectedObjects.size() <= 1) {
+                return;
+            }
+
+            Vector3f rotationOffset = new Vector3f(groupRotation).sub(prevGroupRotation);
+            Vector3f posOffset = new Vector3f(groupPosition).sub(prevGroupPosition);
+            Vector3f scaleOffset = new Vector3f(groupScaling).div(prevGroupScaling);
+            Quaternionf deltaRot = new Quaternionf().rotateXYZ(rotationOffset.x, rotationOffset.y, rotationOffset.z);
+            Matrix4f groupMatrix = new Matrix4f().identity().translate(savedCenter).rotate(deltaRot).translate(-savedCenter.x, -savedCenter.y, -savedCenter.z);
+            for (WBenchObject<?> obj : currentSelectedObjects) {
+                {
+                    obj.setPosition(obj.getPosition().add(posOffset));
+                    obj.setScaling(obj.getScaling().div(scaleOffset));
+                }
+                Matrix4f objMatrix = TransformUtils.getModelMatrix(obj.getModel().getPose());
+                groupMatrix.mul(objMatrix, objMatrix);
+                Vector3f newPos = objMatrix.getTranslation(new Vector3f());
+                Quaternionf newRotQ = objMatrix.getNormalizedRotation(new Quaternionf());
+                Vector3f newEuler = newRotQ.getEulerAnglesXYZ(new Vector3f()).negate();
+                obj.setPosition(newPos);
+                obj.setRotation(newEuler);
+            }
+        }
+
+        public void deleteSelected() {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            synchronized (MapEditorInterface.monitor) {
+                this.getCurrentSelectedObjects().forEach(e -> this.deleteObject(false, e));
+            }
+            this.reset();
+        }
+
+        public void deleteObject(boolean snapshot, WBenchObject<?> wBenchObject) {
+            if (snapshot) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
+                this.reset();
+            }
+            wBenchObject.setDead();
+        }
+
+        public void setCurrentSelectedObject(boolean snapshot, WBenchObject<?> select) {
+            synchronized (MapEditorInterface.monitor) {
+                if (snapshot) {
+                    if ((select == null && !this.currentSelectedObjects.isEmpty()) || (select != null && !this.currentSelectedObjects.contains(select))) {
+                        WBenchUITrackingHelper.instantlyTrackAndPush();
+                    }
+                }
+                this.currentSelectedObjects.clear();
+                if (select != null) {
+                    this.currentSelectedObjects.add(select);
+                }
+            }
+            this.reset();
+        }
+
+        public void addObjectInSelection(boolean snapshot, WBenchObject<?> select) {
+            synchronized (MapEditorInterface.monitor) {
+                if (snapshot) {
+                    if (!this.currentSelectedObjects.contains(select)) {
+                        WBenchUITrackingHelper.instantlyTrackAndPush();
+                    }
+                }
+                this.currentSelectedObjects.add(select);
+            }
+            this.reset();
+        }
+
+        public void removeObjectFromSelection(boolean snapshot, WBenchObject<?> unSelect) {
+            synchronized (MapEditorInterface.monitor) {
+                if (this.currentSelectedObjects.remove(unSelect)) {
+                    if (snapshot) {
+                        if (!this.currentSelectedObjects.contains(unSelect)) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                        }
+                    }
+                }
+            }
+            this.reset();
+        }
+
+        public Set<WBenchObject<?>> getCurrentSelectedObjects() {
+            synchronized (MapEditorInterface.monitor) {
+                return this.currentSelectedObjects;
+            }
+        }
+
+        @Override
+        public SelectedObjectsManageSnapshot takeSnapshot() {
+            return new SelectedObjectsManageSnapshot(new HashSet<>(this.getCurrentSelectedObjects()), new Vector3f(this.getGroupPosition()), new Vector3f(this.getGroupRotation()), new Vector3f(this.getGroupScaling()), new Vector3f(this.savedCenter));
+        }
+
+        @Override
+        public void fixSnapshot(SelectedObjectsManageSnapshot selectedObjectsManager) {
+            this.currentSelectedObjects.clear();
+            this.currentSelectedObjects.addAll(selectedObjectsManager.currentSelectedObjects);
+            this.setGroupPosition(selectedObjectsManager.groupPosition);
+            this.setGroupRotation(selectedObjectsManager.groupRotation);
+            this.setGroupScaling(selectedObjectsManager.groupScaling);
+            this.savedCenter = selectedObjectsManager.savedCenter;
+        }
+
+        public static class SelectedObjectsManageSnapshot implements ISnapshotCompatible.SnapshotData {
+            private final Set<WBenchObject<?>> currentSelectedObjects;
+            private final Vector3f groupPosition;
+            private final Vector3f groupRotation;
+            private final Vector3f groupScaling;
+            private final Vector3f savedCenter;
+
+            public SelectedObjectsManageSnapshot(Set<WBenchObject<?>> currentSelectedObjects, Vector3f groupPosition, Vector3f groupRotation, Vector3f groupScaling, Vector3f savedCenter) {
+                this.currentSelectedObjects = currentSelectedObjects;
+                this.groupPosition = groupPosition;
+                this.groupRotation = groupRotation;
+                this.groupScaling = groupScaling;
+                this.savedCenter = savedCenter;
+            }
         }
     }
 }

@@ -13,12 +13,12 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.mapping.data.*;
-import javagems3d.mapping.data.items.*;
-import javagems3d.mapping.data.templates.RowMapObjectData;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.AxisConstraints;
-import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.data.MapObjectsDataPack;
+import javagems3d.system.external.mapping.data.items.*;
+import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -77,7 +77,6 @@ public final class WBenchMapProjectManager {
     }
 
     public void takeSnapshot() {
-        Log.get().debug("New snapshot!");
         this.getSnapshotsTrace().pushSnapshot(this.snapshotsTrace.takeSnapshot());
     }
 
@@ -334,7 +333,7 @@ public final class WBenchMapProjectManager {
 
         final SunData sunData = new SunData(world.getEnvironment().getSkyBox().isDrawSunOnSkyBox(), sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
-        final SkyData skyData = new SkyData(skyBoxTemplate.getNameId(), skyBoxTemplate.getCmTextures(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
+        final SkyData skyData = new SkyData(skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
         final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

@@ -7,7 +7,7 @@ import javagems3d.system.resources.assets.models.animation.AnimationData;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.misc.GameResourceModelAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 
 public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject<GameResourceModelAsset> {
     private final GameResourceModelAsset modelAsset;

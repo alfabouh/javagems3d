@@ -1,8 +1,8 @@
 package workbench.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

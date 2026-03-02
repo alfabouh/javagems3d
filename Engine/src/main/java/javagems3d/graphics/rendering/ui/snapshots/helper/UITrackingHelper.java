@@ -31,13 +31,15 @@ public abstract class UITrackingHelper implements AutoCloseable {
 
     public abstract void takeSnapshot();
 
-    public void saveSnapshot() {
+    public boolean saveSnapshot() {
         if (ImGui.isItemActive() || ImGui.isItemEdited()) {
             if (!UITrackingHelper.cache.containsKey(this.id)) {
                 this.snapshotsContainer = this.snapshotsTrace.takeSnapshot();
                 UITrackingHelper.cache.put(this.id, this);
+                return true;
             }
         }
+        return false;
     }
 
     @Override

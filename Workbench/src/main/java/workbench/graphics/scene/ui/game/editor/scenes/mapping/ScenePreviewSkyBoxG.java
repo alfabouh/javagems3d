@@ -10,7 +10,7 @@ import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
 import workbench.project.managing.WBenchGameResourcesManager;
-import workbench.project.managing.instances.misc.GameResourceTextureAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
 
 public class ScenePreviewSkyBoxG {
     private boolean showHint;

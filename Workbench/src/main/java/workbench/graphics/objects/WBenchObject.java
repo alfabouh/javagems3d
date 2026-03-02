@@ -4,8 +4,10 @@ import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.help.JGemsHelper;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +41,15 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (this.isDead()) {
             return;
         }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            newPos.mul(0.0f, 1.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            newPos.mul(1.0f, 0.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            newPos.mul(1.0f, 1.0f, 0.0f);
+        }
         this.getModel().getPose().setPosition(newPos);
         this.onTranslate(newPos);
     }
@@ -47,13 +58,37 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (this.isDead()) {
             return;
         }
-        this.getModel().getPose().setRotation(newRot);
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            newRot.mul(0.0f, 1.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            newRot.mul(1.0f, 0.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            newRot.mul(1.0f, 1.0f, 0.0f);
+        }
+        this.getModel().getPose().setRotation(
+                new Vector3f(
+                        (float) JGemsHelper.math().clamp(newRot.x, -Math.PI * 8.0f, Math.PI * 8.0f),
+                        (float) JGemsHelper.math().clamp(newRot.y, -Math.PI * 8.0f, Math.PI * 8.0f),
+                        (float) JGemsHelper.math().clamp(newRot.z, -Math.PI * 8.0f, Math.PI * 8.0f)
+                )
+        );
         this.onRotate(newRot);
     }
 
     public void setScaling(Vector3f newScale) {
         if (this.isDead()) {
             return;
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            newScale.mul(0.0f, 1.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            newScale.mul(1.0f, 0.0f, 1.0f);
+        }
+        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            newScale.mul(1.0f, 1.0f, 0.0f);
         }
         this.getModel().getPose().setScaling(newScale);
         this.onScale(newScale);
@@ -64,7 +99,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         return !GlobalWBenchSceneRenderingVars.ANIMATIONS ? null : super.getAnimationData();
     }
 
-    public abstract WBenchObject clone();
+    public abstract WBenchObject<E> clone();
 
     protected abstract void onTranslate(Vector3f position);
     protected abstract void onRotate(Vector3f rotation);
@@ -106,6 +141,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         return this.translationConstraints;
     }
 
+    @SuppressWarnings("all")
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -114,7 +150,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (!(o instanceof WBenchObject)) {
             return false;
         }
-        WBenchObject that = (WBenchObject) o;
+        WBenchObject<E> that = (WBenchObject<E>) o;
         return this.id == that.id;
     }
 

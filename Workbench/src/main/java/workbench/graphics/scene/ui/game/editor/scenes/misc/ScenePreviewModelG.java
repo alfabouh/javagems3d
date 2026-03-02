@@ -9,7 +9,7 @@ import javagems3d.system.service.collections.Pair;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import javagems3d.system.service.files.AbstractObjectsFolder;
-import workbench.project.managing.instances.misc.GameResourceModelAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 
 import java.util.ArrayList;
 import java.util.List;

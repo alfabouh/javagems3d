@@ -2,7 +2,7 @@ package workbench.project.map;
 
 import api.scripting.functions.APIScriptsListing;
 import javagems3d.JGems3D;
-import javagems3d.mapping.data.MapProjectData;
+import javagems3d.system.external.mapping.data.MapProjectData;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;

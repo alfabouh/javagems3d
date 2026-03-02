@@ -1,6 +1,6 @@
 package workbench.graphics.scene.ui.game.editor.instances;
 
-import workbench.project.managing.instances.IAsset;
+import javagems3d.system.external.gaming.def.IAsset;
 
 public interface IPreviewWrapperObject<I extends IAsset> {
     I getAsset();

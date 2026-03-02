@@ -15,9 +15,12 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class MeshCollisionData {
+    public static final Map<@NotNull MeshStructure3D<?>, MeshCollisionData> GLOBAL_CACHE = new HashMap<>();
+
     private final CollisionShape staticCollision;
     private final CollisionShape dynamicCollision;
     private final List<CollisionShape> animationAABBShapes;
@@ -31,6 +34,7 @@ public class MeshCollisionData {
         this.dynamicCollision = fabric.createDynamicShape(meshStructure, pair.getFirst(), pair.getSecond(), indexedMeshList);
     }
 
+    /*
     private Pair<float[], int[]> pickData(MeshStructure3D<?> meshStructure, List<IndexedMesh> indexedMeshList) {
         int fC = 0;
         int iC = 0;
@@ -64,6 +68,65 @@ public class MeshCollisionData {
             oldFloatIndex = floatIndex;
             oldIntIndex = intIndex;
         }
+        return new Pair<>(floats, integers);
+    }
+*/
+
+    private Pair<float[], int[]> pickData(MeshStructure3D<?> meshStructure, List<IndexedMesh> indexedMeshList) {
+        List<? extends MeshNode3D<?>> nodes = meshStructure.getAllNodes();
+        int nodeCount = nodes.size();
+
+        int[] floatOffsets = new int[nodeCount];
+        int[] intOffsets = new int[nodeCount];
+
+        int totalFloats = 0;
+        int totalInts = 0;
+
+        for (int i = 0; i < nodeCount; i++) {
+            floatOffsets[i] = totalFloats;
+            intOffsets[i] = totalInts;
+
+            totalFloats += nodes.get(i).getMeshData().getVertexPositions().size();
+            totalInts += nodes.get(i).getMeshData().getVertexIndexes().size();
+        }
+
+        float[] floats = new float[totalFloats];
+        int[] integers = new int[totalInts];
+
+        IntStream.range(0, nodeCount).parallel().forEach(i -> {
+            MeshNode3D<?> node = nodes.get(i);
+
+            List<Float> vertexPositions = node.getMeshData().getVertexPositions();
+            List<Integer> vertexIndexes = node.getMeshData().getVertexIndexes();
+
+            int floatOffset = floatOffsets[i];
+            int intOffset = intOffsets[i];
+
+            for (int j = 0; j < vertexPositions.size(); j++) {
+                floats[floatOffset + j] = vertexPositions.get(j);
+            }
+
+            for (int j = 0; j < vertexIndexes.size(); j++) {
+                integers[intOffset + j] = vertexIndexes.get(j);
+            }
+
+            float[] floatsLocal = new float[vertexPositions.size()];
+            int[] intsLocal = new int[vertexIndexes.size()];
+
+            for (int j = 0; j < floatsLocal.length; j++) {
+                floatsLocal[j] = vertexPositions.get(j);
+            }
+
+            for (int j = 0; j < intsLocal.length; j++) {
+                intsLocal[j] = vertexIndexes.get(j);
+            }
+
+            IndexedMesh mesh = DynamicsUtils.getIndexMesh(floatsLocal, intsLocal);
+            synchronized (indexedMeshList) {
+                indexedMeshList.add(mesh);
+            }
+        });
+
         return new Pair<>(floats, integers);
     }
 

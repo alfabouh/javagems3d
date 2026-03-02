@@ -1,9 +1,11 @@
 package javagems3d.physics.colliders;
 
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.service.exceptions.JGemsNullException;
+import logger.Log;
 
 public class MeshCollider implements IColliderConstructor {
     private final MeshStructure3D<?> meshStructure;
@@ -30,7 +32,8 @@ public class MeshCollider implements IColliderConstructor {
     public CollisionShape execute() {
         MeshCollisionData meshCollisionData = this.meshStructure.getMeshCollisionData();
         if (meshCollisionData == null) {
-            throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshStructure);
+            Log.get().error("Couldn't get mesh collision collections! " + this.meshStructure);
+            return new BoxCollisionShape(1.0f);
         }
         CollisionShape collisionShape;
         if (this.isBodyDynamic) {

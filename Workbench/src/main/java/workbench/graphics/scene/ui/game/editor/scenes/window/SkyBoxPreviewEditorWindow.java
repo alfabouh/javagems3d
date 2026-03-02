@@ -21,7 +21,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.screen.WBenchScreen;
-import workbench.project.managing.instances.misc.GameResourceTextureAsset;
+import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.initialization.game.WBenchGameEditorTextureAssetsInitializer;
 

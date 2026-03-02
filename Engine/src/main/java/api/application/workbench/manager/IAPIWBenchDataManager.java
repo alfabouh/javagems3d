@@ -11,11 +11,13 @@ import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.items.TagRadioBoolean;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagID;
+import javagems3d.system.external.mapping.tags.items.TagRadioBoolean;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -26,11 +28,11 @@ public interface IAPIWBenchDataManager {
     void addResourceMarker(@Nullable String path, @NotNull ApiResourceMarker resourceMarker);
     void addResourceSkyCubeMap(@NotNull String name, @NotNull ICubeMapProgram.CMTextures textures);
 
-    default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull JGemsPath modelPath) {
+    default void addResourceEntity(@Nullable String path, @NotNull String id, @Nullable JGemsPathSource modelPath) {
         this.addResourceEntity(path, new ApiResourceEntity(id, () -> new WBenchObjectData(modelPath), () -> new JGemsEntityData(modelPath)));
     }
 
-    default void addResourceProp(@Nullable String path, @NotNull String id, @NotNull JGemsPath modelPath) {
+    default void addResourceProp(@Nullable String path, @NotNull String id, @Nullable JGemsPathSource modelPath) {
         this.addResourceProp(path, new ApiResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)));
     }
 
@@ -65,7 +67,7 @@ public interface IAPIWBenchDataManager {
 
     default void SET_DEFAULTS() {
         final Tag<TagRadioBoolean> TAG_PHYSICS = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
-        final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf");
+        final JGemsPathSource cube = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ISource.Source.INSIDE_JAR);
         this.addResourceProp("generic_prop", "cube", () -> new WBenchObjectData(cube), () -> new JGemsPropData(cube));
         this.addResourceEntity("generic_entity", "cube", () -> new WBenchObjectData(cube).addTag(TAG_PHYSICS), () -> new JGemsEntityData(cube));
         this.addResourceMarker("generic_marker", "player_spawn", () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false));

@@ -2,15 +2,15 @@ package workbench.graphics.scene.ui.map.editor.scenes.actions;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiTreeNodeFlags;
-import imgui.flag.ImGuiWindowFlags;
+import imgui.flag.*;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.items.TagItem;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagID;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagItem;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,29 +19,35 @@ import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Function;
 
 public class InterfaceActionsSelectedObjectM {
+    private final Vector3f translateGroupOffset;
+    private final Vector3f rotateGroupOffset;
+    private final Vector3f scaleGroupOffset;
+
     private final MapEditorInterface mapEditorInterface;
     private int currentOperation;
 
     public InterfaceActionsSelectedObjectM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.reset(null);
+        this.translateGroupOffset = new Vector3f();
+        this.rotateGroupOffset = new Vector3f();
+        this.scaleGroupOffset = new Vector3f();
     }
 
-    public void reset(@Nullable WBenchObject<?> currentSelectedObject) {
-        if (currentSelectedObject == null) {
-            this.currentOperation = Operation.TRANSLATE;
-        } else {
-            this.setCurrentOperation(this.chooseDefaultGuizmoOperation(currentSelectedObject));
+    public void reset(@Nullable Set<WBenchObject<?>> currentSelectedObjects) {
+        if (currentSelectedObjects != null && currentSelectedObjects.size() == 1) {
+            WBenchObject<?> wBenchObject = currentSelectedObjects.stream().findFirst().get();
+            this.setCurrentOperation(this.chooseDefaultGuizmoOperation(wBenchObject));
+            return;
         }
+        this.currentOperation = Operation.TRANSLATE;
     }
 
-    public int chooseDefaultGuizmoOperation(WBenchObject<?> currentSelectedObject) {
+    private int chooseDefaultGuizmoOperation(WBenchObject<?> currentSelectedObject) {
         int f1 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
         if (f1 != 0) {
             return f1;
@@ -53,14 +59,18 @@ public class InterfaceActionsSelectedObjectM {
         return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
     }
 
-    public int chooseGuizmoOperation(WBenchObject<?> currentSelectedObject, boolean translation, boolean rotation, boolean scaling) {
+    private int chooseGuizmoOperation(TranslationConstraints translationConstraints, boolean translation, boolean rotation, boolean scaling) {
+        int i = 0;
         if (translation) {
-            return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
+            i |= this.getOperationMask(translationConstraints.getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
         }
         if (rotation) {
-            return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
+            i |= this.getOperationMask(translationConstraints.getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
         }
-        return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+        if (scaling) {
+            i |= this.getOperationMask(translationConstraints.getRotationConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+        }
+        return i;
     }
 
     private int getOperationMask(int flag, int xOp, int yOp, int zOp) {
@@ -80,101 +90,196 @@ public class InterfaceActionsSelectedObjectM {
         return result;
     }
 
-    private void processTranslations(WBenchObject<?> wBenchObject) {
-        if (wBenchObject == null) {
-            return;
-        }
-        int operationFlag = this.getCurrentOperation();
+    private void processTranslations(String id, Collection<WBenchObject<?>> wBenchObjects, int operationFlag, boolean textInfoIfCannotBeTransformed) {
+        ImGui.beginChild(id, ImGui.getColumnWidth(), textInfoIfCannotBeTransformed ? 280 : 140, true);
+        if (!wBenchObjects.isEmpty()) {
+            final boolean many = wBenchObjects.size() > 1;
+            WBenchObject<?> getFirst = wBenchObjects.stream().findFirst().get();
+            Vector3f Pos = many ? this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition() : getFirst.getPosition();
+            Vector3f Rot = many ? this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation() : getFirst.getRotation();
+            Vector3f Scale = many ? this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling() : getFirst.getScaling();
 
-        float[] posArrayX = new float[] {wBenchObject.getPosition().x};
-        float[] posArrayY = new float[] {wBenchObject.getPosition().y};
-        float[] posArrayZ = new float[] {wBenchObject.getPosition().z};
+            boolean captTranslate = false;
+            boolean captRotate = false;
+            boolean captScale = false;
 
-        float[] rotArrayX = new float[] {wBenchObject.getRotation().x};
-        float[] rotArrayY = new float[] {wBenchObject.getRotation().y};
-        float[] rotArrayZ = new float[] {wBenchObject.getRotation().z};
+            float[] posArrayX = new float[]{Pos.x};
+            float[] posArrayY = new float[]{Pos.y};
+            float[] posArrayZ = new float[]{Pos.z};
 
-        float[] sclArrayX = new float[] {wBenchObject.getScaling().x};
-        float[] sclArrayY = new float[] {wBenchObject.getScaling().y};
-        float[] sclArrayZ = new float[] {wBenchObject.getScaling().z};
+            float[] rotArrayX = new float[]{Rot.x};
+            float[] rotArrayY = new float[]{Rot.y};
+            float[] rotArrayZ = new float[]{Rot.z};
 
-        boolean changedPos = false;
-        boolean changedRot = false;
-        boolean changedScale = false;
+            float[] sclArrayX = new float[]{Scale.x};
+            float[] sclArrayY = new float[]{Scale.y};
+            float[] sclArrayZ = new float[]{Scale.z};
 
-        if ((operationFlag & Operation.TRANSLATE_X) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_X", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("X", posArrayX, 0.01f)) {
-                    uiTrackingHelper.saveSnapshot();
+            boolean showTranslX = (operationFlag & Operation.TRANSLATE_X) != 0;
+            boolean showTranslY = (operationFlag & Operation.TRANSLATE_Y) != 0;
+            boolean showTranslZ = (operationFlag & Operation.TRANSLATE_Z) != 0;
+
+            boolean showRotX = (operationFlag & Operation.ROTATE_X) != 0;
+            boolean showRotY = (operationFlag & Operation.ROTATE_Y) != 0;
+            boolean showRotZ = (operationFlag & Operation.ROTATE_Z) != 0;
+
+            boolean showScaleX = (operationFlag & Operation.SCALE_X) != 0;
+            boolean showScaleY = (operationFlag & Operation.SCALE_Y) != 0;
+            boolean showScaleZ = (operationFlag & Operation.SCALE_Z) != 0;
+
+            if (showTranslX || showTranslY || showTranslZ) {
+                ImGui.bulletText("Translation");
+            } else if (textInfoIfCannotBeTransformed) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
+                ImGui.bulletText("Can't be Translated");
+                ImGui.popStyleColor();
+            }
+
+            if (showTranslX) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_X", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("X##posArrayX", posArrayX, 0.01f)) {
+                        captTranslate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showTranslY) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("Y##posArrayY", posArrayY, 0.01f)) {
+                        captTranslate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showTranslZ) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("Z##posArrayZ", posArrayZ, 0.01f)) {
+                        captTranslate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+
+            if (showRotX || showRotY || showRotZ) {
+                ImGui.bulletText("Rotation");
+            } else if (textInfoIfCannotBeTransformed) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
+                ImGui.bulletText("Can't be Rotated");
+                ImGui.popStyleColor();
+            }
+
+            if (showRotX) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_X", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.sliderAngle("X##rotArrayX", rotArrayX, -180.0f, 180.0f)) {
+                        captRotate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showRotY) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.sliderAngle("Y##rotArrayY", rotArrayY, -180.0f, 180.0f)) {
+                        captRotate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showRotZ) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.sliderAngle("Z##rotArrayZ", rotArrayZ, -180.0f, 180.0f)) {
+                        captRotate = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+
+            if (showScaleX || showScaleY || showScaleZ) {
+                ImGui.bulletText("Scaling");
+            } else if (textInfoIfCannotBeTransformed) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
+                ImGui.bulletText("Can't be Scaled");
+                ImGui.popStyleColor();
+            }
+
+            if (showScaleX) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_X", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("X##sclArrayX", sclArrayX, 0.01f, -1000.0f, 1000.0f)) {
+                        captScale = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showScaleY) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("Y##sclArrayY", sclArrayY, 0.01f, -1000.0f, 1000.0f)) {
+                        captScale = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+            if (showScaleZ) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                    if (ImGui.dragFloat("Z##sclArrayZ", sclArrayZ, 0.01f, -1000.0f, 1000.0f)) {
+                        captScale = true;
+                        if (uiTrackingHelper.saveSnapshot()) {
+                        }
+                    }
+                }
+                ImGui.popStyleColor();
+            }
+
+            final Vector3f newPos = new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]);
+            final Vector3f newRot = new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]);
+            final Vector3f newScale = new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]);
+
+            if (many) {
+                if (captTranslate) {
+                    this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
+                }
+                if (captRotate) {
+                    this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(newRot);
+                }
+                if (captScale) {
+                    this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(newScale);
+                }
+            } else {
+                if (captTranslate) {
+                    getFirst.setPosition(newPos);
+                }
+                if (captRotate) {
+                    getFirst.setRotation(newRot);
+                }
+                if (captScale) {
+                    getFirst.setScaling(newScale);
                 }
             }
         }
-        if ((operationFlag & Operation.TRANSLATE_Y) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("Y", posArrayY, 0.01f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-        if ((operationFlag & Operation.TRANSLATE_Z) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("Z", posArrayZ, 0.01f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-
-        if ((operationFlag & Operation.ROTATE_X) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_X", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.sliderAngle("X", rotArrayX, -180.0f, 180.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-        if ((operationFlag & Operation.ROTATE_Y) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.sliderAngle("Y", rotArrayY, -180.0f, 180.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-        if ((operationFlag & Operation.ROTATE_Z) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.sliderAngle("Z", rotArrayZ, -180.0f, 180.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-
-        if ((operationFlag & Operation.SCALE_X) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_X", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("X", sclArrayX, 0.01f, 0.001f, 1000.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-        if ((operationFlag & Operation.SCALE_Y) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("Y", sclArrayY, 0.01f, 0.001f, 1000.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-        if ((operationFlag & Operation.SCALE_Z) != 0) {
-            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                if (ImGui.dragFloat("Z", sclArrayZ, 0.01f, 0.001f, 1000.0f)) {
-                    uiTrackingHelper.saveSnapshot();
-                }
-            }
-        }
-
-        final Vector3f newPos = new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]);
-        final Vector3f newRot = new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]);
-        final Vector3f newScale = new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]);
-
-        wBenchObject.setPosition(newPos);
-        wBenchObject.setRotation(newRot);
-        wBenchObject.setScaling(newScale);
+        ImGui.endChild();
     }
 
     private void showItemDescription(TagID tagID) {
@@ -214,43 +319,47 @@ public class InterfaceActionsSelectedObjectM {
         }
     }
 
-    public void render() {
-        WBenchObject<?> selectedObject = this.mapEditorInterface.getCurrentSelectedObject();
-        if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().getNameId(), ImGuiTreeNodeFlags.DefaultOpen)) {
+    private void forSelectedObject(WBenchObject<?> selectedObject, boolean manyObjects) {
+        if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().getNameId(), manyObjects ? ImGuiTreeNodeFlags.DefaultOpen : 0)) {
+            ImGui.pushID(this.getClass().getSimpleName() + "_" + selectedObject.getListID());
             ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), 400, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Transformation");
             ImGui.popStyleColor();
             ImGui.indent();
-            if (selectedObject.hasTranslationConstraints()) {
-                int objectFlagTranslate = selectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
-                int objectFlagRotate = selectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
-                int objectFlagScaling = selectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
+            if (manyObjects) {
+                if (selectedObject.hasTranslationConstraints()) {
+                    int objectFlagTranslate = selectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
+                    int objectFlagRotate = selectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
+                    int objectFlagScaling = selectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
 
-                if (objectFlagTranslate != 0) {
-                    if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
-                        WBenchUITrackingHelper.instantlyTrackAndPush();
-                        this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject, true, false, false));
+                    if (objectFlagTranslate != 0) {
+                        if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                            this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), true, false, false));
+                        }
                     }
-                }
 
-                if (objectFlagRotate != 0) {
-                    if (ImGui.radioButton("Rotation", (this.getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
-                        WBenchUITrackingHelper.instantlyTrackAndPush();
-                        this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject, false, true, false));
+                    if (objectFlagRotate != 0) {
+                        if (ImGui.radioButton("Rotation", (this.getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                            this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), false, true, false));
+                        }
                     }
-                }
 
-                if (objectFlagScaling != 0) {
-                    if (ImGui.radioButton("Scaling", (this.getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
-                        WBenchUITrackingHelper.instantlyTrackAndPush();
-                        this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject, false, false, true));
+                    if (objectFlagScaling != 0) {
+                        if (ImGui.radioButton("Scaling", (this.getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                            this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), false, false, true));
+                        }
                     }
-                }
 
-                this.processTranslations(selectedObject);
+                    this.processTranslations("##transl_sngobj", Collections.singletonList(selectedObject), this.getCurrentOperation(), false);
+                } else {
+                    ImGui.text("<empty>");
+                }
             } else {
-                ImGui.text("<empty>");
+                this.processTranslations("##transl_sngobj", Collections.singletonList(selectedObject), this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), true, true, true), true);
             }
             ImGui.unindent();
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
@@ -260,6 +369,61 @@ public class InterfaceActionsSelectedObjectM {
             this.showTags(selectedObject);
             ImGui.unindent();
             ImGui.endChild();
+            ImGui.popID();
+        }
+    }
+
+    private boolean anyMatch(Set<WBenchObject<?>> wBenchObjects, Function<WBenchObject<?>, AxisConstraints> axisConstraints, int flag) {
+        return wBenchObjects.stream().anyMatch(e -> ((axisConstraints.apply(e).getFlag() & flag) != 0));
+    }
+
+    public void render() {
+        if (this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().size() <= 1) {
+            this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().forEach(e -> this.forSelectedObject(e, true));
+        } else {
+            if (ImGui.collapsingHeader("Multiple Objects (" + this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().size() + ")", ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.indent();
+                final boolean anyTranslateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyTranslateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyTranslateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_Z.getFlag());
+
+                final boolean anyRotateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyRotateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyRotateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_Z.getFlag());
+
+                final boolean anyScaleX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyScaleY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyScaleZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_Z.getFlag());
+
+                final TranslationConstraints translationConstraints = new TranslationConstraints(
+                        AxisConstraints.GET(anyTranslateX, anyTranslateY, anyTranslateZ),
+                        AxisConstraints.GET(anyRotateX, anyRotateY, anyRotateZ),
+                        AxisConstraints.GET(anyScaleX, anyScaleY, anyScaleZ));
+
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
+                ImGui.bulletText("Group Data");
+                ImGui.popStyleColor();
+                if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                    WBenchUITrackingHelper.instantlyTrackAndPush();
+                    this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, true, false, false));
+                }
+
+                if (ImGui.radioButton("Rotation", (this.getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
+                    WBenchUITrackingHelper.instantlyTrackAndPush();
+                    this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, false, true, false));
+                }
+
+                if (ImGui.radioButton("Scaling", (this.getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
+                    WBenchUITrackingHelper.instantlyTrackAndPush();
+                    this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, false, false, true));
+                }
+
+                this.processTranslations("##transl_mltobj", this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), this.getCurrentOperation(), false);
+
+                ImGui.spacing();
+                this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().forEach(e -> this.forSelectedObject(e, false));
+                ImGui.unindent();
+            }
         }
     }
 

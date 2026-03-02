@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.snapshots;
 
 import javagems3d.graphics.rendering.ui.snapshots.instances.SnapshotsContainer;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -21,6 +22,7 @@ public abstract class SnapshotsTrace {
     }
 
     public void pushSnapshot(@NotNull SnapshotsContainer snapshot) {
+        Log.get().debug("New snapshot!");
         this.undoStack.push(snapshot);
         this.redoStack.clear();
         this.trim(this.undoStack);

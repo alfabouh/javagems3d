@@ -37,9 +37,11 @@ public abstract class DynamicsUtils {
 
     public static Transform createTransform(Vector3f pos, Vector3f rot, Vector3f scaling) {
         Transform transform = new Transform();
-        transform.setScale(DynamicsUtils.convertV3F_JME(scaling));
-        transform.setTranslation(DynamicsUtils.convertV3F_JME(pos));
-        transform.setRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
+        if (pos.isFinite() && rot.isFinite() && scaling.isFinite()) {
+            transform.setScale(DynamicsUtils.convertV3F_JME(scaling));
+            transform.setTranslation(DynamicsUtils.convertV3F_JME(pos));
+            transform.setRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
+        }
         return transform;
     }
 
@@ -52,29 +54,41 @@ public abstract class DynamicsUtils {
     }
 
     public static void transformRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f pos, Vector3f rot, Vector3f scaling) {
-        physicsRigidBody.setPhysicsTransform(DynamicsUtils.createTransform(pos, rot, scaling));
+        if (pos.isFinite() && rot.isFinite() && scaling.isFinite()) {
+            physicsRigidBody.setPhysicsTransform(DynamicsUtils.createTransform(pos, rot, scaling));
+        }
     }
 
     public static void translateRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f pos) {
-        physicsRigidBody.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
+        if (pos.isFinite()) {
+            physicsRigidBody.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
+        }
     }
 
     public static void rotateRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f rot) {
-        Quaternionf quaternionf = new Quaternionf();
-        quaternionf.rotateXYZ(-rot.x, -rot.y, -rot.z);
-        physicsRigidBody.setPhysicsRotation(new Quaternion(quaternionf.x, quaternionf.y, quaternionf.z, quaternionf.w));
+        if (rot.isFinite()) {
+            Quaternionf quaternionf = new Quaternionf();
+            quaternionf.rotateXYZ(-rot.x, -rot.y, -rot.z);
+            physicsRigidBody.setPhysicsRotation(new Quaternion(quaternionf.x, quaternionf.y, quaternionf.z, quaternionf.w));
+        }
     }
 
     public static void scaleRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f scale) {
-        physicsRigidBody.setPhysicsScale(DynamicsUtils.convertV3F_JME(scale));
+        if (scale.isFinite()) {
+            physicsRigidBody.setPhysicsScale(DynamicsUtils.convertV3F_JME(scale));
+        }
     }
 
     public static void translateGhost(PhysicsGhostObject physicsGhostObject, Vector3f pos) {
-        physicsGhostObject.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
+        if (pos.isFinite()) {
+            physicsGhostObject.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
+        }
     }
 
     public static void rotateGhost(PhysicsGhostObject physicsGhostObject, Vector3f rot) {
-        physicsGhostObject.setPhysicsRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
+        if (rot.isFinite()) {
+            physicsGhostObject.setPhysicsRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
+        }
     }
 
     public static Vector3f getObjectBodyPos(PhysicsCollisionObject physicsRigidBody) {

@@ -1,7 +1,7 @@
 package workbench.graphics.scene.ui.game.editor.instances.misc;
 
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.misc.GameResourceObjectTagData;
+import javagems3d.system.external.gaming.def.misc.GameResourceObjectTagData;
 
 public class ObjectTagPreview implements IPreviewWrapperObject<GameResourceObjectTagData> {
     private final GameResourceObjectTagData gameResourceObjectTagData;

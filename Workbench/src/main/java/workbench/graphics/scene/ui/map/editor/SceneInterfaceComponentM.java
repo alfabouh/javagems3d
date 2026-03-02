@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.map.editor;
 import imgui.ImGui;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
+import imgui.extension.imguizmo.flag.Operation;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
@@ -14,11 +15,13 @@ import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
 import org.joml.*;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
@@ -32,11 +35,28 @@ public class SceneInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
     private final AtomicBoolean isThreadInProcess;
     private boolean wasGuizmoUsed;
+    private final Vector3f guizmoPrevTranlate;
+    private final Vector3f guizmoPrevRotate;
+    private final Vector3f guizmoPrevScale;
+    private boolean rightMouseDown = false;
+    private boolean rightMouseDragged = false;
+    private final float DRAG_THRESHOLD = 3.0f; // пиксели
+    private float dragStartX;
+    private float dragStartY;
 
     public SceneInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.isThreadInProcess = new AtomicBoolean();
+        this.guizmoPrevTranlate = new Vector3f();
+        this.guizmoPrevRotate = new Vector3f();
+        this.guizmoPrevScale = new Vector3f();
         this.clear();
+    }
+
+    public void resetFrame() {
+        this.guizmoPrevTranlate.set(0.0f);
+        this.guizmoPrevRotate.set(0.0f);
+        this.guizmoPrevScale.set(0.0f);
     }
 
     public void clear() {
@@ -63,9 +83,35 @@ public class SceneInterfaceComponentM {
         int imageSizeX = (int) (ImGui.getItemRectSizeX());
         int imageSizeY = (int) (ImGui.getItemRectSizeY());
 
-        ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
+        if (MapEditorInterface.isCursorInsideScene) {
+            this.getEditorInterface().getItemsComponent().rightKeyContext("sceneSelectedContext", false);
+            if (ImGui.isMouseClicked(1)) {
+                this.rightMouseDown = true;
+                this.rightMouseDragged = false;
+                this.dragStartX = ImGui.getMousePosX();
+                this.dragStartY = ImGui.getMousePosY();
+            }
 
+            if (this.rightMouseDown && ImGui.isMouseDown(1)) {
+                float dx = ImGui.getMousePosX() - this.dragStartX;
+                float dy = ImGui.getMousePosY() - this.dragStartY;
+                if (Math.abs(dx) > this.DRAG_THRESHOLD || Math.abs(dy) > this.DRAG_THRESHOLD) {
+                    this.rightMouseDragged = true;
+                }
+            }
+
+            if (this.rightMouseDown && ImGui.isMouseReleased(1)) {
+                if (!this.rightMouseDragged) {
+                    ImGui.openPopup("sceneSelectedContext");
+                }
+
+                this.rightMouseDown = false;
+            }
+        }
+
+        ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
         if (!this.getEditorInterface().getActionsContent().getInterfaceEnvSkyM().isCameraCheckBox()) {
+            ImGui.closeCurrentPopup();
             if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideScene) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -74,7 +120,18 @@ public class SceneInterfaceComponentM {
                             try {
                                 this.isThreadInProcess.set(true);
                                 WBenchObject<?> wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
-                                this.getEditorInterface().setCurrentSelectedObject(wBenchObject != null, wBenchObject);
+                                if (ProjectUIUtils.ctrl()) {
+                                    if (wBenchObject != null) {
+                                        if (this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().contains(wBenchObject)) {
+                                            this.getEditorInterface().getSelectedObjectsManager().removeObjectFromSelection(true, wBenchObject);
+                                        } else {
+                                            this.getEditorInterface().getSelectedObjectsManager().addObjectInSelection(true, wBenchObject);
+                                        }
+                                    }
+                                } else {
+                                    this.getEditorInterface().getSelectedObjectsManager().setCurrentSelectedObject(true, wBenchObject);
+                                }
+                                this.getEditorInterface().getItemsComponent().scrollToSelection();
                                 if (wBenchObject != null) {
                                     this.getEditorInterface().getActionsContent().resetObjectPreview();
                                 }
@@ -87,40 +144,113 @@ public class SceneInterfaceComponentM {
                 }
             }
 
-            boolean UsedImGuizmo = ImGuizmo.isUsing();
-            if (this.getEditorInterface().getCurrentSelectedObject() != null) {
-                CullingAABB cullingAABB = this.getEditorInterface().getCurrentSelectedObject().pickAABBDataFromMesh();
-                if (cullingAABB != null) {
-                    WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-                    float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
-                    ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation(), Mode.WORLD, new float[]{0.001f, 0.001f, 0.001f});
-
-                    if (!this.wasGuizmoUsed && UsedImGuizmo) {
-                        WBenchUITrackingHelper.instantlyTrackAndPush();
-                    }
-                    if (UsedImGuizmo) {
-                        Vector3f position = new Vector3f();
-                        Vector3f rotation = new Vector3f();
-                        Vector3f scaling = new Vector3f();
-                        Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
-                        newMatrix.getTranslation(position);
-                        newMatrix.getScale(scaling);
-                        newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
-
-                        final Vector3f newPos = position;
-                        final Vector3f newRot = rotation.negate();
-                        final Vector3f newScale = scaling;
-
-                        this.getEditorInterface().getCurrentSelectedObject().setPosition(newPos);
-                        this.getEditorInterface().getCurrentSelectedObject().setRotation(newRot);
-                        this.getEditorInterface().getCurrentSelectedObject().setScaling(newScale);
-                    }
-                }
+            if (this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().size() == 1) {
+                this.renderForSingleObject(view, projection, this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().stream().findFirst().get());
+            } else if (this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().size() > 1) {
+                this.renderForMultipleObjects(view, projection, this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects());
             }
-            this.wasGuizmoUsed = UsedImGuizmo;
         }
 
         WBench.get().getScreen().getWindow().setFocus(ImGui.isWindowFocused());
+    }
+
+    private void renderForSingleObject(float[] view, float[] projection, WBenchObject<?> wBenchObject) {
+        boolean UsedImGuizmo = ImGuizmo.isUsing();
+        CullingAABB cullingAABB = wBenchObject.pickAABBDataFromMesh();
+        if (cullingAABB != null) {
+            WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            Pose3D pose3D = new Pose3D();
+            pose3D.setPosition(wBenchObject.getModel().getPose().getPosition());
+            pose3D.setRotation(wBenchObject.getModel().getPose().getRotation());
+            pose3D.setScaling(wBenchObject.getModel().getPose().getScaling());
+            float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
+            int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
+            ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
+
+            if (!this.wasGuizmoUsed && UsedImGuizmo) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
+            }
+            if (UsedImGuizmo && ImGui.isItemHovered()) {
+                Vector3f position = new Vector3f();
+                Vector3f rotation = new Vector3f();
+                Vector3f scaling = new Vector3f();
+                Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
+                newMatrix.getTranslation(position);
+                newMatrix.getScale(scaling);
+                newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
+
+                final Vector3f newPos = position;
+                final Vector3f newRot = rotation.negate();
+                final Vector3f newScale = scaling;
+
+                if ((currentOperation & Operation.TRANSLATE) != 0) {
+                    wBenchObject.setPosition(newPos);
+                }
+                if ((currentOperation & Operation.ROTATE) != 0) {
+                    wBenchObject.setRotation(newRot);
+                }
+                if ((currentOperation & Operation.SCALE) != 0) {
+                    wBenchObject.setScaling(newScale);
+                }
+            }
+        }
+        this.wasGuizmoUsed = UsedImGuizmo;
+    }
+
+    private void renderForMultipleObjects(float[] view, float[] projection, Set<WBenchObject<?>> wBenchObjects) {
+        final Vector3f min = new Vector3f(Float.MAX_VALUE);
+        final Vector3f max = new Vector3f(-Float.MAX_VALUE);
+        boolean UsedImGuizmo = ImGuizmo.isUsing();
+
+        for (WBenchObject<?> wBenchObject : wBenchObjects) {
+            CullingAABB cullingAABB = wBenchObject.pickAABBDataFromMesh();
+            if (cullingAABB != null) {
+                WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.Depth(), DebugLinesDrawer.Depth()));
+                min.min(cullingAABB.getAabbMin());
+                max.max(cullingAABB.getAabbMax());
+            }
+        }
+
+        Pose3D pose3D = new Pose3D();
+        pose3D.setPosition(this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition());
+        pose3D.setRotation(this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().negate());
+        pose3D.setScaling(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
+        float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
+        int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
+        ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, ImGui.isItemHovered() ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
+        final Vector3f position = new Vector3f();
+        final Vector3f rotation = new Vector3f();
+        final Vector3f scaling = new Vector3f();
+        if (UsedImGuizmo && ImGui.isItemHovered()) {
+            if (!this.wasGuizmoUsed) {
+                //this.getEditorInterface().getSelectedObjectsManager().beginGroupTransform();
+                WBenchUITrackingHelper.instantlyTrackAndPush();
+            }
+            Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
+            newMatrix.getTranslation(position);
+            newMatrix.getScale(scaling);
+            Quaternionf q = newMatrix.getNormalizedRotation(new Quaternionf());
+            q.getEulerAnglesXYZ(rotation);
+            final Vector3f newPos = position;
+            final Vector3f newRot = rotation;
+            final Vector3f newScale = scaling;
+
+            if ((currentOperation & Operation.TRANSLATE) != 0) {
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
+            }
+            if ((currentOperation & Operation.ROTATE) != 0) {
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(newRot);
+            }
+            if ((currentOperation & Operation.SCALE) != 0) {
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(newScale);
+            }
+
+        } else {
+            this.resetFrame();
+        }
+        this.wasGuizmoUsed = UsedImGuizmo;
+
+        WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(new Vector3f(min.x - 0.1f, min.y - 0.1f, min.z - 0.1f), new Vector3f(max.x + 0.1f, max.y + 0.1f, max.z + 0.1f), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
     }
 
     private WBenchObject<?> tryToSelectObjectFromMouse(Vector2i sceneWindowPos, Vector2i sceneWindowSize, Vector2i mouseCoordinates) {
@@ -160,9 +290,18 @@ public class SceneInterfaceComponentM {
 
         List<Pair<SceneObject, Vector3f>> sceneObjects = new ArrayList<>();
         for (SceneObject object : intersectedAabbs) {
-            Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, ray, Runtime.getRuntime().availableProcessors() - 1);
-            if (intersection != null) {
-                sceneObjects.add(new Pair<>(object, intersection));
+            if (object.getAnimationData() != null) {
+                CullingAABB cullingAABB = object.pickAABBDataFromMesh();
+                if (cullingAABB != null) {
+                    Vector2f intersection = new Vector2f();
+                    Intersectionf.intersectRayAab(origin, ray, cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), intersection);
+                    sceneObjects.add(new Pair<>(object, new Vector3f(origin).add(new Vector3f(ray).mul(intersection.x))));
+                }
+            } else {
+                Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, ray, Runtime.getRuntime().availableProcessors() - 1);
+                if (intersection != null) {
+                    sceneObjects.add(new Pair<>(object, intersection));
+                }
             }
         }
 

@@ -234,7 +234,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
         @Override
         public void setPhysicsScale(com.jme3.math.Vector3f newScale) {
-            super.setPhysicsScale(newScale);
+            super.setPhysicsScale(new com.jme3.math.Vector3f(Math.max(newScale.x, 0.0f), Math.max(newScale.y, 0.0f), Math.max(newScale.z, 0.0f)));
             this.reCalcMass();
         }
 

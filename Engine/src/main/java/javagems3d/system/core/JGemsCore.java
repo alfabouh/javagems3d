@@ -4,15 +4,17 @@ import api.system.JGemsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.help.JGemsHelper;
-import javagems3d.mapping.IGameMap;
-import javagems3d.mapping.JGemsMapping;
-import javagems3d.mapping.processing.base.IMapProcessor;
-import javagems3d.mapping.processing.callbacks.IMapActionCallback;
+import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.mapping.IGameMap;
+import javagems3d.system.external.mapping.JGemsMapping;
+import javagems3d.system.external.mapping.processing.base.IMapProcessor;
+import javagems3d.system.external.mapping.processing.callbacks.IMapActionCallback;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +46,7 @@ public final class JGemsCore implements ICore {
     private final RequestsFromThreads requestsFromThreads;
     private Thread systemThread;
     private JGemsMapping mapping;
-
+    private JGemsGaming gaming;
     private final Set<Exception> exceptionsBuffer;
 
     public JGemsCore() {
@@ -60,6 +62,11 @@ public final class JGemsCore implements ICore {
         this.exceptionsBuffer = SyncManager.createSyncronisedSet();
 
         JGemsHelper.initJGemsCore(this);
+    }
+
+    private void createGamingObject(@NotNull String externalGamePath) {
+        this.gaming = new JGemsGaming();
+        this.gaming.loadExternalGameFiles(JGemsAPI.APIEditorResources().getEditorResourcesManager(), new JGemsPath(externalGamePath));
     }
 
     private void createMappingObject() {
@@ -80,7 +87,7 @@ public final class JGemsCore implements ICore {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        if (!this.getMapping().isMapValid()) {
+        if (this.getMapping() == null || !this.getMapping().isMapValid()) {
             return;
         }
 
@@ -104,6 +111,10 @@ public final class JGemsCore implements ICore {
 
         JGemsAPI.clearScriptingEngine();
         this.requestsFromThreads.destroyMap = false;
+    }
+
+    public JGemsPath getMapPath(String relativePath) {
+        return this.gaming != null ? this.gaming.getMaps().get(relativePath) : new JGemsPath(relativePath);
     }
 
     public void loadMap(@NotNull IMapProcessor mapProcessor) {
@@ -145,7 +156,7 @@ public final class JGemsCore implements ICore {
     }
 
     @SuppressWarnings("all")
-    public void startSystem() {
+    public void startSystem(@Nullable String externalGamePath) {
         final ArrayList<Exception> exceptionList = new ArrayList<>();
         JGemsCore.printSystemInfo();
         if (this.engineState().isEngineIsReady()) {
@@ -163,6 +174,9 @@ public final class JGemsCore implements ICore {
                 JGemsAPI.APIAppData().postInit(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
+                if (externalGamePath != null) {
+                    this.createGamingObject(externalGamePath);
+                }
                 this.createMappingObject();
                 this.getScreen().runRenderThread();
 

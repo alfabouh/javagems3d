@@ -13,7 +13,7 @@ public abstract class TemplateJS {
         this.name = name;
     }
 
-    @JSMethodDoc(description = "Object's group", args = {})
+    @JSMethodDoc(description = "Object's util", args = {})
     public String getGroupName() {
         return this.groupName;
     }

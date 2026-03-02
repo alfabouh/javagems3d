@@ -1,7 +1,7 @@
 package workbench.graphics.scene.ui.game.editor.instances.world;
 
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
-import workbench.project.managing.instances.world.GameResourceWorldObjectAsset;
+import javagems3d.system.external.gaming.def.world.GameResourceWorldObjectAsset;
 
 public abstract class WorldObjectPreview <T extends GameResourceWorldObjectAsset> implements IPreviewWrapperObject<T> {
     private final T gameResourcePropObjectAsset;

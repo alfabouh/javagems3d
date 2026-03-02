@@ -34,43 +34,43 @@ public final class InitializationJS {
     }
 
     @JSCommentary(commentary = "This method registers a new entity template, which is later used to instantiate objects in the game world. The template is defined based on components registered via the Java API - IAPIWBenchDataManager.")
-    @JSMethodDoc(description = "Registers new entity template in engine system", args = {"group", "entName"}, order = 0)
+    @JSMethodDoc(description = "Registers new entity template in engine system", args = {"util", "entName"}, order = 0)
     public EntityTemplateJS registerEntity(String group, String entName) {
         //Map<String, APIWBenchDataManager.TemplatesTable<ApiResourceEntity>> map = this.getApiwBenchDataManager().getResourceEntityMap();
-        //APIWBenchDataManager.TemplatesTable<ApiResourceEntity> templatesTable = map.get(group);
+        //APIWBenchDataManager.TemplatesTable<ApiResourceEntity> templatesTable = map.get(util);
         //if (templatesTable != null) {
         //    if (!templatesTable.getTemplateMap().containsKey(entName)) {
-        //        Log.get().error("API doesn't contain: " + group + "/" + entName);
+        //        Log.get().error("API doesn't contain: " + util + "/" + entName);
         //        return null;
         //    }
         //    JGemsEntityData jGemsEntityData = templatesTable.find(entName).getFabricGame().create();
         //    MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, jGemsEntityData.getPathToModel(), false);
-        //    EntityTemplateJS entityTemplateJS = new EntityTemplateJS(group, entName);
+        //    EntityTemplateJS entityTemplateJS = new EntityTemplateJS(util, entName);
         //    this.getScriptingManaging().getEntityRenderDataMap().put(entityTemplateJS, new EntityRenderData(jGemsEntityData.getEntityRenderData(), meshBuffer));
         //    return entityTemplateJS;
         //} else {
-        //    Log.get().error("API doesn't contain group: " + group);
+        //    Log.get().error("API doesn't contain util: " + util);
         //}
         return null;
     }
 
     @JSCommentary(commentary = "This method registers a new prop template, which is later used to instantiate objects in the game world. The template is defined based on components registered via the Java API - IAPIWBenchDataManager.")
-    @JSMethodDoc(description = "Registers new prop template in engine system", args = {"group", "propName"}, order = 1)
+    @JSMethodDoc(description = "Registers new prop template in engine system", args = {"util", "propName"}, order = 1)
     public PropTemplateJS registerProp(String group, String propName) {
         //Map<String, APIWBenchDataManager.TemplatesTable<ApiResourceProp>> map = this.getApiwBenchDataManager().getResourcePropMap();
-        //APIWBenchDataManager.TemplatesTable<ApiResourceProp> templatesTable = map.get(group);
+        //APIWBenchDataManager.TemplatesTable<ApiResourceProp> templatesTable = map.get(util);
         //if (templatesTable != null) {
         //    if (!templatesTable.getTemplateMap().containsKey(propName)) {
-        //        Log.get().error("API doesn't contain: " + group + "/" + propName);
+        //        Log.get().error("API doesn't contain: " + util + "/" + propName);
         //        return null;
         //    }
         //    JGemsPropData jGemsPropData = templatesTable.find(propName).getFabricGame().create();
         //    MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(JGems3D.GetSource.EXTERNAL, jGemsPropData.getPathToModel(), false);
-        //    PropTemplateJS propTemplateJS = new PropTemplateJS(group, propName);
+        //    PropTemplateJS propTemplateJS = new PropTemplateJS(util, propName);
         //    this.getScriptingManaging().getPropRenderDataMap().put(propTemplateJS, new PropRenderData(jGemsPropData.getPropRenderData(), meshBuffer));
         //    return propTemplateJS;
         //} else {
-        //    Log.get().error("API doesn't contain group: " + group);
+        //    Log.get().error("API doesn't contain util: " + util);
         //}
         return null;
     }

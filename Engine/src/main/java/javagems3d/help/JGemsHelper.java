@@ -31,8 +31,8 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.mapping.IGameMap;
-import javagems3d.mapping.processing.base.IMapProcessor;
+import javagems3d.system.external.mapping.IGameMap;
+import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
@@ -64,7 +64,6 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import javagems3d.system.settings.JGemsSettings;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -300,6 +299,9 @@ public final class JGemsHelper {
             return JGemsHelper.this.core.getCurrentGameMapPlayer();
         }
 
+        public JGemsPath getMapPath(String relativePath) {
+            return JGemsHelper.this.core.getMapPath(relativePath);
+        }
 
         public void loadMap(@NotNull IMapProcessor mapProcessor) {
             JGemsHelper.this.core.loadMap(mapProcessor);
