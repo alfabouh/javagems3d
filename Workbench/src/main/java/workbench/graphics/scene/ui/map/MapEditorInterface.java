@@ -16,6 +16,7 @@ import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     private final ResourcesInterfaceComponentM resourcesComponent;
     private final SceneInterfaceComponentM sceneComponent;
 
+    public static boolean isCursorInsideSceneAndFocused;
     public static boolean isCursorInsideScene;
 
     public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
@@ -126,7 +128,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN, "true")
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath()),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).getFullPath())
                 ));
             }
             ImGui.separator();
@@ -296,8 +299,11 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             if (ImGui.isMouseClicked(1)) {
                 ImGui.setWindowFocus();
             }
+            MapEditorInterface.isCursorInsideSceneAndFocused = true;
             MapEditorInterface.isCursorInsideScene = true;
         } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
+            MapEditorInterface.isCursorInsideSceneAndFocused = false;
+        } else {
             MapEditorInterface.isCursorInsideScene = false;
         }
 
@@ -591,6 +597,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             Quaternionf deltaRot = new Quaternionf().rotateXYZ(rotationOffset.x, rotationOffset.y, rotationOffset.z);
             Matrix4f groupMatrix = new Matrix4f().identity().translate(savedCenter).rotate(deltaRot).translate(-savedCenter.x, -savedCenter.y, -savedCenter.z);
             for (WBenchObject<?> obj : currentSelectedObjects) {
+                obj.setForceConstraints(true);
                 {
                     obj.setPosition(obj.getPosition().add(posOffset));
                     obj.setScaling(obj.getScaling().div(scaleOffset));
@@ -598,10 +605,11 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                 Matrix4f objMatrix = TransformUtils.getModelMatrix(obj.getModel().getPose());
                 groupMatrix.mul(objMatrix, objMatrix);
                 Vector3f newPos = objMatrix.getTranslation(new Vector3f());
-                Quaternionf newRotQ = objMatrix.getNormalizedRotation(new Quaternionf());
+                Quaternionf newRotQ = objMatrix.getUnnormalizedRotation(new Quaternionf());
                 Vector3f newEuler = newRotQ.getEulerAnglesXYZ(new Vector3f()).negate();
                 obj.setPosition(newPos);
                 obj.setRotation(newEuler);
+                obj.setForceConstraints(false);
             }
         }
 

@@ -129,127 +129,148 @@ public class InterfaceActionsSelectedObjectM {
 
             if (showTranslX || showTranslY || showTranslZ) {
                 ImGui.bulletText("Translation");
+                ImGui.beginDisabled(!showTranslX);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_X", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("X##posArrayX", posArrayX, 0.01f)) {
+                            captTranslate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showTranslY);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("Y##posArrayY", posArrayY, 0.01f)) {
+                            captTranslate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showTranslZ);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("Z##posArrayZ", posArrayZ, 0.01f)) {
+                            captTranslate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
             } else if (textInfoIfCannotBeTransformed) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
                 ImGui.bulletText("Can't be Translated");
                 ImGui.popStyleColor();
             }
 
-            if (showTranslX) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_X", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("X##posArrayX", posArrayX, 0.01f)) {
-                        captTranslate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showTranslY) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("Y##posArrayY", posArrayY, 0.01f)) {
-                        captTranslate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showTranslZ) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_TRANSLATE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("Z##posArrayZ", posArrayZ, 0.01f)) {
-                        captTranslate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-
             if (showRotX || showRotY || showRotZ) {
                 ImGui.bulletText("Rotation");
+                ImGui.beginDisabled(!showRotX);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_X", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.sliderAngle("X##rotArrayX", rotArrayX, -180.0f, 180.0f)) {
+                            captRotate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showRotY);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.sliderAngle("Y##rotArrayY", rotArrayY, -180.0f, 180.0f)) {
+                            captRotate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showRotZ);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.sliderAngle("Z##rotArrayZ", rotArrayZ, -180.0f, 180.0f)) {
+                            captRotate = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
             } else if (textInfoIfCannotBeTransformed) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
                 ImGui.bulletText("Can't be Rotated");
                 ImGui.popStyleColor();
             }
 
-            if (showRotX) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_X", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.sliderAngle("X##rotArrayX", rotArrayX, -180.0f, 180.0f)) {
-                        captRotate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showRotY) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.sliderAngle("Y##rotArrayY", rotArrayY, -180.0f, 180.0f)) {
-                        captRotate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showRotZ) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.sliderAngle("Z##rotArrayZ", rotArrayZ, -180.0f, 180.0f)) {
-                        captRotate = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-
             if (showScaleX || showScaleY || showScaleZ) {
                 ImGui.bulletText("Scaling");
+                ImGui.beginDisabled(!showScaleX);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_X", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("X##sclArrayX", sclArrayX, 0.01f, -1000.0f, 1000.0f)) {
+                            captScale = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showScaleY);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Y", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("Y##sclArrayY", sclArrayY, 0.01f, -1000.0f, 1000.0f)) {
+                            captScale = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
+
+                ImGui.beginDisabled(!showScaleZ);
+                {
+                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
+                    try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Z", WBenchUITrackingHelper::INSTANCE)) {
+                        if (ImGui.dragFloat("Z##sclArrayZ", sclArrayZ, 0.01f, -1000.0f, 1000.0f)) {
+                            captScale = true;
+                            if (uiTrackingHelper.saveSnapshot()) {
+                            }
+                        }
+                    }
+                    ImGui.popStyleColor();
+                }
+                ImGui.endDisabled();
             } else if (textInfoIfCannotBeTransformed) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
                 ImGui.bulletText("Can't be Scaled");
-                ImGui.popStyleColor();
-            }
-
-            if (showScaleX) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_X", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("X##sclArrayX", sclArrayX, 0.01f, -1000.0f, 1000.0f)) {
-                        captScale = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showScaleY) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("Y##sclArrayY", sclArrayY, 0.01f, -1000.0f, 1000.0f)) {
-                        captScale = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
-                ImGui.popStyleColor();
-            }
-            if (showScaleZ) {
-                ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
-                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_SCALE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                    if (ImGui.dragFloat("Z##sclArrayZ", sclArrayZ, 0.01f, -1000.0f, 1000.0f)) {
-                        captScale = true;
-                        if (uiTrackingHelper.saveSnapshot()) {
-                        }
-                    }
-                }
                 ImGui.popStyleColor();
             }
 

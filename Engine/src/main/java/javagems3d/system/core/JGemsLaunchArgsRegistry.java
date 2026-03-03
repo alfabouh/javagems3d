@@ -86,7 +86,7 @@ public final class JGemsLaunchArgsRegistry {
             return new Vector2i(i1, i2);
         }), null),
         MAP_TEST("map_test", (args -> args.equals("true")), false),
-        MAP_PATH("map_path", (args -> args), null),
+        TEST_MAP_ID("map_path", (args -> args), null),
         NO_FULL_SCREEN("no_full_screen", (args -> args.equals("true")), false),
         WORKBENCH("workbench", (args -> args.equals("true")), false),
         EXTERNAL_GAME_DEF("external_def", (args -> args), null),

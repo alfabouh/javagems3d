@@ -112,7 +112,7 @@ public class SceneInterfaceComponentM {
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
         if (!this.getEditorInterface().getActionsContent().getInterfaceEnvSkyM().isCameraCheckBox()) {
             ImGui.closeCurrentPopup();
-            if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideScene) {
+            if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideSceneAndFocused) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     if (!this.isThreadInProcess.get()) {
@@ -217,7 +217,7 @@ public class SceneInterfaceComponentM {
         pose3D.setScaling(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
         float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
         int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
-        ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, ImGui.isItemHovered() ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
+        ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
         final Vector3f position = new Vector3f();
         final Vector3f rotation = new Vector3f();
         final Vector3f scaling = new Vector3f();

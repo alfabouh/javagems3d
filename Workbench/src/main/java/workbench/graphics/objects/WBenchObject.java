@@ -24,6 +24,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     private final WBenchObject.ID objectId;
     private TagsContainer tagsContainer;
     private final TranslationConstraints translationConstraints;
+    private boolean forceConstraints;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
         super(objectId.getNameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
@@ -31,6 +32,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         this.objectId = objectId;
         this.tagsContainer = tagsContainer.copy();
         this.translationConstraints = translationConstraints;
+        this.forceConstraints = false;
     }
 
     public WBenchObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer) {
@@ -41,14 +43,16 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (this.isDead()) {
             return;
         }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_X)) {
-            newPos.mul(0.0f, 1.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
-            newPos.mul(1.0f, 0.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
-            newPos.mul(1.0f, 1.0f, 0.0f);
+        if (this.isForceConstraints()) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+                newPos.mul(0.0f, 1.0f, 1.0f);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+                newPos.mul(1.0f, 0.0f, 1.0f);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+                newPos.mul(1.0f, 1.0f, 0.0f);
+            }
         }
         this.getModel().getPose().setPosition(newPos);
         this.onTranslate(newPos);
@@ -58,14 +62,16 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (this.isDead()) {
             return;
         }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_X)) {
-            newRot.mul(0.0f, 1.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
-            newRot.mul(1.0f, 0.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
-            newRot.mul(1.0f, 1.0f, 0.0f);
+        if (this.isForceConstraints()) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+                newRot.mul(0.0f, 1.0f, 1.0f);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+                newRot.mul(1.0f, 0.0f, 1.0f);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+                newRot.mul(1.0f, 1.0f, 0.0f);
+            }
         }
         this.getModel().getPose().setRotation(
                 new Vector3f(
@@ -81,14 +87,16 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         if (this.isDead()) {
             return;
         }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_X)) {
-            newScale.mul(0.0f, 1.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
-            newScale.mul(1.0f, 0.0f, 1.0f);
-        }
-        if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
-            newScale.mul(1.0f, 1.0f, 0.0f);
+        if (this.isForceConstraints()) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+                newScale.mul(1.0f, this.getScaling().y, this.getScaling().z);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+                newScale.mul(this.getScaling().x, 1.0f, this.getScaling().z);
+            }
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+                newScale.mul(this.getScaling().x, this.getScaling().y, 1.0f);
+            }
         }
         this.getModel().getPose().setScaling(newScale);
         this.onScale(newScale);
@@ -152,6 +160,15 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         }
         WBenchObject<E> that = (WBenchObject<E>) o;
         return this.id == that.id;
+    }
+
+    public boolean isForceConstraints() {
+        return this.forceConstraints;
+    }
+
+    public WBenchObject<E> setForceConstraints(boolean forceConstraints) {
+        this.forceConstraints = forceConstraints;
+        return this;
     }
 
     public String toString(boolean textPosition) {

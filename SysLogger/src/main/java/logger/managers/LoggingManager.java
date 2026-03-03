@@ -161,10 +161,9 @@ public abstract class LoggingManager {
     }
 
     public void exception(Exception e) {
-        this.fatal("Process caught an exception");
-        System.err.println("\n****************************************Exception****************************************");
-        e.printStackTrace(System.err);
-        System.err.println("\n****************************************Exception****************************************");
+        this.log.error("\n****************************************Exception****************************************");
+        this.log.error("Process caught an exception", e);
+        this.log.error("\n****************************************Exception****************************************");
     }
 
     public void fatal(String message, Object... objects) {

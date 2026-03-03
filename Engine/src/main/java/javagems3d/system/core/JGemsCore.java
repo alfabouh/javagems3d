@@ -7,14 +7,15 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.JGemsMapping;
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.external.mapping.processing.callbacks.IMapActionCallback;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -155,6 +156,22 @@ public final class JGemsCore implements ICore {
         }
     }
 
+    public static boolean loadTestMap() {
+        if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST) == Boolean.TRUE) {
+            @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID);
+            if (mapPath != null) {
+                try {
+                    JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(new JGemsPathSource(mapPath, ISource.Source.OUTSIDE_JAR)));
+                    return true;
+                } catch (Exception e) {
+                    Log.get().exception(e);
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings("all")
     public void startSystem(@Nullable String externalGamePath) {
         final ArrayList<Exception> exceptionList = new ArrayList<>();
@@ -180,12 +197,6 @@ public final class JGemsCore implements ICore {
                 this.createMappingObject();
                 this.getScreen().runRenderThread();
 
-                if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST) == Boolean.TRUE) {
-                    @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_PATH);
-                    if (mapPath != null) {
-                        //this.getMapping().loadMap(new External);
-                    }
-                }
             } catch (Exception e) {
                 JGems3D.close(null);
                 exceptionList.add(e);

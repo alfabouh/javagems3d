@@ -15,7 +15,7 @@ public class WBenchMouseKeyboardController extends MouseKeyboardController {
     }
 
     public static boolean blockKeyboardMouseCamTransformInput() {
-        return ProjectUIUtils.ctrlS() || !MapEditorInterface.isCursorInsideScene && !GameEditorInterface.isCursorInsideScene;
+        return ProjectUIUtils.ctrlS() || !MapEditorInterface.isCursorInsideSceneAndFocused && !GameEditorInterface.isCursorInsideScene;
     }
 
     @Override
