@@ -11,6 +11,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.I
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -111,9 +112,9 @@ public class SceneInterfaceComponentM {
 
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
         if (!this.getEditorInterface().getActionsContent().getInterfaceEnvSkyM().isCameraCheckBox()) {
-            ImGui.closeCurrentPopup();
             if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideSceneAndFocused) {
                 if (ImGui.isMouseReleased(0)) {
+                    ImGui.closeCurrentPopup();
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     if (!this.isThreadInProcess.get()) {
                         executor.execute(() -> {
@@ -164,8 +165,9 @@ public class SceneInterfaceComponentM {
             pose3D.setRotation(wBenchObject.getModel().getPose().getRotation());
             pose3D.setScaling(wBenchObject.getModel().getPose().getScaling());
             float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
+            float[] deltaMatrix = new float[16];
             int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
-            ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
+            ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
 
             if (!this.wasGuizmoUsed && UsedImGuizmo) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
@@ -216,30 +218,47 @@ public class SceneInterfaceComponentM {
         pose3D.setRotation(this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().negate());
         pose3D.setScaling(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
         float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
+        float[] deltaMatrix = new float[16];
         int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
-        ImGuizmo.manipulate(view, projection, modelMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f});
-        final Vector3f position = new Vector3f();
-        final Vector3f rotation = new Vector3f();
-        final Vector3f scaling = new Vector3f();
+        ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
         if (UsedImGuizmo && ImGui.isItemHovered()) {
             if (!this.wasGuizmoUsed) {
                 //this.getEditorInterface().getSelectedObjectsManager().beginGroupTransform();
                 WBenchUITrackingHelper.instantlyTrackAndPush();
             }
             Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
-            newMatrix.getTranslation(position);
-            newMatrix.getScale(scaling);
-            Quaternionf q = newMatrix.getNormalizedRotation(new Quaternionf());
-            q.getEulerAnglesXYZ(rotation);
-            final Vector3f newPos = position;
-            final Vector3f newRot = rotation;
-            final Vector3f newScale = scaling;
+            Matrix4f deltaMatrix2 = JGemsUtils.getMatrixFromArray(deltaMatrix);
+            final Vector3f newPos = newMatrix.getTranslation(new Vector3f());
+            final Vector3f newRot = deltaMatrix2.getEulerAnglesXYZ(new Vector3f());
+            final Vector3f newScale = newMatrix.getScale(new Vector3f());
 
             if ((currentOperation & Operation.TRANSLATE) != 0) {
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
             }
             if ((currentOperation & Operation.ROTATE) != 0) {
-                this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(newRot);
+                Vector3f finRot = this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().add(newRot);
+                {
+                    if (finRot.x < -Math.PI) {
+                        finRot.x = (float) Math.PI;
+                    } else if (finRot.x > Math.PI) {
+                        finRot.x = (float) -Math.PI;
+                    }
+                }
+                {
+                    if (finRot.y < -Math.PI) {
+                        finRot.y = (float) Math.PI;
+                    } else if (finRot.y > Math.PI) {
+                        finRot.y = (float) -Math.PI;
+                    }
+                }
+                {
+                    if (finRot.z < -Math.PI) {
+                        finRot.z = (float) Math.PI;
+                    } else if (finRot.z > Math.PI) {
+                        finRot.z = (float) -Math.PI;
+                    }
+                }
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(finRot);
             }
             if ((currentOperation & Operation.SCALE) != 0) {
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(newScale);

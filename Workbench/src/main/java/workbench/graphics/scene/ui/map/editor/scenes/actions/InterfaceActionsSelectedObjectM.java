@@ -5,6 +5,7 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -14,6 +15,8 @@ import javagems3d.system.external.mapping.tags.items.TagItem;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
@@ -182,8 +185,11 @@ public class InterfaceActionsSelectedObjectM {
                 {
                     ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
                     try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_X", WBenchUITrackingHelper::INSTANCE)) {
-                        if (ImGui.sliderAngle("X##rotArrayX", rotArrayX, -180.0f, 180.0f)) {
+                        float[] rotDeg = new float[1];
+                        rotDeg[0] = (float) Math.toDegrees(rotArrayX[0]);
+                        if (ImGui.dragFloat("X##rotArrayX", rotDeg, 0.1f)) {
                             captRotate = true;
+                            rotArrayX[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
@@ -196,8 +202,11 @@ public class InterfaceActionsSelectedObjectM {
                 {
                     ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
                     try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Y", WBenchUITrackingHelper::INSTANCE)) {
-                        if (ImGui.sliderAngle("Y##rotArrayY", rotArrayY, -180.0f, 180.0f)) {
+                        float[] rotDeg = new float[1];
+                        rotDeg[0] = (float) Math.toDegrees(rotArrayY[0]);
+                        if (ImGui.dragFloat("Y##rotArrayY", rotDeg, 0.1f)) {
                             captRotate = true;
+                            rotArrayY[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
@@ -210,8 +219,11 @@ public class InterfaceActionsSelectedObjectM {
                 {
                     ImGui.pushStyleColor(ImGuiCol.Text, 0xffff4444);
                     try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_ROTATE_Z", WBenchUITrackingHelper::INSTANCE)) {
-                        if (ImGui.sliderAngle("Z##rotArrayZ", rotArrayZ, -180.0f, 180.0f)) {
+                        float[] rotDeg = new float[1];
+                        rotDeg[0] = (float) Math.toDegrees(rotArrayZ[0]);
+                        if (ImGui.dragFloat("Z##rotArrayZ", rotDeg, 0.1f)) {
                             captRotate = true;
+                            rotArrayZ[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
@@ -293,7 +305,13 @@ public class InterfaceActionsSelectedObjectM {
                     getFirst.setPosition(newPos);
                 }
                 if (captRotate) {
-                    getFirst.setRotation(newRot);
+                    Vector3f angle = new Vector3f(getFirst.getRotation()).sub(newRot);
+                    Matrix4f model = TransformUtils.getModelMatrix(getFirst.getModel().getPose());
+                    Matrix4f worldRot = new Matrix4f().identity().rotateXYZ(angle);
+                    worldRot.mul(model, model);
+                    Quaternionf q = model.getUnnormalizedRotation(new Quaternionf());
+                    Vector3f euler = q.getEulerAnglesXYZ(new Vector3f()).negate();
+                    getFirst.setRotation(euler);
                 }
                 if (captScale) {
                     getFirst.setScaling(newScale);
