@@ -7,8 +7,9 @@ import api.application.workbench.manager.IAPIWBenchDataManager;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
-import api.scripting.JGemsAPIScriptingEngine;
-import api.scripting.functions.APIScriptingFunction;
+import api.scripting.legacy.JGemsAPIScriptingEngine;
+import api.scripting.legacy.functions.APIScriptingFunction;
+import api.system.JGemsAPI;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
@@ -43,6 +44,7 @@ public class AppTest extends JGemsApplication {
     @Override
     public void initResources(@NotNull IAppResources appResources) {
         appResources.putGlobalAssetsInitializer(new ModelInitializer());
+        JGemsAPI.getAPIScriptingCore().test();
     }
 
     @Override

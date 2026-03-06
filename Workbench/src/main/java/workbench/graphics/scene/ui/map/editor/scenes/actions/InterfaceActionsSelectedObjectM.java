@@ -26,19 +26,13 @@ import java.util.*;
 import java.util.function.Function;
 
 public class InterfaceActionsSelectedObjectM {
-    private final Vector3f translateGroupOffset;
-    private final Vector3f rotateGroupOffset;
-    private final Vector3f scaleGroupOffset;
-
+    private boolean lockObjectAngles;
     private final MapEditorInterface mapEditorInterface;
     private int currentOperation;
 
     public InterfaceActionsSelectedObjectM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.reset(null);
-        this.translateGroupOffset = new Vector3f();
-        this.rotateGroupOffset = new Vector3f();
-        this.scaleGroupOffset = new Vector3f();
     }
 
     public void reset(@Nullable Set<WBenchObject<?>> currentSelectedObjects) {
@@ -231,6 +225,11 @@ public class InterfaceActionsSelectedObjectM {
                     ImGui.popStyleColor();
                 }
                 ImGui.endDisabled();
+                if (!many) {
+                    if (ImGui.checkbox("Desync Angles", this.lockObjectAngles)) {
+                        this.lockObjectAngles = !this.lockObjectAngles;
+                    }
+                }
             } else if (textInfoIfCannotBeTransformed) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
                 ImGui.bulletText("Can't be Rotated");
@@ -280,6 +279,11 @@ public class InterfaceActionsSelectedObjectM {
                     ImGui.popStyleColor();
                 }
                 ImGui.endDisabled();
+                if (many) {
+                    if (ImGui.checkbox("Scale-Translation", this.mapEditorInterface.getSelectedObjectsManager().isScaleTranslator())) {
+                        this.mapEditorInterface.getSelectedObjectsManager().setScaleTranslator(!this.mapEditorInterface.getSelectedObjectsManager().isScaleTranslator());
+                    }
+                }
             } else if (textInfoIfCannotBeTransformed) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8c8c);
                 ImGui.bulletText("Can't be Scaled");
@@ -305,13 +309,17 @@ public class InterfaceActionsSelectedObjectM {
                     getFirst.setPosition(newPos);
                 }
                 if (captRotate) {
-                    Vector3f angle = new Vector3f(getFirst.getRotation()).sub(newRot);
-                    Matrix4f model = TransformUtils.getModelMatrix(getFirst.getModel().getPose());
-                    Matrix4f worldRot = new Matrix4f().identity().rotateXYZ(angle);
-                    worldRot.mul(model, model);
-                    Quaternionf q = model.getUnnormalizedRotation(new Quaternionf());
-                    Vector3f euler = q.getEulerAnglesXYZ(new Vector3f()).negate();
-                    getFirst.setRotation(euler);
+                    if (this.lockObjectAngles) {
+                        getFirst.setRotation(newRot);
+                    } else {
+                        Vector3f angle = new Vector3f(getFirst.getRotation()).sub(newRot);
+                        Matrix4f model = TransformUtils.getModelMatrix(getFirst.getModel().getPose());
+                        Matrix4f worldRot = new Matrix4f().identity().rotateXYZ(angle);
+                        worldRot.mul(model, model);
+                        Quaternionf q = model.getUnnormalizedRotation(new Quaternionf());
+                        Vector3f euler = q.getEulerAnglesXYZ(new Vector3f()).negate();
+                        getFirst.setRotation(euler);
+                    }
                 }
                 if (captScale) {
                     getFirst.setScaling(newScale);

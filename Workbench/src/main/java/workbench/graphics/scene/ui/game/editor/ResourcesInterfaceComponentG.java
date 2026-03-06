@@ -34,24 +34,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ResourcesInterfaceComponentG {
-    private FolderResourcesTreeDrawerG<GameResourceModelAsset, ModelAssetPreview> modelAssetsTreeDrawer;
-    private FolderResourcesTreeDrawerG<GameResourceTextureAsset, TextureAssetPreview> textureAssetsTreeDrawer;
-    private CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
-    private CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
-    private CreatableResourcesTreeDrawerG<GameResourceObjectTagData, ObjectTagPreview> tagResourceTreeDrawer;
-    private CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
-    private CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> skyBoxResourceTreeDrawer;
+    private final FolderResourcesTreeDrawerG<GameResourceModelAsset, ModelAssetPreview> modelAssetsTreeDrawer;
+    private final FolderResourcesTreeDrawerG<GameResourceTextureAsset, TextureAssetPreview> textureAssetsTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourceObjectTagData, ObjectTagPreview> tagResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> skyBoxResourceTreeDrawer;
 
     public ResourcesInterfaceComponentG() {
         this.modelAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
                 "Models",
+                (e) -> WBench.get().getGameProjectManager().refreshModelFiles(true),
                 (e) -> WBenchGameResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectAbsolutePath()),
                 ModelAssetPreview::new);
 
         this.textureAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
                 "Textures",
+                (e) -> WBench.get().getGameProjectManager().refreshTextureFiles(true),
                 (e) -> WBenchGameResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectAbsolutePath()),
                 TextureAssetPreview::new);
 

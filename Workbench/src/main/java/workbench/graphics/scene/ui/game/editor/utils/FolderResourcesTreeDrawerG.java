@@ -5,6 +5,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import javagems3d.system.service.files.AbstractObjectsFolder;
@@ -20,12 +21,14 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
     private T previewWrapperObject;
     private final Supplier<AbstractObjectsFolder<E>> gameResourceAssetsFolder;
     private final Function<E, T> previewInstanceFactory;
+    private final @Nullable Consumer<Void> onRefreshButton;
 
-    public FolderResourcesTreeDrawerG(@NotNull Supplier<AbstractObjectsFolder<E>> gameResourceAssetsFolder, @NotNull String tab, @NotNull Consumer<Void> openFolderAction, @NotNull Function<E, T> previewInstanceFactory) {
+    public FolderResourcesTreeDrawerG(@NotNull Supplier<AbstractObjectsFolder<E>> gameResourceAssetsFolder, @NotNull String tab, @Nullable Consumer<Void> onRefreshButton, @NotNull Consumer<Void> openFolderAction, @NotNull Function<E, T> previewInstanceFactory) {
         this.tab = tab;
         this.openFolderAction = openFolderAction;
         this.gameResourceAssetsFolder = gameResourceAssetsFolder;
         this.previewInstanceFactory = previewInstanceFactory;
+        this.onRefreshButton = onRefreshButton;
     }
 
     private void tree(AbstractObjectsFolder<E> folder, boolean root) {
@@ -60,12 +63,14 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         }
         ImGui.popStyleColor();
         ImGui.sameLine();
-        ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-        if (ImGui.button("Refresh")) {
-            WBench.get().getGameProjectManager().refreshModelFiles(true);
-            this.setPreviewWrapperObject(null);
+        if (this.onRefreshButton != null) {
+            ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8cff);
+            if (ImGui.button("Refresh")) {
+                this.onRefreshButton.accept(null);
+                this.setPreviewWrapperObject(null);
+            }
+            ImGui.popStyleColor();
         }
-        ImGui.popStyleColor();
         ImGui.spacing();
         this.tree(this.getGameResourceAssetsFolder().get(), true);
     }

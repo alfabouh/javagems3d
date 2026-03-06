@@ -44,7 +44,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
 
-    private SelectedObjectsManager selectedObjectsManager;
+    private final SelectedObjectsManager selectedObjectsManager;
     private WBenchObjectTemplate currentSelectedTemplate;
 
     private ICamera oldCamera;
@@ -494,6 +494,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         private final Vector3f groupScaling;
         private Vector3f savedCenter;
         private boolean rotateGroupAroundOwnCenter;
+        private boolean scaleTranslator;
 
         public SelectedObjectsManager(Set<WBenchObject<?>> currentSelectedObjects) {
             this.currentSelectedObjects = currentSelectedObjects;
@@ -505,6 +506,18 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             this.prevGroupRotation = new Vector3f();
             this.prevGroupScaling = new Vector3f(1.0f);
             this.rotateGroupAroundOwnCenter = false;
+            this.scaleTranslator = false;
+        }
+
+        public boolean isScaleTranslator() {
+            return this.scaleTranslator;
+        }
+
+        public SelectedObjectsManager setScaleTranslator(boolean scaleTranslator) {
+            this.groupScaling.set(1.0f);
+            this.prevGroupScaling.set(1.0f);
+            this.scaleTranslator = scaleTranslator;
+            return this;
         }
 
         public boolean isRotateGroupAroundOwnCenter() {
@@ -598,9 +611,16 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             Matrix4f groupMatrix = new Matrix4f().identity().translate(savedCenter).rotate(deltaRot).translate(-savedCenter.x, -savedCenter.y, -savedCenter.z);
             for (WBenchObject<?> obj : currentSelectedObjects) {
                 obj.setForceConstraints(true);
+                Vector3f pos = new Vector3f(obj.getPosition());
                 {
                     obj.setPosition(obj.getPosition().add(posOffset));
-                    obj.setScaling(obj.getScaling().div(scaleOffset));
+                    if (this.isScaleTranslator()) {
+                        Matrix4f scaleMatrix = new Matrix4f().identity().translate(savedCenter).scale(scaleOffset).translate(-savedCenter.x, -savedCenter.y, -savedCenter.z);
+                        Vector3f newPos = scaleMatrix.transformPosition(pos, new Vector3f());
+                        obj.setPosition(newPos);
+                    } else {
+                        obj.setScaling(obj.getScaling().div(scaleOffset));
+                    }
                 }
                 Matrix4f objMatrix = TransformUtils.getModelMatrix(obj.getModel().getPose());
                 groupMatrix.mul(objMatrix, objMatrix);
@@ -677,7 +697,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
         @Override
         public SelectedObjectsManageSnapshot takeSnapshot() {
-            return new SelectedObjectsManageSnapshot(new HashSet<>(this.getCurrentSelectedObjects()), new Vector3f(this.getGroupPosition()), new Vector3f(this.getGroupRotation()), new Vector3f(this.getGroupScaling()), new Vector3f(this.savedCenter));
+            return new SelectedObjectsManageSnapshot(new HashSet<>(this.getCurrentSelectedObjects()), new Vector3f(this.prevGroupPosition), new Vector3f(this.prevGroupRotation), new Vector3f(this.prevGroupScaling), new Vector3f(this.getGroupPosition()), new Vector3f(this.getGroupRotation()), new Vector3f(this.getGroupScaling()), new Vector3f(this.savedCenter));
         }
 
         @Override
@@ -687,21 +707,30 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             this.setGroupPosition(selectedObjectsManager.groupPosition);
             this.setGroupRotation(selectedObjectsManager.groupRotation);
             this.setGroupScaling(selectedObjectsManager.groupScaling);
+            this.prevGroupPosition.set(selectedObjectsManager.prevGroupPosition);
+            this.prevGroupRotation.set(selectedObjectsManager.prevGroupRotation);
+            this.prevGroupScaling.set(selectedObjectsManager.prevGroupScaling);
             this.savedCenter = selectedObjectsManager.savedCenter;
         }
 
         public static class SelectedObjectsManageSnapshot implements ISnapshotCompatible.SnapshotData {
-            private final Set<WBenchObject<?>> currentSelectedObjects;
-            private final Vector3f groupPosition;
-            private final Vector3f groupRotation;
-            private final Vector3f groupScaling;
-            private final Vector3f savedCenter;
+            public final Set<WBenchObject<?>> currentSelectedObjects;
+            public final Vector3f groupPosition;
+            public final Vector3f groupRotation;
+            public final Vector3f groupScaling;
+            public final Vector3f prevGroupPosition;
+            public final Vector3f prevGroupRotation;
+            public final Vector3f prevGroupScaling;
+            public final Vector3f savedCenter;
 
-            public SelectedObjectsManageSnapshot(Set<WBenchObject<?>> currentSelectedObjects, Vector3f groupPosition, Vector3f groupRotation, Vector3f groupScaling, Vector3f savedCenter) {
+            public SelectedObjectsManageSnapshot(Set<WBenchObject<?>> currentSelectedObjects, Vector3f groupPosition, Vector3f groupRotation, Vector3f groupScaling, Vector3f prevGroupPosition, Vector3f prevGroupRotation, Vector3f prevGroupScaling, Vector3f savedCenter) {
                 this.currentSelectedObjects = currentSelectedObjects;
                 this.groupPosition = groupPosition;
                 this.groupRotation = groupRotation;
                 this.groupScaling = groupScaling;
+                this.prevGroupPosition = prevGroupPosition;
+                this.prevGroupRotation = prevGroupRotation;
+                this.prevGroupScaling = prevGroupScaling;
                 this.savedCenter = savedCenter;
             }
         }

@@ -2,8 +2,8 @@ package javagems3d.system.external.mapping;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import api.scripting.JGemsAPIScriptingEngine;
-import api.scripting.functions.APIScriptsListing;
+import api.scripting.legacy.JGemsAPIScriptingEngine;
+import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;

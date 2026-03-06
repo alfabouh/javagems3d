@@ -1,7 +1,7 @@
 package javagems3d.physics.world;
 
 import api.events.EventBus;
-import api.scripting.functions.APIScriptsListing;
+import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;

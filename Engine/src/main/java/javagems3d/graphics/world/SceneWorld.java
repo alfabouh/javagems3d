@@ -2,8 +2,7 @@ package javagems3d.graphics.world;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import api.scripting.JGemsAPIScriptingEngine;
-import api.scripting.functions.APIScriptsListing;
+import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;

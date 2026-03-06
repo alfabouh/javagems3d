@@ -1,8 +1,8 @@
 package workbench.graphics.scene.ui.map.editor.scenes.resources;
 
-import api.scripting.doc.JGemsScriptingDocs;
-import api.scripting.functions.APIScriptingFunction;
-import api.scripting.functions.APIScriptsListing;
+import api.scripting.legacy.doc.JGemsScriptingDocs;
+import api.scripting.legacy.functions.APIScriptingFunction;
+import api.scripting.legacy.functions.APIScriptsListing;
 import imgui.ImGui;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.extension.texteditor.flag.TextEditorPaletteIndex;
@@ -16,7 +16,6 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;

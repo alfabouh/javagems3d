@@ -38,17 +38,18 @@ public class WBenchGameProjectManager {
             WBenchGameProject wBenchGameProject = new WBenchGameProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_VERSION, name);
             this.createGameSystemFiles(absPath, name);
             this.setCurrentProject(path, wBenchGameProject);
+            this.initLocalGameResources();
             this.saveGameProjectFile();
             Log.get().debug("Created WBenchGameProject: " + wBenchGameProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE + ")");
-
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
-
             return true;
         } catch (JGemsIOException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't create object", e);
             Log.get().exception(e);
             this.setCurrentProject(null, null);
             return false;
+        } finally {
+            LoadingInterfaceSwing.dispose();
         }
     }
 

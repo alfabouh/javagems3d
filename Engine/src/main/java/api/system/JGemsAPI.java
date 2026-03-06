@@ -2,8 +2,9 @@ package api.system;
 
 import api.application.JGemsApplication;
 import api.events.EventBus;
-import api.scripting.JGemsAPIScriptingEngine;
-import api.scripting.functions.APIScriptingFunction;
+import api.scripting.JGemsAPIScriptingCore;
+import api.scripting.legacy.JGemsAPIScriptingEngine;
+import api.scripting.legacy.functions.APIScriptingFunction;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.exceptions.JGemsException;
@@ -28,6 +29,7 @@ public final class JGemsAPI implements Closeable {
     private static JGemsAPIData appData = null;
     private static JGemsAPIEditorResources appEditorResources = null;
     private static JGemsAPIScriptingEngine apiScriptingEngine;
+    private static JGemsAPIScriptingCore apiScriptingCore;
 
     private static JGemsAPI INSTANCE;
     private static JGemsAPIManager M_INSTANCE;
@@ -72,6 +74,10 @@ public final class JGemsAPI implements Closeable {
         return JGemsAPI.apiScriptingEngine;
     }
 
+    public static JGemsAPIScriptingCore getAPIScriptingCore() {
+        return apiScriptingCore;
+    }
+
     public static void clearScriptingEngine() {
         JGemsAPI.getAPIScripting().clearEngine();
     }
@@ -97,6 +103,7 @@ public final class JGemsAPI implements Closeable {
             JGemsAPI.appData = new JGemsAPIData();
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             JGemsAPI.apiScriptingEngine = new JGemsAPIScriptingEngine(JGemsAPI.appEditorResources);
+            JGemsAPI.apiScriptingCore = new JGemsAPIScriptingCore();
             JGemsAPI.ALLOW_EVENTS = true;
 
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
@@ -163,6 +170,7 @@ public final class JGemsAPI implements Closeable {
     public void close() {
         JGemsAPI.appData = null;
         JGemsAPI.appEditorResources = null;
+        JGemsAPI.getAPIScriptingCore().clear();
         Log.get().debug("CLOSED API");
     }
 }
