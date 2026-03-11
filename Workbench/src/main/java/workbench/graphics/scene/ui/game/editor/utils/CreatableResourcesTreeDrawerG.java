@@ -6,6 +6,7 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
     private @Nullable Consumer<Void> onRefreshButton;
     private @Nullable Consumer<T> onContextOnItem;
     private final Function<T, E> previewInstanceFactory;
+    private Consumer<E> onItemSelection;
 
     public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
         this.tab = tab;
@@ -55,6 +57,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         this.onRefreshButton = null;
         this.previewInstanceFactory = previewInstanceFactory;
         this.onContextOnItem = null;
+        this.onItemSelection = null;
     }
 
     private void getFoldersToChoose(Map<String, AbstractObjectsFolder<T>> init, AbstractObjectsFolder<T> root) {
@@ -70,8 +73,8 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         if (ImGui.beginPopup(tag + "_popupDataCreation_" + this.tab)) {
             int i = 0;
             for (PopupConstructorData popupConstructorData1 : this.popupConstructorData) {
-                ImGui.text(popupConstructorData1.getFieldName());
-                ImGui.inputText("##" + popupConstructorData1.getFieldName(), this.popupCreateObjectContext.getInputStrings().get(i++));
+                ImGui.text(popupConstructorData1.fieldName());
+                ImGui.inputText("##" + popupConstructorData1.fieldName(), this.popupCreateObjectContext.getInputStrings().get(i++));
             }
             final Map<String, AbstractObjectsFolder<T>> groupsMap = new LinkedHashMap<>();
             this.getFoldersToChoose(groupsMap, this.getGroupSupplier().get());
@@ -93,11 +96,11 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 for (ImString input : this.popupCreateObjectContext.getInputStrings()) {
                     final PopupConstructorData context = this.popupConstructorData.get(i++);
                     if (input.isEmpty()) {
-                        this.popupCreateObjectContext.setErrorText("Field " + context.getFieldName() + " is empty!");
-                    } else if (!input.get().matches(context.getRegex())) {
-                        this.popupCreateObjectContext.setErrorText("Field " + context.getFieldName() + ": " + context.getNonMatchError());
+                        this.popupCreateObjectContext.setErrorText("Field " + context.fieldName() + " is empty!");
+                    } else if (!input.get().matches(context.regex())) {
+                        this.popupCreateObjectContext.setErrorText("Field " + context.fieldName() + ": " + context.nonMatchError());
                     } else if (this.getExistenceCheck().test(new Pair<>(group1, this.popupCreateObjectContext))) {
-                        this.popupCreateObjectContext.setErrorText("Field " + context.getFieldName() + ": Couldn't be created. Already exists!");
+                        this.popupCreateObjectContext.setErrorText("Field " + context.fieldName() + ": Couldn't be created. Already exists!");
                     }
                 }
                 if (this.popupCreateObjectContext.getErrorText() == null) {
@@ -177,13 +180,13 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             boolean openObjCreate = false;
             if (ImGui.beginPopupContextItem("ctx_folder" + "##" + group.getName())) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xffafffaf);
-                if (ImGui.menuItem("+ Add Object")) {
+                if (ImGui.menuItem("+ Create Object")) {
                     openObjCreate = true;
                 }
                 ImGui.popStyleColor();
                 ImGui.separator();
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
-                if (ImGui.menuItem("+ Add Folder")) {
+                if (ImGui.menuItem("+ Create Folder")) {
                     openGrCreate = true;
                 }
                 if (!root) {
@@ -214,7 +217,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 ImGui.openPopup("short_popupDataCreation_" + this.tab);
             }
             for (T asset : group.getObjectsThere()) {
-                String label = asset.getName();
+                String label = asset.name();
                 if (label == null) {
                     continue;
                 }
@@ -250,7 +253,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     ImGui.endPopup();
                 }
                 if (selected && wantsToDeleteCurrentSelected) {
-                    group.removeObjectFromThere(asset.getName());
+                    group.removeObjectFromThere(asset.name());
                     if (this.getAfterAssetDeleted() != null) {
                         this.getAfterAssetDeleted().accept(new Pair<>(group, asset));
                     }
@@ -272,7 +275,8 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.beginChild("##ObjChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.5f, true, ImGuiWindowFlags.HorizontalScrollbar);
+            final float dynHeight = JGemsHelper.math().clamp(this.getGroupSupplier().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 20.0f, 140.0f, ImGui.getWindowHeight() * 0.5f);
+            ImGui.beginChild("##ObjChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushID("##IDC" + this.tab);
             this.popUpObject("button", null);
             if (this.getOnRefreshButton() != null) {
@@ -356,6 +360,15 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         return this;
     }
 
+    public Consumer<E> getOnItemSelection() {
+        return this.onItemSelection;
+    }
+
+    public CreatableResourcesTreeDrawerG<T, E> setOnItemSelection(Consumer<E> onItemSelection) {
+        this.onItemSelection = onItemSelection;
+        return this;
+    }
+
     public Function<T, E> getPreviewInstanceFactory() {
         return this.previewInstanceFactory;
     }
@@ -382,34 +395,16 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
 
     public void setPreviewWrapperObject(E previewWrapperObject) {
         this.previewWrapperObject = previewWrapperObject;
+        if (this.getOnItemSelection() != null) {
+            this.getOnItemSelection().accept(previewWrapperObject);
+        }
     }
 
     public String getTab() {
         return this.tab;
     }
 
-    public static class PopupConstructorData {
-        private final String fieldName;
-        private final String regex;
-        private final String nonMatchError;
-
-        public PopupConstructorData(String fieldName, String regex, String nonMatchError) {
-            this.fieldName = fieldName;
-            this.regex = regex;
-            this.nonMatchError = nonMatchError;
-        }
-
-        public String getFieldName() {
-            return this.fieldName;
-        }
-
-        public String getRegex() {
-            return this.regex;
-        }
-
-        public String getNonMatchError() {
-            return this.nonMatchError;
-        }
+    public record PopupConstructorData(String fieldName, String regex, String nonMatchError) {
     }
 
     public static class PopupContext {

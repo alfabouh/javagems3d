@@ -2,29 +2,17 @@ package javagems3d.system.resources.assets.loading.models.gltf.parsing.structure
 
 import javagems3d.system.service.exceptions.JGemsNullException;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 
 import java.util.List;
 
-public final class GLTF2Accessor<T> {
-    private final List<T> objects;
-    private final GLTF2AccessorData gltf2AccessorData;
-
+public record GLTF2Accessor<T>(List<T> objects, GLTF2AccessorData gltf2AccessorData) {
     public GLTF2Accessor(List<T> objects, @Nullable GLTF2AccessorData gltf2AccessorData) {
         this.objects = objects;
         this.gltf2AccessorData = gltf2AccessorData;
     }
 
-    public GLTF2AccessorData getGltf2AccessorData() {
-        return this.gltf2AccessorData;
-    }
-
     public int size() {
-        return this.getObjects().size();
-    }
-
-    public List<T> getObjects() {
-        return this.objects;
+        return this.objects().size();
     }
 
     public enum ValueType {

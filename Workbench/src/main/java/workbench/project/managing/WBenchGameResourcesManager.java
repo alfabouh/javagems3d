@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.def.misc.*;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -20,11 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
-import workbench.project.managing.instances.mapping.WBenchResourceMapAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceSkyboxAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceObjectTagData;
-import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
+import workbench.project.managing.instances.WBenchResourceMapAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 import workbench.project.map.WBenchMapProject;
@@ -32,6 +29,7 @@ import workbench.project.map.WBenchMapProject;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.*;
 
 public class WBenchGameResourcesManager {
@@ -40,6 +38,7 @@ public class WBenchGameResourcesManager {
     private GameResourceAssetsFolder<GameResourceModelAsset> modelAssetsFolder;
     private GameResourceAssetsFolder<GameResourceTextureAsset> textureAssetsFolder;
     private GameResourceAssetsFolder<WBenchResourceMapAsset> mapAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceScriptAsset> scriptAssetsFolder;
     private GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder;
     private GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder;
     private GameResourceAssetsFolder<GameResourceObjectTagData> tagAssetsFolder;
@@ -53,6 +52,7 @@ public class WBenchGameResourcesManager {
         PROPS,
         ENTITIES,
         TAGS,
+        SCRIPTS,
         SKYBOXES
     }
 
@@ -100,9 +100,20 @@ public class WBenchGameResourcesManager {
         });
     }
 
+    public static void openScriptsFolder(JGemsPath pathToGameFolder) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Desktop.getDesktop().open(JGemsGaming.getScriptsFolder(pathToGameFolder).toFile());
+            } catch (Exception e) {
+                Log.get().exception(e);
+            }
+        });
+    }
+
     public File[] createSystemFolders(File file) {
         File dir1 = new File(file, JGemsGaming.SYS_ASSETS_FOLDER);
         File dir2 = new File(file, JGemsGaming.SYS_MAPS_FOLDER);
+        File dir3 = new File(file, JGemsGaming.SYS_SCRIPTS_FOLDER);
         {
             for (String s : new String[]{JGemsGaming.MODEL_ASSETS_FOLDER, JGemsGaming.TEXTURE_ASSETS_FOLDER, JGemsGaming.OBJECT_ASSETS_FOLDER}) {
                 File inFile = new File(dir1, s);
@@ -120,13 +131,20 @@ public class WBenchGameResourcesManager {
                 }
             }
         }
-        return new File[]{dir1, dir2};
+        {
+            if (!dir3.exists()) {
+                if (dir3.mkdirs()) {
+                    Log.get().debug("Created folder: " + dir3.getPath());
+                }
+            }
+        }
+        return new File[]{dir1, dir2, dir3};
     }
 
     public void refreshTextures(JGemsPath pathToGameFolder) {
         {
             this.texturesKeysCache.values().forEach(e -> {
-                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getTexturesFolder(pathToGameFolder), e.getRelativePath()));
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getTexturesFolder(pathToGameFolder), e.relativePath()));
             });
             this.texturesKeysCache.clear();
         }
@@ -137,7 +155,7 @@ public class WBenchGameResourcesManager {
     public void refreshModels(JGemsPath pathToGameFolder) {
         {
             this.modelsKeysCache.values().forEach(e -> {
-                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getModelsFolder(pathToGameFolder), e.getRelativePath() + MeshGroup.POSTFIX));
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getModelsFolder(pathToGameFolder), e.relativePath() + MeshGroup.POSTFIX));
             });
             this.modelsKeysCache.clear();
         }
@@ -149,6 +167,11 @@ public class WBenchGameResourcesManager {
     public void refreshMaps(JGemsPath pathToGameFolder) {
         this.createSystemFolders(pathToGameFolder.toFile());
         this.mapAssetsFolder = this.readMapsFolder(JGemsGaming.getMapsFolder(pathToGameFolder));
+    }
+
+    public void refreshScripts(JGemsPath pathToGameFolder) {
+        this.createSystemFolders(pathToGameFolder.toFile());
+        this.scriptAssetsFolder = this.readScriptsFolder(JGemsGaming.getScriptsFolder(pathToGameFolder));
     }
 
     public void saveCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
@@ -173,7 +196,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.propAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.propAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+                this.propAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
             }
         }
@@ -183,7 +206,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.entityAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.entityAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+                this.entityAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
             }
         }
@@ -193,7 +216,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.tagAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.tagAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+                this.tagAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
             }
         }
@@ -203,7 +226,7 @@ public class WBenchGameResourcesManager {
                 }, null);
                 this.skyBoxesAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);;
+                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
             }
         }
@@ -283,6 +306,10 @@ public class WBenchGameResourcesManager {
             } else if (this.isMapDefFile(file)) {
                 WBenchResourceMapAsset asset = this.loadMapAsset(rootFolder, file);
                 if (asset != null) {
+                    if (asset.getMapProject() == null) {
+                        Log.get().error("Failed to get map");
+                        continue;
+                    }
                     if (asset.getMapProject().getMapName() == null) {
                         Log.get().error("Failed to get map: " + file.getPath() + ". It's name invalid!");
                     } else {
@@ -298,6 +325,44 @@ public class WBenchGameResourcesManager {
         try {
             final WBenchMapProject mapProject1 = WBench.get().getMapProjectManager().readMainFile(fullPath, true);
             return new WBenchResourceMapAsset(mapProject1);
+        } catch (Exception e) {
+            Log.get().exception(e);
+            return null;
+        }
+    }
+
+    protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolder(JGemsPath pathToGameFolder) {
+        return this.readScriptsFolder(pathToGameFolder.toFile());
+    }
+
+    protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolder(File rootFile) {
+        return this.readScriptsFolderRecursive(rootFile, rootFile);
+    }
+
+    protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolderRecursive(File rootFolder, File relativeFolder) {
+        GameResourceAssetsFolder<GameResourceScriptAsset> assetsFolder = new GameResourceAssetsFolder<>(relativeFolder.getName());
+        File[] files = relativeFolder.listFiles();
+        if (files == null) {
+            return assetsFolder;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                assetsFolder.putFolderThere(this.readScriptsFolderRecursive(rootFolder, file));
+            } else if (this.isScriptFile(file)) {
+                GameResourceScriptAsset asset = this.loadScriptAsset(rootFolder, file);
+                if (asset != null) {
+                    assetsFolder.putObjectThere(asset);
+                }
+            }
+        }
+        return assetsFolder;
+    }
+
+    private GameResourceScriptAsset loadScriptAsset(File rootFolder, File fullPath) {
+        try {
+            final String relativePath = rootFolder.toPath().relativize(fullPath.toPath()).toString().replace("\\", "/");
+            final String scriptText = Files.readString(fullPath.toPath());
+            return new GameResourceScriptAsset(fullPath.getName(), relativePath, scriptText);
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
@@ -330,6 +395,10 @@ public class WBenchGameResourcesManager {
         }
     }
 
+    protected boolean isScriptFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE);
+    }
     protected boolean isMapDefFile(File file) {
         String name = file.getName().toLowerCase();
         return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE);
@@ -359,6 +428,10 @@ public class WBenchGameResourcesManager {
 
     public GameResourceAssetsFolder<WBenchResourceMapAsset> getMapAssetsFolder() {
         return this.mapAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourceScriptAsset> getScriptAssetsFolder() {
+        return this.scriptAssetsFolder;
     }
 
     public GameResourceAssetsFolder<GameResourcePropObjectAsset> getPropAssetsFolder() {

@@ -74,7 +74,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     public WBenchOpenGLRenderer(IWindow window, WBenchWorld wBenchWorld) {
         super(window, wBenchWorld);
-        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
+        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::id));
 
         this.editorScenePreview = new FBOTexture2DProgram(true, false);
         this.gameSceneObjectsPreview = new FBOTexture2DProgram(true, false);
@@ -162,7 +162,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         uiRenderNode.setAnInterface(WBenchOpenGLRenderer.getProjectInterface());
         this.setUIRenderNode(uiRenderNode);
 
-        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.getName()));
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.name()));
         this.createResources();
     }
 

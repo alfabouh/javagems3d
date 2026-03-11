@@ -23,7 +23,7 @@ public class GameResourceObjectTagData implements IAsset {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.name;
     }
 }

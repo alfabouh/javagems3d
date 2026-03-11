@@ -22,13 +22,6 @@ public class WBenchFogScene extends JGemsFogScene implements ISnapshotCompatible
         this.setFogColor(wBenchFogSceneSnapshotData.color);
     }
 
-    public static class WBenchFogSceneSnapshotData implements ISnapshotCompatible.SnapshotData {
-        public final float density;
-        public final Vector3f color;
-
-        public WBenchFogSceneSnapshotData(float density, Vector3f color) {
-            this.density = density;
-            this.color = color;
-        }
+    public record WBenchFogSceneSnapshotData(float density, Vector3f color) implements SnapshotData {
     }
 }

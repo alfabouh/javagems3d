@@ -31,7 +31,7 @@ public final class JGemsLaunchArgsRegistry {
     public static String[] getArgumentFrom(@NotNull Pair<JGemsLaunchArgs, String>... a) {
         String[] arg = new String[a.length];
         for (int i = 0; i < a.length; i++) {
-            arg[i] = a[i].getFirst().getArgument() + "=" + a[i].getSecond();
+            arg[i] = a[i].first().getArgument() + "=" + a[i].second();
         }
         return arg;
     }

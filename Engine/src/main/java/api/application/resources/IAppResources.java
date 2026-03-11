@@ -6,6 +6,5 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 
 public interface IAppResources {
     void putGlobalShadersInitializer(ShadersInitializer<? extends ShaderManager> shadersInitialization);
-
     void putGlobalAssetsInitializer(IAssetsInitializer assetsInitialization);
 }

@@ -71,7 +71,7 @@ public class JSONFileManaging {
     protected JSONFileManaging() {
         this.rulesMap = new HashMap<>();
         for (Pair<Class<?>, SerializationRules<?>> pair : JSONFileManaging.DEFAULT_SERIALIZATION_RULES) {
-            this.getRulesMap().put(pair.getFirst(), pair.getSecond());
+            this.getRulesMap().put(pair.first(), pair.second());
         }
     }
 
@@ -79,7 +79,7 @@ public class JSONFileManaging {
     public static JSONFileManaging createSerializationRules(Pair<Class<?>, SerializationRules<?>>... pairs) {
         JSONFileManaging jsonFileManaging = new JSONFileManaging();
         for (Pair<Class<?>, SerializationRules<?>> pair : pairs) {
-            jsonFileManaging.getRulesMap().put(pair.getFirst(), pair.getSecond());
+            jsonFileManaging.getRulesMap().put(pair.first(), pair.second());
         }
         return jsonFileManaging;
     }

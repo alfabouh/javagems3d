@@ -2,7 +2,6 @@ package workbench.resources;
 
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,12 +18,12 @@ public class WBenchResources extends SystemResources {
     protected @Nullable Consumer<ResLoadSysMessage> getMessagesConsumer() {
         return (e) -> {
             if (LoadingInterfaceSwing.valid()) {
-                LoadingInterfaceSwing.setResource(e.getText());
+                LoadingInterfaceSwing.setResource(e.text());
             }
-            if (e.getResLoadSysMessageType().equals(ResLoadSysMessageType.ERR)) {
-                Log.get().error(e.getText());
+            if (e.resLoadSysMessageType().equals(ResLoadSysMessageType.ERR)) {
+                Log.get().error(e.text());
             } else {
-                Log.get().trace(e.getText());
+                Log.get().trace(e.text());
             }
         };
     }

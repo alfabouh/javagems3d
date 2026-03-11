@@ -85,7 +85,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         if (!this.hasAnimationData()) {
             return;
         }
-        double fps = this.getAnimationData().getCurrentAnimation().getFps();
+        double fps = this.getAnimationData().getCurrentAnimation().fps();
         if (fps <= 0.0d) {
             fps = JGemsConfig.SYSTEM.DEFAULT_ANIM_FPS;
         }

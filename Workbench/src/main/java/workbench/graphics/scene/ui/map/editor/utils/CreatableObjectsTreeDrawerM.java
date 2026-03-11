@@ -11,17 +11,7 @@ import workbench.project.map.MapObjectTemplatesFolder;
 
 import java.util.function.Supplier;
 
-public class CreatableObjectsTreeDrawerM <T extends WBenchObjectTemplate> {
-    private final MapEditorInterface mapEditorInterface;
-    private final Supplier<MapObjectTemplatesFolder<T>> folderSupplier;
-    private final String tab;
-
-    public CreatableObjectsTreeDrawerM(MapEditorInterface mapEditorInterface, Supplier<MapObjectTemplatesFolder<T>> folderSupplier, String tab) {
-        this.mapEditorInterface = mapEditorInterface;
-        this.folderSupplier = folderSupplier;
-        this.tab = tab;
-    }
-
+public record CreatableObjectsTreeDrawerM<T extends WBenchObjectTemplate>(MapEditorInterface mapEditorInterface, Supplier<MapObjectTemplatesFolder<T>> folderSupplier, String tab) {
     private void tree(AbstractObjectsFolder<T> folder, boolean root) {
         ImGui.pushID(this.tab + "_" + folder.getName());
         String folderName = root ? "View" : folder.getName();
@@ -29,14 +19,14 @@ public class CreatableObjectsTreeDrawerM <T extends WBenchObjectTemplate> {
         if (ImGui.treeNodeEx(folderName, ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.popStyleColor();
             for (T t : folder.getObjectsThere()) {
-                ImGui.pushID(t.getName());
-                final boolean selected = this.getMapEditorInterface().getCurrentSelectedTemplate() != null && this.getMapEditorInterface().getCurrentSelectedTemplate().equals(t);
-                if (ImGui.selectable("./" + t.getName(), selected)) {
+                ImGui.pushID(t.name());
+                final boolean selected = this.mapEditorInterface().getCurrentSelectedTemplate() != null && this.mapEditorInterface().getCurrentSelectedTemplate().equals(t);
+                if (ImGui.selectable("./" + t.name(), selected)) {
                     if (selected) {
-                        this.getMapEditorInterface().setCurrentSelectedTemplate(null);
+                        this.mapEditorInterface().setCurrentSelectedTemplate(null);
                     } else {
-                        this.getMapEditorInterface().getActionsContent().resetTemplatePreview();
-                        this.getMapEditorInterface().setCurrentSelectedTemplate(t);
+                        this.mapEditorInterface().getActionsContent().resetTemplatePreview();
+                        this.mapEditorInterface().setCurrentSelectedTemplate(t);
                     }
                 }
                 ImGui.popID();
@@ -53,22 +43,10 @@ public class CreatableObjectsTreeDrawerM <T extends WBenchObjectTemplate> {
     }
 
     public void render() {
-        if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (ImGui.collapsingHeader(this.tab(), ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("##MResChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.3f, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.tree(this.folderSupplier.get(), true);
             ImGui.endChild();
         }
-    }
-
-    public MapEditorInterface getMapEditorInterface() {
-        return this.mapEditorInterface;
-    }
-
-    public Supplier<MapObjectTemplatesFolder<T>> getFolderSupplier() {
-        return this.folderSupplier;
-    }
-
-    public String getTab() {
-        return this.tab;
     }
 }

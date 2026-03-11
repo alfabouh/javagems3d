@@ -151,7 +151,7 @@ public class Material {
         public float getOpacity() {
             if (this.getDiffuse() instanceof ISampleColor4) {
                 ISampleColor4 color4Texture = (ISampleColor4) this.getDiffuse();
-                return this.opacity * color4Texture.getColor().w;
+                return this.opacity * color4Texture.color().w;
             }
             return this.opacity;
         }

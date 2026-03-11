@@ -43,7 +43,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
     private WBenchObjectTemplate createMapObjectTemplateFromGameSource(String prefix, String path, GameResourceWorldObjectAsset gameResourceWorldObjectAsset) {
         final WBenchObject.ID ID = new WBenchObject.ID(prefix + gameResourceWorldObjectAsset.getID(), path);
         final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceWorldObjectAsset.getModelAssetRelativePath());
-        final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.getMeshGroup();
+        final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), WBenchRenderProperties.getDefault());
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
         final TranslationConstraints translationConstraints = gameResourceWorldObjectAsset.getAxisConstraints();
@@ -52,7 +52,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
 
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp) {
         final WBenchObjectData wBenchObjectData = apiResourceProp.getFabricWBench().create();
-        final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.getName(), path);
+        final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
         final MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(wBenchObjectData.getPathToModel(), true);
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
@@ -62,7 +62,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
 
     private WBenchMarkerTemplate createMapObjectTemplateFromApiMarkerSource(SystemResources systemResources, String path, APIResource<WBenchMarkerData, ?> apiResourceProp) {
         final WBenchMarkerData wBenchMarkerData = apiResourceProp.getFabricWBench().create();
-        final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.getName(), path);
+        final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
         MeshGroup meshGroup = null;
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
@@ -76,8 +76,8 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
 
     private <T extends AbstractObjectsFolder.ObjectWithName, E extends WBenchTemplate> void copyPlusConvertFolder(AbstractObjectsFolder<T> from, MapObjectTemplatesFolder<E> to, BiFunction<String, T, E> convert) {
         for (T obj : from.getObjectsThere()) {
-            if (to.getObjectsThereMap().containsKey(obj.getName())) {
-                Log.get().error("MapObjectTemplatesFolder folder " + to.getHierarchy() + " already contains object " + obj.getName());
+            if (to.getObjectsThereMap().containsKey(obj.name())) {
+                Log.get().error("MapObjectTemplatesFolder folder " + to.getHierarchy() + " already contains object " + obj.name());
             } else {
                 to.putObjectThere(convert.apply(to.getHierarchy(), obj));
             }

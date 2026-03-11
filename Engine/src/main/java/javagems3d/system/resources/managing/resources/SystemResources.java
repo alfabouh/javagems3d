@@ -19,7 +19,6 @@ import javagems3d.system.resources.managing.resources.data.arrays.BindlessTextur
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -312,27 +311,11 @@ public abstract class SystemResources implements ISystemResources {
         return this.resourcesDataArrays;
     }
 
-    public static class ResLoadSysMessage {
-        private final int color;
-        private final String text;
-        private final ResLoadSysMessageType resLoadSysMessageType;
-
-        public ResLoadSysMessage(int color, @NotNull String text, @NotNull ResLoadSysMessageType resLoadSysMessageType) {
-            this.color = color;
-            this.text = text;
-            this.resLoadSysMessageType = resLoadSysMessageType;
+    public record ResLoadSysMessage(int color, String text, ResLoadSysMessageType resLoadSysMessageType) {
+            public ResLoadSysMessage(int color, @NotNull String text, @NotNull ResLoadSysMessageType resLoadSysMessageType) {
+                this.color = color;
+                this.text = text;
+                this.resLoadSysMessageType = resLoadSysMessageType;
+            }
         }
-
-        public int getColor() {
-            return this.color;
-        }
-
-        public String getText() {
-            return this.text;
-        }
-
-        public ResLoadSysMessageType getResLoadSysMessageType() {
-            return this.resLoadSysMessageType;
-        }
-    }
 }

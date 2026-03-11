@@ -1,8 +1,11 @@
 package workbench.graphics.scene.ui.game.editor;
 
+import api.system.JGemsAPI;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.JGems3D;
+import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.def.misc.*;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
@@ -10,22 +13,20 @@ import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import workbench.WBench;
+import workbench.graphics.scene.ui.game.GameEditorInterface;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ObjectTagPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
+import workbench.graphics.scene.ui.game.editor.instances.scripting.ScriptAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectEntityPreview;
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectPropPreview;
 import workbench.graphics.scene.ui.game.editor.utils.CreatableResourcesTreeDrawerG;
 import workbench.graphics.scene.ui.game.editor.utils.FolderResourcesTreeDrawerG;
 import workbench.project.managing.WBenchGameResourcesManager;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
-import workbench.project.managing.instances.mapping.WBenchResourceMapAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceSkyboxAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
-import javagems3d.system.external.gaming.def.misc.GameResourceObjectTagData;
-import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
+import workbench.project.managing.instances.WBenchResourceMapAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 
@@ -34,27 +35,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ResourcesInterfaceComponentG {
+    private final GameEditorInterface gameEditorInterface;
     private final FolderResourcesTreeDrawerG<GameResourceModelAsset, ModelAssetPreview> modelAssetsTreeDrawer;
     private final FolderResourcesTreeDrawerG<GameResourceTextureAsset, TextureAssetPreview> textureAssetsTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceObjectTagData, ObjectTagPreview> tagResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourceScriptAsset, ScriptAssetPreview> scriptResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> skyBoxResourceTreeDrawer;
 
-    public ResourcesInterfaceComponentG() {
+    public ResourcesInterfaceComponentG(GameEditorInterface gameEditorInterface) {
+        this.gameEditorInterface = gameEditorInterface;
+
         this.modelAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
                 "Models",
                 (e) -> WBench.get().getGameProjectManager().refreshModelFiles(true),
-                (e) -> WBenchGameResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectAbsolutePath()),
+                (e) -> WBenchGameResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 ModelAssetPreview::new);
 
         this.textureAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
                 "Textures",
                 (e) -> WBench.get().getGameProjectManager().refreshTextureFiles(true),
-                (e) -> WBenchGameResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectAbsolutePath()),
+                (e) -> WBenchGameResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 TextureAssetPreview::new);
 
         this.propResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -63,10 +68,10 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Prop's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourcePropObjectAsset gameResourcePropObjectAsset = new GameResourcePropObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
-                    e.getFirst().putObjectThere(gameResourcePropObjectAsset);
+                    final GameResourcePropObjectAsset gameResourcePropObjectAsset = new GameResourcePropObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    e.first().putObjectThere(gameResourcePropObjectAsset);
                     return gameResourcePropObjectAsset;
                 },
                 ObjectPropPreview::new
@@ -92,13 +97,13 @@ public class ResourcesInterfaceComponentG {
         this.entityResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
                 "Entities",
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getEntityAssetsFolder(),
-                new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
+                new ArrayList<>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Entity's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourceEntityObjectAsset gameResourceEntityObjectAsset = new GameResourceEntityObjectAsset(e.getSecond().getInputStrings().get(0).get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
-                    e.getFirst().putObjectThere(gameResourceEntityObjectAsset);
+                    final GameResourceEntityObjectAsset gameResourceEntityObjectAsset = new GameResourceEntityObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    e.first().putObjectThere(gameResourceEntityObjectAsset);
                     return gameResourceEntityObjectAsset;
                 },
                 ObjectEntityPreview::new
@@ -127,10 +132,10 @@ public class ResourcesInterfaceComponentG {
                 new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Skybox's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourceSkyboxAsset gameResourceSkyboxAsset = new GameResourceSkyboxAsset(e.getSecond().getInputStrings().get(0).get());
-                    e.getFirst().putObjectThere(gameResourceSkyboxAsset);
+                    final GameResourceSkyboxAsset gameResourceSkyboxAsset = new GameResourceSkyboxAsset(e.second().getInputStrings().getFirst().get());
+                    e.first().putObjectThere(gameResourceSkyboxAsset);
                     return gameResourceSkyboxAsset;
                 },
                 SkyBoxAssetPreview::new
@@ -147,13 +152,13 @@ public class ResourcesInterfaceComponentG {
         this.tagResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
                 "Tag Containers",
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getTagAssetsFolder(),
-                new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
+                new ArrayList<>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Tag's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourceObjectTagData gameResourceObjectTagData = new GameResourceObjectTagData(e.getSecond().getInputStrings().get(0).get(), new TagsContainer());
-                    e.getFirst().putObjectThere(gameResourceObjectTagData);
+                    final GameResourceObjectTagData gameResourceObjectTagData = new GameResourceObjectTagData(e.second().getInputStrings().getFirst().get(), new TagsContainer());
+                    e.first().putObjectThere(gameResourceObjectTagData);
                     return gameResourceObjectTagData;
                 },
                 ObjectTagPreview::new
@@ -170,26 +175,25 @@ public class ResourcesInterfaceComponentG {
         this.mapResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
                 "Maps",
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getMapAssetsFolder(),
-                new ArrayList<CreatableResourcesTreeDrawerG.PopupConstructorData>() {{
+                new ArrayList<>() {{
                     add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Map's Name", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
                 }},
-                (e) -> e.getFirst().getFoldersThereMap().containsKey(e.getSecond().getInputStrings().get(0).get()),
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final String name = e.getSecond().getInputStrings().get(0).get();
-                    final String mapNameFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE;
-                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name, e.getFirst().getHierarchy());
-                    final WBenchResourceMapAsset gameResourceMapAsset = new WBenchResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name));
+                    final String name = e.second().getInputStrings().getFirst().get();
+                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name, e.first().getHierarchy());
+                    final WBenchResourceMapAsset gameResourceMapAsset = new WBenchResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, JGemsGaming.getPathToMainMapFile(absPath, name), name));
                     final GameResourceAssetsFolder<WBenchResourceMapAsset> newFolder = new GameResourceAssetsFolder<>(name);
                     newFolder.putObjectThere(gameResourceMapAsset);
-                    e.getFirst().putFolderThere(newFolder);
+                    e.first().putFolderThere(newFolder);
                     return gameResourceMapAsset;
                 },
                 MapProjectPreview::new
         ).setAfterAssetDeleted((e) -> {
             try {
-                WBench.get().getMapProjectManager().deleteMapProjectFolder(e.getSecond().getMapProject().getCurrentProjectPath());
+                WBench.get().getMapProjectManager().deleteMapProjectFolder(e.second().getMapProject().getAbsolutePath());
             } catch (IOException ex) {
-                LoggingManager.showWindowWarn("Couldn't delete map: " + e.getSecond().getName());
+                LoggingManager.showWindowWarn("Couldn't delete map: " + e.second().name());
                 Log.get().exception(ex);
             }
         }).setAfterFolderCreated((e) -> {
@@ -199,6 +203,45 @@ public class ResourcesInterfaceComponentG {
             new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), e.getHierarchy()).recursiveDelete();
         }).setOnRefreshButton((e) -> {
             WBench.get().getGameProjectManager().refreshMaps(true);
+        });
+
+        this.scriptResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
+                "Scripts",
+                () -> WBench.get().getGameProjectManager().getGameResourcesManager().getScriptAssetsFolder(),
+                new ArrayList<>() {{
+                    add(new CreatableResourcesTreeDrawerG.PopupConstructorData("File's Name", "^(?!\\.)[a-zA-Z\\d_-]+$", "Only letters, digits, underscores (_) and dashes (-) allowed. Spaces and special symbols are not allowed, name cannot start with a dot."));
+                }},
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
+                (e) -> {
+                    final String sampleText = JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController().getEntryPointClass().sampleCode().toString();
+                    final String name = e.second().getInputStrings().getFirst().get() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE;
+                    final GameResourceScriptAsset gameResourceScriptAsset = new GameResourceScriptAsset(name, e.first().getHierarchy() + "/" + name, sampleText);
+                    gameResourceScriptAsset.save(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath(), sampleText);
+                    e.first().putObjectThere(gameResourceScriptAsset);
+                    return gameResourceScriptAsset;
+                },
+                ScriptAssetPreview::new
+        ).setAfterAssetDeleted((e) -> {
+            final JGemsPath absPath = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.first().getHierarchy());
+            if (absPath.toFile().exists()) {
+                absPath.toFile().delete();
+            }
+        }).setAfterFolderCreated((e) -> {
+            final JGemsPath absPath = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy());
+            if (absPath.toFile().exists()) {
+                absPath.toFile().mkdirs();
+            }
+        }).setAfterFolderDeleted((e) -> {
+            new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy()).recursiveDelete();
+        }).setOnRefreshButton((e) -> {
+            WBench.get().getGameProjectManager().refreshScripts(true);
+        }).setOnItemSelection((e) -> {
+            if (this.getScriptResourceTreeDrawer().getPreviewWrapperObject() != null) {
+                this.gameEditorInterface.getWindowInterfaceComponentG().getScenePreviewScriptG().save();
+            }
+            if (e != null) {
+                this.gameEditorInterface.getWindowInterfaceComponentG().getScenePreviewScriptG().setScriptPreviewObject(e);
+            }
         });
     }
 
@@ -233,6 +276,10 @@ public class ResourcesInterfaceComponentG {
         return this.textureAssetsTreeDrawer;
     }
 
+    public CreatableResourcesTreeDrawerG<GameResourceScriptAsset, ScriptAssetPreview> getScriptResourceTreeDrawer() {
+        return this.scriptResourceTreeDrawer;
+    }
+
     public void resourcesContent() {
         this.Resources();
         ImGui.dummy(0.0f, 20.0f);
@@ -245,9 +292,10 @@ public class ResourcesInterfaceComponentG {
             this.getTextureAssetsTreeDrawer().render();
             ImGui.unindent();
         }
-        if (ImGui.collapsingHeader("Mapping", ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (ImGui.collapsingHeader("Game", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.indent();
             this.getMapResourceTreeDrawer().render();
+            this.getScriptResourceTreeDrawer().render();
             ImGui.unindent();
         }
         if (ImGui.collapsingHeader("Environment", ImGuiTreeNodeFlags.DefaultOpen)) {

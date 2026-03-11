@@ -243,11 +243,11 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         }
 
         public void setMaterial(PhysMaterial material) {
-            this.setFriction(material.friction);
-            this.setMass(this.calcMass(material.m_density));
-            this.setLinearDamping(material.l_damping);
-            this.setAngularDamping(material.a_damping);
-            this.saveDensity = material.m_density;
+            this.setFriction(material.friction());
+            this.setMass(this.calcMass(material.m_density()));
+            this.setLinearDamping(material.l_damping());
+            this.setAngularDamping(material.a_damping());
+            this.saveDensity = material.m_density();
         }
 
         public float calcMass(float density) {

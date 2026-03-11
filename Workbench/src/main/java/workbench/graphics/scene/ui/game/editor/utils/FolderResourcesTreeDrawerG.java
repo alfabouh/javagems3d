@@ -4,9 +4,10 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
+import javagems3d.help.JGemsHelper;
+import javagems3d.help.JGemsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import javagems3d.system.service.files.AbstractObjectsFolder;
 import javagems3d.system.external.gaming.def.IAsset;
@@ -38,9 +39,9 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         if (ImGui.treeNodeEx(folderName, ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.popStyleColor();
             for (E asset : folder.getObjectsThere()) {
-                ImGui.pushID(asset.getName());
+                ImGui.pushID(asset.name());
                 final boolean selected = this.getPreviewWrapperObject() != null && asset.equals(this.getPreviewWrapperObject().getAsset());
-                if (ImGui.selectable("./" + asset.getName(), selected)) {
+                if (ImGui.selectable("./" + asset.name(), selected)) {
                     this.setPreviewWrapperObject(selected ? null : this.getPreviewInstanceFactory().apply(asset));
                 }
                 ImGui.popID();
@@ -64,7 +65,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         ImGui.popStyleColor();
         ImGui.sameLine();
         if (this.onRefreshButton != null) {
-            ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8cff);
+            ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
             if (ImGui.button("Refresh")) {
                 this.onRefreshButton.accept(null);
                 this.setPreviewWrapperObject(null);
@@ -77,7 +78,8 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.beginChild("##ResChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.5f, true, ImGuiWindowFlags.HorizontalScrollbar);
+            final float dynHeight = JGemsHelper.math().clamp(this.getGameResourceAssetsFolder().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 20.0f, 140.0f, ImGui.getWindowHeight() * 0.5f);
+            ImGui.beginChild("##ResChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.insides();
             ImGui.endChild();
         }

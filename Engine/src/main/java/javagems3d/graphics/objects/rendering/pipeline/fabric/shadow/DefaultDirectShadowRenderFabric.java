@@ -30,8 +30,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
 
     @Override
     public void onRender(Pipeline pipeline, JGemsShaderManager shaderManager, OpenGLRenderer openGLRenderer, IRendered renderedItem, ArbitraryArguments metaData) {
-        if (renderedItem instanceof IModeled) {
-            IModeled modeled = (IModeled) renderedItem;
+        if (renderedItem instanceof IModeled modeled) {
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
                 shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
@@ -47,7 +46,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
                 ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-                shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
+                shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.color()));
                 if (diffuseMap != null) {
                     shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));

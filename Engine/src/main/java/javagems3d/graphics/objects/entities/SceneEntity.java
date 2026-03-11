@@ -1,7 +1,5 @@
 package javagems3d.graphics.objects.entities;
 
-import api.events.EventBus;
-import api.events.EventLauncher;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -50,8 +48,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     public AnimationData setAnimationByID(int id) {
         AnimationData animationData = super.setAnimationByID(id);
         if (animationData != null) {
-            if (this.getWorldItem() instanceof JGemsBody) {
-                final JGemsBody jGemsBody = (JGemsBody) this.getWorldItem();
+            if (this.getWorldItem() instanceof JGemsBody jGemsBody) {
                 final MeshStructure3D<?> meshStructure3D = this.getModel().getMeshStructure();
                 final MeshCollisionData meshCollisionData = meshStructure3D.getMeshCollisionData();
                 jGemsBody.getPhysicsRigidBody().setCollisionShape(meshCollisionData.getAnimationAABBShapes().get(id));
@@ -98,8 +95,8 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     }
 
     public void refreshInterpolatingState() {
-        this.currentPositionInterpolation = new InterpolationPoints(this.getCurrentPosState().getEndPoint(), this.getWorldItem().getPosition());
-        this.currentRotationInterpolation = new InterpolationPoints(this.getCurrentRotState().getEndPoint(), this.getWorldItem().getRotation());
+        this.currentPositionInterpolation = new InterpolationPoints(this.getCurrentPosState().endPoint(), this.getWorldItem().getPosition());
+        this.currentRotationInterpolation = new InterpolationPoints(this.getCurrentRotState().endPoint(), this.getWorldItem().getRotation());
     }
 
     public void updateModelTranslation() {
@@ -133,8 +130,8 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     private Quaternionf getQuaternionInterpolated(InterpolationPoints rotation, float physicsSyncTicks) {
         Quaternionf start = new Quaternionf();
         Quaternionf end = new Quaternionf();
-        start.rotateXYZ(rotation.getStartPoint().x, rotation.getStartPoint().y, rotation.getStartPoint().z);
-        end.rotateXYZ(rotation.getEndPoint().x, rotation.getEndPoint().y, rotation.getEndPoint().z);
+        start.rotateXYZ(rotation.startPoint().x, rotation.startPoint().y, rotation.startPoint().z);
+        end.rotateXYZ(rotation.endPoint().x, rotation.endPoint().y, rotation.endPoint().z);
         Quaternionf res = new Quaternionf();
         start.slerp(end, physicsSyncTicks, res);
         return res;
@@ -205,26 +202,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         return this.getWorldItem().toString() + " - SceneObject";
     }
 
-    public static final class InterpolationPoints {
-        private final Vector3f endPoint;
-        private final Vector3f startPoint;
-
-        public InterpolationPoints(Vector3f startPoint, Vector3f endPoint) {
-            this.startPoint = startPoint;
-            this.endPoint = endPoint;
-        }
+    public record InterpolationPoints(Vector3f startPoint, Vector3f endPoint) {
 
         public Vector3f interpolatedPoint(float physicsSyncTicks) {
-            Vector3f newP = new Vector3f(this.getStartPoint());
-            return newP.lerp(this.getEndPoint(), physicsSyncTicks);
+                Vector3f newP = new Vector3f(this.startPoint());
+                return newP.lerp(this.endPoint(), physicsSyncTicks);
+            }
         }
-
-        public Vector3f getEndPoint() {
-            return this.endPoint;
-        }
-
-        public Vector3f getStartPoint() {
-            return this.startPoint;
-        }
-    }
 }

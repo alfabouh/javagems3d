@@ -53,7 +53,6 @@ import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.json.JSONFileManaging;
@@ -87,33 +86,34 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
-            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, new TypeToken<MapProjectData>(){});
+            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, new TypeToken<>() {
+            });
             if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
             this.mapProjectData.checkVersion();
 
-            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPathSource(new JGemsPath(pathToJG3DFile.getPath().getAbsolutePathDirectory(), this.mapProjectData.getMapDataFile()), pathToJG3DFile.getSource()), new TypeToken<MapObjectsDataPack>(){});
+            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPathSource(this.mapProjectData.getPathToDataMapFile(), pathToJG3DFile.getSource()), new TypeToken<>() {
+            });
             if (this.mapObjectsDataPack == null) {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
-            Log.get().info("Found " + this.mapProjectData.getScriptFiles().size() + " scripts");
-            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles());
+            //this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles());
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
     }
 
-    private void loadScripts(JGemsPathSource pathToJG3DFile, List<String> scriptPaths) {
-        try {
-            for (String path : scriptPaths) {
-                JGemsAPI.executeScript(JGemsHelper.files().readTextFromFile(new JGemsPathSource(new JGemsPath(pathToJG3DFile.getPath().getAbsolutePathDirectory(), "scripts", path), pathToJG3DFile.getSource())));
-            }
-        } catch (JGemsIOException e) {
-            Log.get().exception(e);
-        }
-    }
+    //private void loadScripts(JGemsPathSource pathToJG3DFile, List<String> scriptPaths) {
+    //    try {
+    //        for (String path : scriptPaths) {
+    //            JGemsAPI.executeScript(JGemsHelper.files().readTextFromFile(new JGemsPathSource(new JGemsPath(pathToJG3DFile.getPath().getAbsolutePathDirectory(), "scripts", path), pathToJG3DFile.getSource())));
+    //        }
+    //    } catch (JGemsIOException e) {
+    //        Log.get().exception(e);
+    //    }
+    //}
 
     private <T> T loadJson(JSONFileManaging jsonFileManaging, JGemsPathSource path, TypeToken<T> typeToken) {
         try (InputStream stream = JGems3D.getInputStream(path)) {
@@ -174,36 +174,36 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         for (RowMapObjectData template : pointLights) {
             Pair<PointLight, Integer> pair = this.onProcessPointLight(template, physicsWorld, sceneWorld);
             if (pair != null) {
-                if (pair.getSecond() >= 0) {
-                    JGemsUtils.putObjectInMapOrUpdate(pointLightIdMap, pair.getSecond(), new ArrayList<PointLight>() {{
-                        add(pair.getFirst());
+                if (pair.second() >= 0) {
+                    JGemsUtils.putObjectInMapOrUpdate(pointLightIdMap, pair.second(), new ArrayList<PointLight>() {{
+                        add(pair.first());
                     }}, (ex, nw) -> {
                         ex.add(nw);
                         return ex;
-                    }, pair.getFirst());
-                    JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPointLightEvent(pair.getFirst(), pair.getSecond());
+                    }, pair.first());
+                    //JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPointLightEvent(pair.first(), pair.second());
                 }
             }
         }
         this.processMapObjects(propObjects, resourcePropMap, (template, data) -> {
-            SceneProp sceneProp = this.onProcessProp(template, (JGemsPropData) data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
+            SceneProp sceneProp = this.onProcessProp(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
             if (sceneProp != null) {
-                JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPropEvent(sceneProp, template.getId());
+                //JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPropEvent(sceneProp, template.getId());
             }
         });
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
-            SceneProp prop = this.onProcessBackgroundProp(template, (JGemsPropData) data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
+            SceneProp prop = this.onProcessBackgroundProp(template, data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
             if (prop != null) {
-                JGemsAPI.getAPIScripting().getGameWorldJS().getBackgroundJS().onMapSpawnedBackgroundPropEvent(prop, template.getId());
+                //JGemsAPI.getAPIScripting().getGameWorldJS().getBackgroundJS().onMapSpawnedBackgroundPropEvent(prop, template.getId());
             }
         });
         this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> {
-            WorldItem worldItem = this.onProcessEntity(template, (JGemsEntityData) data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
+            WorldItem worldItem = this.onProcessEntity(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
             if (worldItem != null) {
-                JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedWorldItemEvent(worldItem, template.getId());
+               // JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedWorldItemEvent(worldItem, template.getId());
             }
         });
-        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, (JGemsMarkerData) data, physicsWorld, sceneWorld));
+        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
     }
 
     protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
@@ -309,8 +309,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
-            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
+            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.propRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
@@ -320,8 +320,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
-            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
+            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.propRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
@@ -339,14 +339,14 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.pathToModel(), false);
             JGemsBody jGemsBody = null;
             if (tagPhysics == null || tagPhysics.getValues()[0].isFlag()) {
                 jGemsBody = new JGemsStaticBody(MeshCollider.getStatic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
             } else {
                 jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
             }
-            JGemsHelper.world().addWorldItem(jGemsBody, new EntityRenderData(entityData.getEntityRenderData(), buffer));
+            JGemsHelper.world().addWorldItem(jGemsBody, new EntityRenderData(entityData.entityRenderData(), buffer));
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());

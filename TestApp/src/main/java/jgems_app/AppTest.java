@@ -7,8 +7,6 @@ import api.application.workbench.manager.IAPIWBenchDataManager;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
-import api.scripting.legacy.JGemsAPIScriptingEngine;
-import api.scripting.legacy.functions.APIScriptingFunction;
 import api.system.JGemsAPI;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
@@ -27,8 +25,6 @@ import jgems_app.resources.ModelInitializer;
 
 @JGemsAppEntry(id = "DefaultGame")
 public class AppTest extends JGemsApplication {
-    public static APIScriptingFunction scriptingFunction = JGemsAPIScriptingEngine.createJSFunction("testf", "Test fun");
-
     @JGemsAppInstance
     public static AppTest appTest;
 
@@ -44,7 +40,7 @@ public class AppTest extends JGemsApplication {
     @Override
     public void initResources(@NotNull IAppResources appResources) {
         appResources.putGlobalAssetsInitializer(new ModelInitializer());
-        JGemsAPI.getAPIScriptingCore().test();
+        //JGemsAPI.getAPIScriptingCore().test();
     }
 
     @Override

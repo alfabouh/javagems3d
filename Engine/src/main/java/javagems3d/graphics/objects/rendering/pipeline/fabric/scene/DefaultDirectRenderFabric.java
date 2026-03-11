@@ -37,8 +37,7 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
 
     @Override
     public void onRender(Pipeline pipeline, JGemsShaderManager shaderManager, OpenGLRenderer openGLRenderer, IRendered renderedItem, ArbitraryArguments metaData) {
-        if (renderedItem instanceof IModeled) {
-            IModeled modeled = (IModeled) renderedItem;
+        if (renderedItem instanceof IModeled modeled) {
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
                 Consumer<Pair<JGemsShaderManager, IRendered>> functionToHandleUniforms = metaData.getterFunc().getObject(0);

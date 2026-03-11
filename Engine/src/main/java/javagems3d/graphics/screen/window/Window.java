@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,11 +33,27 @@ public class Window implements IWindow {
     private long currentMonitor;
     private boolean isInFocus;
 
+    private final long arrowCursor;
+    private final long textCursor;
+
     public Window(int width, int height, WindowProperties windowProperties) {
         this.isInFocus = false;
-        this.window = GLFW.glfwCreateWindow(width, height, windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
+        this.window = GLFW.glfwCreateWindow(width, height, windowProperties.title(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.currentMonitor = GLFW.glfwGetPrimaryMonitor();
-        this.setIcon(windowProperties.getIcon());
+        this.setIcon(windowProperties.icon());
+
+        {
+            this.arrowCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+            this.textCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR);
+        }
+    }
+
+    public void setTextCursor() {
+        GLFW.glfwSetCursor(this.getDescriptor(), this.textCursor);
+    }
+
+    public void setArrowCursor() {
+        GLFW.glfwSetCursor(this.getDescriptor(), this.arrowCursor);
     }
 
     @Override
@@ -223,25 +238,14 @@ public class Window implements IWindow {
         return this.window;
     }
 
-    public static class WindowProperties {
-        private final String title;
-        private final JGemsPath icon;
+    public record WindowProperties(String title, JGemsPath icon) {
+            public WindowProperties(@NotNull String title) {
+                this(title, new JGemsPath(Window.DEFAULT_ICON));
+            }
 
-        public WindowProperties(@NotNull String title) {
-            this(title, new JGemsPath(Window.DEFAULT_ICON));
+            public WindowProperties(@NotNull String title, @Nullable JGemsPath icon) {
+                this.title = title;
+                this.icon = icon;
+            }
         }
-
-        public WindowProperties(@NotNull String title, @Nullable JGemsPath icon) {
-            this.title = title;
-            this.icon = icon;
-        }
-
-        public JGemsPath getIcon() {
-            return this.icon;
-        }
-
-        public String getTitle() {
-            return this.title;
-        }
-    }
 }

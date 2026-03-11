@@ -40,7 +40,7 @@ public class TagItemCreatingInstancesG {
     public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagRadioBoolean>> radioBooleanTagItemResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<TagRadioBoolean>() {
         private final List<TagRadioBoolean.Info> infos = new ArrayList<>();
         private int selectedIndex = -1;
-        private ImString nameBuffer = new ImString();
+        private final ImString nameBuffer = new ImString();
 
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
@@ -231,10 +231,10 @@ public class TagItemCreatingInstancesG {
 
     public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagVector>> vectorTagItemResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<TagVector>() {
                 private VectorMode vectorMode = VectorMode.VEC3F;
-                private Vector4f vector = new Vector4f(0, 0, 0, 0);
+                private final Vector4f vector = new Vector4f(0, 0, 0, 0);
                 private float min = -999999.0f;
                 private float max = 999999.0f;
-                private ImInt modeIndex = new ImInt(0);
+                private final ImInt modeIndex = new ImInt(0);
 
                 @Override
                 public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {

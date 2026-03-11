@@ -185,11 +185,11 @@ public final class JGems3D {
         try {
             switch (path.getSource()) {
                 case INSIDE_JAR: {
-                    inputStream = JGems3D.class.getResourceAsStream(path.getPath().getFullPath());
+                    inputStream = JGems3D.class.getResourceAsStream(path.getPath().fullPath());
                     break;
                 }
                 case OUTSIDE_JAR: {
-                    String p = path.getPath().getFullPath();
+                    String p = path.getPath().fullPath();
                     if (p.startsWith("/") && p.length() > 2 && p.charAt(2) == ':') {
                         p = p.substring(1);
                     }
@@ -334,7 +334,7 @@ public final class JGems3D {
         public static final String MAPPING_DATA_FILE = ".jg3mp_data";
         public static final String GAME_DATA_FILE = ".jg3gm_data";
 
-        public static final String MAPPING_SCRIPT_FILE = ".js";
+        public static final String JS_SCRIPT_FILE = ".js";
 
         //public static final Set<String> MAPPING_SUPPORTED_VERSIONS = new HashSet<String>() {{
         //    add("1.0");

@@ -59,7 +59,7 @@ public abstract class IndirectObjectsRenderer {
     protected abstract IndirectCommandsProgram createCommands(Mode mode, @NotNull IntBuffer indexes, @Nullable IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
 
     protected void render(Operator operator, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @Nullable ArbitraryArguments metaData) {
-        operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
+        operator.renderingFunction().func(operator.indirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
     }
 
     protected void fillSSBOWithInformation(@NotNull IntBuffer indexes, @NotNull IntBuffer materialIds, Collection<SceneObject> sceneObjects) {
@@ -187,40 +187,17 @@ public abstract class IndirectObjectsRenderer {
         int uniqueFunctionID();
     }
 
-    public static class Operator {
-        private final IRenderingFunction renderingFunction;
-        private final JGemsShaderManager indirectShader;
-
-        public Operator(@NotNull IndirectObjectsRenderer.IRenderingFunction overRenderingFunction, @NotNull JGemsShaderManager indirectShader) {
-            this.renderingFunction = overRenderingFunction;
-            this.indirectShader = indirectShader;
-        }
+    public record Operator(IRenderingFunction renderingFunction, JGemsShaderManager indirectShader) {
+            public Operator(@NotNull IndirectObjectsRenderer.IRenderingFunction renderingFunction, @NotNull JGemsShaderManager indirectShader) {
+                this.renderingFunction = renderingFunction;
+                this.indirectShader = indirectShader;
+            }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
+            public int hashCode() {
+                return Objects.hash(this.renderingFunction.uniqueFunctionID(), this.indirectShader);
             }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            Operator operator = (Operator) o;
-            return Objects.equals(this.renderingFunction, operator.renderingFunction) && Objects.equals(this.indirectShader, operator.indirectShader);
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.renderingFunction.uniqueFunctionID(), this.indirectShader);
-        }
-
-        public IRenderingFunction getRenderingFunction() {
-            return this.renderingFunction;
-        }
-
-        public JGemsShaderManager getIndirectShader() {
-            return this.indirectShader;
-        }
-    }
 
     public enum Mode {
         ALL,

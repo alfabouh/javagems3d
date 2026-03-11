@@ -98,7 +98,7 @@ public class SkyBoxPreviewEditorWindow {
             WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             WBenchResourceManager.localShaderAssets.simple_skybox_face.performViewMatrix(new UniformString("view"), view);
             final GameResourceTextureAsset program = textureRelativePos == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(textureRelativePos);
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString("skybox_face2D"), program == null ? JGemsResourceManager.DEFAULT_TEXTURE() : program.getTexture2DProgram());
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString("skybox_face2D"), program == null ? JGemsResourceManager.DEFAULT_TEXTURE() : program.texture2DProgram());
             WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString("skybox_faceHint"), hint);
             WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString("doHint"), UniformFunctions.BOOLEAN(this.actionsInterfaceComponentG.getScenePreviewSkyBoxG().isShowHint()));
             JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);

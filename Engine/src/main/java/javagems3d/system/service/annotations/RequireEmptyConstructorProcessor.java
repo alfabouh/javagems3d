@@ -9,7 +9,7 @@ import javax.lang.model.element.*;
 import javax.tools.Diagnostic;
 import java.util.Set;
 
-@SupportedAnnotationTypes("your.annotations.RequireEmptyConstructor")
+@SupportedAnnotationTypes("your.def.RequireEmptyConstructor")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class RequireEmptyConstructorProcessor extends AbstractProcessor {
 

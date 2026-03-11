@@ -9,7 +9,6 @@ import org.lwjgl.system.MemoryUtil;
 import javagems3d.audio.sound.loaders.ISoundCodec;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +50,7 @@ public class Ogg implements ISoundCodec {
 
     private ShortBuffer readOGG(InputStream stream, STBVorbisInfo info) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            byte[] buffer = IOUtils.readExactlyNBytes(stream, stream.available());
+            byte[] buffer = stream.readAllBytes();
             ByteBuffer byteBuffer = BufferUtils.createByteBuffer(buffer.length);
             byteBuffer.put(buffer);
             byteBuffer.flip();

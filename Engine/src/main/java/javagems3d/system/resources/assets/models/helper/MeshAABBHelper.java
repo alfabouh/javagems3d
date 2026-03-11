@@ -135,7 +135,7 @@ public abstract class MeshAABBHelper {
                                 for (int k = 0; k < positions.size(); k += 3) {
                                     Vector3f tempVertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
                                     Vector3f positionStart = new Vector3f(0.0f);
-                                    for (AnimationFrame animationFrame : animation.getFrameList()) {
+                                    for (AnimationFrame animationFrame : animation.frameList()) {
                                         positionStart.set(new Vector3f(0.0f));
                                         for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
                                             SkeletonData skeletonData = mesh.getSkeletonData();
@@ -143,9 +143,9 @@ public abstract class MeshAABBHelper {
                                                 throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL");
                                             }
                                             int vertexIndex = k / 3;
-                                            float weight = skeletonData.getWeights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
+                                            float weight = skeletonData.weights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
                                             if (weight > 0.f) {
-                                                int boneId = skeletonData.getBoneIds().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
+                                                int boneId = skeletonData.boneIds().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
                                                 Matrix4f boneMatrix = animationFrame.getBoneMatrices()[boneId];
                                                 Vector3f newPosition = new Vector3f(tempVertex).mulPosition(boneMatrix);
                                                 newPosition.mul(weight);

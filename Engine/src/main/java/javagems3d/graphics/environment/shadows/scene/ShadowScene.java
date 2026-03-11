@@ -109,8 +109,8 @@ public abstract class ShadowScene implements IShadowScene {
 
     @SuppressWarnings("all")
     protected void pointLightShadows(Pair<List<SceneObject>, List<SceneObject>> groups) {
-        List<SceneObject> directRenderObjects = groups.getFirst();
-        List<SceneObject> indirectRenderObjects = groups.getSecond();
+        List<SceneObject> directRenderObjects = groups.first();
+        List<SceneObject> indirectRenderObjects = groups.second();
 
         for (int i = 0; i < this.getMaxPointLightShadows(); i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
@@ -135,8 +135,8 @@ public abstract class ShadowScene implements IShadowScene {
 
     @SuppressWarnings("all")
     protected void sunShadows(Pair<List<SceneObject>, List<SceneObject>> groups) {
-        List<SceneObject> directRenderObjects = groups.getFirst();
-        List<SceneObject> indirectRenderObjects = groups.getSecond();
+        List<SceneObject> directRenderObjects = groups.first();
+        List<SceneObject> indirectRenderObjects = groups.second();
 
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
         OpenGLRenderer.setViewPort(this.getSunLightShadow().getShadowMapResolution());

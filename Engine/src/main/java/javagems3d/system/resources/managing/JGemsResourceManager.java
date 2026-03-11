@@ -11,7 +11,6 @@ import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.files.source.JGemsStringSource;
 
 import java.util.function.Function;
 
@@ -70,12 +69,11 @@ public final class JGemsResourceManager extends ResourceManager {
 
     private Function<ISample.IProperties, ISample.IProperties> getTexturePropertiesProcessing() {
         return (e) -> {
-            if (e instanceof ImageTexture) {
-                ImageTexture imageTexture = (ImageTexture) e;
+            if (e instanceof ImageTexture imageTexture) {
                 ImageTexture.Properties properties = (ImageTexture.Properties) imageTexture.getProperties();
-                boolean linear = properties.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
-                boolean anisotropic = properties.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
-                return new ImageTexture.Properties(properties.isMipMap(), linear, properties.isShouldBeRepeated(), anisotropic, properties.isQualityAffected());
+                boolean linear = properties.linearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+                boolean anisotropic = properties.anisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+                return new ImageTexture.Properties(properties.mipMap(), linear, properties.shouldBeRepeated(), anisotropic, properties.qualityAffected());
             }
             return null;
         };
@@ -102,21 +100,11 @@ public final class JGemsResourceManager extends ResourceManager {
         return this.getGameResources(ResourceManager.GLOBAL);
     }
 
-    private static class Factory implements ResourceManager.Factory {
-        private final String id;
-
-        public Factory(String id) {
-            this.id = id;
-        }
+    private record Factory(String id) implements ResourceManager.Factory {
 
         @Override
-        public SystemResources createObject(String id) {
-            return new JGemsSystemResources(new ResourceCache(id));
+            public SystemResources createObject(String id) {
+                return new JGemsSystemResources(new ResourceCache(id));
+            }
         }
-
-        @Override
-        public String getId() {
-            return this.id;
-        }
-    }
 }

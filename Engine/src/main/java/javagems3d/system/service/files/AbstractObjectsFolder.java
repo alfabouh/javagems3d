@@ -54,6 +54,36 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         return this.parent.getHierarchy() + "/" + current;
     }
 
+    private int totalObjectsThere(boolean countFolders, int max) {
+        int total = 0;
+        if (countFolders) {
+            total += this.getFoldersThere().size();
+            if (total >= max) {
+                return max;
+            }
+        }
+        total += this.getObjectsThere().size();
+        if (total >= max) {
+            return max;
+        }
+        for (AbstractObjectsFolder<T> folder : this.getFoldersThere()) {
+            int subTotal = folder.totalObjectsThere(countFolders, max - total);
+            total += subTotal;
+            if (total >= max) {
+                return max;
+            }
+        }
+        return total;
+    }
+
+    public int totalObjectsThere(int max) {
+        return this.totalObjectsThere(false, max);
+    }
+
+    public int totalObjectsAndFoldersThere(int max) {
+        return this.totalObjectsThere(true, max);
+    }
+
     public <E extends AbstractObjectsFolder<T>> void putObjectInside(@NotNull String path, @NotNull T t, Function<String, E> createNewFolder) {
         AbstractObjectsFolder<T> next = this;
         String[] pathNodes = path.split("/");
@@ -92,7 +122,7 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
     }
 
     public void putObjectThere(@NotNull T t) {
-        this.getObjectsThereMap().put(t.getName(), t);
+        this.getObjectsThereMap().put(t.name(), t);
     }
 
     public void removeObjectFromThere(String id) {
@@ -131,6 +161,6 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
     }
 
     public interface ObjectWithName {
-        String getName();
+        String name();
     }
 }

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public final class TagsContainer implements ICopyable<TagsContainer> {
+public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements ICopyable<TagsContainer> {
     public static @NotNull Map<Class<?>, JSONFileManaging.SerializationRules<?>> TAG_ITEMS_SERIALIZATION_RULES = new HashMap<>();
 
     static {
@@ -36,7 +36,7 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
             JSONFileManaging.createSerializationRules(
                     (object, context) -> {
                         JsonArray tagsArray = new JsonArray();
-                        for (Tag<? extends TagItem> tag : object.getTags().values()) {
+                        for (Tag<? extends TagItem> tag : object.tags().values()) {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("type", tag.getTagItem().getTypeString());
                             jsonObject.add("tag", context.serialize(tag.getTagItem(), tag.getTagItem().getClass()));
@@ -71,14 +71,8 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
                     }
             );
 
-    private final Map<TagID, Tag<? extends TagItem>> tags;
-
-    public TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) {
-        this.tags = tags;
-    }
-
     public TagsContainer(Collection<Tag<? extends TagItem>> tags) {
-        this.tags = new HashMap<>();
+        this(new HashMap<>());
         for (Tag<? extends TagItem> tag : tags) {
             this.addTag(tag.copy());
         }
@@ -86,11 +80,11 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
 
     @SuppressWarnings("all")
     public TagsContainer(TagsContainer tagsContainer) {
-        this(tagsContainer.getTags().values());
+        this(tagsContainer.tags().values());
     }
 
     public TagsContainer() {
-        this.tags = new HashMap<>();
+        this(new HashMap<>());
     }
 
     public boolean hasTag(TagID id) {
@@ -98,46 +92,42 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
     }
 
     public boolean isEmpty() {
-        return this.getTags().isEmpty();
+        return this.tags().isEmpty();
     }
 
     public TagsContainer replaceTag(TagID id, TagItem newValue) {
-        this.getTags().replace(id, new Tag<>(id, newValue));
+        this.tags().replace(id, new Tag<>(id, newValue));
         return this;
     }
 
     public TagsContainer removeTag(TagID id) {
-        this.getTags().remove(id);
+        this.tags().remove(id);
         return this;
     }
 
     public TagsContainer addTag(Tag<? extends TagItem> tag) {
-        this.getTags().put(tag.getTagID(), tag);
+        this.tags().put(tag.getTagID(), tag);
         return this;
     }
 
     public TagsContainer copyTagsFrom(@NotNull TagsContainer tagsContainer) {
-        this.getTags().putAll(tagsContainer.getTags());
+        this.tags().putAll(tagsContainer.tags());
         return this;
     }
 
     public Tag<? extends TagItem> getTag(TagID id) {
-        return this.getTags().get(id);
+        return this.tags().get(id);
     }
 
     public <T extends TagItem> T getTagItem(TagID id) {
         if (!this.hasTag(id)) {
             return null;
         }
-        return this.getTags().get(id).getTagItemUnsafeCast();
+        return this.tags().get(id).getTagItemUnsafeCast();
     }
 
     public Collection<Tag<? extends TagItem>> getTagCollection() {
-        return this.getTags().values();
-    }
-
-    public Map<TagID, Tag<? extends TagItem>> getTags() {
-        return this.tags;
+        return this.tags().values();
     }
 
     public TagsContainer copy() {

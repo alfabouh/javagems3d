@@ -1,6 +1,5 @@
 package javagems3d.system.resources.managing;
 
-import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -57,7 +56,7 @@ public abstract class ResourceManager {
     public ResourceManager(Factory... factories) {
         this.gameResourcesMap = new HashMap<>();
         for (Factory factory : factories) {
-            this.gameResourcesMap.put(factory.getId(), factory.createObject(factory.getId()));
+            this.gameResourcesMap.put(factory.id(), factory.createObject(factory.id()));
         }
         this.resourcesDataCache = new ResourcesDataCache(new MeshBuffersDataCache(), new BindlessTexturesDataCache());
     }
@@ -87,14 +86,14 @@ public abstract class ResourceManager {
             float roughnessFactor = material.getRoughnessFactor();
 
             //vec4 diffuse_color;
-            byteBuffer.putFloat(diffuseColor.getColor().x);
-            byteBuffer.putFloat(diffuseColor.getColor().y);
-            byteBuffer.putFloat(diffuseColor.getColor().z);
+            byteBuffer.putFloat(diffuseColor.color().x);
+            byteBuffer.putFloat(diffuseColor.color().y);
+            byteBuffer.putFloat(diffuseColor.color().z);
             byteBuffer.putFloat(material.getTransparency().getOpacity());
             //vec3 emission_color;
-            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().x);
-            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().y);
-            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().z);
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().x);
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().y);
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().z);
             byteBuffer.putFloat(0.0f); //PADDING
             //float metallic_factor;
             byteBuffer.putFloat(metallicFactor);
@@ -149,7 +148,7 @@ public abstract class ResourceManager {
         int totalMatrices = 0;
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
-                for (AnimationFrame animationFrame : animation.getFrameList()) {
+                for (AnimationFrame animationFrame : animation.frameList()) {
                     animationFrame.setOffset(totalMatrices);
                     totalMatrices += animationFrame.getBoneMatrices().length;
                 }
@@ -169,7 +168,7 @@ public abstract class ResourceManager {
         int matricesWritten = 0;
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
-                for (AnimationFrame animationFrame : animation.getFrameList()) {
+                for (AnimationFrame animationFrame : animation.frameList()) {
                     for (Matrix4f matrix4f : animationFrame.getBoneMatrices()) {
                         if (matricesWritten < totalTexels / 4) {
                             floatBuffer.put(matrix4f.get(new float[16]));
@@ -269,6 +268,6 @@ public abstract class ResourceManager {
 
     public interface Factory {
         SystemResources createObject(String id);
-        String getId();
+        String id();
     }
 }

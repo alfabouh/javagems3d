@@ -20,8 +20,8 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     }
 
     private void initZone(Zone zone) {
-        this.ghostObject = new PhysicsGhostObject(new BoxCollisionShape(DynamicsUtils.convertV3F_JME(zone.getSize().mul(0.5f))));
-        this.getGhostObject().setPhysicsLocation(DynamicsUtils.convertV3F_JME(zone.getLocation()));
+        this.ghostObject = new PhysicsGhostObject(new BoxCollisionShape(DynamicsUtils.convertV3F_JME(zone.size().mul(0.5f))));
+        this.getGhostObject().setPhysicsLocation(DynamicsUtils.convertV3F_JME(zone.location()));
         this.getGhostObject().setUserObject(this);
 
         this.setCollisionFilter(CollisionType.DN_BODY, CollisionType.PLAYER);
@@ -41,7 +41,7 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     }
 
     public void setLocation(Vector3f location) {
-        this.zone = new Zone(location, this.getZone().getSize());
+        this.zone = new Zone(location, this.getZone().size());
         DynamicsUtils.translateGhost(this.getGhostObject(), location);
     }
 

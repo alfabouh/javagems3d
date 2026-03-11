@@ -21,7 +21,7 @@ public class UIArrow extends UIInteractiveElement {
         super(null, zValue);
         this.position = position;
         this.size = new Vector2i(4, 8);
-        this.imageStaticUI = new UIPictureStaticSelectable((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
+        this.imageStaticUI = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
         this.settingIntSlots = settingIntSlots;
         this.vector = vector;
     }

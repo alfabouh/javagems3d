@@ -100,7 +100,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPathSource(JGemsHelper.map().getMapPath("TEST"), ISource.Source.OUTSIDE_JAR)));
+                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPathSource(JGemsHelper.map().getMapPath("Test1"), ISource.Source.OUTSIDE_JAR)));
                    ui.setPanel(new DefaultGamePanel(null));
                });
 

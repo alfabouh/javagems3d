@@ -33,9 +33,8 @@ public class MarkerSimpleTransparentRenderFabric extends DirectRenderFabric {
 
     @Override
     public void onRender(Pipeline pipeline, JGemsShaderManager shaderManager, OpenGLRenderer openGLRenderer, IRendered renderedItem, ArbitraryArguments metaData) {
-        if (renderedItem instanceof WBenchMarkerObject) {
+        if (renderedItem instanceof WBenchMarkerObject modeled) {
             WBenchMarkerObject markerObject = (WBenchMarkerObject) renderedItem;
-            IModeled modeled = (IModeled) renderedItem;
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
                 Consumer<Pair<JGemsShaderManager, IRendered>> functionToHandleUniforms = metaData.getterFunc().getObject(0);

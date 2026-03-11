@@ -30,8 +30,8 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
         for (int i = 0; i < 6; i++) {
-            this.size6x[i] = data.getDataSet()[i].getSize();
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, this.getSize()[i].x, this.getSize()[i].y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getDataSet()[i].getBuffer());
+            this.size6x[i] = data.dataSet()[i].getSize();
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, this.getSize()[i].x, this.getSize()[i].y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.dataSet()[i].getBuffer());
         }
         data.clear();
         this.unBindTexture();
@@ -47,7 +47,7 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
             GL46.glDeleteSamplers(this.getSamplerId());
         }
         this.samplerId = GL46.glGenSamplers();
-        boolean linear = properties1.isLinearFiltration();
+        boolean linear = properties1.linearFiltration();
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
@@ -114,33 +114,15 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
         return true;
     }
 
-    public static final class Data {
-        private final ImageTexture.Data[] dataSet;
-
-        public Data(ImageTexture.Data[] dataSet) {
-            this.dataSet = dataSet;
-        }
+    public record Data(ImageTexture.Data[] dataSet) {
 
         public void clear() {
-            for (int i = 0; i < 6; i++) {
-                this.getDataSet()[i].clear();
+                for (int i = 0; i < 6; i++) {
+                    this.dataSet()[i].clear();
+                }
             }
         }
 
-        public ImageTexture.Data[] getDataSet() {
-            return this.dataSet;
-        }
-    }
-
-    public static final class Properties implements IProperties {
-        private final boolean linearFiltration;
-
-        public Properties(boolean linearFilter) {
-            this.linearFiltration = linearFilter;
-        }
-
-        public boolean isLinearFiltration() {
-            return this.linearFiltration;
-        }
+    public record Properties(boolean linearFiltration) implements IProperties {
     }
 }

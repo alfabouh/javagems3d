@@ -6,6 +6,7 @@ import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
+import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import jgems_app.entities.TestPlayer;
 import org.joml.Vector3f;

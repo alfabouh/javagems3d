@@ -52,9 +52,9 @@ public class TagObjectsList extends TagItem {
 
         for (int i = 0; i < objectList.size(); i++) {
             Pair<Integer, SceneObject> pair = objectList.get(i);
-            labels.add(pair.getSecond().toString());
+            labels.add(pair.second().toString());
 
-            if (pair.getFirst().equals(tagList.getValue())) {
+            if (pair.first().equals(tagList.getValue())) {
                 currentIndex = i + 1;
             }
         }
@@ -70,7 +70,7 @@ public class TagObjectsList extends TagItem {
             if (currentIndex == 0) {
                 tagList.setValue(-1);
             } else {
-                tagList.setValue(objectList.get(currentIndex - 1).getFirst());
+                tagList.setValue(objectList.get(currentIndex - 1).first());
             }
         }
     }

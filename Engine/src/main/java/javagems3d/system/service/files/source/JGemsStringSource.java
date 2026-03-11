@@ -20,10 +20,9 @@ public final class JGemsStringSource implements ISource {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof JGemsStringSource)) {
+        if (!(object instanceof JGemsStringSource that)) {
             return false;
         }
-        JGemsStringSource that = (JGemsStringSource) object;
         return that.getSource().equals(this.getSource()) && that.getString().equals(this.getString());
     }
 

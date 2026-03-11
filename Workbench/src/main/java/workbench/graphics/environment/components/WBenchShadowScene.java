@@ -83,11 +83,6 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
         this.getSunLightShadow().setCascadeSplits(wBenchShadowSceneSnapshotData.cascadeSplits);
     }
 
-    public static class WBenchShadowSceneSnapshotData implements ISnapshotCompatible.SnapshotData {
-        public final Vector3f cascadeSplits;
-
-        public WBenchShadowSceneSnapshotData(Vector3f cascadeSplits) {
-            this.cascadeSplits = cascadeSplits;
-        }
+    public record WBenchShadowSceneSnapshotData(Vector3f cascadeSplits) implements SnapshotData {
     }
 }

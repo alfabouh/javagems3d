@@ -16,12 +16,12 @@ public class ScenePreviewTextureG {
     public void render() {
         TextureAssetPreview textureAssetPreview = this.resourcesInterfaceComponentG.getTextureAssetsTreeDrawer().getPreviewWrapperObject();
         if (textureAssetPreview != null) {
-            if (ImGui.collapsingHeader("Texture: " + textureAssetPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Texture: " + textureAssetPreview.getAsset().name(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##texture_preview", ImGui.getColumnWidth(), 60, true);
                 ImGui.indent();
                 ImGui.bullet();
-                ImGui.textWrapped(textureAssetPreview.getAsset().getName());
-                Vector2i vector2i = textureAssetPreview.getAsset().getTexture2DProgram().getSize();
+                ImGui.textWrapped(textureAssetPreview.getAsset().name());
+                Vector2i vector2i = textureAssetPreview.getAsset().texture2DProgram().getSize();
                 ImGui.textWrapped("Size: " + vector2i.x + " x " + vector2i.y);
                 ImGui.unindent();
                 ImGui.endChild();

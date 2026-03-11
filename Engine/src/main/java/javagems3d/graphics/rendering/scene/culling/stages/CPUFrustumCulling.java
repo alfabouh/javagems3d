@@ -48,6 +48,6 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
 
     @Override
     public void filter(@NotNull Collection<? extends ICulled> sceneObjects) {
-        sceneObjects.removeIf(e -> !this.test((ICulled) e));
+        sceneObjects.removeIf(e -> !this.test(e));
     }
 }

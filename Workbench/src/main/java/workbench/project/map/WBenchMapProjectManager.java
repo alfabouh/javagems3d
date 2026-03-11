@@ -24,6 +24,7 @@ import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -94,8 +95,7 @@ public final class WBenchMapProjectManager {
 
     public WBenchMapProject createMapProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
-            WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name);
-            wBenchMapProject.setCurrentProjectPath(path);
+            WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name, absPath);
             //this.setCurrentProject(files, wBenchMapProject);
             this.createMapSystemFiles(absPath, name);
             this.saveMapProjectFile(wBenchMapProject);
@@ -121,7 +121,7 @@ public final class WBenchMapProjectManager {
 
     private void saveMapProjectFile(@NotNull WBenchMapProject wBenchMapProject) {
         JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
-        jsonFileManaging.writeToFile(wBenchMapProject, wBenchMapProject.getCurrentProjectPath().toFile(), null);
+        jsonFileManaging.writeToFile(wBenchMapProject, wBenchMapProject.getPathToMainMapFile().toFile(), null);
     }
 
     private <T extends WBenchTemplate> void handleObjects(boolean background, @NotNull Set<RowMapObjectData> templates, @NotNull BiFunction<String, String, T> templateFinder, @NotNull BiFunction<T, RowMapObjectData, WBenchObject<?>> objectCreator, @NotNull List<WBenchObject<?>> defaultObjectsToCreate, Function<RowMapObjectData, T> functionCreateDefault) {
@@ -164,12 +164,7 @@ public final class WBenchMapProjectManager {
 
     public void readMapProject() {
         final WBenchWorld world = this.getWorld();
-        final String mapDataFile = this.getCurrentMapProject().getMapDataFile();
-        if (mapDataFile == null || mapDataFile.isEmpty()) {
-            return;
-        }
-
-        final File file = new File(this.getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath(), mapDataFile);
+        final File file = this.getCurrentMapProject().getPathToDataMapFile().toFile();
         if (!file.exists()) {
             return;
         }
@@ -333,7 +328,7 @@ public final class WBenchMapProjectManager {
 
         final SunData sunData = new SunData(world.getEnvironment().getSkyBox().isDrawSunOnSkyBox(), sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
-        final SkyData skyData = new SkyData(skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
+        final SkyData skyData = new SkyData(skyBoxTemplate == null ? "" : skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
         final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -350,11 +345,11 @@ public final class WBenchMapProjectManager {
                     if (sceneObject instanceof WBenchObject) {
                         WBenchObject wBenchObject = (WBenchObject) sceneObject;
                         final WBenchObject.ID objectId = wBenchObject.getObjectNameId();
-                        final String nameId = objectId.getNameId();
+                        final String nameId = objectId.nameId();
 
                         for (Map.Entry<String, Set<RowMapObjectData>> entry : categoryMap.entrySet()) {
                             if (nameId.startsWith(entry.getKey())) {
-                                entry.getValue().add(new RowMapObjectData(wBenchObject.getListID(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                                entry.getValue().add(new RowMapObjectData(wBenchObject.getListID(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                                 break;
                             }
                         }
@@ -364,8 +359,8 @@ public final class WBenchMapProjectManager {
                     if (sceneObject instanceof WBenchObject) {
                         WBenchObject wBenchObject = (WBenchObject) sceneObject;
                         final WBenchObject.ID objectId = wBenchObject.getObjectNameId();
-                        final String nameId = objectId.getNameId();
-                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getListID(), objectId.getNameId(), objectId.getObjectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                        final String nameId = objectId.nameId();
+                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getListID(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                     }
                 }
 
@@ -374,9 +369,7 @@ public final class WBenchMapProjectManager {
                 jsonFileManaging.setMatch(MapObjectsDataPack.class, mapObjectsDataPack.getSerializationRules());
                 mapObjectsDataPack.set(fogData, sunData, objectsData, skyData, shadowsData);
 
-                final String mapDataFile = this.getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_FILE;
-                this.getCurrentMapProject().setMapDataFile(mapDataFile);
-                jsonFileManaging.writeToFile(mapObjectsDataPack, new File(this.getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath(), mapDataFile), null);
+                jsonFileManaging.writeToFile(mapObjectsDataPack, this.getCurrentMapProject().getPathToDataMapFile().toFile(), null);
                 this.saveMapProjectFile(this.currentMapProject);
             } catch (Exception e) {
                 Log.get().exception(e);
@@ -399,7 +392,7 @@ public final class WBenchMapProjectManager {
         if (!path.toFile().exists()) {
             path.toFile().mkdirs();
         }
-        File scripts = new File(new JGemsPath(path, WBenchMapProjectManager.SCRIPTS_PATH).getFullPath());
+        File scripts = new File(new JGemsPath(path, WBenchMapProjectManager.SCRIPTS_PATH).fullPath());
         scripts.mkdirs();
     }
 
@@ -422,7 +415,7 @@ public final class WBenchMapProjectManager {
 
     public boolean openMapProject(JGemsPath path) {
         try {
-            File projectFolder = new File(path.getFullPath());
+            File projectFolder = new File(path.fullPath());
             if (!projectFolder.exists() || !projectFolder.isDirectory()) {
                 throw new JGemsIOException("Invalid files: " + path);
             }
@@ -469,8 +462,8 @@ public final class WBenchMapProjectManager {
     public WBenchMapProject readMainFile(File file, boolean preview) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
-            WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(file, new TypeToken<WBenchMapProject>(){}, null);
-            wBenchMapProject.setCurrentProjectPath(new JGemsPath(file.getPath()));
+            WBenchMapProject wBenchMapProject = jsonFileManaging.readFromFile(file, new TypeToken<>() {}, null);
+            wBenchMapProject.setAbsolutePath(new JGemsPath(file.toPath()).getAbsolutePathDirectory());
             if (!preview) {
                 this.currentMapProject = wBenchMapProject;
             }

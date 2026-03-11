@@ -9,12 +9,10 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.synchronizing.SyncManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -29,9 +27,9 @@ public class MeshCollisionData {
         List<IndexedMesh> indexedMeshList = new ArrayList<>();
         Pair<float[], int[]> pair = this.pickData(meshStructure, indexedMeshList);
 
-        this.animationAABBShapes = fabric.createShapedForAnimatedObject(meshStructure, pair.getFirst(), pair.getSecond(), indexedMeshList);
-        this.staticCollision = fabric.createStaticShape(meshStructure, pair.getFirst(), pair.getSecond(), indexedMeshList);
-        this.dynamicCollision = fabric.createDynamicShape(meshStructure, pair.getFirst(), pair.getSecond(), indexedMeshList);
+        this.animationAABBShapes = fabric.createShapedForAnimatedObject(meshStructure, pair.first(), pair.second(), indexedMeshList);
+        this.staticCollision = fabric.createStaticShape(meshStructure, pair.first(), pair.second(), indexedMeshList);
+        this.dynamicCollision = fabric.createDynamicShape(meshStructure, pair.first(), pair.second(), indexedMeshList);
     }
 
     /*

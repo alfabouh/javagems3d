@@ -7,25 +7,25 @@ import imgui.flag.ImGuiWindowFlags;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
 import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedTemplateM;
-import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvFogM;
-import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvShadowsM;
-import workbench.graphics.scene.ui.map.editor.scenes.resources.environment.InterfaceEnvSkyM;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvFogM;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvShadowsM;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvSkyM;
 
 public class ActionsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
     private final InterfaceActionsSelectedTemplateM interfaceActionsSelectedTemplateM;
     private final InterfaceActionsSelectedObjectM interfaceActionsSelectedObjectM;
-    private final InterfaceEnvFogM interfaceEnvFogM;
-    private final InterfaceEnvSkyM interfaceEnvSkyM;
-    private final InterfaceEnvShadowsM interfaceEnvShadowsM;
+    private final InterfaceActionsEnvFogM interfaceActionsEnvFogM;
+    private final InterfaceActionsEnvSkyM interfaceActionsEnvSkyM;
+    private final InterfaceActionsEnvShadowsM interfaceActionsEnvShadowsM;
 
     public ActionsInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.interfaceActionsSelectedObjectM = new InterfaceActionsSelectedObjectM(mapEditorInterface);
         this.interfaceActionsSelectedTemplateM = new InterfaceActionsSelectedTemplateM(mapEditorInterface.getScenePreview(), mapEditorInterface);
-        this.interfaceEnvFogM = new InterfaceEnvFogM(mapEditorInterface);
-        this.interfaceEnvSkyM = new InterfaceEnvSkyM(mapEditorInterface);
-        this.interfaceEnvShadowsM = new InterfaceEnvShadowsM(mapEditorInterface);
+        this.interfaceActionsEnvFogM = new InterfaceActionsEnvFogM(mapEditorInterface);
+        this.interfaceActionsEnvSkyM = new InterfaceActionsEnvSkyM(mapEditorInterface);
+        this.interfaceActionsEnvShadowsM = new InterfaceActionsEnvShadowsM(mapEditorInterface);
         this.clear();
     }
 
@@ -36,7 +36,7 @@ public class ActionsInterfaceComponentM {
     }
 
     public void resetEnvInterfaces() {
-        this.interfaceEnvSkyM.reset();
+        this.interfaceActionsEnvSkyM.reset();
     }
 
     public void resetObjectPreview() {
@@ -55,18 +55,18 @@ public class ActionsInterfaceComponentM {
                 ImGui.popStyleColor();
                 ImGui.indent();
                 if (ImGui.collapsingHeader("Fog")) {
-                    ImGui.beginChild("##FogContet", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
-                    this.interfaceEnvFogM.render();
+                    ImGui.beginChild("##FogContent", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    this.interfaceActionsEnvFogM.render();
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("SkyBox")) {
-                    ImGui.beginChild("##SkyContet", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
-                    this.interfaceEnvSkyM.render();
+                    ImGui.beginChild("##SkyContent", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    this.interfaceActionsEnvSkyM.render();
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("Shadows")) {
-                    ImGui.beginChild("##ShadowsContet", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
-                    this.interfaceEnvShadowsM.render();
+                    ImGui.beginChild("##ShadowsContent", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    this.interfaceActionsEnvShadowsM.render();
                     ImGui.endChild();
                 }
                 ImGui.unindent();
@@ -81,16 +81,16 @@ public class ActionsInterfaceComponentM {
         this.interfaceActionsSelectedObjectM.render();
     }
 
-    public InterfaceEnvFogM getInterfaceEnvFogM() {
-        return this.interfaceEnvFogM;
+    public InterfaceActionsEnvFogM getInterfaceEnvFogM() {
+        return this.interfaceActionsEnvFogM;
     }
 
-    public InterfaceEnvSkyM getInterfaceEnvSkyM() {
-        return this.interfaceEnvSkyM;
+    public InterfaceActionsEnvSkyM getInterfaceEnvSkyM() {
+        return this.interfaceActionsEnvSkyM;
     }
 
-    public InterfaceEnvShadowsM getInterfaceEnvShadowsM() {
-        return this.interfaceEnvShadowsM;
+    public InterfaceActionsEnvShadowsM getInterfaceEnvShadowsM() {
+        return this.interfaceActionsEnvShadowsM;
     }
 
     public InterfaceActionsSelectedTemplateM getInterfaceActionsSelectedTemplateM() {

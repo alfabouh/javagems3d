@@ -76,7 +76,7 @@ Then you need to initialize the engine itself in the main method of your program
 
 ```Java
 public class Main {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         JavaGemsLauncher.launch(args);
     }
 }
@@ -84,7 +84,7 @@ public class Main {
 The engine also involves the use of the **ToolBox** map editing program. You can initialize this program in a similar way instead of running the standard engine.
 ```Java
 public class Main {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         ToolBoxLauncher.launch(args);
     }
 }

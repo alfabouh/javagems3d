@@ -62,18 +62,13 @@ public class JGemsPhysics {
         return this.physicsProcessor;
     }
 
-    private static class NamedThreadFactory implements ThreadFactory {
-        private final String baseName;
-
-        public NamedThreadFactory(String baseName) {
-            this.baseName = baseName;
-        }
+    private record NamedThreadFactory(String baseName) implements ThreadFactory {
 
         @Override
-        public Thread newThread(@NotNull Runnable r) {
-            Thread t = new Thread(r);
-            t.setName(baseName);
-            return t;
+            public Thread newThread(@NotNull Runnable r) {
+                Thread t = new Thread(r);
+                t.setName(baseName);
+                return t;
+            }
         }
-    }
 }

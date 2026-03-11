@@ -40,19 +40,19 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
             if (ImGui.collapsingHeader(this.tab + ": " + worldObjectAsset.getID(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##prop_preview", ImGui.getColumnWidth(), 400, true);
                 final List<Pair<String, AxisConstraints>> constraintsPos = new ArrayList<>();
-                constraintsPos.add(new Pair<>(worldObjectAsset.getAxisConstraints().getPositionConstraints().name(), null));
+                constraintsPos.add(new Pair<>(worldObjectAsset.getAxisConstraints().positionConstraints().name(), null));
                 final List<Pair<String, AxisConstraints>> constraintsRot = new ArrayList<>();
-                constraintsRot.add(new Pair<>(worldObjectAsset.getAxisConstraints().getRotationConstraints().name(), null));
+                constraintsRot.add(new Pair<>(worldObjectAsset.getAxisConstraints().rotationConstraints().name(), null));
                 final List<Pair<String, AxisConstraints>> constraintsScale = new ArrayList<>();
-                constraintsScale.add(new Pair<>(worldObjectAsset.getAxisConstraints().getScalingConstraints().name(), null));
+                constraintsScale.add(new Pair<>(worldObjectAsset.getAxisConstraints().scalingConstraints().name(), null));
                 for (AxisConstraints axisConstraints : AxisConstraints.values()) {
                     constraintsPos.add(new Pair<>(axisConstraints.name(), axisConstraints));
                     constraintsRot.add(new Pair<>(axisConstraints.name(), axisConstraints));
                     constraintsScale.add(new Pair<>(axisConstraints.name(), axisConstraints));
                 }
-                String[] constraintsPosS = constraintsPos.stream().map(Pair::getFirst).collect(Collectors.toList()).toArray(new String[]{});
-                String[] constraintsRotS = constraintsRot.stream().map(Pair::getFirst).collect(Collectors.toList()).toArray(new String[]{});
-                String[] constraintsScaleS = constraintsScale.stream().map(Pair::getFirst).collect(Collectors.toList()).toArray(new String[]{});
+                String[] constraintsPosS = constraintsPos.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
+                String[] constraintsRotS = constraintsRot.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
+                String[] constraintsScaleS = constraintsScale.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
 
                 ImInt selectInt = new ImInt(0);
                 ImGui.indent();
@@ -61,7 +61,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 final GameResourceModelAsset extractModelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(worldObjectAsset.getModelAssetRelativePath());
                 this.gameResourceModelAssetsChooseCombo.render(
                         () -> extractModelAsset,
-                        (e) -> worldObjectAsset.setModelAssetRelativePath(e.getRelativePath()),
+                        (e) -> worldObjectAsset.setModelAssetRelativePath(e.relativePath()),
                         (e) -> worldObjectAsset.setModelAssetRelativePath(null));
                 ImGui.beginDisabled(extractModelAsset == null);
                 if (ImGui.button("View Model")) {
@@ -75,9 +75,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     if (selectInt.get() > 0) {
                         worldObjectAsset.setAxisConstraints(
                                 new TranslationConstraints(
-                                        constraintsPos.get(selectInt.get()).getSecond(),
-                                        worldObjectAsset.getAxisConstraints().getRotationConstraints(),
-                                        worldObjectAsset.getAxisConstraints().getScalingConstraints())
+                                        constraintsPos.get(selectInt.get()).second(),
+                                        worldObjectAsset.getAxisConstraints().rotationConstraints(),
+                                        worldObjectAsset.getAxisConstraints().scalingConstraints())
                         );
                     }
                 }
@@ -85,9 +85,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     if (selectInt.get() > 0) {
                         worldObjectAsset.setAxisConstraints(
                                 new TranslationConstraints(
-                                        worldObjectAsset.getAxisConstraints().getPositionConstraints(),
-                                        constraintsRot.get(selectInt.get()).getSecond(),
-                                        worldObjectAsset.getAxisConstraints().getScalingConstraints())
+                                        worldObjectAsset.getAxisConstraints().positionConstraints(),
+                                        constraintsRot.get(selectInt.get()).second(),
+                                        worldObjectAsset.getAxisConstraints().scalingConstraints())
                         );
                     }
                 }
@@ -95,9 +95,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     if (selectInt.get() > 0) {
                         worldObjectAsset.setAxisConstraints(
                                 new TranslationConstraints(
-                                        worldObjectAsset.getAxisConstraints().getPositionConstraints(),
-                                        worldObjectAsset.getAxisConstraints().getRotationConstraints(),
-                                        constraintsScale.get(selectInt.get()).getSecond())
+                                        worldObjectAsset.getAxisConstraints().positionConstraints(),
+                                        worldObjectAsset.getAxisConstraints().rotationConstraints(),
+                                        constraintsScale.get(selectInt.get()).second())
                         );
                     }
                 }
@@ -110,17 +110,17 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     ImGui.text("Tags");
                     final List<Pair<String, GameResourceObjectTagData>> allTagsAsset = new ArrayList<>();
                     AssetsChooseCombo.parseTreeS(WBench.get().getGameProjectManager().getGameResourcesManager().getTagAssetsFolder(), allTagsAsset);
-                    String[] listForTagCombo = allTagsAsset.stream().map(Pair::getFirst).collect(Collectors.toList()).toArray(new String[]{});
+                    String[] listForTagCombo = allTagsAsset.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
                     ImInt imInt = new ImInt(-1);
                     if (ImGui.combo("+ Tags", imInt, listForTagCombo)) {
-                        worldObjectAsset.getTagsContainer().copyTagsFrom(allTagsAsset.get(imInt.get()).getSecond().getTagContainer());
+                        worldObjectAsset.getTagsContainer().copyTagsFrom(allTagsAsset.get(imInt.get()).second().getTagContainer());
                     }
                     ImGui.text("Tags Included:");
-                    if (worldObjectAsset.getTagsContainer().getTags().isEmpty()) {
+                    if (worldObjectAsset.getTagsContainer().tags().isEmpty()) {
                         ImGui.text("<Empty>!");
                     } else {
                         ImGui.beginChild("##tags_inc_there", ImGui.getColumnWidth(), 150, true);
-                        Iterator<Tag<?>> tagIterator = worldObjectAsset.getTagsContainer().getTags().values().iterator();
+                        Iterator<Tag<?>> tagIterator = worldObjectAsset.getTagsContainer().tags().values().iterator();
                         while (tagIterator.hasNext()) {
                             Tag<?> tag = tagIterator.next();
                             ImGui.pushID("##view_tags_" + tag.getTagID().getId());

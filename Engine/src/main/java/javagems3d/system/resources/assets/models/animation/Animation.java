@@ -5,42 +5,15 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Animation {
-    private final String name;
-    private final double duration;
-    private final double fps;
-    private final List<AnimationFrame> frameList;
-
-    public Animation(String name, double duration, double fps, List<AnimationFrame> frameList) {
-        this.name = name;
-        this.duration = duration;
-        this.frameList = frameList;
-        this.fps = fps;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public double getFps() {
-        return this.fps;
-    }
-
-    public double getDuration() {
-        return this.duration;
-    }
+public record Animation(String name, double duration, double fps, List<AnimationFrame> frameList) {
 
     public void clear() {
-        this.getFrameList().forEach(AnimationFrame::clear);
-        this.getFrameList().clear();
-    }
-
-    public List<AnimationFrame> getFrameList() {
-        return this.frameList;
+        this.frameList().forEach(AnimationFrame::clear);
+        this.frameList().clear();
     }
 
     public int getFrameCount() {
-        return this.getFrameList().size();
+        return this.frameList().size();
     }
 
     public static final class Node {

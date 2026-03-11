@@ -5,7 +5,6 @@ import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.files.source.JGemsStringSource;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -50,7 +49,7 @@ public class GuiFont {
         for (char c : chars.toCharArray()) {
             CharInfo charInfo = new CharInfo(this.getWidth(), fontMetrics.charWidth(c));
             this.charMap.put(c, charInfo);
-            this.width += charInfo.getWidth();
+            this.width += charInfo.width();
             this.height = Math.max(this.getHeight(), fontMetrics.getHeight());
         }
         graphics2D.dispose();
@@ -103,21 +102,6 @@ public class GuiFont {
         this.getTexture().clear();
     }
 
-    public static class CharInfo {
-        private final int startX;
-        private final int width;
-
-        public CharInfo(int startX, int width) {
-            this.startX = startX;
-            this.width = width;
-        }
-
-        public int getStartX() {
-            return this.startX;
-        }
-
-        public int getWidth() {
-            return this.width;
-        }
+    public record CharInfo(int startX, int width) {
     }
 }

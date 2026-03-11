@@ -20,13 +20,13 @@ public class TextureSimple2DProgram implements ITexture2DProgram {
         this.size = size;
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
-        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.getTextureFormat(), size.x, size.y, 0, properties.getInternalFormat(), GL46.GL_FLOAT, pixels);
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAG_FILTER, properties.getFilteringMag());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MIN_FILTER, properties.getFilteringMin());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_COMPARE_MODE, properties.getCompareMode());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_COMPARE_FUNC, properties.getCompareFunc());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_WRAP_S, properties.getClampS());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_WRAP_T, properties.getClampT());
+        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.textureFormat(), size.x, size.y, 0, properties.internalFormat(), GL46.GL_FLOAT, pixels);
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAG_FILTER, properties.filteringMag());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MIN_FILTER, properties.filteringMin());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_COMPARE_MODE, properties.compareMode());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_COMPARE_FUNC, properties.compareFunc());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_WRAP_S, properties.clampS());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_WRAP_T, properties.clampT());
         this.unBindTexture();
     }
 

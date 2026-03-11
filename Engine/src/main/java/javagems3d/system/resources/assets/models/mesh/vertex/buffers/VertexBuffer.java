@@ -6,24 +6,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public final class VertexBuffer<T extends Number> {
-    private final List<T> values;
-    private final RenderAttributePointer renderAttributePointer;
-
+public record VertexBuffer<T extends Number>(RenderAttributePointer renderAttributePointer, List<T> values) {
     public VertexBuffer(@Nullable RenderAttributePointer renderAttributePointer, @NotNull List<T> values) {
         this.values = values;
         this.renderAttributePointer = renderAttributePointer;
     }
 
-    public RenderAttributePointer getRenderAttributePointer() {
-        return this.renderAttributePointer;
-    }
-
-    public List<T> getValues() {
-        return this.values;
-    }
-
     public int getLength() {
-        return this.getValues().size();
+        return this.values().size();
     }
 }

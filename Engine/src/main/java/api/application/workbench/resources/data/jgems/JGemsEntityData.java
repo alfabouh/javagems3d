@@ -4,15 +4,12 @@ import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class JGemsEntityData implements IJGemsObjectData {
-    private final JGemsPathSource pathToModel;
-    private final EntityRenderData entityRenderData;
-
+public record JGemsEntityData(JGemsPathSource pathToModel,
+                              EntityRenderData entityRenderData) implements IJGemsObjectData {
     public JGemsEntityData(@Nullable JGemsPathSource pathToModel, @NotNull EntityRenderData entityRenderData) {
         this.entityRenderData = entityRenderData;
         this.pathToModel = pathToModel;
@@ -30,16 +27,8 @@ public class JGemsEntityData implements IJGemsObjectData {
         this(null, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect);
     }
 
-    public JGemsPathSource getPathToModel() {
-        return this.pathToModel;
-    }
-
     @SuppressWarnings("all")
     public <T extends RenderProperties> T getRenderPropertiesUnsafeCast() {
-        return (T) this.getEntityRenderData().getObjectRenderAttributes().getProperties();
-    }
-
-    public EntityRenderData getEntityRenderData() {
-        return entityRenderData;
+        return (T) this.entityRenderData().getObjectRenderAttributes().getProperties();
     }
 }

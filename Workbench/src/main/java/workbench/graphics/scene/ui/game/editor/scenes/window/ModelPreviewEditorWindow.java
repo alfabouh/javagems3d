@@ -10,7 +10,6 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import org.jetbrains.annotations.NotNull;
@@ -80,10 +79,10 @@ public class ModelPreviewEditorWindow {
         shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
         shaderManager.performModel3DMatrix(new UniformString("view_matrix"), view);
         JGemsHelper.render().performAnimationsInfo(WBench.get().getResourceManager(), shaderManager, modelAsset);
-        for (MeshNode3D<RenderMesh> meshNode3D : modelAsset.getAsset().getMeshGroup().getAllNodes()) {
+        for (MeshNode3D<RenderMesh> meshNode3D : modelAsset.getAsset().meshGroup().getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
             ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
+            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.color()));
             if (diffuseMap != null) {
                 shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
                 shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));

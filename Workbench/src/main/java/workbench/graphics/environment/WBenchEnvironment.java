@@ -88,15 +88,8 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
         this.getFogScene().fixSnapshot(wBenchEnvironmentSnapshotData.fogManager);
     }
 
-    public static class WBenchEnvironmentSnapshotData implements ISnapshotCompatible.SnapshotData {
-        public final WBenchShadowScene.WBenchShadowSceneSnapshotData shadowScene;
-        public final WBenchSkyBox.WBenchSkyBoxSnapshotData skyBox;
-        public final WBenchFogScene.WBenchFogSceneSnapshotData fogManager;
-
-        public WBenchEnvironmentSnapshotData(WBenchShadowScene.WBenchShadowSceneSnapshotData shadowScene, WBenchSkyBox.WBenchSkyBoxSnapshotData skyBox, WBenchFogScene.WBenchFogSceneSnapshotData fogManager) {
-            this.shadowScene = shadowScene;
-            this.skyBox = skyBox;
-            this.fogManager = fogManager;
-        }
+    public record WBenchEnvironmentSnapshotData(WBenchShadowScene.WBenchShadowSceneSnapshotData shadowScene,
+                                                WBenchSkyBox.WBenchSkyBoxSnapshotData skyBox,
+                                                WBenchFogScene.WBenchFogSceneSnapshotData fogManager) implements SnapshotData {
     }
 }

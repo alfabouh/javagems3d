@@ -74,7 +74,7 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
                 continue;
             }
             sceneObject.updateAnimation();
-            ((IWorldTicked) sceneObject).onUpdate(this);
+            sceneObject.onUpdate(this);
         }
     }
 

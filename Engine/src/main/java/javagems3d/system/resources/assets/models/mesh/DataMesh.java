@@ -3,9 +3,7 @@ import javagems3d.system.resources.assets.models.animation.components.SkeletonDa
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,19 +60,19 @@ public class DataMesh implements IMesh {
 
     @Override
     public @NotNull List<Integer> getVertexIndexes() {
-        return this.getIndexesBuffer().getValues();
+        return this.getIndexesBuffer().values();
     }
 
     @Override
     public @NotNull List<Float> getVertexPositions() {
-        return this.getBufferById(this.positionsIndex()).getValues();
+        return this.getBufferById(this.positionsIndex()).values();
     }
 
     @Override
     public void clearData() {
         this.setSkeletonData(null);
-        this.getIndexesBuffer().getValues().clear();
-        this.getBufferMap().values().forEach(e -> e.getValues().clear());
+        this.getIndexesBuffer().values().clear();
+        this.getBufferMap().values().forEach(e -> e.values().clear());
         this.getBufferMap().clear();
     }
 

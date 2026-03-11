@@ -129,35 +129,35 @@ public class UIText extends UIElement {
                 vaPositions.put(startX);
                 vaPositions.put(0.0f);
                 vaPositions.put(z);
-                vaTextureCoordinates.put((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
+                vaTextureCoordinates.put((float) charInfo.startX() / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(0.0f);
                 renderMesh.putVertexIndex(i * 4);
 
                 vaPositions.put(startX);
                 vaPositions.put(this.getHeight());
                 vaPositions.put(z);
-                vaTextureCoordinates.put((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
+                vaTextureCoordinates.put((float) charInfo.startX() / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(1.0f);
                 renderMesh.putVertexIndex(i * 4 + 1);
 
-                vaPositions.put(startX + charInfo.getWidth());
+                vaPositions.put(startX + charInfo.width());
                 vaPositions.put(this.getHeight());
                 vaPositions.put(z);
-                vaTextureCoordinates.put((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
+                vaTextureCoordinates.put((float) (charInfo.startX() + charInfo.width()) / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(1.0f);
                 renderMesh.putVertexIndex(i * 4 + 2);
 
-                vaPositions.put(startX + charInfo.getWidth());
+                vaPositions.put(startX + charInfo.width());
                 vaPositions.put(0.0f);
                 vaPositions.put(z);
-                vaTextureCoordinates.put((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
+                vaTextureCoordinates.put((float) (charInfo.startX() + charInfo.width()) / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(0.0f);
                 renderMesh.putVertexIndex(i * 4 + 3);
 
                 renderMesh.putVertexIndex(i * 4);
                 renderMesh.putVertexIndex(i * 4 + 2);
 
-                startX += charInfo.getWidth();
+                startX += charInfo.width();
             }
             this.width = startX;
 

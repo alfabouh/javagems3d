@@ -62,36 +62,13 @@ public abstract class EventBus {
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    public static final class MapLoading implements IEvent {
-        public final PhysicsWorld physicsWorld;
-        public final SceneWorld sceneWorld;
-        public final Run run;
-
-        public MapLoading(Run run, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-            this.physicsWorld = physicsWorld;
-            this.sceneWorld = sceneWorld;
-            this.run = run;
-        }
+    public record MapLoading(Run run, PhysicsWorld physicsWorld, SceneWorld sceneWorld) implements IEvent {
     }
 
-    public static final class SceneWorldState implements IEvent {
-        public final SceneWorld sceneWorld;
-        public final State state;
-
-        public SceneWorldState(State state, SceneWorld sceneWorld) {
-            this.state = state;
-            this.sceneWorld = sceneWorld;
-        }
+    public record SceneWorldState(State state, SceneWorld sceneWorld) implements IEvent {
     }
 
-    public static final class PhysicsWorldState implements IEvent {
-        public final PhysicsWorld physicsWorld;
-        public final State state;
-
-        public PhysicsWorldState(State state, PhysicsWorld physicsWorld) {
-            this.state = state;
-            this.physicsWorld = physicsWorld;
-        }
+    public record PhysicsWorldState(State state, PhysicsWorld physicsWorld) implements IEvent {
     }
 
     public static final class SceneWorldUpdate extends Cancellable implements IEvent {
@@ -114,16 +91,7 @@ public abstract class EventBus {
         }
     }
 
-    public static final class WorldObjectState implements IEvent {
-        public final IWorldObject worldObject;
-        public final Run run;
-        public final ObjectState state;
-
-        public WorldObjectState(Run run, ObjectState state, IWorldObject worldObject) {
-            this.run = run;
-            this.state = state;
-            this.worldObject = worldObject;
-        }
+    public record WorldObjectState(Run run, ObjectState state, IWorldObject worldObject) implements IEvent {
     }
 
     public static final class WorldObjectUpdate extends Cancellable implements IEvent {
@@ -180,11 +148,6 @@ public abstract class EventBus {
         }
     }
 
-    public static class ReloadResourcesEvent implements IEvent {
-        public final ResourceManager resourceManager;
-
-        public ReloadResourcesEvent(ResourceManager resourceManager) {
-            this.resourceManager = resourceManager;
-        }
+    public record ReloadResourcesEvent(ResourceManager resourceManager) implements IEvent {
     }
 }

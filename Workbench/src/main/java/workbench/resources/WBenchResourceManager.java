@@ -132,21 +132,11 @@ public final class WBenchResourceManager extends ResourceManager {
         return this.getGameResources(ResourceManager.LOCAL2);
     }
 
-    private static class Factory implements ResourceManager.Factory {
-        private final String id;
-
-        public Factory(String id) {
-            this.id = id;
-        }
+    private record Factory(String id) implements ResourceManager.Factory {
 
         @Override
-        public SystemResources createObject(String id) {
-            return new WBenchResources(new ResourceCache(id));
+            public SystemResources createObject(String id) {
+                return new WBenchResources(new ResourceCache(id));
+            }
         }
-
-        @Override
-        public String getId() {
-            return this.id;
-        }
-    }
 }

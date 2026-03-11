@@ -11,7 +11,6 @@ import api.events.EventLauncher;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
-import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -58,17 +57,16 @@ public class DynamicsSystem {
             this.getPhysicsSpace().contactTest(physicsCollisionObject, event -> {
                 Object obA = event.getObjectA().getUserObject();
                 Object obB = event.getObjectB().getUserObject();
-                if (obA instanceof IHasCollisionTrigger) {
-                    IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obA;
+                if (obA instanceof IHasCollisionTrigger collideTrigger) {
                     triggerPairs.add(new Pair<>(collideTrigger, obB));
                 }
             });
         }
         for (Pair<IHasCollisionTrigger, Object> objectPair : triggerPairs) {
-            ITriggerAction triggerAction = objectPair.getFirst().onColliding();
+            ITriggerAction triggerAction = objectPair.first().onColliding();
             if (triggerAction != null) {
-                if (!EventLauncher.pushEvent(new EventBus.CollisionTriggered(objectPair.getFirst(), triggerAction)).isCancelled()) {
-                    triggerAction.action(objectPair.getSecond());
+                if (!EventLauncher.pushEvent(new EventBus.CollisionTriggered(objectPair.first(), triggerAction)).isCancelled()) {
+                    triggerAction.action(objectPair.second());
                 }
             }
         }

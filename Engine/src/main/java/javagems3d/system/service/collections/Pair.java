@@ -1,29 +1,13 @@
 package javagems3d.system.service.collections;
 
-public class Pair<K, V> {
-
-    private final K first;
-    private final V second;
-
-    public Pair(K first, V second) {
-        this.first = first;
-        this.second = second;
-    }
+public record Pair<K, V>(K first, V second) {
 
     @SuppressWarnings("all")
     @SafeVarargs
-    public static <K, V> Pair<K, V> [] get(Pair<K, V>... pairs) {
-        Pair[] kvPair =  new Pair[pairs.length];
+    public static <K, V> Pair<K, V>[] get(Pair<K, V>... pairs) {
+        Pair[] kvPair = new Pair[pairs.length];
         System.arraycopy(pairs, 0, kvPair, 0, kvPair.length);
         return kvPair;
-    }
-
-    public K getFirst() {
-        return this.first;
-    }
-
-    public V getSecond() {
-        return this.second;
     }
 
     @Override

@@ -4,12 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.system.service.files.json.JSONGraphDeserializer;
-import javagems3d.system.service.files.JGemsPath;
 import logger.managers.LoggingManager;
 
 import java.io.*;
@@ -82,7 +80,7 @@ public class Graph implements Serializable {
         List<GraphEdge> edges = this.getGraph().get(vertex1);
         if (edges != null) {
             for (GraphEdge edge1 : edges) {
-                if (edge1.getTarget().equals(vertex2)) {
+                if (edge1.target().equals(vertex2)) {
                     return;
                 }
             }

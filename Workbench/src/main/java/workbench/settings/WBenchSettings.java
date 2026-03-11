@@ -27,12 +27,12 @@ public class WBenchSettings implements Serializable {
     @SuppressWarnings("all")
     public static void save(WBenchSettings wBenchSettings, JGemsPath path) throws JGemsIOException {
         JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
-        jsonFileManaging.writeToFile(wBenchSettings, new File(path.getFullPath(), WBenchSettings.extension), null);
+        jsonFileManaging.writeToFile(wBenchSettings, new File(path.fullPath(), WBenchSettings.extension), null);
     }
 
     @SuppressWarnings("all")
     public static WBenchSettings load(JGemsPath path) throws JGemsIOException {
-        File file = new File(path.getFullPath(), WBenchSettings.extension);
+        File file = new File(path.fullPath(), WBenchSettings.extension);
         try {
             if (!file.exists()) {
                 file.createNewFile();

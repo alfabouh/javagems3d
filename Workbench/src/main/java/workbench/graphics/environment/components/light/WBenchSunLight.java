@@ -23,19 +23,7 @@ public class WBenchSunLight extends SunLight implements ISnapshotCompatible<WBen
         this.setOffset(wBenchSunLightSnapshotData.offset);
     }
 
-    public static class WBenchSunLightSnapshotData implements ISnapshotCompatible.SnapshotData {
-        public final float sunBrightness;
-        public final Vector3f offset;
-        public final Vector3f lightColor;
-        public final Vector3f lightPos;
-        public final boolean isActive;
-
-        public WBenchSunLightSnapshotData(float sunBrightness, Vector3f offset, Vector3f lightColor, Vector3f lightPos, boolean isActive) {
-            this.sunBrightness = sunBrightness;
-            this.offset = offset;
-            this.lightColor = lightColor;
-            this.lightPos = lightPos;
-            this.isActive = isActive;
-        }
+    public record WBenchSunLightSnapshotData(float sunBrightness, Vector3f offset, Vector3f lightColor,
+                                             Vector3f lightPos, boolean isActive) implements SnapshotData {
     }
 }

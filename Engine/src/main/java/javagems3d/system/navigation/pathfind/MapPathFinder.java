@@ -39,13 +39,13 @@ public class MapPathFinder {
             closedList.add(current);
 
             for (GraphEdge edge : this.graph.getNeighbors(current)) {
-                GraphVertex neighbor = edge.getTarget();
+                GraphVertex neighbor = edge.target();
 
                 if (closedList.contains(neighbor)) {
                     continue;
                 }
 
-                float tentativeG = current.getG() + edge.getWeight();
+                float tentativeG = current.getG() + edge.weight();
 
                 if (!openList.contains(neighbor) || tentativeG < neighbor.getG()) {
                     neighbor.setParent(current);

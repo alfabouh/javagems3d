@@ -11,7 +11,6 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
-import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.settings.objects.SettingFloatBar;
 import javagems3d.system.settings.objects.SettingSlot;
@@ -52,7 +51,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         int startX = 0;
         for (final char aChar : chars) {
             GuiFont.CharInfo charInfo = fontTexture.getCharInfo(aChar);
-            startX += charInfo.getWidth();
+            startX += charInfo.width();
         }
         return startX;
     }

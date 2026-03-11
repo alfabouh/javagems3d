@@ -68,14 +68,14 @@ public final class JGemsUtils {
         if (list == null || list.isEmpty()) {
             return new int[] {};
         }
-        return list.stream().mapToInt( v -> (Integer) v).toArray();
+        return list.stream().mapToInt( v -> v).toArray();
     }
 
     public static double[] convertDoublesArray(List<Double> list) {
         if (list == null || list.isEmpty()) {
             return new double[] {};
         }
-        return list.stream().mapToDouble( v -> (Double) v).toArray();
+        return list.stream().mapToDouble( v -> v).toArray();
     }
 
     public static float[] convertFloatsArray(List<Float> list) {

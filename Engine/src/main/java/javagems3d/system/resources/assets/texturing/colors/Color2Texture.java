@@ -1,17 +1,10 @@
 package javagems3d.system.resources.assets.texturing.colors;
 
-import javagems3d.system.resources.assets.texturing.ISample;
 import org.joml.Vector2f;
 
-public final class Color2Texture implements ISampleColor2 {
-    private final Vector2f color;
-
+public record Color2Texture(Vector2f color) implements ISampleColor2 {
     public Color2Texture(float r, float g) {
-        this.color = new Vector2f(r, g);
-    }
-
-    public Color2Texture(Vector2f color) {
-        this.color = color;
+        this(new Vector2f(r, g));
     }
 
     public void setColor(Vector2f color) {
@@ -19,7 +12,7 @@ public final class Color2Texture implements ISampleColor2 {
     }
 
     @Override
-    public Vector2f getColor() {
+    public Vector2f color() {
         return new Vector2f(this.color);
     }
 }

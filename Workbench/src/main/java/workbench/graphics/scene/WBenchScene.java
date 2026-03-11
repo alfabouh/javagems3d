@@ -49,7 +49,7 @@ public class WBenchScene implements IScene {
         ((Window) this.getWindow()).setFocus(true);
 
         if (this.getCamera() != null) {
-            this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
+            this.getCamera().updateCamera(frameTicking.frameDeltaTime());
             JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
         }
     }

@@ -25,8 +25,7 @@ public final class WorldObjectsContainer {
 
     public void onUpdate() {
         for (IWorldTicked worldTicked : this.getWorldTickedObjects()) {
-            if (worldTicked instanceof WorldItem) {
-                WorldItem worldItem1 = (WorldItem) worldTicked;
+            if (worldTicked instanceof WorldItem worldItem1) {
                 if (worldItem1 instanceof InventoryOwner) {
                     ((InventoryOwner) worldItem1).getInventory().updateInventory(world);
                 }

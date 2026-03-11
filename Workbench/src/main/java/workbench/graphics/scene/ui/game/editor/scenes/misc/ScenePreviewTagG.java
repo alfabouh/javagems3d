@@ -73,7 +73,7 @@ public class ScenePreviewTagG {
     public void render() {
         ObjectTagPreview tagPreview = this.resourcesInterfaceComponentG.getTagResourceTreeDrawer().getPreviewWrapperObject();
         if (tagPreview != null) {
-            if (ImGui.collapsingHeader("Tags Container: " + tagPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Tags Container: " + tagPreview.getAsset().name(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 final TagsContainer tagsContainer = tagPreview.getAsset().getTagContainer();
 
                 ImGui.indent();
@@ -123,7 +123,7 @@ public class ScenePreviewTagG {
 
                     ImGui.spacing();
                     {
-                        ImGui.beginDisabled(this.uniqueID.isEmpty() || tagsContainer.getTags().containsKey(new TagID(this.uniqueID.get())) || tagItemClassResolver == null);
+                        ImGui.beginDisabled(this.uniqueID.isEmpty() || tagsContainer.tags().containsKey(new TagID(this.uniqueID.get())) || tagItemClassResolver == null);
                         if (ImGui.button("+ Create")) {
                             tagsContainer.addTag(new Tag<>(new TagID(this.uniqueID.get(), this.description.get(), this.tip.get()), Objects.requireNonNull(tagItemClassResolver).create()));
                             this.reset();
@@ -142,10 +142,10 @@ public class ScenePreviewTagG {
                 if (ImGui.treeNodeEx("Tags inside:", ImGuiTreeNodeFlags.DefaultOpen)) {
                     ImGui.popStyleColor();
                     ImGui.beginChild("##tags_inside_child", ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.5f, true);
-                    if (tagsContainer.getTags().isEmpty()) {
+                    if (tagsContainer.tags().isEmpty()) {
                         ImGui.text("<Empty!>");
                     } else {
-                        Iterator<Map.Entry<TagID, Tag<? extends TagItem>>> iterator = tagsContainer.getTags().entrySet().iterator();
+                        Iterator<Map.Entry<TagID, Tag<? extends TagItem>>> iterator = tagsContainer.tags().entrySet().iterator();
                         while (iterator.hasNext()) {
                             Map.Entry<TagID, Tag<? extends TagItem>> tagItem = iterator.next();
                             ImGui.beginChild("##tagPreview_" + tagItem.getKey().getId(), ImGui.getColumnWidth(), 228, true, ImGuiWindowFlags.HorizontalScrollbar);

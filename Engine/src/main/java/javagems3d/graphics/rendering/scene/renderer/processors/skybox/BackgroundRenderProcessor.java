@@ -82,7 +82,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
             final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
-            JGemsHelper.render().performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.BACKGROUND, this.getOpenGLRenderer());
@@ -117,8 +117,8 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     protected void renderBackground(FrameTicking frameTicking) {
         Set<? extends SceneProp> toRender = this.getSkyBox().getBackground().getSkySceneObjectsFiltered();
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(toRender);
-        List<SceneObject> directRenderObjects = groups.getFirst();
-        List<SceneObject> indirectRenderObjects = groups.getSecond();
+        List<SceneObject> directRenderObjects = groups.first();
+        List<SceneObject> indirectRenderObjects = groups.second();
         final Vector3f cameraPos = this.getWorld().getCamera().getCamPosition();
 
         this.getBackground().bindFBO();

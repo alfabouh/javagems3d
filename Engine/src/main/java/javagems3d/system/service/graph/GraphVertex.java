@@ -72,10 +72,9 @@ public class GraphVertex implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof GraphVertex)) {
+        if (!(o instanceof GraphVertex vertex)) {
             return false;
         }
-        GraphVertex vertex = (GraphVertex) o;
         return vertex.toString().equals(this.toString());
     }
 

@@ -41,10 +41,9 @@ public final class TagID {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TagID)) {
+        if (!(o instanceof TagID tagID)) {
             return false;
         }
-        TagID tagID = (TagID) o;
         return Objects.equals(this.id, tagID.id);
     }
 

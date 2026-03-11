@@ -92,7 +92,7 @@ public class InterfaceActionsSelectedTemplateM {
         for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
             ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
+            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.color()));
             if (diffuseMap != null) {
                 shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
                 shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
@@ -110,7 +110,7 @@ public class InterfaceActionsSelectedTemplateM {
 
     public void render() {
         WBenchObjectTemplate selected = this.mapEditorInterface.getCurrentSelectedTemplate();
-        if (selected != null && ImGui.collapsingHeader("Resource: " + selected.getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (selected != null && ImGui.collapsingHeader("Resource: " + selected.name(), ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("##insideResourceTmpPreview", ImGui.getColumnWidth(), 480, true, ImGuiWindowFlags.HorizontalScrollbar);
             {
                 if (ImGui.beginPopup("GenAtPosition")) {
@@ -145,7 +145,7 @@ public class InterfaceActionsSelectedTemplateM {
             {
                 int i = 0;
                 final StringBuilder tagsStringBuilder = new StringBuilder();
-                Set<TagID> tagIDSet = selected.getTagsContainer().getTags().keySet();
+                Set<TagID> tagIDSet = selected.getTagsContainer().tags().keySet();
                 for (TagID tag : tagIDSet) {
                     tagsStringBuilder.append(tag.getId());
                     if (i++ != tagIDSet.size() - 1) {
@@ -164,9 +164,9 @@ public class InterfaceActionsSelectedTemplateM {
                     ImGui.textWrapped("Model: " + selected.getModelDef());
                 }
                 ImGui.textWrapped("Tags: (" + tagsStringBuilder + ")");
-                ImGui.textWrapped("Translation-Position: " + selected.getTranslationConstraints().getPositionConstraints());
-                ImGui.textWrapped("Translation-Rotation: " + selected.getTranslationConstraints().getRotationConstraints());
-                ImGui.textWrapped("Translation-Scaling: " + selected.getTranslationConstraints().getScalingConstraints());
+                ImGui.textWrapped("Translation-Position: " + selected.getTranslationConstraints().positionConstraints());
+                ImGui.textWrapped("Translation-Rotation: " + selected.getTranslationConstraints().rotationConstraints());
+                ImGui.textWrapped("Translation-Scaling: " + selected.getTranslationConstraints().scalingConstraints());
                 ImGui.unindent();
                 ImGui.spacing();
             }

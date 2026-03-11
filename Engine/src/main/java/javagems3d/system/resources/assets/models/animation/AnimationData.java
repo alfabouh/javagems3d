@@ -18,7 +18,7 @@ public class AnimationData {
 
     public void nextFrame() {
         int nextFrame = this.getCurrentFrameId() + 1;
-        if (nextFrame > this.getCurrentAnimation().getFrameList().size() - 1) {
+        if (nextFrame > this.getCurrentAnimation().frameList().size() - 1) {
             this.setFrame(0);
         } else {
             this.setFrame(nextFrame);
@@ -31,7 +31,7 @@ public class AnimationData {
     }
 
     public double getFps() {
-        return this.getCurrentAnimation().getFps();
+        return this.getCurrentAnimation().fps();
     }
 
     public float getAnimationFrameDelta() {
@@ -43,11 +43,11 @@ public class AnimationData {
     }
 
     public AnimationFrame getCurrentAnimationFrame() {
-        return this.getCurrentAnimation().getFrameList().get(this.getCurrentFrameId());
+        return this.getCurrentAnimation().frameList().get(this.getCurrentFrameId());
     }
 
     public AnimationFrame getPreviousAnimationFrame() {
-        return this.getCurrentAnimation().getFrameList().get(this.getPreviousFrameId());
+        return this.getCurrentAnimation().frameList().get(this.getPreviousFrameId());
     }
 
     public int getPreviousFrameId() {

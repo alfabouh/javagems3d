@@ -60,6 +60,6 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         int crossSize = 32;
-        ui.imageUI((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
+        ui.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
     }
 }

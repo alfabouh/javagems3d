@@ -27,7 +27,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     private boolean forceConstraints;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
-        super(objectId.getNameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
+        super(objectId.nameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
         this.id = -1;
         this.objectId = objectId;
         this.tagsContainer = tagsContainer.copy();
@@ -44,13 +44,13 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
             return;
         }
         if (this.isForceConstraints()) {
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().positionConstraints().getFlag(), AxisConstraints.AXIS_X)) {
                 newPos.mul(0.0f, 1.0f, 1.0f);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().positionConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
                 newPos.mul(1.0f, 0.0f, 1.0f);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getPositionConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().positionConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
                 newPos.mul(1.0f, 1.0f, 0.0f);
             }
         }
@@ -63,13 +63,13 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
             return;
         }
         if (this.isForceConstraints()) {
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().rotationConstraints().getFlag(), AxisConstraints.AXIS_X)) {
                 newRot.mul(0.0f, 1.0f, 1.0f);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().rotationConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
                 newRot.mul(1.0f, 0.0f, 1.0f);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getRotationConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().rotationConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
                 newRot.mul(1.0f, 1.0f, 0.0f);
             }
         }
@@ -88,13 +88,13 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
             return;
         }
         if (this.isForceConstraints()) {
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_X)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().scalingConstraints().getFlag(), AxisConstraints.AXIS_X)) {
                 newScale.mul(1.0f, this.getScaling().y, this.getScaling().z);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().scalingConstraints().getFlag(), AxisConstraints.AXIS_Y)) {
                 newScale.mul(this.getScaling().x, 1.0f, this.getScaling().z);
             }
-            if (!AxisConstraints.CHECK(this.getTranslationConstraints().getScalingConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
+            if (!AxisConstraints.CHECK(this.getTranslationConstraints().scalingConstraints().getFlag(), AxisConstraints.AXIS_Z)) {
                 newScale.mul(this.getScaling().x, this.getScaling().y, 1.0f);
             }
         }
@@ -142,7 +142,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     }
 
     public boolean hasTranslationConstraints() {
-        return this.getTranslationConstraints().getPositionConstraints().getFlag() + this.getTranslationConstraints().getRotationConstraints().getFlag() + this.getTranslationConstraints().getScalingConstraints().getFlag() > 0;
+        return this.getTranslationConstraints().positionConstraints().getFlag() + this.getTranslationConstraints().rotationConstraints().getFlag() + this.getTranslationConstraints().scalingConstraints().getFlag() > 0;
     }
 
     public TranslationConstraints getTranslationConstraints() {
@@ -193,32 +193,21 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         return this.id;
     }
 
-    public static final class ID {
-        private final String nameId;
-        private final String objectPath;
+    public record ID(String nameId, String objectPath) {
+            public ID(@NotNull String nameId) {
+                this(nameId, null);
+            }
 
-        public ID(@NotNull String nameId) {
-            this(nameId, null);
-        }
+            public ID(@NotNull String nameId, @Nullable String objectPath) {
+                this.nameId = nameId;
+                this.objectPath = objectPath == null ? "" : objectPath;
+            }
 
-        public ID(@NotNull String nameId, @Nullable String objectPath) {
-            this.nameId = nameId;
-            this.objectPath = objectPath == null ? "" : objectPath;
+            @Override
+            public String toString() {
+                return this.objectPath() + "/" + this.nameId();
+            }
         }
-
-        public String getNameId() {
-            return this.nameId;
-        }
-
-        public String getObjectPath() {
-            return this.objectPath;
-        }
-
-        @Override
-        public String toString() {
-            return this.getObjectPath() + "/" + this.getNameId();
-        }
-    }
 
     public abstract static class WBenchObjectSnapshotData implements ISnapshotCompatible.SnapshotData {
         public final TagsContainer tagsContainer;

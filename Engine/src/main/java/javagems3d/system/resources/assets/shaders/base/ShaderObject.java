@@ -174,7 +174,7 @@ public class ShaderObject {
                 throw new JGemsNullException(this + " > Couldn't find shader library(" + this.getShaderType() + ") with key: " + includePath);
             }
 
-            processedShader.append(shaderLibrary.getLibraryText()).append("\n");
+            processedShader.append(shaderLibrary.libraryText()).append("\n");
             lastEnd = matcher.end();
         }
 

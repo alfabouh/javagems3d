@@ -31,7 +31,7 @@ public final class JGemsUIRenderNode implements IUIRenderNode {
         GL46.glDisable(GL46.GL_DEPTH_TEST);
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-        this.ui.renderFrame(frameTicking.getFrameDeltaTime());
+        this.ui.renderFrame(frameTicking.frameDeltaTime());
         GL46.glDisable(GL46.GL_BLEND);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
 

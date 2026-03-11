@@ -349,7 +349,7 @@ public class JGemsScreen implements IScreen {
             int strokes = 0;
             for (Pair<Integer, String> s : this.lines) {
                 String textPre = strokes < 3 ? "[*] " : "[" + ++this.counter + "] ";
-                UIText textUI = new UIText(textPre + s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
+                UIText textUI = new UIText(textPre + s.second(), this.guiFont, s.first(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
                 textUI.build();
                 textUI.render(0.0f);
                 textUI.clear();

@@ -31,20 +31,9 @@ public class WBenchSkyBox extends SkyBox implements ISnapshotCompatible<WBenchSk
         ((WBenchSunLight) this.sunLight).fixSnapshot(wBenchSkyBoxSnapshotData.sunLightSnapshotData);
     }
 
-    public static class WBenchSkyBoxSnapshotData implements ISnapshotCompatible.SnapshotData {
-        public final ICubeMapProgram sky2DTexture;
-        public final boolean isSkyCoveredByFog;
-        public final boolean drawSunOnSkyBox;
-
-        public final WBenchSkyBackground.WBenchSkyBackgroundSnapshotData wBenchSkyBackgroundSnapshotData;
-        public final WBenchSunLight.WBenchSunLightSnapshotData sunLightSnapshotData;
-
-        public WBenchSkyBoxSnapshotData(ICubeMapProgram sky2DTexture, boolean isSkyCoveredByFog, boolean drawSunOnSkyBox, WBenchSkyBackground.WBenchSkyBackgroundSnapshotData wBenchSkyBackgroundSnapshotData, WBenchSunLight.WBenchSunLightSnapshotData sunLightSnapshotData) {
-            this.sky2DTexture = sky2DTexture;
-            this.isSkyCoveredByFog = isSkyCoveredByFog;
-            this.drawSunOnSkyBox = drawSunOnSkyBox;
-            this.wBenchSkyBackgroundSnapshotData = wBenchSkyBackgroundSnapshotData;
-            this.sunLightSnapshotData = sunLightSnapshotData;
-        }
+    public record WBenchSkyBoxSnapshotData(ICubeMapProgram sky2DTexture, boolean isSkyCoveredByFog,
+                                           boolean drawSunOnSkyBox,
+                                           WBenchSkyBackground.WBenchSkyBackgroundSnapshotData wBenchSkyBackgroundSnapshotData,
+                                           WBenchSunLight.WBenchSunLightSnapshotData sunLightSnapshotData) implements SnapshotData {
     }
 }

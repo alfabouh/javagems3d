@@ -45,27 +45,27 @@ public class InterfaceActionsSelectedObjectM {
     }
 
     private int chooseDefaultGuizmoOperation(WBenchObject<?> currentSelectedObject) {
-        int f1 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
+        int f1 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().positionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
         if (f1 != 0) {
             return f1;
         }
-        int f2 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
+        int f2 = this.getOperationMask(currentSelectedObject.getTranslationConstraints().rotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
         if (f2 != 0) {
             return f2;
         }
-        return this.getOperationMask(currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+        return this.getOperationMask(currentSelectedObject.getTranslationConstraints().scalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
     }
 
     private int chooseGuizmoOperation(TranslationConstraints translationConstraints, boolean translation, boolean rotation, boolean scaling) {
         int i = 0;
         if (translation) {
-            i |= this.getOperationMask(translationConstraints.getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
+            i |= this.getOperationMask(translationConstraints.positionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
         }
         if (rotation) {
-            i |= this.getOperationMask(translationConstraints.getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
+            i |= this.getOperationMask(translationConstraints.rotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
         }
         if (scaling) {
-            i |= this.getOperationMask(translationConstraints.getRotationConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+            i |= this.getOperationMask(translationConstraints.rotationConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
         }
         return i;
     }
@@ -338,7 +338,7 @@ public class InterfaceActionsSelectedObjectM {
     }
 
     private void showTags(@NotNull WBenchObject<?> selectedObject) {
-        Set<Pair<Integer, SceneObject>> wolrdObjectsToViewInList = new TreeSet<>(Comparator.comparingInt(Pair::getFirst));
+        Set<Pair<Integer, SceneObject>> wolrdObjectsToViewInList = new TreeSet<>(Comparator.comparingInt(Pair::first));
         for (Map.Entry<Integer, WBenchObject<?>> entry : this.mapEditorInterface.getOpenGLRenderer().getWorld().getIdMap().entrySet()) {
             wolrdObjectsToViewInList.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
@@ -367,7 +367,7 @@ public class InterfaceActionsSelectedObjectM {
     }
 
     private void forSelectedObject(WBenchObject<?> selectedObject, boolean manyObjects) {
-        if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().getNameId(), manyObjects ? ImGuiTreeNodeFlags.DefaultOpen : 0)) {
+        if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().nameId(), manyObjects ? ImGuiTreeNodeFlags.DefaultOpen : 0)) {
             ImGui.pushID(this.getClass().getSimpleName() + "_" + selectedObject.getListID());
             ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), 400, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
@@ -376,9 +376,9 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.indent();
             if (manyObjects) {
                 if (selectedObject.hasTranslationConstraints()) {
-                    int objectFlagTranslate = selectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
-                    int objectFlagRotate = selectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
-                    int objectFlagScaling = selectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
+                    int objectFlagTranslate = selectedObject.getTranslationConstraints().positionConstraints().getFlag();
+                    int objectFlagRotate = selectedObject.getTranslationConstraints().rotationConstraints().getFlag();
+                    int objectFlagScaling = selectedObject.getTranslationConstraints().scalingConstraints().getFlag();
 
                     if (objectFlagTranslate != 0) {
                         if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
@@ -430,17 +430,17 @@ public class InterfaceActionsSelectedObjectM {
         } else {
             if (ImGui.collapsingHeader("Multiple Objects (" + this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().size() + ")", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.indent();
-                final boolean anyTranslateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_X.getFlag());
-                final boolean anyTranslateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_Y.getFlag());
-                final boolean anyTranslateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getPositionConstraints(), AxisConstraints.AXIS_Z.getFlag());
+                final boolean anyTranslateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().positionConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyTranslateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().positionConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyTranslateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().positionConstraints(), AxisConstraints.AXIS_Z.getFlag());
 
-                final boolean anyRotateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_X.getFlag());
-                final boolean anyRotateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_Y.getFlag());
-                final boolean anyRotateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getRotationConstraints(), AxisConstraints.AXIS_Z.getFlag());
+                final boolean anyRotateX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().rotationConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyRotateY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().rotationConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyRotateZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().rotationConstraints(), AxisConstraints.AXIS_Z.getFlag());
 
-                final boolean anyScaleX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_X.getFlag());
-                final boolean anyScaleY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_Y.getFlag());
-                final boolean anyScaleZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().getScalingConstraints(), AxisConstraints.AXIS_Z.getFlag());
+                final boolean anyScaleX = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().scalingConstraints(), AxisConstraints.AXIS_X.getFlag());
+                final boolean anyScaleY = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().scalingConstraints(), AxisConstraints.AXIS_Y.getFlag());
+                final boolean anyScaleZ = this.anyMatch(this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), (e) -> e.getTranslationConstraints().scalingConstraints(), AxisConstraints.AXIS_Z.getFlag());
 
                 final TranslationConstraints translationConstraints = new TranslationConstraints(
                         AxisConstraints.GET(anyTranslateX, anyTranslateY, anyTranslateZ),

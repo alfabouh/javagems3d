@@ -12,8 +12,7 @@ public class Water extends Liquid {
 
     @Override
     protected void onEntityEnteredLiquid(Object e) {
-        if (e instanceof IHasEntityState) {
-            IHasEntityState entityState = (IHasEntityState) e;
+        if (e instanceof IHasEntityState entityState) {
             entityState.getEntityState().setState(EntityState.Type.IN_LIQUID);
         }
     }

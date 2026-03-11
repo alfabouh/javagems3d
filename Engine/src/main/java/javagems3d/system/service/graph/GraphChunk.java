@@ -5,17 +5,12 @@ import org.joml.Vector3f;
 
 import java.io.Serializable;
 
-public class GraphChunk implements Serializable {
+public record GraphChunk(Vector2i chunkIJ) implements Serializable {
     public static final int CHUNK_SIZE_XZ = 8;
     private static final long serialVersionUID = -228L;
-    private final Vector2i chunkIJ;
-
-    public GraphChunk(Vector2i chunkIJ) {
-        this.chunkIJ = chunkIJ;
-    }
 
     public static Vector3f getChunkPos(GraphChunk graphChunk, float y) {
-        return new Vector3f(graphChunk.getChunkIJ().x * GraphChunk.CHUNK_SIZE_XZ, y, graphChunk.getChunkIJ().y * GraphChunk.CHUNK_SIZE_XZ);
+        return new Vector3f(graphChunk.chunkIJ().x * GraphChunk.CHUNK_SIZE_XZ, y, graphChunk.chunkIJ().y * GraphChunk.CHUNK_SIZE_XZ);
     }
 
     public static GraphChunk getChunkIJByCoordinates(Vector3f vector3f) {
@@ -27,24 +22,19 @@ public class GraphChunk implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof GraphChunk)) {
+        if (!(o instanceof GraphChunk chunk)) {
             return false;
         }
-        GraphChunk chunk = (GraphChunk) o;
-        return chunk.getChunkIJ().equals(this.getChunkIJ());
+        return chunk.chunkIJ().equals(this.chunkIJ());
     }
 
     @Override
     public int hashCode() {
-        return this.getChunkIJ().hashCode();
-    }
-
-    public Vector2i getChunkIJ() {
-        return this.chunkIJ;
+        return this.chunkIJ().hashCode();
     }
 
     @Override
     public String toString() {
-        return this.getChunkIJ().toString();
+        return this.chunkIJ().toString();
     }
 }

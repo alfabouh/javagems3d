@@ -19,7 +19,7 @@ public class SettingIntSlots extends SettingSlot {
     }
 
     public String getName(int i) {
-        return this.intNames.containsKey(i) ? (this.intNames.get(i).getSecond() ? JGems3D.get().I18n(this.intNames.get(i).getFirst()) : this.intNames.get(i).getFirst()) : Integer.toString(i);
+        return this.intNames.containsKey(i) ? (this.intNames.get(i).second() ? JGems3D.get().I18n(this.intNames.get(i).first()) : this.intNames.get(i).first()) : Integer.toString(i);
     }
 
     public String getCurrentName() {

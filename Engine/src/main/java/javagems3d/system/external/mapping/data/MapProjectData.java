@@ -1,32 +1,47 @@
 package javagems3d.system.external.mapping.data;
 
+import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.def.misc.GameResourceScriptAsset;
+import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
+import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("all")
 public class MapProjectData {
+    private transient JGemsPath absolutePath;
     protected String mapDescription;
     protected String mapName;
     protected String version;
-    protected String mapDataFile;
-    protected List<String> scriptFiles;
+    protected GameResourceAssetsFolder<GameResourceScriptAsset> scriptFiles;
 
-    public MapProjectData(@NotNull String mapDescription, @NotNull String mapName, @NotNull String version, @NotNull String mapDataFile) {
+    public MapProjectData(@NotNull String mapDescription, @NotNull String mapName, @NotNull String version, @NotNull JGemsPath absolutePath) {
+        this.setAbsolutePath(absolutePath);
         this.mapDescription = mapDescription;
         this.mapName = mapName;
         this.version = version;
-        this.scriptFiles = new ArrayList<>();
-        this.mapDataFile = mapDataFile;
+        this.scriptFiles = new GameResourceAssetsFolder<>("");
     }
 
-    public void setMapDescription(String mapDescription) {
+    public MapProjectData setAbsolutePath(@NotNull JGemsPath absolutePath) {
+        this.absolutePath = absolutePath;
+        return this;
+    }
+
+    public JGemsPath getPathToMainMapFile() {
+        return JGemsGaming.getPathToMainMapFile(this.getAbsolutePath(), this.getMapName());
+    }
+
+    public JGemsPath getPathToDataMapFile() {
+        return JGemsGaming.getPathToDataMapFile(this.getAbsolutePath(), this.getMapName());
+    }
+
+    public MapProjectData setMapDescription(String mapDescription) {
         this.mapDescription = mapDescription;
+        return this;
     }
 
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
+    public JGemsPath getAbsolutePath() {
+        return this.absolutePath;
     }
 
     public String getMapDescription() {
@@ -41,12 +56,12 @@ public class MapProjectData {
         return this.version;
     }
 
-    public String getMapDataFile() {
-        return this.mapDataFile;
+    public GameResourceAssetsFolder<GameResourceScriptAsset> getScriptFiles() {
+        return this.scriptFiles;
     }
 
-    public List<String> getScriptFiles() {
-        return this.scriptFiles;
+    public String toString() {
+        return this.getMapName() + " - " + this.getVersion();
     }
 
     //TODO

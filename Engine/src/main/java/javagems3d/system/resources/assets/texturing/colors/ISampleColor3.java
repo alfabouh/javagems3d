@@ -4,5 +4,5 @@ import javagems3d.system.resources.assets.texturing.ISample;
 import org.joml.Vector3f;
 
 public interface ISampleColor3 extends ISample {
-    Vector3f getColor();
+    Vector3f color();
 }

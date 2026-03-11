@@ -103,9 +103,9 @@ public class FBOTexture2DProgram {
         GL46.glBindFramebuffer(GL46.GL_READ_FRAMEBUFFER, this.getFrameBufferId());
         GL46.glBindFramebuffer(GL46.GL_DRAW_FRAMEBUFFER, fboTo);
         for (Pair<Integer, Integer> att : colorFrom_colorTo) {
-            GL46.glReadBuffer(att.getFirst());
+            GL46.glReadBuffer(att.first());
             if (fboTo != 0) {
-                GL46.glDrawBuffer(att.getSecond());
+                GL46.glDrawBuffer(att.second());
             }
             GL46.glBlitFramebuffer(0, 0, dimension.x, dimension.y, 0, 0, dimension.x, dimension.y, GL46.GL_COLOR_BUFFER_BIT, GL46.GL_NEAREST);
         }

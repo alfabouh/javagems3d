@@ -10,7 +10,8 @@ public interface IWindow {
     long getDescriptor();
     Vector2i getWindowSize();
     boolean isWindowInFocus();
-
+    void setTextCursor();
+    void setArrowCursor();
     default boolean isFullScreen() {
         return GLFW.glfwGetWindowMonitor(this.getDescriptor()) != 0;
     }

@@ -31,8 +31,7 @@ public class AttachedCamera extends CameraBase {
 
     private Vector3f cameraOffset() {
         Vector3f vector3f = new Vector3f(0.0f);
-        if (this.getAttachedObject() != null && this.getAttachedObject().getWorldItem() instanceof IPlayer) {
-            IPlayer entityPlayerSP = (IPlayer) this.getAttachedObject().getWorldItem();
+        if (this.getAttachedObject() != null && this.getAttachedObject().getWorldItem() instanceof IPlayer entityPlayerSP) {
             vector3f.add(0, entityPlayerSP.getEyeHeight(), 0);
         }
         return vector3f;

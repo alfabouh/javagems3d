@@ -1,28 +1,6 @@
 package javagems3d.system.service.collections;
 
-public class Triple<K, V, R> {
-
-    private final K first;
-    private final V second;
-    private final R third;
-
-    public Triple(K first, V second, R third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-    }
-
-    public R getThird() {
-        return this.third;
-    }
-
-    public K getFirst() {
-        return this.first;
-    }
-
-    public V getSecond() {
-        return this.second;
-    }
+public record Triple<K, V, R>(K first, V second, R third) {
 
     @Override
     public String toString() {

@@ -8,6 +8,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;
 
+import java.io.File;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +28,7 @@ public class ScenePreviewMapG {
             final String mapProject = projectData.getAsset().getMapProject().getMapName();
             if (ImGui.collapsingHeader("Map: " + projectData.getAsset().getMapProject().getMapName(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##map_preview", ImGui.getColumnWidth(), 200, true);
+                ImGui.indent();
                 if (ImGui.beginPopup("NewMapInfoPopup")) {
                     ImGui.text("New Description:");
                     ImGui.inputText("##mapDesc", this.imStringDesc);
@@ -47,13 +49,13 @@ public class ScenePreviewMapG {
                 ImGui.textWrapped("Map: " + projectData.getAsset().getMapProject().getMapName());
                 ImGui.textWrapped("Description: " + projectData.getAsset().getMapProject().getMapDescription());
                 ImGui.textWrapped("Version: " + projectData.getAsset().getMapProject().getVersion());
-                if (!projectData.getAsset().getMapProject().getMapDataFile().isEmpty()) {
-                    final JGemsPath pathToMapDataFile = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject, projectData.getAsset().getMapProject().getMapDataFile());
-                    final String modifiedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(Instant.ofEpochMilli(pathToMapDataFile.toFile().lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime());
-                    ImGui.textWrapped("Map Data: " + projectData.getAsset().getMapProject().getMapDataFile());
+                final File dataFile = projectData.getAsset().getMapProject().getPathToDataMapFile().toFile();
+                if (dataFile.exists()) {
+                    final String modifiedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(Instant.ofEpochMilli(dataFile.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    ImGui.textWrapped("Map Data: " + dataFile);
                     ImGui.textWrapped("Modified: " + modifiedDate);
                 }
-                ImGui.separator();
+                ImGui.spacing();
                 if (ImGui.button("Open")) {
                     final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
                     WBench.get().getMapProjectManager().openMapProject(pathToMap);
@@ -63,6 +65,7 @@ public class ScenePreviewMapG {
                 if (ImGui.button("Edit Description")) {
                     ImGui.openPopup("NewMapInfoPopup");
                 }
+                ImGui.unindent();
                 ImGui.endChild();
             }
         }

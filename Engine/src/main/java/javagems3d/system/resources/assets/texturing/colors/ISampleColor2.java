@@ -5,5 +5,5 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public interface ISampleColor2 extends ISample {
-    Vector2f getColor();
+    Vector2f color();
 }

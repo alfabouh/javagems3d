@@ -14,7 +14,6 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -154,7 +153,7 @@ public abstract class GLTF2Parser {
 
             if (gltf2Mesh != null) {
                 for (GLTF2Primitive primitive : gltf2Mesh.getPrimitives()) {
-                    List<Float> positions = primitive.getPOSITION().getObjects();
+                    List<Float> positions = primitive.getPOSITION().objects();
 
                     for (int i = 0; i < positions.size(); i += 3) {
                         Vector4f pos = new Vector4f(positions.get(i), positions.get(i + 1), positions.get(i + 2), 1.0f);
@@ -168,7 +167,7 @@ public abstract class GLTF2Parser {
                     worldTransform.normal(normalMatrix);
 
                     if (primitive.getNORMAL() != null) {
-                        List<Float> normals = primitive.getNORMAL().getObjects();
+                        List<Float> normals = primitive.getNORMAL().objects();
                         for (int i = 0; i < normals.size(); i += 3) {
                             Vector3f n = new Vector3f(normals.get(i), normals.get(i + 1), normals.get(i + 2));
                             normalMatrix.transform(n);
@@ -180,7 +179,7 @@ public abstract class GLTF2Parser {
                     }
 
                     if (primitive.getTANGENT() != null) {
-                        List<Float> tangents = primitive.getTANGENT().getObjects();
+                        List<Float> tangents = primitive.getTANGENT().objects();
                         for (int i = 0; i < tangents.size(); i += 3) {
                             Vector3f tangentVec3 = new Vector3f(tangents.get(i), tangents.get(i + 1), tangents.get(i + 2));
                             normalMatrix.transform(tangentVec3);
@@ -294,9 +293,9 @@ public abstract class GLTF2Parser {
                 final int outputId = sampler.get("output").getAsInt();
 
                 GLTF2AccessorData inputAD = GLTF2Parser.readAccessorData(accessors.get(inputId).getAsJsonObject());
-                GLTF2BufferView inputBV = GLTF2Parser.readBufferView(bufferViews.get(inputAD.getBufferView()).getAsJsonObject());
+                GLTF2BufferView inputBV = GLTF2Parser.readBufferView(bufferViews.get(inputAD.bufferView()).getAsJsonObject());
                 GLTF2AccessorData outputAD = GLTF2Parser.readAccessorData(accessors.get(outputId).getAsJsonObject());
-                GLTF2BufferView outputBV = GLTF2Parser.readBufferView(bufferViews.get(outputAD.getBufferView()).getAsJsonObject());
+                GLTF2BufferView outputBV = GLTF2Parser.readBufferView(bufferViews.get(outputAD.bufferView()).getAsJsonObject());
 
                 GLTF2Accessor<Float> timeStamps = GLTF2Parser.readAccessor(inputBV, inputAD, buffersList);
                 GLTF2Accessor<Float> dataOnTime = GLTF2Parser.readAccessor(outputBV, outputAD, buffersList);
@@ -381,8 +380,8 @@ public abstract class GLTF2Parser {
                 @Nullable GLTF2AccessorData JOINTS_0_ACC_DATA = null;
                 @Nullable GLTF2AccessorData WEIGHTS_0_ACC_DATA = null;
 
-                @NotNull GLTF2BufferView POSITION_BV = GLTF2Parser.readBufferView(bufferViews.get(POSITION_ACC_DATA.getBufferView()).getAsJsonObject());
-                @NotNull GLTF2BufferView indices_BV = GLTF2Parser.readBufferView(bufferViews.get(indices_ACC_DATA.getBufferView()).getAsJsonObject());
+                @NotNull GLTF2BufferView POSITION_BV = GLTF2Parser.readBufferView(bufferViews.get(POSITION_ACC_DATA.bufferView()).getAsJsonObject());
+                @NotNull GLTF2BufferView indices_BV = GLTF2Parser.readBufferView(bufferViews.get(indices_ACC_DATA.bufferView()).getAsJsonObject());
                 @Nullable GLTF2BufferView NORMAL_BV = null;
                 @Nullable GLTF2BufferView TEXCOORD_0_BV = null;
                 @Nullable GLTF2BufferView TANGENT_BV = null;
@@ -395,36 +394,36 @@ public abstract class GLTF2Parser {
                 if (NORMAL_ACCESSOR_ID >= 0) {
                     JsonObject NORMAL_ACC_DATA_JS = accessors.get(NORMAL_ACCESSOR_ID).getAsJsonObject();
                     NORMAL_ACC_DATA = GLTF2Parser.readAccessorData(NORMAL_ACC_DATA_JS);
-                    NORMAL_BV = GLTF2Parser.readBufferView(bufferViews.get(NORMAL_ACC_DATA.getBufferView()).getAsJsonObject());
+                    NORMAL_BV = GLTF2Parser.readBufferView(bufferViews.get(NORMAL_ACC_DATA.bufferView()).getAsJsonObject());
                     NORMAL = GLTF2Parser.readAccessor(NORMAL_BV, NORMAL_ACC_DATA, buffersList);
                 } else {
-                    NORMAL = new GLTF2Accessor<>(GLTF2Parser.calculateNormals(POSITION.getObjects(), indices.getObjects()), null);
+                    NORMAL = new GLTF2Accessor<>(GLTF2Parser.calculateNormals(POSITION.objects(), indices.objects()), null);
                 }
 
                 if (TEXCOORD_0_ACCESSOR_ID >= 0) {
                     JsonObject TEXCOORD_0_ACC_DATA_JS = accessors.get(TEXCOORD_0_ACCESSOR_ID).getAsJsonObject();
                     TEXCOORD_0_ACC_DATA = GLTF2Parser.readAccessorData(TEXCOORD_0_ACC_DATA_JS);
-                    TEXCOORD_0_BV = GLTF2Parser.readBufferView(bufferViews.get(TEXCOORD_0_ACC_DATA.getBufferView()).getAsJsonObject());
+                    TEXCOORD_0_BV = GLTF2Parser.readBufferView(bufferViews.get(TEXCOORD_0_ACC_DATA.bufferView()).getAsJsonObject());
                     TEXCOORD_0 = GLTF2Parser.readAccessor(TEXCOORD_0_BV, TEXCOORD_0_ACC_DATA, buffersList);
                 }
 
                 if (TANGENT_ACCESSOR_ID >= 0) {
                     JsonObject TANGENT_ACC_DATA_JS = accessors.get(TANGENT_ACCESSOR_ID).getAsJsonObject();
                     TANGENT_ACC_DATA = GLTF2Parser.readAccessorData(TANGENT_ACC_DATA_JS);
-                    TANGENT_BV = GLTF2Parser.readBufferView(bufferViews.get(TANGENT_ACC_DATA.getBufferView()).getAsJsonObject());
+                    TANGENT_BV = GLTF2Parser.readBufferView(bufferViews.get(TANGENT_ACC_DATA.bufferView()).getAsJsonObject());
                     TANGENT = GLTF2Parser.readAccessor(TANGENT_BV, TANGENT_ACC_DATA, buffersList);
-                    BiTANGENT = new GLTF2Accessor<>(GLTF2Parser.calculateBiTangents(TANGENT.getObjects(), NORMAL.getObjects()), null);
+                    BiTANGENT = new GLTF2Accessor<>(GLTF2Parser.calculateBiTangents(TANGENT.objects(), NORMAL.objects()), null);
                 } else {
                     if (TEXCOORD_0 != null) {
-                        Pair<List<Float>, List<Float>> tangents = GLTF2Parser.calculateTangentsAndBiTangents(indices.getObjects(), POSITION.getObjects(), TEXCOORD_0.getObjects(), POSITION.getObjects().size() / 3);
-                        TANGENT = new GLTF2Accessor<>(tangents.getFirst(), null);
-                        BiTANGENT = new GLTF2Accessor<>(tangents.getSecond(), null);
+                        Pair<List<Float>, List<Float>> tangents = GLTF2Parser.calculateTangentsAndBiTangents(indices.objects(), POSITION.objects(), TEXCOORD_0.objects(), POSITION.objects().size() / 3);
+                        TANGENT = new GLTF2Accessor<>(tangents.first(), null);
+                        BiTANGENT = new GLTF2Accessor<>(tangents.second(), null);
                     } else {
                         Log.get().warn("The model doesn't have UV to calculate tangents and biTangents");
                         List<Float> uv = new ArrayList<>();
                         List<Float> bi_tangents = new ArrayList<>();
 
-                        for (int i = 0; i < POSITION.getObjects().size() / 3; i++) {
+                        for (int i = 0; i < POSITION.objects().size() / 3; i++) {
                             bi_tangents.add(0.0f);
                             bi_tangents.add(0.0f);
                             bi_tangents.add(0.0f);
@@ -441,14 +440,14 @@ public abstract class GLTF2Parser {
                 if (JOINTS_0_ACCESSOR_ID >= 0) {
                     JsonObject JOINTS_0_ACC_DATA_JS = accessors.get(JOINTS_0_ACCESSOR_ID).getAsJsonObject();
                     JOINTS_0_ACC_DATA = GLTF2Parser.readAccessorData(JOINTS_0_ACC_DATA_JS);
-                    JOINTS_0_BV = GLTF2Parser.readBufferView(bufferViews.get(JOINTS_0_ACC_DATA.getBufferView()).getAsJsonObject());
+                    JOINTS_0_BV = GLTF2Parser.readBufferView(bufferViews.get(JOINTS_0_ACC_DATA.bufferView()).getAsJsonObject());
                     JOINTS_0 = GLTF2Parser.readAccessor(JOINTS_0_BV, JOINTS_0_ACC_DATA, buffersList);
                 }
 
                 if (WEIGHTS_0_ACCESSOR_ID >= 0) {
                     JsonObject WEIGHTS_0_ACC_DATA_JS = accessors.get(WEIGHTS_0_ACCESSOR_ID).getAsJsonObject();
                     WEIGHTS_0_ACC_DATA = GLTF2Parser.readAccessorData(WEIGHTS_0_ACC_DATA_JS);
-                    WEIGHTS_0_BV = GLTF2Parser.readBufferView(bufferViews.get(WEIGHTS_0_ACC_DATA.getBufferView()).getAsJsonObject());
+                    WEIGHTS_0_BV = GLTF2Parser.readBufferView(bufferViews.get(WEIGHTS_0_ACC_DATA.bufferView()).getAsJsonObject());
                     WEIGHTS_0 = GLTF2Parser.readAccessor(WEIGHTS_0_BV, WEIGHTS_0_ACC_DATA, buffersList);
                 }
             }
@@ -557,20 +556,20 @@ public abstract class GLTF2Parser {
 
     @SuppressWarnings("unchecked")
     private static <T> GLTF2Accessor<T> readAccessor(GLTF2BufferView gltf2BufferView, GLTF2AccessorData gltf2AccessorData, List<ByteBuffer> bufferList) {
-        final int bytesOfType = GLTF2Parser.getBytesOfType(gltf2AccessorData.getComponentType());
-        final int typeSize = GLTF2Accessor.ValueType.getTypeSize(gltf2AccessorData.getTypeStr());
+        final int bytesOfType = GLTF2Parser.getBytesOfType(gltf2AccessorData.componentType());
+        final int typeSize = GLTF2Accessor.ValueType.getTypeSize(gltf2AccessorData.typeStr());
         final int elementByteSize = typeSize * bytesOfType;
-        ByteBuffer buffer = bufferList.get(gltf2BufferView.getId());
+        ByteBuffer buffer = bufferList.get(gltf2BufferView.id());
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        int stride = gltf2BufferView.getByteStride() == 0 ? elementByteSize : gltf2BufferView.getByteStride();
+        int stride = gltf2BufferView.byteStride() == 0 ? elementByteSize : gltf2BufferView.byteStride();
 
-        final List<T> readObjects = new ArrayList<>(gltf2AccessorData.getCount() * typeSize);
+        final List<T> readObjects = new ArrayList<>(gltf2AccessorData.count() * typeSize);
 
-        for (int k = 0; k < gltf2AccessorData.getCount(); k++) {
-            int basePosition = gltf2BufferView.getByteOffset() + gltf2AccessorData.getByteOffset() + k * stride;
+        for (int k = 0; k < gltf2AccessorData.count(); k++) {
+            int basePosition = gltf2BufferView.byteOffset() + gltf2AccessorData.byteOffset() + k * stride;
             buffer.position(basePosition);
             for (int i = 0; i < typeSize; i++) {
-                T component = (T) GLTF2Parser.readComponent(buffer, gltf2AccessorData.getComponentType());
+                T component = (T) GLTF2Parser.readComponent(buffer, gltf2AccessorData.componentType());
                 readObjects.add(component);
             }
         }

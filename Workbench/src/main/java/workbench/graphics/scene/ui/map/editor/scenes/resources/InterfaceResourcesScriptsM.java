@@ -1,40 +1,13 @@
 package workbench.graphics.scene.ui.map.editor.scenes.resources;
 
-import api.scripting.legacy.doc.JGemsScriptingDocs;
-import api.scripting.legacy.functions.APIScriptingFunction;
-import api.scripting.legacy.functions.APIScriptsListing;
 import imgui.ImGui;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
-import imgui.extension.texteditor.flag.TextEditorPaletteIndex;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import javagems3d.help.JGemsHelper;
-import javagems3d.system.service.files.JGemsPath;
-import javagems3d.system.service.files.source.ISource;
-import javagems3d.system.service.files.source.JGemsPathSource;
-import logger.Log;
-import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2i;
-import workbench.WBench;
-import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.project.map.WBenchMapProject;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class InterfaceResourcesScriptsM {
-    private static JGemsScriptingDocs scriptingDocs;
+   // private static JGemsScriptingDocs scriptingDocs;
     private static InterfaceResourcesScriptsM.CodeMode currentCodeMode;
     private final ImInt currentSelectedScript;
     private final ImString newScriptName;
@@ -42,7 +15,7 @@ public class InterfaceResourcesScriptsM {
     private String scriptTextTemplate;
 
     static {
-        InterfaceResourcesScriptsM.scriptingDocs = new JGemsScriptingDocs();
+       // InterfaceResourcesScriptsM.scriptingDocs = new JGemsScriptingDocs();
         InterfaceResourcesScriptsM.currentCodeMode = InterfaceResourcesScriptsM.CodeMode.CODE;
     }
 
@@ -59,13 +32,14 @@ public class InterfaceResourcesScriptsM {
     }
 
     public void reset() {
-        this.getEditorInterface().getTextEditor().setPalette(this.getEditorInterface().getTextEditor().getDarkPalette());
-        this.getEditorInterface().getTextEditor().setColorizerEnable(true);
-        this.getEditorInterface().getTextEditor().setLanguageDefinition(new InterfaceResourcesScriptsM.JSDefinition().getJsLang());
+       //this.getEditorInterface().getTextEditor().setPalette(this.getEditorInterface().getTextEditor().getDarkPalette());
+       //this.getEditorInterface().getTextEditor().setColorizerEnable(true);
+       //this.getEditorInterface().getTextEditor().setLanguageDefinition(new InterfaceResourcesScriptsM.JSDefinition().getJsLang());
     }
 
     public void render() {
         if (ImGui.collapsingHeader("Scripts")) {
+            /*
             ImGui.treePush();
             final WBenchMapProject wBenchProject = WBench.get().getMapProjectManager().getCurrentMapProject();
             final List<String> scriptPaths = wBenchProject.getScriptFiles();
@@ -119,7 +93,7 @@ public class InterfaceResourcesScriptsM {
 
                 try {
                     if (ImGui.button("Folder")) {
-                        Desktop.getDesktop().open(new File(wBenchProject.getScriptPathTo(selectedPath).getFullPath()).getParentFile());
+                        Desktop.getDesktop().open(new File(wBenchProject.getScriptPathTo(selectedPath).fullPath()).getParentFile());
                     }
                 } catch (IOException e) {
                     Log.get().exception(e);
@@ -189,9 +163,10 @@ public class InterfaceResourcesScriptsM {
                 ImGui.end();
             }
             ImGui.treePop();
+            */
         }
     }
-
+/*
     private void renderDocs() {
         ImGui.separator();
         ImGui.text("Types");
@@ -242,8 +217,8 @@ public class InterfaceResourcesScriptsM {
                     final StringBuilder argsTypes = new StringBuilder();
 
                     for (int i = 0; i < methodDesc.args().size(); i++) {
-                        argsNames.append(methodDesc.args().get(i).getSecond());
-                        argsTypes.append(methodDesc.args().get(i).getFirst());
+                        argsNames.append(methodDesc.args().get(i).second());
+                        argsTypes.append(methodDesc.args().get(i).first());
                         if (i != methodDesc.args().size() - 1) {
                             argsNames.append(", ");
                             argsTypes.append(", ");
@@ -319,8 +294,8 @@ public class InterfaceResourcesScriptsM {
             final StringBuilder funArgsTypes = new StringBuilder();
 
             for (int i = 0; i < apiScriptingFunction.getArgs().size(); i++) {
-                funArgsNames.append(apiScriptingFunction.getArgs().get(i).getSecond());
-                funArgsTypes.append(apiScriptingFunction.getArgs().get(i).getFirst().getSimpleName());
+                funArgsNames.append(apiScriptingFunction.getArgs().get(i).second());
+                funArgsTypes.append(apiScriptingFunction.getArgs().get(i).first().getSimpleName());
                 if (i != apiScriptingFunction.getArgs().size() - 1) {
                     funArgsNames.append(", ");
                     funArgsTypes.append(", ");
@@ -348,7 +323,8 @@ public class InterfaceResourcesScriptsM {
     public MapEditorInterface getEditorInterface() {
         return this.mapEditorInterface;
     }
-
+    */
+/*
     private static class JSDefinition {
         private final TextEditorLanguageDefinition jsLang;
 
@@ -387,30 +363,30 @@ public class InterfaceResourcesScriptsM {
             jsLang.setIdentifiers(identifiers);
 
             jsLang.setCommentStart("/*");
-            jsLang.setCommentEnd("*/");
-            jsLang.setSingleLineComment("//");
+          //  jsLang.setCommentEnd("*/
+     //  jsLang.setSingleLineComment("//");
 
-            String knownIdentifiersRegex = identifiers.keySet().stream().filter(s -> s != null && !s.isEmpty()).map(Pattern::quote).collect(Collectors.joining("|", "\\b(", ")\\b"));
-            style.put(knownIdentifiersRegex, TextEditorPaletteIndex.KnownIdentifier);
+     //  String knownIdentifiersRegex = identifiers.keySet().stream().filter(s -> s != null && !s.isEmpty()).map(Pattern::quote).collect(Collectors.joining("|", "\\b(", ")\\b"));
+     //  style.put(knownIdentifiersRegex, TextEditorPaletteIndex.KnownIdentifier);
 
-            style.put("\\b(Object|Function|Array|String|Boolean|Number|Math|Date|RegExp|JSON|Error|TypeError|ReferenceError)\\b", TextEditorPaletteIndex.KnownIdentifier);
-            style.put("\\b(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield)\\b", TextEditorPaletteIndex.Keyword);
-            style.put("[+-]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?", TextEditorPaletteIndex.Number);
-            style.put("'([^'\\\\]|\\\\.)*'", TextEditorPaletteIndex.String);
-            style.put("\"([^\"\\\\]|\\\\.)*\"", TextEditorPaletteIndex.String);
-            style.put("`([^`\\\\]|\\\\.)*`", TextEditorPaletteIndex.String);
-            style.put("\\b[_a-zA-Z][_a-zA-Z0-9]*\\b", TextEditorPaletteIndex.Identifier);
-            style.put("//.*", TextEditorPaletteIndex.Comment);
-            style.put("/\\*.*?\\*/", TextEditorPaletteIndex.MultiLineComment);
-            style.put("[\\[\\]{}();,.<>!=:+\\-*/%&|^~?]", TextEditorPaletteIndex.Punctuation);
+     //  style.put("\\b(Object|Function|Array|String|Boolean|Number|Math|Date|RegExp|JSON|Error|TypeError|ReferenceError)\\b", TextEditorPaletteIndex.KnownIdentifier);
+     //  style.put("\\b(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield)\\b", TextEditorPaletteIndex.Keyword);
+     //  style.put("[+-]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?", TextEditorPaletteIndex.Number);
+     //  style.put("'([^'\\\\]|\\\\.)*'", TextEditorPaletteIndex.String);
+     //  style.put("\"([^\"\\\\]|\\\\.)*\"", TextEditorPaletteIndex.String);
+     //  style.put("`([^`\\\\]|\\\\.)*`", TextEditorPaletteIndex.String);
+     //  style.put("\\b[_a-zA-Z][_a-zA-Z0-9]*\\b", TextEditorPaletteIndex.Identifier);
+     //  style.put("//.*", TextEditorPaletteIndex.Comment);
+     //  style.put("/\\*.*?\\*/", TextEditorPaletteIndex.MultiLineComment);
+     //  style.put("[\\[\\]{}();,.<>!=:+\\-*/%&|^~?]", TextEditorPaletteIndex.Punctuation);
 
 
-            jsLang.setTokenRegexStrings(style);
-            jsLang.setAutoIdentation(true);
-        }
+     //  jsLang.setTokenRegexStrings(style);
+     //  jsLang.setAutoIdentation(true);
+     //
 
-        public TextEditorLanguageDefinition getJsLang() {
-            return this.jsLang;
-        }
-    }
+     //blic TextEditorLanguageDefinition getJsLang() {
+     //  return this.jsLang;
+     //
+     //
 }

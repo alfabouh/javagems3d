@@ -6,7 +6,6 @@ import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -29,8 +28,8 @@ public final class SceneWorldLiquid implements IWorldObject, ICulled {
     }
 
     private Model3D constructModel(Liquid liquid) {
-        Vector3f location = liquid.getSimpleTriggerZone().getZone().getLocation();
-        Vector3f size = new Vector3f(liquid.getSimpleTriggerZone().getZone().getSize()).mul(0.5f);
+        Vector3f location = liquid.getSimpleTriggerZone().getZone().location();
+        Vector3f size = new Vector3f(liquid.getSimpleTriggerZone().getZone().size()).mul(0.5f);
         double y = location.y + size.y - 0.1f;
         Vector3f v1 = new Vector3f(location.x - size.x, (float) y, location.z - size.z);
         Vector3f v2 = new Vector3f(location.x - size.x, (float) y, location.z + size.z);
@@ -43,7 +42,7 @@ public final class SceneWorldLiquid implements IWorldObject, ICulled {
         if (size.z > sizeBound) {
             this.textureScaling.mul(1.0f, size.z / sizeBound);
         }
-        return MeshHelper.generatePlane3DModel(ArbitraryArguments.pass(this.getRenderLiquidData().getLiquidMaterial()), v1, v2, v3, v4);
+        return MeshHelper.generatePlane3DModel(ArbitraryArguments.pass(this.getRenderLiquidData().liquidMaterial()), v1, v2, v3, v4);
     }
 
     public Vector2f getTextureScaling() {
@@ -90,8 +89,8 @@ public final class SceneWorldLiquid implements IWorldObject, ICulled {
 
     @Override
     public CullingAABB getCullingData() {
-        Vector3f min = this.getLiquid().getZone().getLocation().sub(this.getLiquid().getZone().getSize().mul(0.5f));
-        Vector3f max = this.getLiquid().getZone().getLocation().add(this.getLiquid().getZone().getSize().mul(0.5f));
+        Vector3f min = this.getLiquid().getZone().location().sub(this.getLiquid().getZone().size().mul(0.5f));
+        Vector3f max = this.getLiquid().getZone().location().add(this.getLiquid().getZone().size().mul(0.5f));
         return new CullingAABB(min, max);
     }
 }

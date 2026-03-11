@@ -1,9 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
-import javagems3d.graphics.objects.IModeled;
-import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -19,13 +16,10 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.args.ArbitraryArguments;
-import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.function.Consumer;
 
 public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
     private Collection<SceneWorldLiquid> worldLiquid;
@@ -45,7 +39,7 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
     }
 
     protected void renderLiquid(SceneWorldLiquid sceneWorldLiquid) {
-        JGemsShaderManager shaderManager = sceneWorldLiquid.getRenderLiquidData().getShaderManager();
+        JGemsShaderManager shaderManager = sceneWorldLiquid.getRenderLiquidData().shaderManager();
         shaderManager.beginShading();
         shaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
         shaderManager.performModel3DMatrix(new UniformString("model_matrix"), sceneWorldLiquid.getModel());

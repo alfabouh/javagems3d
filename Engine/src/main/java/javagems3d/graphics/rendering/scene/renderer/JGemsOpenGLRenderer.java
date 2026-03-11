@@ -89,7 +89,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     public JGemsOpenGLRenderer(IWindow window, IRenderWorld sceneWorld) {
         super(window, sceneWorld);
-        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
+        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::id));
 
         JGemsOpenGLRenderer.inGameInterface = new DearUIGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
@@ -158,7 +158,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsHelper.resources().getGlobalGameResources());
 
         this.setDefaultNodes();
-        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.getName()));
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.name()));
         this.createResources();
 
         EventLauncher.pushEvent(new EventBus.OpenGLRendererState(EventBus.State.START, this));
@@ -295,8 +295,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
-        if (transparencyRenderNode instanceof JGemsTransparencyRenderNode) {
-            JGemsTransparencyRenderNode transparencyRenderNode1 = (JGemsTransparencyRenderNode) transparencyRenderNode;
+        if (transparencyRenderNode instanceof JGemsTransparencyRenderNode transparencyRenderNode1) {
             transparencyRenderNode1.setWorldLiquid(toRenderLiquids);
         }
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, transparencyRenderNode);

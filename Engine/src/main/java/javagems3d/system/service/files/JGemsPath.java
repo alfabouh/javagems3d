@@ -1,37 +1,44 @@
 package javagems3d.system.service.files;
 
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Objects;
 
-public final class JGemsPath implements Serializable {
+public record JGemsPath(String fullPath) implements Serializable {
+    @Serial
     private static final long serialVersionUID = 142L;
-    private final String fullPath;
+
+    public JGemsPath(JGemsPath path, JGemsPath... other) {
+        this(path.fullPath(), Arrays.stream(other).map(JGemsPath::fullPath).toArray(String[]::new));
+    }
 
     public JGemsPath(JGemsPath path, String... other) {
-        this(path.getFullPath(), other);
+        this(path.fullPath(), other);
     }
 
     public JGemsPath(String root, String... other) {
-        this.fullPath = this.concatenate(root, other);
+        this(JGemsPath.concatenate(root, other));
     }
 
     public JGemsPath(Path path) {
         this(path.toString());
     }
 
-    public JGemsPath(String path) {
-        this.fullPath = this.concatenate(path);
+    public JGemsPath(String fullPath) {
+        this.fullPath = JGemsPath.concatenate(fullPath);
     }
 
-    private String concatenate(String root, String... other) {
-        StringBuilder stringBuilder = new StringBuilder(this.fixPath(root));
+    private static String concatenate(String root, String... other) {
+        StringBuilder stringBuilder = new StringBuilder(JGemsPath.fixPath(root));
         if (other != null) {
             for (String s : other) {
-                String string = this.fixPath(s);
+                String string = JGemsPath.fixPath(s);
                 stringBuilder.append(string);
             }
         }
@@ -39,7 +46,7 @@ public final class JGemsPath implements Serializable {
         return path.replace("\\", "/").replace("//", "/");
     }
 
-    private String fixPath(String path) {
+    private static String fixPath(String path) {
         String trimmedPath = path.trim();
         String normalizedPath = trimmedPath.replace("\\", "/");
         if (!normalizedPath.startsWith("/")) {
@@ -69,7 +76,7 @@ public final class JGemsPath implements Serializable {
     }
 
     public File toFile() {
-        return new File(this.getFullPath());
+        return new File(this.fullPath());
     }
 
     public Path toPath() {
@@ -77,15 +84,11 @@ public final class JGemsPath implements Serializable {
     }
 
     public JGemsPath getAbsolutePathDirectory() {
-        return new JGemsPath(this.getFullPath().substring(0, this.getFullPath().lastIndexOf('/')));
-    }
-
-    public String getFullPath() {
-        return this.fullPath;
+        return new JGemsPath(this.fullPath().substring(0, this.fullPath().lastIndexOf('/')));
     }
 
     @Override
-    public String toString() {
-        return this.getFullPath();
+    public @NotNull String toString() {
+        return this.fullPath();
     }
 }

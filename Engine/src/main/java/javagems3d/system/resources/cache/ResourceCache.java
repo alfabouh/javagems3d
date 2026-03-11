@@ -2,7 +2,6 @@ package javagems3d.system.resources.cache;
 
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +23,7 @@ public class ResourceCache {
     }
 
     public @Nullable ICached clearObjectFromCache(@NotNull JGemsPath objectKey) {
-        return this.clearObjectFromCache(objectKey.getFullPath());
+        return this.clearObjectFromCache(objectKey.fullPath());
     }
 
     public @Nullable ICached clearObjectFromCache(@NotNull String objectKey) {
@@ -67,7 +66,7 @@ public class ResourceCache {
     }
 
     public void registerInCache(JGemsPath key, ICached object) {
-        this.registerInCache(key.getFullPath(), object);
+        this.registerInCache(key.fullPath(), object);
     }
 
     public void registerInCache(String key, ICached object) {
@@ -92,7 +91,7 @@ public class ResourceCache {
     }
 
     public ICached getCachedObject(JGemsPath key) {
-        return this.getCachedObject(key.getFullPath());
+        return this.getCachedObject(key.fullPath());
     }
 
     public ICached getCachedObject(String key) {
@@ -114,7 +113,7 @@ public class ResourceCache {
     }
 
     public boolean checkObjectInCache(JGemsPath key) {
-        return this.checkObjectInCache(key.getFullPath());
+        return this.checkObjectInCache(key.fullPath());
     }
 
     @SuppressWarnings("all")

@@ -23,7 +23,7 @@ public abstract class APIResource<T, E> implements AbstractObjectsFolder.ObjectW
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.name;
     }
 

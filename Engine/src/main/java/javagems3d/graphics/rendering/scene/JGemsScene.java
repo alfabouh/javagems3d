@@ -65,7 +65,7 @@ public class JGemsScene implements IScene {
         sceneWorld1.updateWorldObjects(this.refresh, frameTicking);
         this.refresh = false;
         sceneWorld1.onWorldUpdate();
-        this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
+        this.getCamera().updateCamera(frameTicking.frameDeltaTime());
         JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
     }
 

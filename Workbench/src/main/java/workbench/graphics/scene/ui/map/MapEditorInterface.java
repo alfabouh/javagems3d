@@ -1,7 +1,6 @@
 package workbench.graphics.scene.ui.map;
 
 import imgui.ImGui;
-import imgui.extension.texteditor.TextEditor;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<MapEditorInterface.MapEditorInterfaceSnapshotData> {
     private SelectedScene selectedScene;
-    private final TextEditor textEditor;
 
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
@@ -60,7 +58,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
     public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
         this.selectedObjectsManager = new SelectedObjectsManager(new HashSet<>());
-        this.textEditor = new TextEditor();
 
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
@@ -128,8 +125,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectPath().getAbsolutePathDirectory().getFullPath()),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getCurrentProjectPath().getAbsolutePathDirectory(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).getFullPath())
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getAbsolutePath(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).fullPath())
                 ));
             }
             ImGui.separator();
@@ -396,10 +393,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
     public ICamera getOldCamera() {
         return this.oldCamera;
-    }
-
-    public TextEditor getTextEditor() {
-        return this.textEditor;
     }
 
     public SelectedScene getSelectedScene() {
@@ -713,26 +706,11 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             this.savedCenter = selectedObjectsManager.savedCenter;
         }
 
-        public static class SelectedObjectsManageSnapshot implements ISnapshotCompatible.SnapshotData {
-            public final Set<WBenchObject<?>> currentSelectedObjects;
-            public final Vector3f groupPosition;
-            public final Vector3f groupRotation;
-            public final Vector3f groupScaling;
-            public final Vector3f prevGroupPosition;
-            public final Vector3f prevGroupRotation;
-            public final Vector3f prevGroupScaling;
-            public final Vector3f savedCenter;
-
-            public SelectedObjectsManageSnapshot(Set<WBenchObject<?>> currentSelectedObjects, Vector3f groupPosition, Vector3f groupRotation, Vector3f groupScaling, Vector3f prevGroupPosition, Vector3f prevGroupRotation, Vector3f prevGroupScaling, Vector3f savedCenter) {
-                this.currentSelectedObjects = currentSelectedObjects;
-                this.groupPosition = groupPosition;
-                this.groupRotation = groupRotation;
-                this.groupScaling = groupScaling;
-                this.prevGroupPosition = prevGroupPosition;
-                this.prevGroupRotation = prevGroupRotation;
-                this.prevGroupScaling = prevGroupScaling;
-                this.savedCenter = savedCenter;
-            }
+        public record SelectedObjectsManageSnapshot(Set<WBenchObject<?>> currentSelectedObjects, Vector3f groupPosition,
+                                                    Vector3f groupRotation, Vector3f groupScaling,
+                                                    Vector3f prevGroupPosition, Vector3f prevGroupRotation,
+                                                    Vector3f prevGroupScaling,
+                                                    Vector3f savedCenter) implements SnapshotData {
         }
     }
 }

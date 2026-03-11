@@ -12,7 +12,6 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,10 +64,10 @@ public class CubeMapsLoader implements ILoadingHelper {
             this.hashId = gemsPathSource.getPath().toString();
             try (InputStream inputStream = JGems3D.getInputStream(gemsPathSource)) {
                 Pair<ByteBuffer, Vector2i> pair = this.readTextureFromMemory(inputStream);
-                if (pair == null || pair.getFirst() == null) {
+                if (pair == null || pair.first() == null) {
                     throw new JGemsIOException("Couldn't create texture " + this.getHashId() + ". \n" + STBImage.stbi_failure_reason());
                 }
-                dataSet[i] = new ImageTexture.Data(pair.getFirst(), pair.getSecond());
+                dataSet[i] = new ImageTexture.Data(pair.first(), pair.second());
             } catch (IOException e) {
                 throw new JGemsIOException(e);
             }

@@ -13,9 +13,11 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
+import workbench.graphics.scene.ui.game.editor.instances.scripting.ScriptAssetPreview;
 import workbench.graphics.scene.ui.game.editor.scenes.window.ModelPreviewEditorWindow;
 import workbench.graphics.scene.ui.game.editor.scenes.window.SkyBoxPreviewEditorWindow;
 import workbench.graphics.scene.ui.game.editor.scenes.window.TexturePreviewEditorWindow;
+import workbench.graphics.scene.ui.game.editor.utils.ScriptEditorDrawerG;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -35,6 +37,8 @@ public class WindowInterfaceComponentG {
     private Vector2f previewRotation;
     private WindowSection<?> currentSection = null;
 
+    private final ScriptEditorDrawerG scenePreviewScriptG;
+
     public WindowInterfaceComponentG(OpenGLRenderer openGLRenderer, ActionsInterfaceComponentG actionsInterfaceComponentG, ResourcesInterfaceComponentG resourcesInterfaceComponentG, FBOTexture2DProgram modelScenePreview) {
         this.resourcesInterfaceComponentG = resourcesInterfaceComponentG;
         this.actionsInterfaceComponentG = actionsInterfaceComponentG;
@@ -42,6 +46,7 @@ public class WindowInterfaceComponentG {
         this.texturePreviewRenderFunctions = new TexturePreviewEditorWindow();
         this.modelPreviewRenderFunctions = new ModelPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
         this.skyBoxPreviewRenderFunctions = new SkyBoxPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
+        this.scenePreviewScriptG = new ScriptEditorDrawerG(actionsInterfaceComponentG);
 
         this.reset();
     }
@@ -50,12 +55,13 @@ public class WindowInterfaceComponentG {
         WindowSection<?>[] sections = new WindowSection[] {
                 new WindowSection<>(WindowSection.SectionType.MODEL, () -> this.resourcesInterfaceComponentG.getModelAssetsTreeDrawer().getPreviewWrapperObject(), this::renderModelPreview, "Model"),
                 new WindowSection<>(WindowSection.SectionType.TEXTURE, () -> this.resourcesInterfaceComponentG.getTextureAssetsTreeDrawer().getPreviewWrapperObject(), this::renderTexturePreview, "Texture"),
-                new WindowSection<>(WindowSection.SectionType.SKYBOX, () -> this.resourcesInterfaceComponentG.getSkyBoxResourceTreeDrawer().getPreviewWrapperObject(), this::renderSkyBoxPreview, "Skybox")
+                new WindowSection<>(WindowSection.SectionType.SKYBOX, () -> this.resourcesInterfaceComponentG.getSkyBoxResourceTreeDrawer().getPreviewWrapperObject(), this::renderSkyBoxPreview, "Skybox"),
+                new WindowSection<>(WindowSection.SectionType.SCRIPT, () -> this.resourcesInterfaceComponentG.getScriptResourceTreeDrawer().getPreviewWrapperObject(), this::renderScriptCode, "Script")
         };
-        List<WindowSection<?>> actualSections = Arrays.stream(sections).filter(WindowSection::check).collect(Collectors.toList());
+        List<WindowSection<?>> actualSections = Arrays.stream(sections).filter(WindowSection::check).toList();
         if (this.currentSection == null) {
             if (!actualSections.isEmpty()) {
-                this.currentSection = actualSections.get(0);
+                this.currentSection = actualSections.getFirst();
             }
         } else {
             if (!this.currentSection.check()) {
@@ -123,11 +129,15 @@ public class WindowInterfaceComponentG {
         return new Triple<>(projection, model, view);
     }
 
+    private void renderScriptCode(ScriptAssetPreview scriptAssetPreview) {
+        this.scenePreviewScriptG.render(scriptAssetPreview);
+    }
+
     private void renderModelPreview(ModelAssetPreview modelAssetPreview) {
         if (ImGui.isWindowHovered() && ImGui.isWindowFocused()) {
             this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling += WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().getScrollVector() * -0.25f;
         }
-        final CullingAABB cullingAABB = modelAssetPreview.getAsset().getMeshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
+        final CullingAABB cullingAABB = modelAssetPreview.getAsset().meshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
         final float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
         final float diagonalOffset = (float) Math.sqrt(diagonal * 8.0f);
         if (this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling < -((diagonalOffset) - 0.1f)) {
@@ -135,7 +145,7 @@ public class WindowInterfaceComponentG {
         }
         final float outScaling = this.actionsInterfaceComponentG.getScenePreviewModelG().getModelPreviewScaling() + diagonalOffset;
         final Triple<Matrix4f, Matrix4f, Matrix4f> preparedMatrices = this.prepareMatricesForModelPreview(outScaling);
-        this.modelPreviewRenderFunctions.render(preparedMatrices.getFirst(), preparedMatrices.getSecond(), preparedMatrices.getThird(), cullingAABB, modelAssetPreview, this.modelScenePreview);
+        this.modelPreviewRenderFunctions.render(preparedMatrices.first(), preparedMatrices.second(), preparedMatrices.third(), cullingAABB, modelAssetPreview, this.modelScenePreview);
         this.renderFBO(this.modelScenePreview);
     }
 
@@ -145,7 +155,7 @@ public class WindowInterfaceComponentG {
 
     private void renderSkyBoxPreview(SkyBoxAssetPreview skyBoxAssetPreview) {
         final Triple<Matrix4f, Matrix4f, Matrix4f> preparedMatrices = this.prepareMatricesForSkyBoxPreview();
-        this.skyBoxPreviewRenderFunctions.render(preparedMatrices.getFirst(), preparedMatrices.getThird(), skyBoxAssetPreview, this.modelScenePreview);
+        this.skyBoxPreviewRenderFunctions.render(preparedMatrices.first(), preparedMatrices.third(), skyBoxAssetPreview, this.modelScenePreview);
         this.renderFBO(this.modelScenePreview);
     }
 
@@ -159,6 +169,10 @@ public class WindowInterfaceComponentG {
         ImGui.image(modelScenePreview.getTextureIDByIndex(0), quadSize - dX, quadSize - dX, 0.0f, 1.0f, 1.0f, 0.0f);
     }
 
+    public ScriptEditorDrawerG getScenePreviewScriptG() {
+        return this.scenePreviewScriptG;
+    }
+
     public static class WindowSection<T> {
         private final Supplier<T> object;
         private final Consumer<T> render;
@@ -168,7 +182,8 @@ public class WindowInterfaceComponentG {
         public enum SectionType {
             TEXTURE,
             MODEL,
-            SKYBOX
+            SKYBOX,
+            SCRIPT
         }
 
         public WindowSection(@NotNull SectionType sectionType, Supplier<T> object, Consumer<T> render, String id) {

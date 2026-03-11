@@ -67,8 +67,8 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
             if (e == null || !e.getRenderTable().validate(pipeline)) {
                 continue;
             }
-            if (redirectedObjects != null && e.getRenderTable().isRedirected(redirectedObjects.getSecond())) {
-                redirectedObjects.getFirst().add(e);
+            if (redirectedObjects != null && e.getRenderTable().isRedirected(redirectedObjects.second())) {
+                redirectedObjects.first().add(e);
             } else {
                 filteredCollection.add(e);
             }

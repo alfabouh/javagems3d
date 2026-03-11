@@ -4,8 +4,8 @@
         <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.6</lwjgl.version>
         <joml.version>1.10.8</joml.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <imgui.artifactId>imgui-java-natives-windows</imgui.artifactId>
         <lwjgl.natives>natives-windows</lwjgl.natives>

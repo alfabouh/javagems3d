@@ -16,7 +16,7 @@ public abstract class WBenchTemplate implements AbstractObjectsFolder.ObjectWith
     }
 
     @Override
-    public String getName() {
-        return this.getObjectId().getNameId();
+    public String name() {
+        return this.getObjectId().nameId();
     }
 }

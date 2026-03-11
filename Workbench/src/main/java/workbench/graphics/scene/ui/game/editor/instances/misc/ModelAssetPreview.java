@@ -50,7 +50,7 @@ public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject
         if (!this.hasAnimationData()) {
             return;
         }
-        double fps = this.getAnimationData().getCurrentAnimation().getFps();
+        double fps = this.getAnimationData().getCurrentAnimation().fps();
         if (fps <= 0.0d) {
             fps = JGemsConfig.SYSTEM.DEFAULT_ANIM_FPS;
         }
@@ -67,19 +67,19 @@ public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject
 
     @Override
     public AnimationData setAnimationByID(int id) {
-        if (!this.getAsset().getMeshGroup().isAnimatedStructure()) {
+        if (!this.getAsset().meshGroup().isAnimatedStructure()) {
             return null;
         }
         if (id < 0) {
             this.setAnimationData(null);
             return null;
         }
-        if (id >= this.getAsset().getMeshGroup().getAnimationsList().size()) {
+        if (id >= this.getAsset().meshGroup().getAnimationsList().size()) {
             Log.get().error("Couldn't set animation for: " + this);
             return null;
         }
 
-        AnimationData animationData = new AnimationData(this.getAsset().getMeshGroup().getAnimationsList().get(id));
+        AnimationData animationData = new AnimationData(this.getAsset().meshGroup().getAnimationsList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         return animationData;

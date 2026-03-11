@@ -45,8 +45,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
     }
 
     public boolean test(@NotNull ICulled culled) {
-        if (culled instanceof SceneObject) {
-            SceneObject sceneObject = (SceneObject) culled;
+        if (culled instanceof SceneObject sceneObject) {
             if (!sceneObject.canBeRendered() || !sceneObject.hasModel()) {
                 return false;
             }

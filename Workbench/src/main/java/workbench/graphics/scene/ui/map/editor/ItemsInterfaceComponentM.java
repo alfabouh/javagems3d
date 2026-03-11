@@ -57,7 +57,7 @@ public class ItemsInterfaceComponentM {
             Vector3f color = wBenchObject.textInMenuColor();
             ImGui.pushStyleColor(ImGuiCol.Text, color.x, color.y, color.z, 1.0f);
 
-            String fullText = "[" + wBenchObject.getListID() + "] " + wBenchObject.getObjectNameId().getNameId();
+            String fullText = "[" + wBenchObject.getListID() + "] " + wBenchObject.getObjectNameId().nameId();
             String displayText = fullText;
             float textWidth = ImGui.calcTextSize(displayText).x;
             float maxWidth = Math.max(x, 0.0f);
@@ -185,7 +185,7 @@ public class ItemsInterfaceComponentM {
                 return;
             }
 
-            Vector3f hitPoint = new Vector3f(hits.get(0).getSecond());
+            Vector3f hitPoint = new Vector3f(hits.get(0).second());
 
             if (direction.x > 0) {
                 hitPoint.sub(halfSize.x, 0, 0);

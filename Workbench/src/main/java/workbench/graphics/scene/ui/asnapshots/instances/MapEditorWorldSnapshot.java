@@ -3,12 +3,8 @@ package workbench.graphics.scene.ui.asnapshots.instances;
 import javagems3d.graphics.rendering.ui.snapshots.ISnapshot;
 import workbench.graphics.scene.world.WBenchWorld;
 
-public class MapEditorWorldSnapshot implements ISnapshot<WBenchWorld> {
-    public final WBenchWorld.WBenchWorldSnapshotData wBenchWorldSnapshotData;
-
-    public MapEditorWorldSnapshot(WBenchWorld.WBenchWorldSnapshotData wBenchWorldSnapshotData) {
-        this.wBenchWorldSnapshotData = wBenchWorldSnapshotData;
-    }
+public record MapEditorWorldSnapshot(
+        WBenchWorld.WBenchWorldSnapshotData wBenchWorldSnapshotData) implements ISnapshot<WBenchWorld> {
 
     @Override
     public void fix(WBenchWorld world) {

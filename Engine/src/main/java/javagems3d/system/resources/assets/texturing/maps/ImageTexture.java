@@ -35,7 +35,7 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         this.bindTexture();
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         GL46.glTexImage2D(this.getTextureAttachment(), 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
-        if (properties != null && ((Properties) properties).isMipMap()) {
+        if (properties != null && ((Properties) properties).mipMap()) {
             int maxDimension = Math.max(this.getSize().x, this.getSize().y);
             int maxLevel = (int) Math.floor(Math.log(maxDimension) / Math.log(2));
             GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, maxLevel);
@@ -54,18 +54,18 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         }
         Properties properties1 = (Properties) this.getProperties();
         //int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
-        boolean linear = properties1.isLinearFiltration();
-        boolean anisotropic = properties1.isAnisotropicFiltration();
+        boolean linear = properties1.linearFiltration();
+        boolean anisotropic = properties1.anisotropicFiltration();
 
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
         }
         this.samplerId = GL46.glGenSamplers();
-        int bitMin = properties1.isMipMap() ? (linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST) : (linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        int bitMin = properties1.mipMap() ? (linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST) : (linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, bitMin);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, properties1.shouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, properties1.shouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
         if (anisotropic) {
             GL46.glSamplerParameterf(this.getSamplerId(), EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
@@ -131,48 +131,16 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         return true;
     }
 
-    public static final class Properties implements IProperties {
-        private final boolean linearFiltration;
-        private final boolean shouldBeRepeated;
-        private final boolean anisotropicFiltration;
-        private final boolean qualityAffected;
-        private final boolean mipMap;
+    public record Properties(boolean mipMap, boolean linearFiltration, boolean shouldBeRepeated,
+                             boolean anisotropicFiltration, boolean qualityAffected) implements IProperties {
+            public Properties(boolean mipMap, boolean qualityAffected) {
+                this(mipMap, true, true, true, qualityAffected);
+            }
 
-        public Properties(boolean mipMap, boolean qualityAffected) {
-            this(mipMap, true, true, true, qualityAffected);
-        }
+            public Properties() {
+                this(true, true, true, true, false);
+            }
 
-        public Properties() {
-            this(true, true, true, true, false);
-        }
-
-        public Properties(boolean mipMap, boolean linearFilter, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) {
-            this.linearFiltration = linearFilter;
-            this.shouldBeRepeated = shouldBeRepeated;
-            this.anisotropicFiltration = anisotropicFiltration;
-            this.qualityAffected = qualityAffected;
-            this.mipMap = mipMap;
-        }
-
-        public boolean isMipMap() {
-            return this.mipMap;
-        }
-
-        public boolean isLinearFiltration() {
-            return this.linearFiltration;
-        }
-
-        public boolean isShouldBeRepeated() {
-            return this.shouldBeRepeated;
-        }
-
-        public boolean isAnisotropicFiltration() {
-            return this.anisotropicFiltration;
-        }
-
-        public boolean isQualityAffected() {
-            return this.qualityAffected;
-        }
     }
 
     public static final class Data {

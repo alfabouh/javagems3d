@@ -66,11 +66,11 @@ public class ShaderHandler {
 
     private void initUniformBuffers(Set<UniformBufferObject> uniformBufferObjects) {
         for (UniformBufferObject uniformBufferObject : uniformBufferObjects.stream().filter(Objects::nonNull).collect(Collectors.toList())) {
-            UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.getId());
-            if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
-                Log.get().info("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+            UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.id());
+            if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.binding(), uniformBufferObject.bufferSize())) {
+                Log.get().info("[" + this.id + "] Linked UBO " + uniformBufferObject.id() + " at " + uniformBufferObject.binding());
             } else {
-                Log.get().error("[" + this.id + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                Log.get().error("[" + this.id + "] Couldn't link " + uniformBufferObject.id() + " at " + uniformBufferObject.binding());
             }
             this.uniformBufferProgramMap.put(uniformBufferObject, uniformBufferProgram);
         }

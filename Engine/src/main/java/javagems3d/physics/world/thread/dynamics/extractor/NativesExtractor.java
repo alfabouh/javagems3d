@@ -7,7 +7,6 @@ import javagems3d.system.service.os.OS;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 
 import java.io.IOException;
@@ -24,8 +23,8 @@ public abstract class NativesExtractor {
             throw new JGemsIOException("Internal Native lib picking error");
         }
         pathToFile.toFile().mkdirs();
-        try (InputStream is = JGems3D.getInputStream(new JGemsPathSource(new JGemsPath(file.getFirst() + file.getSecond()), ISource.Source.INSIDE_JAR))) {
-            Path path = Paths.get(pathToFile.toString(), file.getSecond());
+        try (InputStream is = JGems3D.getInputStream(new JGemsPathSource(new JGemsPath(file.first() + file.second()), ISource.Source.INSIDE_JAR))) {
+            Path path = Paths.get(pathToFile.toString(), file.second());
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
             Log.get().info("Extracted Native: " + file);
             return path.toString();

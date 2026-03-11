@@ -21,8 +21,7 @@ public abstract class UIInteractiveElement extends UIElement {
 
     protected void handleInput() {
         IController controller = this.getController();
-        if (controller instanceof MouseKeyboardController) {
-            MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controller;
+        if (controller instanceof MouseKeyboardController mouseKeyboardController) {
             boolean flag = mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed();
             if (!flag) {
                 this.isMLKPressedOutsideButton = false;

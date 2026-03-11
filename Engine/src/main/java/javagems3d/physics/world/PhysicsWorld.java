@@ -1,7 +1,6 @@
 package javagems3d.physics.world;
 
 import api.events.EventBus;
-import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
@@ -34,7 +33,7 @@ public final class PhysicsWorld implements IWorld {
     public void onWorldUpdate() {
         if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             this.getWorldObjectsContainer().onUpdate();
-            JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
+            //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             this.ticks += 1;
             EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.POST, this));
         }

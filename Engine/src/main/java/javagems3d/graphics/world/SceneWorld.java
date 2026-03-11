@@ -2,7 +2,6 @@ package javagems3d.graphics.world;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
@@ -75,12 +74,12 @@ public final class SceneWorld implements IRenderWorld {
     @Override
     public void onWorldUpdate() {
         if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
-            JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
-            JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
+            //JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
+            //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             Iterator<Pair<WorldItem, ILightAttached>> iterator = this.lightAttachmentQueue.iterator();
             while (iterator.hasNext()) {
                 Pair<WorldItem, ILightAttached> pair = iterator.next();
-                this.addWorldItemLight(pair.getFirst(), pair.getSecond());
+                this.addWorldItemLight(pair.first(), pair.second());
                 iterator.remove();
             }
             this.ticks += 1;
@@ -101,15 +100,14 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
-        this.getParticlesEmitter().onUpdateParticles(frameTicking.getFrameDeltaTime(), this);
+        this.getParticlesEmitter().onUpdateParticles(frameTicking.frameDeltaTime(), this);
 
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
 
             if (sceneObject.isDead()) {
-                if (sceneObject instanceof SceneEntity) {
-                    SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
+                if (sceneObject instanceof SceneEntity abstractSceneEntity) {
                     this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
                 }
                 sceneObject.onDestroyWithEvent(this);
@@ -119,17 +117,15 @@ public final class SceneWorld implements IRenderWorld {
 
             sceneObject.updateAnimation();
 
-            if (sceneObject instanceof IWorldTicked) {
-                IWorldTicked worldTicked = (IWorldTicked) sceneObject;
+            if (sceneObject instanceof IWorldTicked worldTicked) {
                 worldTicked.onUpdateWithEvent(this);
             }
 
-            if (sceneObject instanceof SceneEntity) {
-                SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
+            if (sceneObject instanceof SceneEntity abstractSceneEntity) {
                 if (refresh) {
                     abstractSceneEntity.refreshInterpolatingState();
                 }
-                abstractSceneEntity.updateRenderPos(frameTicking.getPhysicsSyncTicks());
+                abstractSceneEntity.updateRenderPos(frameTicking.physicsSyncTicks());
                 abstractSceneEntity.updateModelTranslation();
             }
         }
@@ -149,8 +145,7 @@ public final class SceneWorld implements IRenderWorld {
         while (iterator.hasNext()) {
             SceneObject modeledSceneObject = iterator.next();
             iterator.remove();
-            if (modeledSceneObject instanceof SceneEntity) {
-                SceneEntity abstractSceneEntity = (SceneEntity) modeledSceneObject;
+            if (modeledSceneObject instanceof SceneEntity abstractSceneEntity) {
                 abstractSceneEntity.onDestroyWithEvent(this);
             }
         }
@@ -220,8 +215,7 @@ public final class SceneWorld implements IRenderWorld {
         this.getSceneObjects().add(sceneObject);
         sceneObject.onSpawnWithEvent(this);
 
-        if (sceneObject instanceof SceneEntity) {
-            SceneEntity sceneEntity = (SceneEntity) sceneObject;
+        if (sceneObject instanceof SceneEntity sceneEntity) {
             this.getObjectMap().put(sceneEntity.getWorldItem().getItemId(), sceneEntity);
         }
     }
@@ -230,8 +224,7 @@ public final class SceneWorld implements IRenderWorld {
         this.getSceneObjects().remove(sceneObject);
         sceneObject.onDestroyWithEvent(this);
 
-        if (sceneObject instanceof SceneEntity) {
-            SceneEntity sceneEntity = (SceneEntity) sceneObject;
+        if (sceneObject instanceof SceneEntity sceneEntity) {
             this.getObjectMap().remove(sceneEntity.getWorldItem().getItemId());
         }
     }

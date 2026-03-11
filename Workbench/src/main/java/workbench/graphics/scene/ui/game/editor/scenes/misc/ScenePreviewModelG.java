@@ -28,7 +28,7 @@ public class ScenePreviewModelG {
 
     private void parseModelsTree(AbstractObjectsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
         for (GameResourceModelAsset asset : folder.getObjectsThere()) {
-            allModelsAsset.add(new Pair<>(asset.getRelativePath(), asset));
+            allModelsAsset.add(new Pair<>(asset.relativePath(), asset));
         }
         for (AbstractObjectsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
             this.parseModelsTree(child, false, allModelsAsset);
@@ -39,39 +39,39 @@ public class ScenePreviewModelG {
         ModelAssetPreview modelAssetPreview = this.resourcesInterfaceComponentG.getModelAssetsTreeDrawer().getPreviewWrapperObject();
         if (modelAssetPreview != null) {
             modelAssetPreview.updateAnimation();
-            if (ImGui.collapsingHeader("Model: " + modelAssetPreview.getAsset().getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Model: " + modelAssetPreview.getAsset().name(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##model_preview", ImGui.getColumnWidth(), 300, true);
                 ImGui.indent();
                 ImGui.bullet();
                 ImGui.text("Nodes");
                 int totalVertexes = 0;
                 int totalTriangles = 0;
-                for (MeshNode<?> node : modelAssetPreview.getAsset().getMeshGroup().getAllNodes()) {
+                for (MeshNode<?> node : modelAssetPreview.getAsset().meshGroup().getAllNodes()) {
                     totalVertexes += node.getMeshData().totalVertexes();
                     totalTriangles += node.getMeshData().numVertexIndexes() / 3;
                 }
-                ImGui.textWrapped("Total Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getAllNodes().size());
-                ImGui.textWrapped("Solid Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getSolidNodes().size());
-                ImGui.textWrapped("Transparent Nodes: " + modelAssetPreview.getAsset().getMeshGroup().getBlendedTransparencyNodes().size());
+                ImGui.textWrapped("Total Nodes: " + modelAssetPreview.getAsset().meshGroup().getAllNodes().size());
+                ImGui.textWrapped("Solid Nodes: " + modelAssetPreview.getAsset().meshGroup().getSolidNodes().size());
+                ImGui.textWrapped("Transparent Nodes: " + modelAssetPreview.getAsset().meshGroup().getBlendedTransparencyNodes().size());
                 ImGui.textWrapped("Total Vertexes: " + totalVertexes);
                 ImGui.textWrapped("Total Triangles: " + totalTriangles);
-                if (!modelAssetPreview.getAsset().getMeshGroup().getAnimationsList().isEmpty()) {
+                if (!modelAssetPreview.getAsset().meshGroup().getAnimationsList().isEmpty()) {
                     boolean hasAnimation = modelAssetPreview.getAnimationData() != null && modelAssetPreview.getAnimationData().getCurrentAnimation() != null;
 
                     ImGui.separator();
                     ImGui.bullet();
                     ImGui.text("Animations");
-                    ImGui.textWrapped("Total Animations: " + modelAssetPreview.getAsset().getMeshGroup().getAnimationsNum());
+                    ImGui.textWrapped("Total Animations: " + modelAssetPreview.getAsset().meshGroup().getAnimationsNum());
                     List<String> animations = new ArrayList<>();
                     if (hasAnimation) {
-                        animations.add("(*) " + modelAssetPreview.getAnimationData().getCurrentAnimation().getName());
+                        animations.add("(*) " + modelAssetPreview.getAnimationData().getCurrentAnimation().name());
                         animations.add("* None");
                     } else {
                         animations.add("Select...");
                         animations.add("* None");
                     }
-                    for (Animation animation : modelAssetPreview.getAsset().getMeshGroup().getAnimationsList()) {
-                        animations.add(animation.getName());
+                    for (Animation animation : modelAssetPreview.getAsset().meshGroup().getAnimationsList()) {
+                        animations.add(animation.name());
                     }
                     ImInt currentAnimation = new ImInt(0);
                     if (ImGui.combo("Animation", currentAnimation, animations.toArray(new String[]{}))) {
@@ -80,7 +80,7 @@ public class ScenePreviewModelG {
                         if (hasAnimation) {
                             ImGui.indent();
                             ImGui.text("FPS: " + modelAssetPreview.getAnimationData().getFps());
-                            ImGui.text("Duration: " + modelAssetPreview.getAnimationData().getCurrentAnimation().getDuration());
+                            ImGui.text("Duration: " + modelAssetPreview.getAnimationData().getCurrentAnimation().duration());
                             ImGui.text("Frame Count: " + modelAssetPreview.getAnimationData().getCurrentAnimation().getFrameCount());
                             ImGui.unindent();
                         }

@@ -54,7 +54,7 @@ public abstract class GameResourceWorldObjectAsset implements IAsset {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.getID();
     }
 }

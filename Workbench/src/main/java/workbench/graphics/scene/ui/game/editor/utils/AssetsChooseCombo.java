@@ -12,10 +12,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class AssetsChooseCombo <T extends AbstractObjectsFolder.ObjectWithName> {
-    private final Supplier<AbstractObjectsFolder<T>> folderSupplier;
-    private final String tab;
-
+public record AssetsChooseCombo<T extends AbstractObjectsFolder.ObjectWithName>(String tab,
+                                                                                Supplier<AbstractObjectsFolder<T>> folderSupplier) {
     public AssetsChooseCombo(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> folderSupplier) {
         this.folderSupplier = folderSupplier;
         this.tab = tab;
@@ -27,17 +25,17 @@ public class AssetsChooseCombo <T extends AbstractObjectsFolder.ObjectWithName> 
         boolean checkExtraction = extractedAsset != null;
 
         if (checkExtraction) {
-            allAssets.add(new Pair<>("(*) " + extractedAsset.getName(), null));
+            allAssets.add(new Pair<>("(*) " + extractedAsset.name(), null));
             allAssets.add(new Pair<>("None", null));
         } else {
             allAssets.add(new Pair<>("Select...", null));
         }
 
-        this.parseTree(this.getFolderSupplier().get(), allAssets);
-        String[] listForCombo = allAssets.stream().map(Pair::getFirst).collect(Collectors.toList()).toArray(new String[]{});
+        this.parseTree(this.folderSupplier().get(), allAssets);
+        String[] listForCombo = allAssets.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
         ImInt selectInt = new ImInt(0);
-        if (ImGui.combo(this.getTab(), selectInt, listForCombo)) {
-            T getAsset = allAssets.get(selectInt.get()).getSecond();
+        if (ImGui.combo(this.tab(), selectInt, listForCombo)) {
+            T getAsset = allAssets.get(selectInt.get()).second();
             if (getAsset != null) {
                 onSetObj.accept(getAsset);
             } else {
@@ -52,18 +50,10 @@ public class AssetsChooseCombo <T extends AbstractObjectsFolder.ObjectWithName> 
 
     public static <E extends AbstractObjectsFolder.ObjectWithName> void parseTreeS(AbstractObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
         for (E asset : folder.getObjectsThere()) {
-            allModelsAsset.add(new Pair<>(folder.getHierarchy() + "/" + asset.getName(), asset));
+            allModelsAsset.add(new Pair<>(folder.getHierarchy() + "/" + asset.name(), asset));
         }
         for (AbstractObjectsFolder<E> child : folder.getFoldersThere()) {
             AssetsChooseCombo.parseTreeS(child, allModelsAsset);
         }
-    }
-
-    public String getTab() {
-        return this.tab;
-    }
-
-    public Supplier<AbstractObjectsFolder<T>> getFolderSupplier() {
-        return this.folderSupplier;
     }
 }

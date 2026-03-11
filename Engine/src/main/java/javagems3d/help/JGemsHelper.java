@@ -240,7 +240,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Controller {
+    public static final class Controller {
         public JGemsControllerDispatcher getControllerDispatcher() {
             return JGemsHelper.screen().getScreen().getControllerDispatcher();
         }
@@ -254,15 +254,13 @@ public final class JGemsHelper {
         }
 
 
-        public boolean setCursorInCenter() {
+        public void setCursorInCenter() {
             IController controller = this.getCurrentController();
-            if (controller instanceof MouseKeyboardController) {
-                MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controller;
+            if (controller instanceof MouseKeyboardController mouseKeyboardController) {
                 mouseKeyboardController.setCursorInCenter();
-                return true;
+                return;
             }
             Log.get().warn("Couldn't find cursor. Check your controller");
-            return false;
         }
 
         public void attachControllerTo(IController controller, IControllable remoteController) {
@@ -408,7 +406,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Localisation {
+    public static final class Localisation {
         public JGemsLocalisation getLocalisation() {
             return JGems3D.get().getLocalisation();
         }
@@ -437,7 +435,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Render {
+    public static final class Render {
         public static final int DIFFUSE_CODE = 1 << 2;
         public static final int NORMALS_CODE = 1 << 3;
         public static final int EMISSION_CODE = 1 << 4;
@@ -554,15 +552,14 @@ public final class JGemsHelper {
             shaderManager.enableWarns();
         }
 
-        public boolean performEmptyAnimationsInfo(@NotNull JGemsShaderManager shaderManager) {
+        public void performEmptyAnimationsInfo(@NotNull JGemsShaderManager shaderManager) {
             shaderManager.disableWarns();
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(-1));
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(-1));
             shaderManager.enableWarns();
-            return false;
         }
 
-        public boolean performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
+        public void performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
             shaderManager.disableWarns();
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
@@ -571,7 +568,6 @@ public final class JGemsHelper {
                 shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
             }
             shaderManager.enableWarns();
-            return false;
         }
 
         public void performShadowsInfo(IEnvironment environment, JGemsShaderManager shaderManager) {
@@ -628,7 +624,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Math {
+    public static final class Math {
         public float interpolate(float a, float b, float f) {
             return a + f * (b - a);
         }
@@ -667,7 +663,7 @@ public final class JGemsHelper {
         }
     }
 
-    public final class Files {
+    public static final class Files {
         public String readTextFromFile(@NotNull JGemsPathSource path) {
             StringBuilder textBuilder = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.getInputStream(path), StandardCharsets.UTF_8))) {

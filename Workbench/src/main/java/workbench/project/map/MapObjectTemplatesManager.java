@@ -15,9 +15,9 @@ public class MapObjectTemplatesManager {
     private final Map<ICubeMapProgram, SkyBoxTemplate> skyBoxesCache;
 
     public MapObjectTemplatesManager() {
-        this.entities = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
-        this.props = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
-        this.markers = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);;
+        this.entities = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.props = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.markers = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
         this.skyBoxes = new LinkedHashMap<>();
         this.skyBoxesCache = new HashMap<>();
     }

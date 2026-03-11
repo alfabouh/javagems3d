@@ -11,7 +11,6 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.I
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
-import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -292,7 +291,7 @@ public class SceneInterfaceComponentM {
 
         Vector3f origin = this.getEditorInterface().getOpenGLRenderer().getCamera().getCamPosition();
         List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjects(this.getEditorInterface().getWorld().getEndFrameVisibleObjects(), origin, camRay);
-        return sceneObjects.isEmpty() ? null : (WBenchObject<?>) sceneObjects.get(0).getFirst();
+        return sceneObjects.isEmpty() ? null : (WBenchObject<?>) sceneObjects.get(0).first();
     }
 
     public List<Pair<SceneObject, Vector3f>> getIntersectedObjects(Collection<? extends SceneObject> objects, Vector3f origin, Vector3f ray) {
@@ -324,7 +323,7 @@ public class SceneInterfaceComponentM {
             }
         }
 
-        sceneObjects.sort(Comparator.comparingDouble(e -> e.getSecond().distance(origin)));
+        sceneObjects.sort(Comparator.comparingDouble(e -> e.second().distance(origin)));
         return sceneObjects;
     }
 

@@ -25,10 +25,9 @@ public final class JGemsPathSource implements ISource {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof JGemsPathSource)) {
+        if (!(object instanceof JGemsPathSource that)) {
             return false;
         }
-        JGemsPathSource that = (JGemsPathSource) object;
         return that.getSource().equals(this.getSource()) && that.getPath().equals(this.getPath());
     }
 

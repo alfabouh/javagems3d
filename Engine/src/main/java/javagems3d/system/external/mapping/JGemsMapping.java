@@ -2,8 +2,6 @@ package javagems3d.system.external.mapping;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import api.scripting.legacy.JGemsAPIScriptingEngine;
-import api.scripting.legacy.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -65,7 +63,7 @@ public final class JGemsMapping {
         }
         this.currentLoadedMap = null;
         this.getSceneWorld().getEnvironment().setEnvironmentDefaults();
-        JGemsAPI.getAPIScripting().getGameWorldJS().clear();
+        //JGemsAPI.getAPIScripting().getGameWorldJS().clear();
         this.destroyWorlds();
     }
     
@@ -82,34 +80,34 @@ public final class JGemsMapping {
         this.createWorlds();
 
         EventLauncher.pushEvent(new EventBus.MapLoading(EventBus.Run.PRE, this.getPhysicsWorld(), this.getSceneWorld()));
-        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onInitialization, JGemsAPI.getAPIScripting().createInitializationJS())) {
-            JGemsAPIScriptingEngine.warn(APIScriptsListing.onInitialization);
-        }
+        //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onInitialization, JGemsAPI.getAPIScripting().createInitializationJS())) {
+        //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onInitialization);
+        //}
         processor.init();
 
         processor.setGlobalResources(this.getResourceManager().getGlobalResources());
         processor.setLocalResources(this.getResourceManager().getLocalResources());
         processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground());
         processor.onSetupFog(environment.getFogScene());
-        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
-            JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
-        }
+       //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+       //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
+       //}
         processor.preProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         processor.onProcessing(this.getPhysicsWorld(), this.getSceneWorld());
 
         if (processor.getPlayerConstructor() != null) {
             Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = processor.getPlayerConstructor().constructPlayer(this.getPhysicsWorld());
-            player = pair.getFirst();
-            JGemsHelper.world().addWorldItem((WorldItem) player, pair.getSecond() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.getSecond());
+            player = pair.first();
+            JGemsHelper.world().addWorldItem((WorldItem) player, pair.second() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.second());
             JGemsHelper.controller().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
             JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
         } else {
             JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
         }
         processor.postProcessing(this.getPhysicsWorld(), this.getSceneWorld());
-        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
-            JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPostGeneration);
-        }
+        //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+        //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPostGeneration);
+        //}
 
         this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
 

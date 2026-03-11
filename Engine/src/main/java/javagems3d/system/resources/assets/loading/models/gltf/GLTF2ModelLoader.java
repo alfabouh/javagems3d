@@ -36,7 +36,6 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,7 +129,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             List<Animation> animations = this.readAnimations(scene);
             List<Material> materials = readMaterials(scene, systemResources);
             systemResources.processMessage("Building Mesh Group...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
-            this.processNodes(scene.getNodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), buffer != null ? node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node) : null);
+            this.processNodes(scene.nodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), buffer != null ? node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node) : null);
 
             if (animations != null) {
                 group.loadAnimations(animations);
@@ -162,7 +161,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             List<Material> materials = this.readMaterials(scene, systemResources);
             systemResources.processMessage("Building Mesh Buffer...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
 
-            this.processNodes(scene.getNodes(), materials, null, node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node));
+            this.processNodes(scene.nodes(), materials, null, node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node));
 
             if (animations != null) {
                 buffer.loadAnimations(animations);
@@ -188,7 +187,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             for (GLTF2Primitive primitive : node.getMesh().getPrimitives()) {
                 int matIdx = primitive.getMaterialId();
                 Material material = (matIdx >= 0 && matIdx < materials.size()) ? materials.get(matIdx) : new Material();
-                SkeletonData skeleton = (primitive.getWEIGHTS_0() != null && primitive.getJOINTS_0() != null) ? new SkeletonData(primitive.getWEIGHTS_0().getObjects(), primitive.getJOINTS_0().getObjects()) : null;
+                SkeletonData skeleton = (primitive.getWEIGHTS_0() != null && primitive.getJOINTS_0() != null) ? new SkeletonData(primitive.getWEIGHTS_0().objects(), primitive.getJOINTS_0().objects()) : null;
 
                 if (renderMeshConsumer != null) {
                     RenderMesh renderMesh = this.createRenderMesh(primitive, skeleton);
@@ -206,8 +205,8 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
     private List<Material> readMaterials(GLTF2Scene gltf2Scene, SystemResources systemResources) {
         List<Material> materials = new ArrayList<>();
-        for (GLTF2Material gltfMat : gltf2Scene.getMaterials()) {
-            Material mat = this.readMaterial(gltfMat, systemResources, this.getPathToMainFile().getPath().getAbsolutePathDirectory().getFullPath());
+        for (GLTF2Material gltfMat : gltf2Scene.materials()) {
+            Material mat = this.readMaterial(gltfMat, systemResources, this.getPathToMainFile().getPath().getAbsolutePathDirectory().fullPath());
             systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(mat);
             materials.add(mat);
         }
@@ -215,26 +214,26 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     }
 
     private List<Animation> readAnimations(GLTF2Scene gltf2Scene) {
-        if (gltf2Scene.getAnimations() == null || gltf2Scene.getSkins() == null) {
+        if (gltf2Scene.animations() == null || gltf2Scene.skins() == null) {
             return null;
         }
 
         List<Animation> animations = new ArrayList<>();
-        for (GLTF2Animations gltf2Animation : gltf2Scene.getAnimations()) {
+        for (GLTF2Animations gltf2Animation : gltf2Scene.animations()) {
             Map<Float, Map<Integer, Pair<GLTF2Skin, Set<DataOnTime<?>>>>> timeMap = new TreeMap<>(Comparator.comparingDouble((k) -> k));
 
-            for (GLTF2Animations.Channel channel : gltf2Animation.getChannels()) {
-                final int nodeId = channel.getTargetNode();
-                GLTF2Animations.Sampler gltf2Sampler = channel.getSampler();
+            for (GLTF2Animations.Channel channel : gltf2Animation.channels()) {
+                final int nodeId = channel.targetNode();
+                GLTF2Animations.Sampler gltf2Sampler = channel.sampler();
 
-                for (int i = 0; i < gltf2Sampler.getTimeStamps().size(); i++) {
-                    float time = gltf2Sampler.getTimeStamps().getObjects().get(i);
+                for (int i = 0; i < gltf2Sampler.timeStamps().size(); i++) {
+                    float time = gltf2Sampler.timeStamps().objects().get(i);
                     if (!timeMap.containsKey(time)) {
                         timeMap.put(time, new HashMap<>());
                     }
                     DataOnTime<?> data = null;
-                    List<Float> floats = gltf2Sampler.getDataOnTime().getObjects();
-                    switch (channel.getPath()) {
+                    List<Float> floats = gltf2Sampler.dataOnTime().objects();
+                    switch (channel.path()) {
                         case TRANSLATE: {
                             data = new TranslationOnTime(new Vector3f(floats.get(i * 3), floats.get(i * 3 + 1), floats.get(i * 3 + 2)), time);
                             break;
@@ -251,22 +250,22 @@ public class GLTF2ModelLoader implements ILoadingHelper {
                             break;
                         }
                     }
-                    int skinId = gltf2Scene.getNodes().get(nodeId).getSkin();
+                    int skinId = gltf2Scene.nodes().get(nodeId).getSkin();
                     if (skinId < 0) {
                         skinId = 0;
                     }
-                    final GLTF2Skin skin = gltf2Scene.getSkins().get(skinId);
-                    int nodeNew = gltf2Scene.getSkins().get(skinId).getTargetIdJointId().get(nodeId);
+                    final GLTF2Skin skin = gltf2Scene.skins().get(skinId);
+                    int nodeNew = gltf2Scene.skins().get(skinId).getTargetIdJointId().get(nodeId);
                     if (!timeMap.get(time).containsKey(nodeNew)) {
                         timeMap.get(time).put(nodeNew, new Pair<>(skin, new HashSet<>()));
                     }
-                    timeMap.get(time).get(nodeNew).getSecond().add(data);
+                    timeMap.get(time).get(nodeNew).second().add(data);
                 }
             }
 
             List<AnimationFrame> animationFrames = new ArrayList<>();
             for (Map.Entry<Float, Map<Integer, Pair<GLTF2Skin, Set<DataOnTime<?>>>>> entry : timeMap.entrySet()) {
-                for (GLTF2Node node : gltf2Scene.getNodes()) {
+                for (GLTF2Node node : gltf2Scene.nodes()) {
                     node.setLocalAnimationTransform(null);
                 }
                 Matrix4f[] matrices = new Matrix4f[JGemsConfig.SYSTEM.ANIM_MAX_BONES];
@@ -279,7 +278,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
                     Quaternionf rotation = new Quaternionf().identity();
                     Vector3f scale = new Vector3f(1, 1, 1);
 
-                    final Set<DataOnTime<?>> dataOntimeSet = entryInner.getValue().getSecond();
+                    final Set<DataOnTime<?>> dataOntimeSet = entryInner.getValue().second();
                     for (DataOnTime<?> data : dataOntimeSet) {
                         switch (data.path()) {
                             case TRANSLATE: {
@@ -297,17 +296,17 @@ public class GLTF2ModelLoader implements ILoadingHelper {
                         }
                     }
                     Matrix4f localAnimationTransformation = new Matrix4f().identity().translate(translation).rotate(rotation).scale(scale);
-                    GLTF2Skin skin = entryInner.getValue().getFirst();
+                    GLTF2Skin skin = entryInner.getValue().first();
                     int nodeIndex = skin.getJoints().get(boneId);
-                    GLTF2Node gltf2Node = gltf2Scene.getNodes().get(nodeIndex);
+                    GLTF2Node gltf2Node = gltf2Scene.nodes().get(nodeIndex);
                     gltf2Node.setLocalAnimationTransform(localAnimationTransformation);
                 }
 
                 for (Map.Entry<Integer, Pair<GLTF2Skin, Set<DataOnTime<?>>>> entryInner : entry.getValue().entrySet()) {
                     final int boneId = entryInner.getKey();
-                    GLTF2Skin skin = entryInner.getValue().getFirst();
+                    GLTF2Skin skin = entryInner.getValue().first();
                     int nodeIndex = skin.getJoints().get(boneId);
-                    GLTF2Node gltf2Node = gltf2Scene.getNodes().get(nodeIndex);
+                    GLTF2Node gltf2Node = gltf2Scene.nodes().get(nodeIndex);
                     @NotNull Matrix4f inverseBindingMatrix = skin.getInverseBindingMatrices().get(boneId);
                     matrices[boneId] = gltf2Node.computeAnimationTransform(inverseBindingMatrix);
                 }
@@ -316,27 +315,27 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             }
 
             @SuppressWarnings("all") final float duration = timeMap.keySet().stream().max(Comparator.comparingDouble((e) -> e)).get();
-            Animation animation = new Animation(gltf2Animation.getName(), duration, 24.0f, animationFrames);
+            Animation animation = new Animation(gltf2Animation.name(), duration, 24.0f, animationFrames);
             animations.add(animation);
 
-            Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPathToMainFile() + ". " + animation.getName());
-            systemResources.processMessage("Loaded animation(size:" + animations.size() + "). " + animation.getName(), 0xff00ff, SystemResources.ResLoadSysMessageType.LOG);
+            Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPathToMainFile() + ". " + animation.name());
+            systemResources.processMessage("Loaded animation(size:" + animations.size() + "). " + animation.name(), 0xff00ff, SystemResources.ResLoadSysMessageType.LOG);
         }
 
         return animations;
     }
 
     private DataMesh createDataMesh(GLTF2Primitive gltf2Primitive, SkeletonData skeletonData) {
-        List<Integer> vertices = gltf2Primitive.getIndices().getObjects();
+        List<Integer> vertices = gltf2Primitive.getIndices().objects();
         this.countVertexes += vertices.size();
         if (this.countVertexes > JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL) {
             throw new JGemsIOException("Reached max vertexes in model: " + JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL);
         }
-        List<Float> textureCoordinates = gltf2Primitive.getTEXCOORD_0().getObjects();
-        List<Float> positions = gltf2Primitive.getPOSITION().getObjects();
-        List<Float> normals = gltf2Primitive.getNORMAL().getObjects();
-        List<Float> tangents = gltf2Primitive.getTANGENT().getObjects();
-        List<Float> biTangents = gltf2Primitive.getBiTANGENT().getObjects();
+        List<Float> textureCoordinates = gltf2Primitive.getTEXCOORD_0().objects();
+        List<Float> positions = gltf2Primitive.getPOSITION().objects();
+        List<Float> normals = gltf2Primitive.getNORMAL().objects();
+        List<Float> tangents = gltf2Primitive.getTANGENT().objects();
+        List<Float> biTangents = gltf2Primitive.getBiTANGENT().objects();
 
         if (textureCoordinates.isEmpty()) {
             int totalElements = (positions.size() / 3) * 2;
@@ -354,24 +353,24 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
 
         if (skeletonData != null) {
-            dataMesh.putVertexBufferI(DefaultAttributePointers.ATTR_BONES_INDEXES, skeletonData.getBoneIds());
-            dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_BONES_WEIGHTS, skeletonData.getWeights());
+            dataMesh.putVertexBufferI(DefaultAttributePointers.ATTR_BONES_INDEXES, skeletonData.boneIds());
+            dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_BONES_WEIGHTS, skeletonData.weights());
         }
 
         return dataMesh;
     }
 
     private RenderMesh createRenderMesh(GLTF2Primitive gltf2Primitive, SkeletonData skeletonData) {
-        List<Integer> vertices = gltf2Primitive.getIndices().getObjects();
+        List<Integer> vertices = gltf2Primitive.getIndices().objects();
         this.countVertexes += vertices.size();
         if (this.countVertexes > JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL) {
             throw new JGemsIOException("Reached max vertexes in model: " + JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL);
         }
-        List<Float> textureCoordinates = gltf2Primitive.getTEXCOORD_0().getObjects();
-        List<Float> positions = gltf2Primitive.getPOSITION().getObjects();
-        List<Float> normals = gltf2Primitive.getNORMAL().getObjects();
-        List<Float> tangents = gltf2Primitive.getTANGENT().getObjects();
-        List<Float> biTangents = gltf2Primitive.getBiTANGENT().getObjects();
+        List<Float> textureCoordinates = gltf2Primitive.getTEXCOORD_0().objects();
+        List<Float> positions = gltf2Primitive.getPOSITION().objects();
+        List<Float> normals = gltf2Primitive.getNORMAL().objects();
+        List<Float> tangents = gltf2Primitive.getTANGENT().objects();
+        List<Float> biTangents = gltf2Primitive.getBiTANGENT().objects();
 
         if (textureCoordinates.isEmpty()) {
             int totalElements = (positions.size() / 3) * 2;
@@ -403,8 +402,8 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         if (skeletonData != null) {
             IntegerVertexAttribute vaBonesIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONES_INDEXES);
             FloatVertexAttribute vaBonesWeights = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BONES_WEIGHTS);
-            vaBonesIndexes.put(skeletonData.getBoneIds());
-            vaBonesWeights.put(skeletonData.getWeights());
+            vaBonesIndexes.put(skeletonData.boneIds());
+            vaBonesWeights.put(skeletonData.weights());
 
             renderMesh.putVertexAttribute(vaBonesIndexes);
             renderMesh.putVertexAttribute(vaBonesWeights);
@@ -452,7 +451,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             }
 
             if (diffuseTexture != null) {
-                diffuseMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, diffuseTexture.getUri()), this.getPathToMainFile().getSource()), nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, imageProperties);
+                diffuseMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, diffuseTexture.uri()), this.getPathToMainFile().getSource()), nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, imageProperties);
                // if (computeTransparentPixels != null) {
                //     textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, diffuseMap);
                // }
@@ -460,7 +459,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture emissionTexture = gltf2Material.getEmissionTexture();
             if (emissionTexture != null) {
-                emissionMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, emissionTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                emissionMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, emissionTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
                 if (emissionColorVec == null) {
                     emissionColor = new Color3Texture(new Vector3f(1.0f));
                 }
@@ -468,7 +467,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture metallicRoughnessTexture = gltf2Material.getMetallicRoughnessTexture();
             if (metallicRoughnessTexture != null) {
-                metallicRoughnessMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, metallicRoughnessTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                metallicRoughnessMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, metallicRoughnessTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.5f;
             } else {
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.0f;
@@ -478,7 +477,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture normalsTexture = gltf2Material.getNormalTexture();
             if (normalsTexture != null) {
-                normalsMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, normalsTexture.getUri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                normalsMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, normalsTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
             }
         } catch (JGemsException e) {
             Log.get().exception(e);

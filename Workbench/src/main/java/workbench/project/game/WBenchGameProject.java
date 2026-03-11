@@ -15,11 +15,11 @@ public class WBenchGameProject extends GameProjectData {
         this.currentProjectPath = currentProjectPath1;
     }
 
-    public JGemsPath getCurrentProjectAbsolutePath() {
+    public JGemsPath getProjectAbsolutePath() {
         return this.currentProjectPath.getAbsolutePathDirectory();
     }
 
-    public JGemsPath getCurrentProjectPath() {
+    public JGemsPath getCurrentProjectFilePath() {
         return this.currentProjectPath;
     }
 

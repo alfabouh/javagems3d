@@ -27,8 +27,8 @@ public final class JGemsAPIManager {
     }
 
     void pullDataFromApplication(JGemsAPIEditorResources apiEditorResources, JGemsAPIData appData, Pair<JGemsApplication, JGemsAppEntry> pair) {
-        JGemsApplication jGemsApplication = pair.getFirst();
-        JGemsAppEntry jGemsAppEntry = pair.getSecond();
+        JGemsApplication jGemsApplication = pair.first();
+        JGemsAppEntry jGemsAppEntry = pair.second();
 
         final AppEventSubscriber appEventSubscriber = new AppEventSubscriber();
         final AppResources appResources = new AppResources();
@@ -37,7 +37,7 @@ public final class JGemsAPIManager {
         jGemsApplication.initResources(appResources);
         this.initEvents(EventBus.class, appEventSubscriber.getClassesWithEvents());
 
-        appData.setApplication(pair.getFirst());
+        appData.setApplication(pair.first());
         appData.setId(jGemsAppEntry.id());
         appData.setAppResources(appResources);
         appData.setAppEventSubscriber(appEventSubscriber);
@@ -56,7 +56,7 @@ public final class JGemsAPIManager {
             return;
         }
         for (PriorityMethod priorityMethod : this.eventMap.get(event.getClass())) {
-            Method method = priorityMethod.getMethod();
+            Method method = priorityMethod.method();
             if (method == null) {
                 SystemLogging.get().getLogManager().warn("Couldn't find event " + event.getClass().getName() + " in API Container");
                 return;
@@ -88,7 +88,7 @@ public final class JGemsAPIManager {
                         Log.get().error(cl.getName() + " should be static class");
                         continue;
                     }
-                    this.eventMap.put((Class<EventBus.IEvent>) cl, new TreeSet<PriorityMethod>(Comparator.comparingInt(PriorityMethod::getPriority).thenComparingInt(System::identityHashCode)));
+                    this.eventMap.put((Class<EventBus.IEvent>) cl, new TreeSet<PriorityMethod>(Comparator.comparingInt(PriorityMethod::priority).thenComparingInt(System::identityHashCode)));
                     Log.get().debug("Created API ClassEvent: " + cl.getName());
                 }
             }
@@ -121,21 +121,6 @@ public final class JGemsAPIManager {
         }
     }
 
-    private static class PriorityMethod {
-        private final Method method;
-        private final int priority;
-
-        public PriorityMethod(Method method, int priority) {
-            this.method = method;
-            this.priority = priority;
-        }
-
-        public Method getMethod() {
-            return this.method;
-        }
-
-        public int getPriority() {
-            return this.priority;
-        }
+    private record PriorityMethod(Method method, int priority) {
     }
 }

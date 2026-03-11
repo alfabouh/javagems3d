@@ -1,6 +1,7 @@
 package workbench.graphics.scene.ui.game;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
@@ -26,7 +27,7 @@ public class GameEditorInterface implements DearUIInterface {
 
     public GameEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview) {
         this.openGLRenderer = openGLRenderer;
-        this.resourcesInterfaceComponentG = new ResourcesInterfaceComponentG();
+        this.resourcesInterfaceComponentG = new ResourcesInterfaceComponentG(this);
         this.actionsInterfaceComponentG = new ActionsInterfaceComponentG(this.resourcesInterfaceComponentG);
         this.windowInterfaceComponentG = new WindowInterfaceComponentG(this.getOpenGLRenderer(), this.actionsInterfaceComponentG, this.resourcesInterfaceComponentG, scenePreview);
         this.clear();

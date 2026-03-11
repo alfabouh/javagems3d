@@ -1,7 +1,9 @@
 package javagems3d.graphics.rendering.ui.dear_imgui;
 
 import imgui.*;
+import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseCursor;
 import imgui.type.ImInt;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
@@ -9,9 +11,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +61,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImGuiIO imGuiIO = ImGui.getIO();
         imGuiIO.setIniFilename(null);
         imGuiIO.setDisplaySize(this.getWindow().getWindowSize().x, this.getWindow().getWindowSize().y);
-
+        imGuiIO.setConfigFlags(ImGui.getIO().getConfigFlags() & ~ImGuiConfigFlags.NoMouseCursorChange);
         ImFontAtlas fontAtlas = imGuiIO.getFonts();
 
         if (pathToJarFont != null) {
@@ -80,7 +80,6 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt height = new ImInt();
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
         this.textureSample = systemResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
-
         this.dearImGuiMesh = new DearUIMesh();
     }
 
@@ -140,7 +139,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImDrawData drawData = ImGui.getDrawData();
 
         ImGuiIO io = ImGui.getIO();
-        float delta = frameTicking.getFrameDeltaTime();
+        float delta = frameTicking.frameDeltaTime();
         if (delta == 0.0f) {
             delta = 1.0f;
         }
@@ -222,6 +221,12 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         io.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
         io.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());
         io.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
+
+        if (ImGui.getMouseCursor() == ImGuiMouseCursor.TextInput) {
+            this.getWindow().setTextCursor();
+        } else {
+            this.getWindow().setArrowCursor();
+        }
     }
 
     public IWindow getWindow() {

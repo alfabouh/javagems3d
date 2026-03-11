@@ -110,7 +110,7 @@ public final class JGemsCore implements ICore {
         this.setLockedResume(false);
         this.getScreen().getControllerDispatcher().setLock(false);
 
-        JGemsAPI.clearScriptingEngine();
+        //JGemsAPI.clearScriptingEngine();
         this.requestsFromThreads.destroyMap = false;
     }
 
