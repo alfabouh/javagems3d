@@ -41,9 +41,9 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
     protected void renderLiquid(SceneWorldLiquid sceneWorldLiquid) {
         JGemsShaderManager shaderManager = sceneWorldLiquid.getRenderLiquidData().shaderManager();
         shaderManager.beginShading();
-        shaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+        shaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
         shaderManager.performModel3DMatrix(new UniformString("model_matrix"), sceneWorldLiquid.getModel());
-        shaderManager.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        shaderManager.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
         shaderManager.performUniform(new UniformString("texture_scaling"), UniformFunctions.VEC2F(sceneWorldLiquid.getTextureScaling()));
         shaderManager.performUniform(new UniformString("camera_pos"), UniformFunctions.VEC3F(this.getOpenGLRenderer().getCamera().getCamPosition()));
         this.renderMeshList3D(this.getOpenGLRenderer(), shaderManager, sceneWorldLiquid.getModel(), MeshStructure3D.TRANSPARENCY_LAYER);

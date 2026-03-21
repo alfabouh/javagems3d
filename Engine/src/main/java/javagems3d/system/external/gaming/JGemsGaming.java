@@ -146,7 +146,7 @@ public class JGemsGaming {
     private void loadSkyBoxesInAPI(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull JGemsPath absolutePathToFiles) {
         GameResourceAssetsFolder<GameResourceSkyboxAsset> skyBoxesAsset = null;
         try {
-            skyBoxesAsset = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(absolutePathToFiles), "_skyBoxes.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceSkyboxAsset>>() {
+            skyBoxesAsset = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(absolutePathToFiles), "_skyBoxes.json").toFile(), new TypeToken<>() {
             }, null);
             skyBoxesAsset.buildRelations();
         } catch (Exception e) {
@@ -160,7 +160,7 @@ public class JGemsGaming {
     private void loadEntityAssetsInAPI(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull JGemsPath absolutePathToFiles) {
         GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder = null;
         try {
-            entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(absolutePathToFiles), "_entities.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceEntityObjectAsset>>() {
+            entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(absolutePathToFiles), "_entities.json").toFile(), new TypeToken<>() {
             }, null);
             entityAssetsFolder.buildRelations();
         } catch (Exception e) {

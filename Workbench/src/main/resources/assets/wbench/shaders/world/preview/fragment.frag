@@ -24,11 +24,11 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     specularF = pow(specularF, 8.0);
     specularC = brightness * specularF * vec4(colors, 1.);
 
-    return diffuseC + specularC + vec4(0.3);
+    return diffuseC + specularC + vec4(0.7);
 }
 
 vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
-    return calc_light_factor(vec3(1.), 1.25, vPos, normalize(vec3(1, 1, 1)), vNormal);
+    return calc_light_factor(vec3(1.), 0.95, vPos, normalize(vec3(1, 1, 1)), vNormal);
 }
 
 void main()

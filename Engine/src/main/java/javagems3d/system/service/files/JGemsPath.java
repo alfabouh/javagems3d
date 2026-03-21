@@ -14,15 +14,15 @@ public record JGemsPath(String fullPath) implements Serializable {
     @Serial
     private static final long serialVersionUID = 142L;
 
-    public JGemsPath(JGemsPath path, JGemsPath... other) {
+    public JGemsPath(@NotNull JGemsPath path, @NotNull JGemsPath... other) {
         this(path.fullPath(), Arrays.stream(other).map(JGemsPath::fullPath).toArray(String[]::new));
     }
 
-    public JGemsPath(JGemsPath path, String... other) {
+    public JGemsPath(@NotNull JGemsPath path, @NotNull String... other) {
         this(path.fullPath(), other);
     }
 
-    public JGemsPath(String root, String... other) {
+    public JGemsPath(@NotNull String root, @NotNull String... other) {
         this(JGemsPath.concatenate(root, other));
     }
 

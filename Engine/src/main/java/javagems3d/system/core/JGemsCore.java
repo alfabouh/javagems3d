@@ -1,5 +1,6 @@
 package javagems3d.system.core;
 
+import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
 import api.system.JGemsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
@@ -15,7 +16,6 @@ import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
-import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +68,8 @@ public final class JGemsCore implements ICore {
     private void createGamingObject(@NotNull String externalGamePath) {
         this.gaming = new JGemsGaming();
         this.gaming.loadExternalGameFiles(JGemsAPI.APIEditorResources().getEditorResourcesManager(), new JGemsPath(externalGamePath));
+        JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
+        JGemsAPI.getAPIScriptingCore().initGame(JGemsGaming.getScriptsFolder(new JGemsPath(externalGamePath)));
     }
 
     private void createMappingObject() {
@@ -110,7 +112,7 @@ public final class JGemsCore implements ICore {
         this.setLockedResume(false);
         this.getScreen().getControllerDispatcher().setLock(false);
 
-        //JGemsAPI.clearScriptingEngine();
+        JGemsAPI.getAPIScriptingCore().getLocalMapContext().close();
         this.requestsFromThreads.destroyMap = false;
     }
 
@@ -161,7 +163,7 @@ public final class JGemsCore implements ICore {
             @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID);
             if (mapPath != null) {
                 try {
-                    JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(new JGemsPathSource(mapPath, ISource.Source.OUTSIDE_JAR)));
+                    JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(new JGemsPath(mapPath)));
                     return true;
                 } catch (Exception e) {
                     Log.get().exception(e);

@@ -81,7 +81,6 @@ public final class JGemsAPI implements Closeable {
             JGemsAPI.appData = new JGemsAPIData();
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             JGemsAPI.apiScriptingCore = new JGemsAPIScriptingCore();
-            //JGemsAPI.apiScriptingCore.initGame(new JGemsPath("f"));
             JGemsAPI.ALLOW_EVENTS = true;
 
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();

@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.game.editor;
 
+import api.system.JGemsAPI;
 import imgui.ImGui;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
@@ -46,7 +47,7 @@ public class WindowInterfaceComponentG {
         this.texturePreviewRenderFunctions = new TexturePreviewEditorWindow();
         this.modelPreviewRenderFunctions = new ModelPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
         this.skyBoxPreviewRenderFunctions = new SkyBoxPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
-        this.scenePreviewScriptG = new ScriptEditorDrawerG(actionsInterfaceComponentG);
+        this.scenePreviewScriptG = new ScriptEditorDrawerG(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController());
 
         this.reset();
     }

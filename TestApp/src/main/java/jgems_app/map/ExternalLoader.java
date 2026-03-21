@@ -12,7 +12,7 @@ import jgems_app.entities.TestPlayer;
 import org.joml.Vector3f;
 
 public class ExternalLoader extends ExternalMapProcessor.Default {
-    public ExternalLoader(JGemsPathSource pathToJG3DFile) {
+    public ExternalLoader(JGemsPath pathToJG3DFile) {
         super(pathToJG3DFile);
     }
 

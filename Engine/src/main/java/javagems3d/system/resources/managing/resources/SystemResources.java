@@ -232,7 +232,7 @@ public abstract class SystemResources implements ISystemResources {
         return s;
     }
 
-    public static Font createFontFromJAR(@NotNull JGemsPathSource path) {
+    public static Font createFontFromFile(@NotNull JGemsPathSource path) {
         Font font1;
         try {
             try (InputStream inputStream = JGems3D.getInputStream(path)) {
@@ -270,7 +270,7 @@ public abstract class SystemResources implements ISystemResources {
             } catch (Exception e) {
                 Log.get().exception(e);
             }
-        })).collect(Collectors.toList());
+        })).toList();
 
         threads.forEach(Thread::start);
         this.getAssetsLoaderSet().stream().filter(assets -> assets.loadMode() == IAssetsInitializer.LaunchMode.REGULAR).sorted(Comparator.comparingInt(e -> e.loadPriority().getPriority())).forEach(assets -> assets.load(this));

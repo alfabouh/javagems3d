@@ -336,10 +336,10 @@ public class WBenchGameResourcesManager {
     }
 
     protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolder(File rootFile) {
-        return this.readScriptsFolderRecursive(rootFile, rootFile);
+        return WBenchGameResourcesManager.readScriptsFolderRecursive(rootFile, rootFile);
     }
 
-    protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolderRecursive(File rootFolder, File relativeFolder) {
+    public static GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolderRecursive(File rootFolder, File relativeFolder) {
         GameResourceAssetsFolder<GameResourceScriptAsset> assetsFolder = new GameResourceAssetsFolder<>(relativeFolder.getName());
         File[] files = relativeFolder.listFiles();
         if (files == null) {
@@ -347,9 +347,9 @@ public class WBenchGameResourcesManager {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                assetsFolder.putFolderThere(this.readScriptsFolderRecursive(rootFolder, file));
-            } else if (this.isScriptFile(file)) {
-                GameResourceScriptAsset asset = this.loadScriptAsset(rootFolder, file);
+                assetsFolder.putFolderThere(WBenchGameResourcesManager.readScriptsFolderRecursive(rootFolder, file));
+            } else if (WBenchGameResourcesManager.isScriptFile(file)) {
+                GameResourceScriptAsset asset = WBenchGameResourcesManager.loadScriptAsset(rootFolder, file);
                 if (asset != null) {
                     assetsFolder.putObjectThere(asset);
                 }
@@ -358,7 +358,7 @@ public class WBenchGameResourcesManager {
         return assetsFolder;
     }
 
-    private GameResourceScriptAsset loadScriptAsset(File rootFolder, File fullPath) {
+    public static GameResourceScriptAsset loadScriptAsset(File rootFolder, File fullPath) {
         try {
             final String relativePath = rootFolder.toPath().relativize(fullPath.toPath()).toString().replace("\\", "/");
             final String scriptText = Files.readString(fullPath.toPath());
@@ -367,6 +367,11 @@ public class WBenchGameResourcesManager {
             Log.get().exception(e);
             return null;
         }
+    }
+
+    public static boolean isScriptFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE);
     }
 
     private GameResourceModelAsset loadModelAsset(File rootFolder, File fullPath) {
@@ -395,10 +400,6 @@ public class WBenchGameResourcesManager {
         }
     }
 
-    protected boolean isScriptFile(File file) {
-        String name = file.getName().toLowerCase();
-        return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE);
-    }
     protected boolean isMapDefFile(File file) {
         String name = file.getName().toLowerCase();
         return name.endsWith(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE);

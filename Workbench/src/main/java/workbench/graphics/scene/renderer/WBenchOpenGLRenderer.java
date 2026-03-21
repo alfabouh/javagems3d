@@ -146,7 +146,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @SuppressWarnings("all")
-    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
+    public <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
         return (T) this.getConveyorNodes().get(node);
     }
 
@@ -333,7 +333,9 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     @Override
     public void openUIInterface(@Nullable DearUIInterface dearUIInterface) {
-        ((IUIRenderNode) this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
+        if (this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS) != null) {
+            ((IUIRenderNode) this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
+        }
     }
 
     public DearUIRenderer getDearUIRenderer() {

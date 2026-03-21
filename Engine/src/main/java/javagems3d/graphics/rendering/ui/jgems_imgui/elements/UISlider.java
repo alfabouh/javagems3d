@@ -1,13 +1,12 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIScalable;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.settings.objects.SettingFloatBar;
 
@@ -16,10 +15,10 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     private final Vector2i position;
     private final String title;
     private final float zValue;
-    private final GuiFont guiFont;
+    private final JGemsGuiFont guiFont;
     private final int hexColor;
 
-    public UISlider(@NotNull String text, @NotNull GuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingFloatBar settingFloatBar, float zValue) {
+    public UISlider(@NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingFloatBar settingFloatBar, float zValue) {
         super(null, zValue);
         this.position = position;
         this.title = text;

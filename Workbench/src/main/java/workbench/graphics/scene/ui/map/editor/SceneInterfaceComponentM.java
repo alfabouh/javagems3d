@@ -84,28 +84,30 @@ public class SceneInterfaceComponentM {
         int imageSizeY = (int) (ImGui.getItemRectSizeY());
 
         if (MapEditorInterface.isCursorInsideScene) {
-            this.getEditorInterface().getItemsComponent().rightKeyContext("sceneSelectedContext", false);
-            if (ImGui.isMouseClicked(1)) {
-                this.rightMouseDown = true;
-                this.rightMouseDragged = false;
-                this.dragStartX = ImGui.getMousePosX();
-                this.dragStartY = ImGui.getMousePosY();
-            }
-
-            if (this.rightMouseDown && ImGui.isMouseDown(1)) {
-                float dx = ImGui.getMousePosX() - this.dragStartX;
-                float dy = ImGui.getMousePosY() - this.dragStartY;
-                if (Math.abs(dx) > this.DRAG_THRESHOLD || Math.abs(dy) > this.DRAG_THRESHOLD) {
-                    this.rightMouseDragged = true;
-                }
-            }
-
-            if (this.rightMouseDown && ImGui.isMouseReleased(1)) {
-                if (!this.rightMouseDragged) {
-                    ImGui.openPopup("sceneSelectedContext");
+            if (!this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().isEmpty()) {
+                this.getEditorInterface().getItemsComponent().rightKeyContext("sceneSelectedContext", false);
+                if (ImGui.isMouseClicked(1)) {
+                    this.rightMouseDown = true;
+                    this.rightMouseDragged = false;
+                    this.dragStartX = ImGui.getMousePosX();
+                    this.dragStartY = ImGui.getMousePosY();
                 }
 
-                this.rightMouseDown = false;
+                if (this.rightMouseDown && ImGui.isMouseDown(1)) {
+                    float dx = ImGui.getMousePosX() - this.dragStartX;
+                    float dy = ImGui.getMousePosY() - this.dragStartY;
+                    if (Math.abs(dx) > this.DRAG_THRESHOLD || Math.abs(dy) > this.DRAG_THRESHOLD) {
+                        this.rightMouseDragged = true;
+                    }
+                }
+
+                if (this.rightMouseDown && ImGui.isMouseReleased(1)) {
+                    if (!this.rightMouseDragged) {
+                        ImGui.openPopup("sceneSelectedContext");
+                    }
+
+                    this.rightMouseDown = false;
+                }
             }
         }
 

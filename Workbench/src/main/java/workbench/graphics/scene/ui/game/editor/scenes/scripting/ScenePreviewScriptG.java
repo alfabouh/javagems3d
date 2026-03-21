@@ -28,7 +28,7 @@ public class ScenePreviewScriptG {
                 final File fileG = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), previewScriptG.getAsset().relativePath()).toFile();
                 final String modifiedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(Instant.ofEpochMilli(fileG.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime());
                 ImGui.indent();
-                ImGui.bulletText( previewScriptG.getAsset().name());
+                ImGui.bulletText(previewScriptG.getAsset().name());
                 ImGui.textWrapped("Modified: " + modifiedDate);
                 ImGui.unindent();
                 ImGui.endChild();

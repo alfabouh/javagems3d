@@ -131,8 +131,7 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         return true;
     }
 
-    public record Properties(boolean mipMap, boolean linearFiltration, boolean shouldBeRepeated,
-                             boolean anisotropicFiltration, boolean qualityAffected) implements IProperties {
+    public record Properties(boolean mipMap, boolean linearFiltration, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) implements IProperties {
             public Properties(boolean mipMap, boolean qualityAffected) {
                 this(mipMap, true, true, true, qualityAffected);
             }
@@ -140,7 +139,6 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
             public Properties() {
                 this(true, true, true, true, false);
             }
-
     }
 
     public static final class Data {

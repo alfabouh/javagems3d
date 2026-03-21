@@ -54,7 +54,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         skyShaderManager.beginShading();
         GL46.glDisable(GL46.GL_CULL_FACE);
         GL46.glDepthFunc(GL46.GL_LEQUAL);
-        skyShaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+        skyShaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
         Matrix4f viewMatrix = JGemsTransformManager.getModelViewMatrix(model);
         viewMatrix.m30(0);
         viewMatrix.m31(0);
@@ -67,7 +67,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         }
         skyShaderManager.performUniform(new UniformString("covered_by_fog"), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
         skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
-        skyShaderManager.performModel3DViewMatrix(new UniformString("model_view_matrix"), viewMatrix);
+        skyShaderManager.performMatrix4(new UniformString("model_view_matrix"), viewMatrix);
         skyShaderManager.performUniform(new UniformString("draw_sun_mult"), UniformFunctions.FLOAT(!this.getSkyBox().isDrawSunOnSkyBox() ? 0.0f : 1.0f));
         JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         skyShaderManager.endShading();

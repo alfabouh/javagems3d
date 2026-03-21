@@ -72,8 +72,8 @@ public class DebugLinesDrawer {
 
                 this.getDrawerShader().beginShading();
                 this.getDrawerShader().performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(request.color(), 1.0f)));
-                this.getDrawerShader().performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-                this.getDrawerShader().performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                this.getDrawerShader().performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                this.getDrawerShader().performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
                 GL46.glEnableVertexAttribArray(0);
                 GL46.glDrawElements(GL46.GL_LINES, request.indexes.remaining(), GL46.GL_UNSIGNED_INT, 0);
                 GL46.glDisableVertexAttribArray(0);

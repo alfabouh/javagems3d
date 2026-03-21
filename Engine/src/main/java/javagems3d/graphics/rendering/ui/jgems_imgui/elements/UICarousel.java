@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 import javagems3d.system.settings.objects.SettingSlot;
 
 public class UICarousel extends UIElement {
@@ -15,7 +15,7 @@ public class UICarousel extends UIElement {
     private final UIText uiTitle;
     private final Vector2i position;
 
-    public UICarousel(@NotNull String text, @NotNull GuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingSlot settingIntSlots, float zValue) {
+    public UICarousel(@NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingSlot settingIntSlots, float zValue) {
         super(null, zValue);
         this.position = position;
 

@@ -147,7 +147,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @SuppressWarnings("all")
-    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
+    public <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
         return (T) this.getConveyorNodes().get(node);
     }
 
@@ -419,7 +419,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void openUIInterface(@Nullable DearUIInterface dearUIInterface) {
-        ((IUIRenderNode) this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
+        if (this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS) != null) {
+            ((IUIRenderNode) this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
+        }
     }
 
     @Override

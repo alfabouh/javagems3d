@@ -45,8 +45,8 @@ public class ModelPreviewEditorWindow {
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         WBenchResourceManager.localShaderAssets.simple_flat.beginShading();
         WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-        WBenchResourceManager.localShaderAssets.simple_flat.performModel3DMatrix(new UniformString("model_matrix"), model);
-        WBenchResourceManager.localShaderAssets.simple_flat.performViewMatrix(new UniformString("view_matrix"), view);
+        WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString("model_matrix"), model);
+        WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString("view_matrix"), view);
         WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
         WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(-1.0f));
         JGemsHelper.render().renderModel3D(WBenchOpenGLRenderer.flatTerrain, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
@@ -76,8 +76,8 @@ public class ModelPreviewEditorWindow {
         //modelAsset.getAsset().getMeshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-        shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
-        shaderManager.performModel3DMatrix(new UniformString("view_matrix"), view);
+        shaderManager.performMatrix4(new UniformString("model_matrix"), model);
+        shaderManager.performMatrix4(new UniformString("view_matrix"), view);
         JGemsHelper.render().performAnimationsInfo(WBench.get().getResourceManager(), shaderManager, modelAsset);
         for (MeshNode3D<RenderMesh> meshNode3D : modelAsset.getAsset().meshGroup().getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();

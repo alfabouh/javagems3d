@@ -14,7 +14,6 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -69,25 +68,25 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
-        shaderStaticConstants.putConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES));
-        shaderStaticConstants.putConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS));
-        shaderStaticConstants.putConstant("MAX_VERTEXES_IN_MODEL", String.valueOf(JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL));
-        shaderStaticConstants.putConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
-        shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
-        shaderStaticConstants.putConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
-        shaderStaticConstants.putConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
+        shaderStaticConstants.createConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES));
+        shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS));
+        shaderStaticConstants.createConstant("MAX_VERTEXES_IN_MODEL", String.valueOf(JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL));
+        shaderStaticConstants.createConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
+        shaderStaticConstants.createConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
+        shaderStaticConstants.createConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
+        shaderStaticConstants.createConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
 
-        shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
-        shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsHelper.Render.NORMALS_CODE));
-        shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsHelper.Render.EMISSION_CODE));
-        shaderStaticConstants.putConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsHelper.Render.METALLIC_ROUGHNESS_CODE));
+        shaderStaticConstants.createConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
+        shaderStaticConstants.createConstant("NORMALS_CODE", String.valueOf(JGemsHelper.Render.NORMALS_CODE));
+        shaderStaticConstants.createConstant("EMISSION_CODE", String.valueOf(JGemsHelper.Render.EMISSION_CODE));
+        shaderStaticConstants.createConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsHelper.Render.METALLIC_ROUGHNESS_CODE));
     }
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.initLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
-        shaderLibrary.initLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/animations", ISource.Source.INSIDE_JAR));
-        shaderLibrary.initLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/animations", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
     }
 
     protected void initObjects(ResourceCache resourceCache) {

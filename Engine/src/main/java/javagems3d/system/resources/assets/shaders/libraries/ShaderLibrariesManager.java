@@ -1,7 +1,6 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
 import javagems3d.system.service.files.JGemsPath;
-import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.files.source.JGemsStringSource;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +25,11 @@ public final class ShaderLibrariesManager {
         return this.getContainerMap().get(id);
     }
 
-    public void initLibrary(@NotNull JGemsPathSource pathSource) {
-        this.initLibrary(new ShaderLibrariesContainer(pathSource));
+    public void createLibrary(@NotNull JGemsPathSource pathSource) {
+        this.createLibrary(new ShaderLibrariesContainer(pathSource));
     }
 
-    public void initLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
+    public void createLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
         this.getContainerMap().put(shaderLibrariesContainer.getStringSource(), shaderLibrariesContainer);
     }
 

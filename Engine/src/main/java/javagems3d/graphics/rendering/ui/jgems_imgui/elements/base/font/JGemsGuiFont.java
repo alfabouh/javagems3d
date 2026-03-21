@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GuiFont {
+public class JGemsGuiFont {
     private static int globalFonts = 0;
     private final FontCode fontCode;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
@@ -24,7 +24,7 @@ public class GuiFont {
     private int height;
     private int width;
 
-    public GuiFont(SystemResources systemResources, Font font, FontCode fontCode) {
+    public JGemsGuiFont(SystemResources systemResources, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
         try {
             this.initFontTexture(systemResources, font);
@@ -33,7 +33,7 @@ public class GuiFont {
         }
     }
 
-    public GuiFont(Font font, FontCode fontCode) {
+    public JGemsGuiFont(Font font, FontCode fontCode) {
         this(null, font, fontCode);
     }
 
@@ -70,9 +70,9 @@ public class GuiFont {
             throw new JGemsIOException(e);
         }
         if (systemResources != null) {
-            this.texture = systemResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
+            this.texture = systemResources.createTexture(null, "font" + JGemsGuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
         } else {
-            this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
+            this.texture = new TexturesLoader(null, "font" + JGemsGuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
         }
         inputStream.close();
     }

@@ -14,7 +14,7 @@ import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -22,7 +22,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class UIButton extends UIInteractiveElement {
-    private final GuiFont guiFont;
+    private final JGemsGuiFont guiFont;
     private final UIText uiText;
     private final Vector2i position;
     private final Vector2i size;
@@ -33,7 +33,7 @@ public class UIButton extends UIInteractiveElement {
     private UIAction onUnClick;
     private UIAction onInside;
 
-    public UIButton(@NotNull String text, @NotNull GuiFont guiFont, @NotNull Vector2i position, @NotNull Vector2i size, int textColorHex, float zValue) {
+    public UIButton(@NotNull String text, @NotNull JGemsGuiFont guiFont, @NotNull Vector2i position, @NotNull Vector2i size, int textColorHex, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_button, zValue);
         this.guiFont = guiFont;
         this.position = position;

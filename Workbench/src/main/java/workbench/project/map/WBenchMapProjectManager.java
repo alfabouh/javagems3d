@@ -13,6 +13,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
@@ -24,7 +25,6 @@ import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
-import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -55,8 +55,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class WBenchMapProjectManager {
-    public static final String SCRIPTS_PATH = "scripts";
-
     private final MapObjectTemplatesManager mapObjectTemplates;
     private WBenchMapProject currentMapProject;
     private WBenchWorld world;
@@ -97,7 +95,7 @@ public final class WBenchMapProjectManager {
         try {
             WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name, absPath);
             //this.setCurrentProject(files, wBenchMapProject);
-            this.createMapSystemFiles(absPath, name);
+            this.refresScriptFolder(absPath, name);
             this.saveMapProjectFile(wBenchMapProject);
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
 
@@ -388,12 +386,14 @@ public final class WBenchMapProjectManager {
     }
 
     @SuppressWarnings("all")
-    private void createMapSystemFiles(JGemsPath path, String name) {
+    private void refresScriptFolder(JGemsPath path, String name) {
         if (!path.toFile().exists()) {
             path.toFile().mkdirs();
         }
-        File scripts = new File(new JGemsPath(path, WBenchMapProjectManager.SCRIPTS_PATH).fullPath());
-        scripts.mkdirs();
+        File scripts = JGemsGaming.getScriptsFolder(path).toFile();
+        if (!scripts.mkdirs()) {
+            this.currentMapProject.refreshScriptFiles();
+        }
     }
 
     public void closeMapProject(boolean save) {
@@ -432,7 +432,7 @@ public final class WBenchMapProjectManager {
             }
             wBenchMapProject.checkVersion();
 
-            this.createMapSystemFiles(path, wBenchMapProject.getMapName());
+            this.refresScriptFolder(path, wBenchMapProject.getMapName());
             Log.get().info("Opened WBenchMapProject: " + wBenchMapProject);
             Log.get().info(wBenchMapProject.getMapDescription());
 

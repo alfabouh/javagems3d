@@ -16,7 +16,7 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -26,11 +26,11 @@ public class UIText extends UIElement {
     private final String text;
     private final int hexColor;
     private final Vector2i position;
-    private final GuiFont fontTexture;
+    private final JGemsGuiFont fontTexture;
     private UIText.TextModel textModel;
     private boolean cacheText;
 
-    public UIText(@NotNull String text, @NotNull GuiFont fontTexture, int hexColor, @NotNull Vector2i position, float zValue) {
+    public UIText(@NotNull String text, @NotNull JGemsGuiFont fontTexture, int hexColor, @NotNull Vector2i position, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_text, zValue);
         this.fontTexture = fontTexture;
         this.text = text;
@@ -93,7 +93,7 @@ public class UIText extends UIElement {
         return result;
     }
 
-    public GuiFont getFontTexture() {
+    public JGemsGuiFont getFontTexture() {
         return this.fontTexture;
     }
 
@@ -125,7 +125,7 @@ public class UIText extends UIElement {
 
             float startX = 0.0f;
             for (int i = 0; i < chars.length; i++) {
-                GuiFont.CharInfo charInfo = UIText.this.fontTexture.getCharInfo(chars[i]);
+                JGemsGuiFont.CharInfo charInfo = UIText.this.fontTexture.getCharInfo(chars[i]);
                 vaPositions.put(startX);
                 vaPositions.put(0.0f);
                 vaPositions.put(z);

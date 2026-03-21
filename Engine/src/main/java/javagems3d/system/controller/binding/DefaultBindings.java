@@ -49,7 +49,7 @@ public final class DefaultBindings extends BindingManager {
             if (e == IKeyAction.KeyAction.CLICK) {
                 JGemsResourceManager.reloadShaders();
             }
-        }, GLFW.GLFW_KEY_V);
+        }, GLFW.GLFW_KEY_F1);
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {

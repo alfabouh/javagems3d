@@ -86,8 +86,8 @@ public class InterfaceActionsSelectedTemplateM {
 
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
-        shaderManager.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D));
-        shaderManager.performModel3DMatrix(new UniformString("view_matrix"), new Matrix4f().identity().lookAt(new Vector3f(diagonal), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
+        shaderManager.performMatrix4(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D));
+        shaderManager.performMatrix4(new UniformString("view_matrix"), new Matrix4f().identity().lookAt(new Vector3f(diagonal), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         JGemsHelper.render().performEmptyAnimationsInfo(shaderManager);
         for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();

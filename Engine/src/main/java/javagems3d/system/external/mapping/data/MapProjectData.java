@@ -12,7 +12,7 @@ public class MapProjectData {
     protected String mapDescription;
     protected String mapName;
     protected String version;
-    protected GameResourceAssetsFolder<GameResourceScriptAsset> scriptFiles;
+    protected transient GameResourceAssetsFolder<GameResourceScriptAsset> scriptFiles;
 
     public MapProjectData(@NotNull String mapDescription, @NotNull String mapName, @NotNull String version, @NotNull JGemsPath absolutePath) {
         this.setAbsolutePath(absolutePath);
@@ -28,11 +28,11 @@ public class MapProjectData {
     }
 
     public JGemsPath getPathToMainMapFile() {
-        return JGemsGaming.getPathToMainMapFile(this.getAbsolutePath(), this.getMapName());
+        return JGemsGaming.getPathToMainMapFile(this.getMapAbsolutePath(), this.getMapName());
     }
 
     public JGemsPath getPathToDataMapFile() {
-        return JGemsGaming.getPathToDataMapFile(this.getAbsolutePath(), this.getMapName());
+        return JGemsGaming.getPathToDataMapFile(this.getMapAbsolutePath(), this.getMapName());
     }
 
     public MapProjectData setMapDescription(String mapDescription) {
@@ -40,7 +40,7 @@ public class MapProjectData {
         return this;
     }
 
-    public JGemsPath getAbsolutePath() {
+    public JGemsPath getMapAbsolutePath() {
         return this.absolutePath;
     }
 

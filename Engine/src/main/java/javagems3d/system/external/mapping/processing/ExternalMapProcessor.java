@@ -27,6 +27,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
+import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.MapProjectData;
@@ -57,6 +58,7 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -91,6 +93,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
+            this.mapProjectData.setAbsolutePath(pathToJG3DFile.getPath().getAbsolutePathDirectory());
             this.mapProjectData.checkVersion();
 
             this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPathSource(this.mapProjectData.getPathToDataMapFile(), pathToJG3DFile.getSource()), new TypeToken<>() {
@@ -99,7 +102,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
-            //this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles());
+            JGemsAPI.getAPIScriptingCore().initMap(JGemsGaming.getScriptsFolder(pathToJG3DFile.getPath().getAbsolutePathDirectory()));
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
@@ -303,8 +306,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         protected Vector3f playerSpawnPoint;
         protected Vector3f playerSpawnRotation;
 
-        public Default(JGemsPathSource pathToJG3DFile) {
-            super(pathToJG3DFile);
+        public Default(JGemsPath pathToJG3DFile) {
+            super(new JGemsPathSource(pathToJG3DFile, ISource.Source.OUTSIDE_JAR));
         }
 
         @Override

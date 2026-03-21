@@ -1,8 +1,10 @@
 package api.scripting;
 
 import api.scripting.coding.APICodingContext;
+import api.scripting.coding.env.functions.JavaToJSFunctionsList;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -24,19 +26,25 @@ public final class JGemsAPIScriptingCore implements Closeable {
     }
 
     public void scanJavaCodeMap() {
-        this.getLocalMapContext().getApiCodeEnvironmentController().scan("api.scripting.coding.env.internal.game", "api.scripting.coding.env.internal.util");
+        this.getLocalMapContext().getApiCodeEnvironmentController().scan("api.scripting.coding.env.internal.map", "api.scripting.coding.env.internal.util");
     }
 
-    public void initGame(@NotNull JGemsPath relativePath) {
+    public void initGame(@NotNull JGemsPath absolutePathToSeekEntries) {
+        Log.get().info("Init game scripting engine...");
         this.getGlobalGameContext().init();
+        this.getGlobalGameContext().entry(absolutePathToSeekEntries);
         this.scanJavaCodeGame();
-        this.getGlobalGameContext().entryPoint(relativePath);
+        this.getGlobalGameContext().callFunctionNoExc(JavaToJSFunctionsList.ENTRY_POINT_FUNCTION);
+        Log.get().info("Init game scripting engine. Success.");
     }
 
-    public void initMap(@NotNull JGemsPath relativePath) {
+    public void initMap(@NotNull JGemsPath absolutePathToSeekEntries) {
+        Log.get().info("Init map scripting engine...");
         this.getLocalMapContext().init();
+        this.getLocalMapContext().entry(absolutePathToSeekEntries);
         this.scanJavaCodeMap();
-        this.getLocalMapContext().entryPoint(relativePath);
+        this.getLocalMapContext().callFunctionNoExc(JavaToJSFunctionsList.ENTRY_POINT_FUNCTION);
+        Log.get().info("Init map scripting engine. Success.");
     }
 
     public void clearGame() {

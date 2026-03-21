@@ -2,7 +2,9 @@ package api.scripting.coding;
 
 import api.scripting.JGemsAPIScriptingCore;
 import api.scripting.coding.env.APICodeEnvironmentController;
+import api.scripting.coding.env.functions.JavaToJSFunctionsList;
 import javagems3d.system.service.exceptions.JGemsAPIException;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import org.graalvm.polyglot.Context;
@@ -15,6 +17,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class APICodingContext implements Closeable {
@@ -29,10 +35,41 @@ public class APICodingContext implements Closeable {
         this.context = Context.newBuilder(JGemsAPIScriptingCore.LAN).allowHostAccess(HostAccess.ALL).allowHostClassLookup(s -> true).allowIO(IOAccess.ALL).option("js.esm-eval-returns-exports", "true").option("js.ecmascript-version", "2022").build();
     }
 
-    public void entryPoint(JGemsPath entryPoint) {
+    public void entry(JGemsPath absolutePathToSeekEntries) {
         this.close();
         this.init();
-        this.loadCodeInside_EXTERNALFS(entryPoint);
+        final List<File> files = new ArrayList<>();
+        this.findEntryScripts(files, absolutePathToSeekEntries.toFile());
+        files.forEach(this::loadCodeInside_EXTERNALFS);
+    }
+
+    private void findEntryScripts(List<File> filesArray, File rootDir) {
+        if (!rootDir.exists()) {
+            return;
+        }
+        File[] files = rootDir.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                this.findEntryScripts(filesArray, rootDir);
+            } else if (file.getName().endsWith(".js")) {
+                Log.get().debug("Found: " + file.getPath());
+                if (this.containsEntryPoint(file)) {
+                    filesArray.add(file);
+                }
+            }
+        }
+    }
+
+    private boolean containsEntryPoint(File file) {
+        try {
+            String content = Files.readString(file.toPath());
+            return content.contains("function JsInit");
+        } catch (IOException e) {
+            throw new JGemsAPIException(e);
+        }
     }
 
     @Override
@@ -43,10 +80,21 @@ public class APICodingContext implements Closeable {
         }
     }
 
+    public void callFunctionNoExc(@NotNull String funName, Object... args) {
+        try {
+            this.callFunction(funName, args);
+        } catch (Exception e) {
+            Log.get().error("Failed to call function " + funName + " : " + e.getMessage());
+        }
+    }
+
     public void callFunction(@NotNull String funName, Object... args) throws JGemsAPIException {
         try {
-            Value fun = this.getBindings().getMember("funName");
-            fun.execute(args);
+            Value fun = this.getBindings().getMember(funName);
+            if (fun == null) {
+                throw new JGemsRuntimeException("Function not found: " + funName);
+            }
+            fun.execute((Object[]) args);
         } catch (Exception e) {
             throw new JGemsAPIException(e);
         }
@@ -62,7 +110,8 @@ public class APICodingContext implements Closeable {
 
     private void loadCodeInside_EXTERNALFS(File file) {
         try {
-            Source src = Source.newBuilder(JGemsAPIScriptingCore.LAN, file).mimeType("application/javascript+module").build();
+            //.mimeType("application/javascript+module")
+            Source src = Source.newBuilder(JGemsAPIScriptingCore.LAN, file).build();
             Objects.requireNonNull(this.getContext()).eval(src);
         } catch (Exception e) {
             Log.get().exception(new JGemsAPIException("Failed to load code", e));

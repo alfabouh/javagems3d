@@ -17,9 +17,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
-import org.lwjgl.opengl.GL46;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class DefaultDirectRenderFabric extends DirectRenderFabric {
@@ -44,9 +42,9 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
                 if (functionToHandleUniforms != null) {
                     functionToHandleUniforms.accept(new Pair<>(shaderManager, renderedItem));
                 }
-                shaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                shaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
                 shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
-                shaderManager.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                shaderManager.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
                 this.renderMeshList3D(openGLRenderer, shaderManager, model, this.transparency ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER);
             }
         }

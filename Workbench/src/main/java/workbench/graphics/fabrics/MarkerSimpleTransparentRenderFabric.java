@@ -1,6 +1,5 @@
 package workbench.graphics.fabrics;
 
-import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
@@ -41,9 +40,9 @@ public class MarkerSimpleTransparentRenderFabric extends DirectRenderFabric {
                 if (functionToHandleUniforms != null) {
                     functionToHandleUniforms.accept(new Pair<>(shaderManager, renderedItem));
                 }
-                shaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                shaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
                 shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
-                shaderManager.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                shaderManager.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
                 shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(markerObject.getColor(), 0.5f)));
                 JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }

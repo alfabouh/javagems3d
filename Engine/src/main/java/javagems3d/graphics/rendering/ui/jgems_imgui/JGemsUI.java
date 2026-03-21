@@ -9,7 +9,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.settings.objects.SettingFloatBar;
@@ -42,15 +42,15 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return new Vector3f(r / 255.0f, g / 255.0f, b / 255.0f);
     }
 
-    public static int getFontHeight(GuiFont fontTexture) {
+    public static int getFontHeight(JGemsGuiFont fontTexture) {
         return fontTexture.getHeight();
     }
 
-    public static int getTextWidth(GuiFont fontTexture, String text) {
+    public static int getTextWidth(JGemsGuiFont fontTexture, String text) {
         char[] chars = text.toCharArray();
         int startX = 0;
         for (final char aChar : chars) {
-            GuiFont.CharInfo charInfo = fontTexture.getCharInfo(aChar);
+            JGemsGuiFont.CharInfo charInfo = fontTexture.getCharInfo(aChar);
             startX += charInfo.width();
         }
         return startX;
@@ -137,7 +137,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         this.renderUIData.setShaderManager(shaderManager);
     }
 
-    public UIText textUI(String text, GuiFont guiFont, Vector2i position, int hexColor, float zValue) {
+    public UIText textUI(String text, JGemsGuiFont guiFont, Vector2i position, int hexColor, float zValue) {
         return this.checkUIInCacheAndRender(UIText.class, new UIText(text, guiFont, hexColor, position, zValue));
     }
 
@@ -149,15 +149,15 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return this.checkUIInCacheAndRender(UIPictureSizable.class, new UIPictureSizable(iImageSample, position, size, zValue));
     }
 
-    public UIButton buttonUI(String text, GuiFont guiFont, Vector2i position, Vector2i size, int textColorHex, float zValue) {
+    public UIButton buttonUI(String text, JGemsGuiFont guiFont, Vector2i position, Vector2i size, int textColorHex, float zValue) {
         return this.checkUIInCacheAndRender(UIButton.class, new UIButton(text, guiFont, position, size, textColorHex, zValue));
     }
 
-    public UISlider settingSliderUI(String text, GuiFont guiFont, int hexColor, Vector2i position, SettingFloatBar settingFloatBar, float zValue) {
+    public UISlider settingSliderUI(String text, JGemsGuiFont guiFont, int hexColor, Vector2i position, SettingFloatBar settingFloatBar, float zValue) {
         return this.checkUIInCacheAndRender(UISlider.class, new UISlider(text, guiFont, hexColor, position, settingFloatBar, zValue));
     }
 
-    public UICarousel settingCarouselUI(String text, GuiFont guiFont, int hexColor, Vector2i position, SettingSlot settingIntSlots, float zValue) {
+    public UICarousel settingCarouselUI(String text, JGemsGuiFont guiFont, int hexColor, Vector2i position, SettingSlot settingIntSlots, float zValue) {
         return this.checkUIInCacheAndRender(UICarousel.class, new UICarousel(text, guiFont, hexColor, position, settingIntSlots, zValue));
     }
 

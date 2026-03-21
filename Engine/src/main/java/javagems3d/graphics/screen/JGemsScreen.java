@@ -20,7 +20,7 @@ import javagems3d.audio.sound.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
@@ -329,13 +329,13 @@ public class JGemsScreen implements IScreen {
     }
 
     public class LoadingScreen {
-        private final GuiFont guiFont;
+        private final JGemsGuiFont guiFont;
         private final ArrayList<Pair<Integer, String>> lines;
         private int counter;
 
         public LoadingScreen(String title) {
-            Font gameFont = SystemResources.createFontFromJAR(new JGemsPathSource(new JGemsPath("/assets/jgems/gamefont.ttf"), ISource.Source.INSIDE_JAR));
-            this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
+            Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/jgems/gamefont.ttf"), ISource.Source.INSIDE_JAR));
+            this.guiFont = new JGemsGuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));
             this.lines.add(new Pair<>(0x00ff00, title));

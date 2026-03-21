@@ -10,7 +10,7 @@ public final class ShaderStaticConstants {
         this.cnstMap = new HashMap<>();
     }
 
-    public void putConstant(String key, String value) {
+    public void createConstant(String key, String value) {
         this.getCnstMap().put(key.replaceAll("CONST.", ""), value);
     }
 

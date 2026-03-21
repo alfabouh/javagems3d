@@ -191,7 +191,7 @@ public class ResourcesInterfaceComponentG {
                 MapProjectPreview::new
         ).setAfterAssetDeleted((e) -> {
             try {
-                WBench.get().getMapProjectManager().deleteMapProjectFolder(e.second().getMapProject().getAbsolutePath());
+                WBench.get().getMapProjectManager().deleteMapProjectFolder(e.second().getMapProject().getMapAbsolutePath());
             } catch (IOException ex) {
                 LoggingManager.showWindowWarn("Couldn't delete map: " + e.second().name());
                 Log.get().exception(ex);
@@ -216,7 +216,7 @@ public class ResourcesInterfaceComponentG {
                     final String sampleText = JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController().getEntryPointClass().sampleCode().toString();
                     final String name = e.second().getInputStrings().getFirst().get() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE;
                     final GameResourceScriptAsset gameResourceScriptAsset = new GameResourceScriptAsset(name, e.first().getHierarchy() + "/" + name, sampleText);
-                    gameResourceScriptAsset.save(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath(), sampleText);
+                    gameResourceScriptAsset.save(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), sampleText);
                     e.first().putObjectThere(gameResourceScriptAsset);
                     return gameResourceScriptAsset;
                 },
@@ -228,9 +228,7 @@ public class ResourcesInterfaceComponentG {
             }
         }).setAfterFolderCreated((e) -> {
             final JGemsPath absPath = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy());
-            if (absPath.toFile().exists()) {
-                absPath.toFile().mkdirs();
-            }
+            absPath.toFile().mkdirs();
         }).setAfterFolderDeleted((e) -> {
             new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy()).recursiveDelete();
         }).setOnRefreshButton((e) -> {
