@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import api.system.scripting.JavaToJsAPI;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
@@ -51,7 +52,7 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -155,6 +156,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     public void onStartRender() {
         this.constructScreenModel();
         this.jGemsUI = new JGemsUI(this.getWindow());
+
+        {
+            JavaToJsAPI.Js_GAME_registerUI__EVENT();
+            JavaToJsAPI.Js_GAME_registerUIBehaviour__EVENT(this.jGemsUI);
+        }
+
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsHelper.resources().getGlobalGameResources());
 
         this.setDefaultNodes();

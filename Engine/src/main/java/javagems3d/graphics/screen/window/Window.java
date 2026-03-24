@@ -40,7 +40,7 @@ public class Window implements IWindow {
         this.isInFocus = false;
         this.window = GLFW.glfwCreateWindow(width, height, windowProperties.title(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.currentMonitor = GLFW.glfwGetPrimaryMonitor();
-        this.setIcon(windowProperties.icon());
+        this.setIcon(windowProperties.icon(), ISource.Source.INSIDE_JAR);
 
         {
             this.arrowCursor = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
@@ -63,13 +63,13 @@ public class Window implements IWindow {
     }
     
     @Override
-    public void setIcon(@Nullable JGemsPath iconPath) {
+    public void setIcon(@Nullable JGemsPath iconPath, ISource.Source source) {
         if (iconPath == null) {
             Log.get().warn("Couldn't load app icon, because it was NULL");
             return;
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            try (InputStream inputStream = JGems3D.getInputStream(new JGemsPathSource(iconPath, ISource.Source.INSIDE_JAR))) {
+            try (InputStream inputStream = JGems3D.getInputStream(new JGemsPathSource(iconPath, source))) {
                 IntBuffer width = stack.mallocInt(1);
                 IntBuffer height = stack.mallocInt(1);
                 IntBuffer channels = stack.mallocInt(1);

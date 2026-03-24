@@ -36,7 +36,7 @@ public class WBenchBindingManager extends BindingManager {
             if (e == IKeyAction.KeyAction.CLICK) {
                 WBenchResourceManager.reloadShaders();
             }
-        }, GLFW.GLFW_KEY_V);
+        }, GLFW.GLFW_KEY_F1);
 
         if (JGems3D.DEBUG_MODE) {
             this.addBinding(this.keyV);

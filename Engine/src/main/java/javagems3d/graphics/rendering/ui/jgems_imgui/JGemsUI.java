@@ -24,7 +24,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     private final RenderUIData renderUIData;
     private boolean requestCleanFrame;
     private PanelUI currentPanel;
-    private float frameDeltaTicks;
+    public float frameDeltaTicks;
     private final IWindow window;
 
     public JGemsUI(IWindow window) {
@@ -149,8 +149,8 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return this.checkUIInCacheAndRender(UIPictureSizable.class, new UIPictureSizable(iImageSample, position, size, zValue));
     }
 
-    public UIButton buttonUI(String text, JGemsGuiFont guiFont, Vector2i position, Vector2i size, int textColorHex, float zValue) {
-        return this.checkUIInCacheAndRender(UIButton.class, new UIButton(text, guiFont, position, size, textColorHex, zValue));
+    public UIDefaultButton buttonUI(String text, JGemsGuiFont guiFont, Vector2i position, Vector2i size, int textColorHex, float zValue) {
+        return this.checkUIInCacheAndRender(UIDefaultButton.class, new UIDefaultButton(text, guiFont, position, size, textColorHex, zValue));
     }
 
     public UISlider settingSliderUI(String text, JGemsGuiFont guiFont, int hexColor, Vector2i position, SettingFloatBar settingFloatBar, float zValue) {

@@ -48,10 +48,10 @@ public class AppTest extends JGemsApplication {
         return new DefaultBindings();
     }
 
-    @Override
-    public @NotNull PanelUI getMainMenuPanel() {
-        return new TestMainMenuPanel(null);
-    }
+    //@Override
+    //public @NotNull PanelUI getMainMenuPanel() {
+    //    return new TestMainMenuPanel(null);
+    //}
 
     @Override
     public @NotNull Window.WindowProperties getWindowProperties() {

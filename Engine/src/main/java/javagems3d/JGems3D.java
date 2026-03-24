@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsAPIException;
+import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
@@ -145,8 +146,6 @@ public final class JGems3D {
             Log.get().info("Loading settings from files...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
                 JGems3D.FIRST_LAUNCH = true;
-            } else {
-                JGems3D.get().getGameSettings().loadOptions();
             }
             JGems3D.get().core = new JGemsCore();
             JGems3D.get().getCore().startSystem(externalGamePath);
@@ -233,8 +232,8 @@ public final class JGems3D {
         return String.format(this.getLocalisation().format(key), objects);
     }
 
-    public void changeIcon(@Nullable JGemsPath icon) {
-        this.getScreen().setIcon(icon);
+    public void changeIcon(@Nullable JGemsPath icon, ISource.Source source) {
+        this.getScreen().setIcon(icon, source);
     }
 
     public void changeTitle(@NotNull String title) {

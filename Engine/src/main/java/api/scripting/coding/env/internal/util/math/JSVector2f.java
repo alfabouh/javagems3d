@@ -5,6 +5,7 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSVector2f", description = "...")
@@ -51,6 +52,15 @@ public class JSVector2f {
         return this.vector2f.y;
     }
 
+    @JSHideFromDoc
+    public Vector2f toVec2f() {
+        return new Vector2f(this.vector2f.x, this.vector2f.y);
+    }
+
+    @JSHideFromDoc
+    public Vector2i toVec2i() {
+        return new Vector2i((int) this.vector2f.x, (int) this.vector2f.y);
+    }
 
     @JSCodingFunctionOrMethod(description = "Set components", paramNames = {"x", "y"})
     public JSVector2f set(float x, float y) {

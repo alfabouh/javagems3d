@@ -1,5 +1,6 @@
 package javagems3d.graphics.screen;
 
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
@@ -22,7 +23,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
 import javagems3d.graphics.rendering.scene.JGemsScene;
-import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.world.SceneWorld;
@@ -233,6 +234,9 @@ public class JGemsScreen implements IScreen {
         } finally {
             this.getScene().postRender();
             this.getTimerPool().clear();
+            {
+                JavaToJsAPI.disposeRender();
+            }
             GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
             GLFW.glfwTerminate();
             Log.get().info("Screen destroyed");
@@ -241,9 +245,9 @@ public class JGemsScreen implements IScreen {
 
     private void renderLoop() throws InterruptedException {
         int fps = 0;
-        JGemsTimer perSecondTimer = this.getTimerPool().createTimer();
-        JGemsTimer renderTimer = this.getTimerPool().createTimer();
-        JGemsTimer deltaTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction perSecondTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction renderTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction deltaTimer = this.getTimerPool().createTimer();
         while (!JGems3D.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 JGems3D.close(null);

@@ -6,20 +6,20 @@ import java.util.Iterator;
 import java.util.Set;
 
 public final class TimerPool {
-    private final Set<JGemsTimer> JGemsTimerSet;
+    private final Set<JGemsTimedAction> timers;
 
     public TimerPool() {
-        this.JGemsTimerSet = SyncManager.createSyncronisedSet();
+        this.timers = SyncManager.createSyncronisedSet();
     }
 
     public void update() {
-        Iterator<JGemsTimer> gameRenderTimerIterator = this.JGemsTimerSet.iterator();
+        Iterator<JGemsTimedAction> gameRenderTimerIterator = this.timers.iterator();
         while (gameRenderTimerIterator.hasNext()) {
-            JGemsTimer JGemsTimer = gameRenderTimerIterator.next();
-            if (JGemsTimer.isShouldBeErased()) {
+            JGemsTimedAction timedAction = gameRenderTimerIterator.next();
+            if (timedAction.isShouldBeErased()) {
                 gameRenderTimerIterator.remove();
             } else {
-                JGemsTimer.update();
+                timedAction.update();
             }
         }
     }
@@ -28,17 +28,17 @@ public final class TimerPool {
         this.getTimerSet().clear();
     }
 
-    public void deleteTimer(JGemsTimer JGemsTimer) {
-        JGemsTimer.dispose();
+    public void deleteTimer(JGemsTimedAction timedAction) {
+        timedAction.dispose();
     }
 
-    public JGemsTimer createTimer() {
-        JGemsTimer JGemsTimer = new JGemsTimer();
-        this.getTimerSet().add(JGemsTimer);
-        return JGemsTimer;
+    public JGemsTimedAction createTimer() {
+        JGemsTimedAction timedAction = new JGemsTimedAction();
+        this.getTimerSet().add(timedAction);
+        return timedAction;
     }
 
-    public Set<JGemsTimer> getTimerSet() {
-        return this.JGemsTimerSet;
+    public Set<JGemsTimedAction> getTimerSet() {
+        return this.timers;
     }
 }

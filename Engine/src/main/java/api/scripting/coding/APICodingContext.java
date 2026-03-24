@@ -2,7 +2,6 @@ package api.scripting.coding;
 
 import api.scripting.JGemsAPIScriptingCore;
 import api.scripting.coding.env.APICodeEnvironmentController;
-import api.scripting.coding.env.functions.JavaToJSFunctionsList;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
@@ -53,7 +52,7 @@ public class APICodingContext implements Closeable {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                this.findEntryScripts(filesArray, rootDir);
+                this.findEntryScripts(filesArray, file);
             } else if (file.getName().endsWith(".js")) {
                 Log.get().debug("Found: " + file.getPath());
                 if (this.containsEntryPoint(file)) {
@@ -80,21 +79,22 @@ public class APICodingContext implements Closeable {
         }
     }
 
-    public void callFunctionNoExc(@NotNull String funName, Object... args) {
+    public Value callFunctionNoExc(@NotNull String funName, Object... args) {
         try {
-            this.callFunction(funName, args);
+            return this.callFunction(funName, args);
         } catch (Exception e) {
             Log.get().error("Failed to call function " + funName + " : " + e.getMessage());
         }
+        return null;
     }
 
-    public void callFunction(@NotNull String funName, Object... args) throws JGemsAPIException {
+    public Value callFunction(@NotNull String funName, Object... args) throws JGemsAPIException {
         try {
             Value fun = this.getBindings().getMember(funName);
             if (fun == null) {
                 throw new JGemsRuntimeException("Function not found: " + funName);
             }
-            fun.execute((Object[]) args);
+            return fun.execute(args);
         } catch (Exception e) {
             throw new JGemsAPIException(e);
         }

@@ -1,7 +1,11 @@
 package javagems3d.system.core;
 
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
+import api.scripting.coding.env.internal.util.resources.init.JSDefaultGameResources;
+import api.scripting.coding.env.internal.util.settings.JSGameSettings;
+import api.scripting.coding.env.internal.util.settings.JSPerfTestResult;
 import api.system.JGemsAPI;
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.help.JGemsHelper;
@@ -54,6 +58,9 @@ public final class JGemsCore implements ICore {
         this.jGemsPhysics = new JGemsPhysics(JGemsPhysics.TICKS_PER_SECOND);
         this.jGemsSoundManager = new JGemsSoundManager();
         this.jGemsScreen = new JGemsScreen();
+        {
+            JavaToJsAPI.setScreen(this.jGemsScreen);
+        }
         this.resourceManager = new JGemsResourceManager();
 
         this.engineState = new EngineState();
@@ -69,7 +76,6 @@ public final class JGemsCore implements ICore {
         this.gaming = new JGemsGaming();
         this.gaming.loadExternalGameFiles(JGemsAPI.APIEditorResources().getEditorResourcesManager(), new JGemsPath(externalGamePath));
         JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
-        JGemsAPI.getAPIScriptingCore().initGame(JGemsGaming.getScriptsFolder(new JGemsPath(externalGamePath)));
     }
 
     private void createMappingObject() {
@@ -186,19 +192,31 @@ public final class JGemsCore implements ICore {
             try {
                 JGemsAPI.APIAppData().preInit(this);
                 JGems3D.get().getLocalisation().setLanguage(ISource.Source.INSIDE_JAR, JGems3D.get().getGameSettings().language.getCurrentLanguage());
+                if (externalGamePath != null) {
+                    JGemsAPI.getAPIScriptingCore().initGame(JGemsGaming.getScriptsFolder(new JGemsPath(externalGamePath)));
+                    JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
+                }
+                JavaToJsAPI.Js_GAME_initEvents();
+                final JSGameSettings gameSettings = new JSGameSettings(JGems3D.get().getGameSettings());
+                JSScriptGlobalData.setSettings(gameSettings);
+                JavaToJsAPI.Js_GAME_settingsInitEvent__EVENT(gameSettings);
+                {
+                    if (!JGems3D.FIRST_LAUNCH) {
+                        JGems3D.get().getGameSettings().loadOptions();
+                    }
+                }
                 this.getResourceManager().initGlobalResources();
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();
                 this.createGraphics();
-                JGemsAPI.APIAppData().postInit(this);
-                this.engineState().gameResourcesLoaded = true;
-                this.engineState().engineIsReady = true;
                 if (externalGamePath != null) {
                     this.createGamingObject(externalGamePath);
                 }
                 this.createMappingObject();
+                JGemsAPI.APIAppData().postInit(this);
+                this.engineState().gameResourcesLoaded = true;
+                this.engineState().engineIsReady = true;
                 this.getScreen().runRenderThread();
-
             } catch (Exception e) {
                 JGems3D.close(null);
                 exceptionList.add(e);
@@ -351,7 +369,11 @@ public final class JGemsCore implements ICore {
     private void createGraphics() {
         this.getScreen().createScreenAndContext();
         if (JGems3D.FIRST_LAUNCH) {
-            JGems3D.get().getGameSettings().setDefaultByPerfStat(PerformanceStat.getSystemStat());
+            final PerformanceStat.Result result = PerformanceStat.getSystemStat();
+            JGems3D.get().getGameSettings().setDefaultByPerfStat(result);
+            {
+                JavaToJsAPI.Js_GAME_afterSettingsPerfTestEvent__EVENT(JSPerfTestResult.choose(result), JSScriptGlobalData.getGameSettings());
+            }
             JGems3D.get().getGameSettings().saveOptions();
         }
         this.printGraphicsInfo();

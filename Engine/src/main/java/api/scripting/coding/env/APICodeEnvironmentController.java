@@ -1,5 +1,6 @@
 package api.scripting.coding.env;
 
+import api.scripting.JGemsAPIScriptingCore;
 import api.scripting.coding.APICodingContext;
 import api.scripting.coding.env.def.*;
 import javagems3d.system.service.collections.Pair;
@@ -21,6 +22,7 @@ public class APICodeEnvironmentController implements Closeable {
     private final Map<String, JSClassData> classRegistry;
     private final APICodingContext apiCodingContext;
     private JSSampleClassData entryPoint;
+    private final List<JSSampleClassData> eventHandlers;
     private final Map<String, String> argumentsMap;
     private final Set<String> fields;
 
@@ -30,6 +32,7 @@ public class APICodeEnvironmentController implements Closeable {
         this.globalVarFactoryKeys = new LinkedHashMap<>();
         this.argumentsMap = new HashMap<>();
         this.fields = new HashSet<>();
+        this.eventHandlers = new ArrayList<>();
         this.entryPoint = null;
     }
 
@@ -38,6 +41,7 @@ public class APICodeEnvironmentController implements Closeable {
         this.globalVarFactoryKeys.clear();
         this.argumentsMap.clear();
         this.fields.clear();
+        this.eventHandlers.clear();
         this.entryPoint = null;
     }
 
@@ -88,7 +92,8 @@ public class APICodeEnvironmentController implements Closeable {
             }
             Log.get().debug("Reading script-class: " + binding);
             if (this.apiCodingContext.getContext() != null) {
-                this.apiCodingContext.getBindings().putMember(binding, clazz);
+                String jsInit = String.format("var %s = Java.type('%s');", binding, clazz.getCanonicalName());
+                this.apiCodingContext.getContext().eval(JGemsAPIScriptingCore.LAN, jsInit);
             }
             this.fillClassDoc(new Pair<>(binding, jsClassData));
         });
@@ -306,31 +311,14 @@ public class APICodeEnvironmentController implements Closeable {
         final StringBuilder doc = entryClass.sampleCode();
         doc.append("// Auto generated script\n\n");
         for (Method method : entryClass.aClass().getDeclaredMethods()) {
-            if (!Modifier.isPublic(method.getModifiers())) {
-                continue;
-            }
-            if (method.isAnnotationPresent(JSHideFromDoc.class)) {
-                continue;
-            }
+            if (!Modifier.isPublic(method.getModifiers())) continue;
+            if (method.isAnnotationPresent(JSHideFromDoc.class)) continue;
             JSCodingFunctionOrMethod jsMethod = method.getAnnotation(JSCodingFunctionOrMethod.class);
+            doc.append("/**\n");
             if (jsMethod != null && !jsMethod.description().isBlank()) {
                 entryClass.functions.add(new JSFunctionData(method.getName(), jsMethod));
-                doc.append("// ").append(jsMethod.description()).append("\n");
+                doc.append(" * ").append(jsMethod.description()).append("\n");
             }
-            /*
-            int mod = method.getModifiers();
-            doc.append(Modifier.isPublic(mod) ? "public " : Modifier.isProtected(mod) ? "protected " : Modifier.isPrivate(mod) ? "private " : "");
-            if (Modifier.isStatic(mod)) {
-                doc.append("static ");
-            }
-            if (Modifier.isAbstract(mod)) {
-                doc.append("abstract ");
-            }
-            if (Modifier.isFinal(mod)) {
-                doc.append("final ");
-            }
-             */
-            doc.append("function ").append(method.getName()).append("(");
             Parameter[] params = method.getParameters();
             for (int i = 0; i < params.length; i++) {
                 String paramName;
@@ -340,19 +328,32 @@ public class APICodeEnvironmentController implements Closeable {
                     paramName = params[i].getName();
                 }
                 paramName = "arg_" + paramName;
-                doc.append(paramName).append(": ").append(this.convertTypeToJS(params[i].getType()));
+                String jsType = this.convertTypeToJS(params[i].getType());
+                doc.append(" * @param {").append(jsType).append("} ").append(paramName).append("\n");
                 this.argumentsMap.put(params[i].getType().getCanonicalName(), params[i].getType().getSimpleName());
+            }
+            Class<?> returnType = method.getReturnType();
+            if (returnType != void.class) {
+                String jsType = this.convertTypeToJS(returnType);
+                doc.append(" * @returns {").append(jsType).append("}\n");
+                this.argumentsMap.put(returnType.getCanonicalName(), returnType.getSimpleName());
+            }
+            doc.append(" */\n");
+            doc.append("function ").append(method.getName()).append("(");
+            for (int i = 0; i < params.length; i++) {
+                String paramName;
+                if (jsMethod != null && jsMethod.paramNames().length > i) {
+                    paramName = jsMethod.paramNames()[i];
+                } else {
+                    paramName = params[i].getName();
+                }
+                paramName = "arg_" + paramName;
+                doc.append(paramName);
                 if (i < params.length - 1) {
                     doc.append(", ");
                 }
             }
-            doc.append(")");
-            Class<?> returnType = method.getReturnType();
-            if (returnType != void.class) {
-                doc.append(": ").append(this.convertTypeToJS(returnType));
-                this.argumentsMap.put(returnType.getCanonicalName(), returnType.getSimpleName());
-            }
-            doc.append(" {\n");
+            doc.append(") {\n");
             doc.append("    // Code here.\n");
             doc.append("}\n\n");
         }

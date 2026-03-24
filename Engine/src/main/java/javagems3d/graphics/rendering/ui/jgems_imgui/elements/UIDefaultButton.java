@@ -21,7 +21,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
-public class UIButton extends UIInteractiveElement {
+public class UIDefaultButton extends UIInteractiveElement {
     private final JGemsGuiFont guiFont;
     private final UIText uiText;
     private final Vector2i position;
@@ -33,7 +33,7 @@ public class UIButton extends UIInteractiveElement {
     private UIAction onUnClick;
     private UIAction onInside;
 
-    public UIButton(@NotNull String text, @NotNull JGemsGuiFont guiFont, @NotNull Vector2i position, @NotNull Vector2i size, int textColorHex, float zValue) {
+    public UIDefaultButton(@NotNull String text, @NotNull JGemsGuiFont guiFont, @NotNull Vector2i position, @NotNull Vector2i size, int textColorHex, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_button, zValue);
         this.guiFont = guiFont;
         this.position = position;
@@ -141,27 +141,27 @@ public class UIButton extends UIInteractiveElement {
         }
     }
 
-    public UIButton setOnUnClick(UIAction onUnClick) {
+    public UIDefaultButton setOnUnClick(UIAction onUnClick) {
         this.onUnClick = onUnClick;
         return this;
     }
 
-    public UIButton setOnEntered(UIAction onEntered) {
+    public UIDefaultButton setOnEntered(UIAction onEntered) {
         this.onEntered = onEntered;
         return this;
     }
 
-    public UIButton setOnClick(UIAction onClick) {
+    public UIDefaultButton setOnClick(UIAction onClick) {
         this.onClick = onClick;
         return this;
     }
 
-    public UIButton setOnInside(UIAction onInside) {
+    public UIDefaultButton setOnInside(UIAction onInside) {
         this.onInside = onInside;
         return this;
     }
 
-    public UIButton setOnLeft(UIAction onLeft) {
+    public UIDefaultButton setOnLeft(UIAction onLeft) {
         this.onLeft = onLeft;
         return this;
     }

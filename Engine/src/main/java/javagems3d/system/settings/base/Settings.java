@@ -17,7 +17,7 @@ public abstract class Settings {
         this.optionsFile = optionsFile;
     }
 
-    protected void addSetting(SettingObject<? extends Serializable> settingObject) {
+    public void addSetting(SettingObject<? extends Serializable> settingObject) {
         this.getSettingObjectMap().put(settingObject.getName(), settingObject);
     }
 

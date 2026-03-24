@@ -3,7 +3,7 @@ package api.scripting.coding.env.internal.util.management;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.internal.util.misc.JSString;
+import api.scripting.coding.env.def.JSHideFromDoc;
 import javagems3d.system.service.files.JGemsPath;
 
 import java.util.Arrays;
@@ -18,17 +18,30 @@ public class JSPath {
     }
 
     @JSCodingConstructor(description = "...", paramNames = {"path"})
-    public JSPath(JSString path) {
-        this.jGemsPath = new JGemsPath(path.string());
+    public JSPath(String path) {
+        this.jGemsPath = new JGemsPath(path);
     }
 
     @JSCodingConstructor(description = "...", paramNames = {"root", "foldersTrace"})
-    public JSPath(JSString root, JSString... foldersTrace) {
-        this.jGemsPath = new JGemsPath(root.string(), Arrays.stream(foldersTrace).map(JSString::string).toArray(String[]::new));
+    public JSPath(String root, String... foldersTrace) {
+        this.jGemsPath = new JGemsPath(root, foldersTrace);
+    }
+
+    @JSCodingConstructor(description = "...", paramNames = {"root", "foldersTrace"})
+    public JSPath(JSPath root, String... foldersTrace) {
+        this.jGemsPath = new JGemsPath(root.getJavaPath(), foldersTrace);
     }
 
     @JSCodingFunctionOrMethod(description = "...", paramNames = {"..."})
     public JGemsPath getJavaPath() {
         return this.jGemsPath;
+    }
+
+    @JSHideFromDoc
+    @Override
+    public String toString() {
+        return "JSPath{" +
+                "jGemsPath=" + jGemsPath +
+                '}';
     }
 }

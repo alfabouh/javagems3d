@@ -4,7 +4,6 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSGlobalVarFactory;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.misc.JSString;
 import logger.Log;
 
 @JSCodingClass(binding = "JSSample", description = "...")

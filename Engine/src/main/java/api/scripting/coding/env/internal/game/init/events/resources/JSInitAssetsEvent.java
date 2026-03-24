@@ -1,15 +1,13 @@
-package api.scripting.coding.env.internal.util.resources;
+package api.scripting.coding.env.internal.game.init.events.resources;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
+import api.scripting.coding.env.def.*;
+import api.scripting.coding.env.internal.util.events.JSEventI;
 import api.scripting.coding.env.internal.util.management.JSPath;
 import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
-import api.scripting.coding.env.internal.util.resources.init.JSShadersInitializer;
 import api.scripting.coding.env.internal.util.resources.instances.font.JSFont;
 import api.scripting.coding.env.internal.util.resources.instances.font.JSFontStyles;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshBuffer;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshGroup;
-import api.scripting.coding.env.internal.util.resources.instances.shaders.JSShader;
 import api.scripting.coding.env.internal.util.resources.instances.sound.JSOggSound;
 import api.scripting.coding.env.internal.util.resources.instances.sound.JSSoundFormats;
 import api.scripting.coding.env.internal.util.resources.instances.textures.JSTexture2D;
@@ -19,6 +17,7 @@ import api.scripting.coding.env.internal.util.resources.instances.textures.JSTex
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -29,12 +28,19 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 
 import java.awt.*;
 
-@JSCodingClass(binding = "JSResourcesManager", description = "...")
-public class JSResourcesManager {
-    private final JSSystemResources systemResources;
+@JSCodingClass(binding = "JSInitAssetsEvent", description = "...")
+public class JSInitAssetsEvent implements JSEventI {
+    @JSCodingField(description = "systemResources") public JSSystemResources systemResources;
+    @JSHideFromDoc private IAssetsInitializer assetsInitializer;
 
-    public JSResourcesManager(JSSystemResources systemResources) {
+    @JSCodingConstructor(description = "...")
+    public JSInitAssetsEvent() {
+    }
+
+    @JSHideFromDoc
+    public JSInitAssetsEvent(IAssetsInitializer assetsInitializer, JSSystemResources systemResources) {
         this.systemResources = systemResources;
+        this.assetsInitializer = assetsInitializer;
     }
 
     @JSCodingFunctionOrMethod(description = "...", paramNames = {"pathToOggSound", "format"})
@@ -94,37 +100,9 @@ public class JSResourcesManager {
         return new JSFont(new JGemsGuiFont(this.systemResources.getJavaSystemResources(), font.deriveFont(fontStyles.getValue(), fontSize), FontCode.Window));
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"pathToShader", "shadersInitializer"})
-    public JSShader createShader(JSPath pathToShader, JSShadersInitializer shadersInitializer) {
-        return new JSShader(shadersInitializer.createShaderManager(this.systemResources.getJavaSystemResources().getResourceCache(), new JGemsPathSource(pathToShader.getJavaPath(), ISource.Source.OUTSIDE_JAR)));
-    }
-
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"varName", "staticValue", "shadersInitializer"})
-    public void registerShaderStaticConstant(String varName, String staticValue, JSShadersInitializer shadersInitializer) {
-        shadersInitializer.getShaderStaticConstants().createConstant(varName, staticValue);
-    }
-
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"pathToLibrary", "shadersInitializer"})
-    public void registerShaderLibrary(JSPath pathToLibrary, JSShadersInitializer shadersInitializer) {
-        shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource(pathToLibrary.getJavaPath(), ISource.Source.OUTSIDE_JAR));
-    }
-
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
-    public void registerDefaultShaderLibrary_SHADOWS(JSShadersInitializer shadersInitializer) {
-        shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
-    }
-
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
-    public void registerDefaultShaderLibrary_ANIMATIONS(JSShadersInitializer shadersInitializer) {
-        shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/animations", ISource.Source.INSIDE_JAR));
-    }
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
-    public void registerShaderLibrary_LIGHTING(JSShadersInitializer shadersInitializer) {
-        shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
-    }
-
-    @JSCodingFunctionOrMethod(description = "...")
-    public JSSystemResources getSystemResources() {
-        return this.systemResources;
+    @JSHideFromDoc
+    @Override
+    public String name() {
+        return "JSInitAssetsEvent";
     }
 }

@@ -327,10 +327,10 @@ public class ScriptEditorDrawerG {
         }
         cursor = Math.min(cursor, line.length());
         int i = cursor - 1;
-        while (i >= 0 && !Character.isSpaceChar(line.charAt(i))) {
+        while (i >= 0 && !(Character.isSpaceChar(line.charAt(i)) || line.charAt(i) == '(')) {
             i--;
         }
-        return line.substring(i + 1, cursor).replaceAll("\t", "").replaceAll("\\.", "");
+        return line.substring(i + 1, cursor).replaceAll("\t", "").replaceAll("\\.", "").replaceAll("\\)o", "");
     }
 
     private void codeCompletionContext(TextEditor editor, int id, Supplier<Boolean> openPopup, Function<TextEditor, String> getStr, BiFunction<TextEditor, String, Boolean> onWordMatch) {
@@ -425,7 +425,7 @@ public class ScriptEditorDrawerG {
                     "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in",
                     "instanceof", "let", "new", "return", "super", "switch", "this", "throw", "try",
                     "typeof", "var", "void", "while", "with", "yield", "public", "private", "final",
-                    "protected", "interface", "abstract", "static", "record", "enum", "implements"
+                    "protected", "interface", "abstract", "static", "record", "enum", "implements", "null", "Java"
             };
             this.apiCodeEnvironmentController.getGlobalVarFactoryKeys().values().forEach(e -> {
                 identifiers.put(e.varName(), this.apiCodeEnvironmentController.getClassRegistry().get(e.varKey()).codingClass().description());

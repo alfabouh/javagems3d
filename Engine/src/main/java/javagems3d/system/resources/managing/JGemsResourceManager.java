@@ -1,9 +1,12 @@
 package javagems3d.system.resources.managing;
 
+import api.scripting.coding.env.internal.util.resources.init.JSDefaultGameResources;
 import api.system.JGemsAPI;
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.*;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -31,7 +34,7 @@ public final class JGemsResourceManager extends ResourceManager {
         for (ShadersInitializer<? extends ShaderManager> shadersLoader : JGemsAPI.APIAppData().getAppResources().getShadersInitializers()) {
             shadersLoader.createShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         }
-
+        JavaToJsAPI.createJSShadersInitializer(JGemsHelper.resources().getGlobalGameResources()).createShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         RenderDataInitializer.setDefaultRenderTableValues();
     }
 
@@ -40,10 +43,14 @@ public final class JGemsResourceManager extends ResourceManager {
         for (ShadersInitializer<? extends ShaderManager> shadersLoader : JGemsAPI.APIAppData().getAppResources().getShadersInitializers()) {
             shadersLoader.reloadShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         }
+        JavaToJsAPI.createJSShadersInitializer(JGemsHelper.resources().getGlobalGameResources()).reloadShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
     }
 
     public void loadGlobalResources() {
         this.getGlobalResources().loadResources();
+        {
+            JSDefaultGameResources.init();
+        }
     }
 
     public void loadLocalResources() {
@@ -57,6 +64,7 @@ public final class JGemsResourceManager extends ResourceManager {
         JGemsResourceManager.globalSoundAssets = new SoundAssetsInitializer();
         this.getGlobalResources().addAssetsLoaders(JGemsResourceManager.globalTextureAssets, JGemsResourceManager.globalModelAssets, JGemsResourceManager.globalRenderDataAssets, JGemsResourceManager.globalSoundAssets);
         this.getGlobalResources().addAssetsLoaders(JGemsAPI.APIAppData().getAppResources().getGlobalAssetsInitializers());
+        this.getGlobalResources().addAssetsLoaders(JavaToJsAPI.createJSAssetsInitializer(this));
     }
 
     public void clearGlobalCache() {

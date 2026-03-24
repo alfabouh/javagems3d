@@ -3,7 +3,6 @@ package api.scripting.coding.env.internal.util.resources.cache;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.misc.JSString;
 import api.scripting.coding.env.internal.util.resources.JSCanBeCachedInMemory;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -16,7 +15,7 @@ public class JSSystemResources {
     private final SystemResources systemResources;
 
     @JSHideFromDoc
-    private JSSystemResources(SystemResources systemResources) {
+    public JSSystemResources(SystemResources systemResources) {
         this.systemResources = systemResources;
     }
 
@@ -26,22 +25,22 @@ public class JSSystemResources {
     }
 
     @JSCodingFunctionOrMethod(description = "...")
-    public void clearObjectFromMemoryCacheByKey(JSString key) {
-        this.getMemoryResourceCache().clearObjectFromCache(key.string());
+    public void clearObjectFromMemoryCacheByKey(String key) {
+        this.getMemoryResourceCache().clearObjectFromCache(key);
     }
 
     @JSCodingFunctionOrMethod(description = "...", paramNames = {"key", "object"})
-    public void registerObjectInMemoryCache(JSString key, JSCanBeCachedInMemory object) {
+    public void registerObjectInMemoryCache(String key, JSCanBeCachedInMemory object) {
         if (object instanceof ICached cached) {
-            this.getMemoryResourceCache().registerInCache(key.string(), cached);
+            this.getMemoryResourceCache().registerInCache(key, cached);
         } else {
             Log.get().error("Cannot register in cache this type of object");
         }
     }
 
     @JSCodingFunctionOrMethod(description = "...", paramNames = {"key"})
-    public JSCanBeCachedInMemory getObjectFromMemoryCacheByKey(JSString key) {
-        return this.getJavaSystemResources().getResource(key.string());
+    public JSCanBeCachedInMemory getObjectFromMemoryCacheByKey(String key) {
+        return this.getJavaSystemResources().getResource(key);
     }
 
     @JSCodingFunctionOrMethod(description = "...")

@@ -5,7 +5,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.IScreen;
 import javagems3d.graphics.screen.OpenGLSysUtils;
-import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
@@ -177,10 +177,10 @@ public class WBenchScreen implements IScreen {
 
     private void renderLoop() throws InterruptedException {
         int fps = 0;
-        JGemsTimer perSecondTimer = this.getTimerPool().createTimer();
-        JGemsTimer renderTimer = this.getTimerPool().createTimer();
-        JGemsTimer deltaTimer = this.getTimerPool().createTimer();
-        JGemsTimer autoSaveTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction perSecondTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction renderTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction deltaTimer = this.getTimerPool().createTimer();
+        JGemsTimedAction autoSaveTimer = this.getTimerPool().createTimer();
 
         while (!WBench.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {

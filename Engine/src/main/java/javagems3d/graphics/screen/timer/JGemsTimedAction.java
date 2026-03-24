@@ -2,13 +2,13 @@ package javagems3d.graphics.screen.timer;
 
 import javagems3d.JGems3D;
 
-public final class JGemsTimer {
+public final class JGemsTimedAction {
     private boolean shouldBeErased;
     private double lastTime;
     private float deltaTime;
     private double accumulatedTime;
 
-    JGemsTimer() {
+    JGemsTimedAction() {
         this.lastTime = JGems3D.glfwTime();
         this.shouldBeErased = false;
     }
