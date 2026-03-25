@@ -8,6 +8,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -95,12 +96,12 @@ public class SkyBoxPreviewEditorWindow {
     private void renderSkyFace(Matrix4f projection, Matrix4f view, @NotNull Vector3f pos1, @NotNull Vector3f pos2, @NotNull Vector3f pos3, @NotNull Vector3f pos4, @Nullable String textureRelativePos, @NotNull ITexture2DProgram hint) {
         try (Model3D model = MeshHelper.generatePlane3DModel(ArbitraryArguments.pass(false), pos1, pos2, pos3, pos4)) {
             WBenchResourceManager.localShaderAssets.simple_skybox_face.beginShading();
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performMatrix4(new UniformString("view"), view);
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW), view);
             final GameResourceTextureAsset program = textureRelativePos == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(textureRelativePos);
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString("skybox_face2D"), program == null ? JGemsResourceManager.DEFAULT_TEXTURE() : program.texture2DProgram());
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString("skybox_faceHint"), hint);
-            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString("doHint"), UniformFunctions.BOOLEAN(this.actionsInterfaceComponentG.getScenePreviewSkyBoxG().isShowHint()));
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString(DefaultUniformDefinitions.SKYBOX_FACE_2D), program == null ? JGemsResourceManager.DEFAULT_TEXTURE() : program.texture2DProgram());
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniformTexture(new UniformString(DefaultUniformDefinitions.SKYBOX_FACE_HINT), hint);
+            WBenchResourceManager.localShaderAssets.simple_skybox_face.performUniform(new UniformString(DefaultUniformDefinitions.DO_HINT), UniformFunctions.BOOLEAN(this.actionsInterfaceComponentG.getScenePreviewSkyBoxG().isShowHint()));
             JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             WBenchResourceManager.localShaderAssets.simple_skybox_face.endShading();
         }
@@ -110,11 +111,11 @@ public class SkyBoxPreviewEditorWindow {
     GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         WBenchResourceManager.localShaderAssets.simple_flat.beginShading();
-        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-        WBenchResourceManager.localShaderAssets.simple_flat.performModel3DMatrix(new UniformString("model_matrix"), new Matrix4f().identity().translate(0.0f, -5.0f, 0.0f));
-        WBenchResourceManager.localShaderAssets.simple_flat.performViewMatrix(new UniformString("view_matrix"), view);
-        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
-        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(-1.0f));
+        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+        WBenchResourceManager.localShaderAssets.simple_flat.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), new Matrix4f().identity().translate(0.0f, -5.0f, 0.0f));
+        WBenchResourceManager.localShaderAssets.simple_flat.performViewMatrix(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), view);
+        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_CENTER_RECT), UniformFunctions.FLOAT(-1.0f));
         JGemsHelper.render().renderModel3D(WBenchOpenGLRenderer.flatTerrain, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         WBenchResourceManager.localShaderAssets.simple_flat.endShading();
         GL46.glDisable(GL46.GL_BLEND);

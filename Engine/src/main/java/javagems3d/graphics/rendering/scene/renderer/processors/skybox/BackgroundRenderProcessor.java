@@ -24,6 +24,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.service.collections.Pair;
@@ -71,14 +72,14 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = this.getSkyBox().getTexture();
 
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(cameraBackground.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
-                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
+            shaderManager.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(cameraBackground.getCamPosition()));
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+                shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
             }
 
-            shaderManager.performUniform(new UniformString("view_scaling"), UniformFunctions.FLOAT(skyBackground.getViewScaling()));
-            shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-            shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_SCALING), UniformFunctions.FLOAT(skyBackground.getViewScaling()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
             final SceneWorld sceneWorld = (SceneWorld) this.getWorld();

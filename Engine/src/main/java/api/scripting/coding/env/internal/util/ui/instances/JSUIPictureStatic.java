@@ -7,7 +7,7 @@ import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIPictureStatic;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 
-@JSCodingClass(binding = "JSUIPictureStatic", description = "...")
+@JSCodingClass(binding = "JSUIPictureStatic", description = "Wrapper for a static UI picture, exposing position, size, and the underlying Java UIPictureStatic object.")
 public class JSUIPictureStatic {
     @JSHideFromDoc private final UIPictureStatic uiPictureStatic;
 
@@ -16,17 +16,17 @@ public class JSUIPictureStatic {
         this.uiPictureStatic = uiPictureStatic;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the position of the static picture as a JSVector2f.")
     public JSVector2f getPosition() {
         return new JSVector2f(this.uiPictureStatic.getPosition().x, this.uiPictureStatic.getPosition().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the size of the static picture as a JSVector2f.")
     public JSVector2f getSize() {
         return new JSVector2f(this.uiPictureStatic.getSize().x, this.uiPictureStatic.getSize().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java UIPictureStatic object.")
     public UIPictureStatic getJavaUIPicture() {
         return this.uiPictureStatic;
     }

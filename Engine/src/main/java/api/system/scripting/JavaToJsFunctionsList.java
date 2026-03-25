@@ -7,5 +7,5 @@ public abstract class JavaToJsFunctionsList {
                     "If this function is present, the file is treated as a script entry point.";
 
     public static final String SUBSCRIBE_EVENTS_FUNCTION = "JsSubscribeEvents";
-    public static final String SUBSCRIBE_EVENTS_FUNCTION_DESC = "...";
+    public static final String SUBSCRIBE_EVENTS_FUNCTION_DESC = "Function that subscribes to engine events.";
 }

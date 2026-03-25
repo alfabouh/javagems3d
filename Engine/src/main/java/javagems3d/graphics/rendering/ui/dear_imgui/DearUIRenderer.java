@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
@@ -149,8 +150,8 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         io.getDisplaySize(dSize);
 
         this.getShaderManager().beginShading();
-        this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
-        this.getShaderManager().performUniform(new UniformString("texture_map"), UniformFunctions.INTEGER(0));
+        this.getShaderManager().performUniform(new UniformString(DefaultUniformDefinitions.SCALE), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
+        this.getShaderManager().performUniform(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), UniformFunctions.INTEGER(0));
 
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);

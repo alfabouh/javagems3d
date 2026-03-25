@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -55,9 +56,9 @@ public class UIDefaultButton extends UIInteractiveElement {
 
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.buttonModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniform(new UniformString("background_color"), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
-        shaderManager.performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.buttonModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.BACKGROUND_COLOR), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SELECTED), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsHelper.render().renderModel2D(this.buttonModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);

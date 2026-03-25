@@ -7,6 +7,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -35,12 +36,12 @@ public class GluingRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         JGemsShaderManager gluing = this.getGluingShader();
         gluing.beginShading();
-        gluing.performUniformTexture(new UniformString("texture_map"), this.getInColorScene().getTextureByIndex(0));
-        gluing.performUniformTexture(new UniformString("bloom_map1"), this.getInColorScene().getTextureByIndex(1));
-        gluing.performUniformTexture(new UniformString("bloom_map2"), this.getInColorTransparency().getTextureByIndex(2));
-        gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getInColorTransparency().getTextureByIndex(0));
-        gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getInColorTransparency().getTextureByIndex(1));
-        gluing.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        gluing.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getInColorScene().getTextureByIndex(0));
+        gluing.performUniformTexture(new UniformString(DefaultUniformDefinitions.BLOOM_MAP1), this.getInColorScene().getTextureByIndex(1));
+        gluing.performUniformTexture(new UniformString(DefaultUniformDefinitions.BLOOM_MAP2), this.getInColorTransparency().getTextureByIndex(2));
+        gluing.performUniformTexture(new UniformString(DefaultUniformDefinitions.ACCUMULATED_ALPHA), this.getInColorTransparency().getTextureByIndex(0));
+        gluing.performUniformTexture(new UniformString(DefaultUniformDefinitions.REVEAL_ALPHA), this.getInColorTransparency().getTextureByIndex(1));
+        gluing.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         gluing.endShading();
     }

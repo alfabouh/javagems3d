@@ -8,7 +8,7 @@ import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 
-@JSCodingClass(binding = "JSModelPose2D", description = "...")
+@JSCodingClass(binding = "JSModelPose2D", description = "Represents a 2D model pose with position, rotation, and scale.")
 public class JSModelPose2D {
     private final Pose2D pose;
 
@@ -52,8 +52,6 @@ public class JSModelPose2D {
         return new JSVector2f(pose.getScale());
     }
 
-    // --- Setters ---
-
     @JSCodingFunctionOrMethod(description = "Set position", paramNames = {"position"})
     public JSModelPose2D setPosition(JSVector2f position) {
         pose.setPosition(position.getJavaVector2f());
@@ -85,8 +83,6 @@ public class JSModelPose2D {
     @JSHideFromDoc
     @Override
     public String toString() {
-        return "Pose2D[pos=" + pose.getPosition() +
-                ", rot=" + pose.getRotation() +
-                ", scale=" + pose.getScale() + "]";
+        return "Pose2D[pos=" + pose.getPosition() + ", rot=" + pose.getRotation() + ", scale=" + pose.getScale() + "]";
     }
 }

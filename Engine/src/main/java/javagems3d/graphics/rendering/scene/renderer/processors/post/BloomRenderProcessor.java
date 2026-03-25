@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -51,12 +52,12 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
         int steps = this.getSteps();
 
         blurShader.beginShading();
-        blurShader.performUniform(new UniformString("resolution"), UniformFunctions.VEC2I(this.getRenderingResolution().div(4.0f)));
+        blurShader.performUniform(new UniformString(DefaultUniformDefinitions.RESOLUTION), UniformFunctions.VEC2I(this.getRenderingResolution().div(4.0f)));
         for (int i = 0; i < steps; i++) {
             this.getOutColor().bindFBO();
-            blurShader.performUniformTexture(new UniformString("texture_map"), startFbo.getTextureByIndex(startBinding));
-            blurShader.performUniform(new UniformString("direction"), UniformFunctions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
-            blurShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+            blurShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), startFbo.getTextureByIndex(startBinding));
+            blurShader.performUniform(new UniformString(DefaultUniformDefinitions.DIRECTION), UniformFunctions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
+            blurShader.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
             JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
             this.getOutColor().unBindFBO();
             startFbo = this.getOutColor();

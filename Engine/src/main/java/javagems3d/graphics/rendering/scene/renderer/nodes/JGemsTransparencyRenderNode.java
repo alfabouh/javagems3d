@@ -14,6 +14,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
@@ -41,11 +42,11 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
     protected void renderLiquid(SceneWorldLiquid sceneWorldLiquid) {
         JGemsShaderManager shaderManager = sceneWorldLiquid.getRenderLiquidData().shaderManager();
         shaderManager.beginShading();
-        shaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-        shaderManager.performModel3DMatrix(new UniformString("model_matrix"), sceneWorldLiquid.getModel());
-        shaderManager.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-        shaderManager.performUniform(new UniformString("texture_scaling"), UniformFunctions.VEC2F(sceneWorldLiquid.getTextureScaling()));
-        shaderManager.performUniform(new UniformString("camera_pos"), UniformFunctions.VEC3F(this.getOpenGLRenderer().getCamera().getCamPosition()));
+        shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+        shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), sceneWorldLiquid.getModel());
+        shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.TEXTURE_SCALING), UniformFunctions.VEC2F(sceneWorldLiquid.getTextureScaling()));
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(this.getOpenGLRenderer().getCamera().getCamPosition()));
         this.renderMeshList3D(this.getOpenGLRenderer(), shaderManager, sceneWorldLiquid.getModel(), MeshStructure3D.TRANSPARENCY_LAYER);
         shaderManager.endShading();
     }

@@ -7,7 +7,7 @@ import api.scripting.coding.env.internal.util.resources.JSCanBeCachedInMemory;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 
-@JSCodingClass(binding = "JSTextureCubeMap", description = "...")
+@JSCodingClass(binding = "JSTextureCubeMap", description = "Cube map texture with caching and program access.")
 public class JSTextureCubeMap implements JSCanBeCachedInMemory, JSTextureI {
     @JSHideFromDoc
     private final ICubeMapProgram cubeMapProgram;
@@ -16,7 +16,7 @@ public class JSTextureCubeMap implements JSCanBeCachedInMemory, JSTextureI {
         this.cubeMapProgram = cubeMapProgram;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get cube map program")
     public ICubeMapProgram getJavaCubeMapProgram() {
         return this.cubeMapProgram;
     }

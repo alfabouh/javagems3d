@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -38,8 +39,8 @@ public class UIPictureStatic extends UIElement {
         this.imageModel.getPose().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTexture(new UniformString("texture_map"), this.iImageSample);
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.iImageSample);
         JGemsHelper.render().renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

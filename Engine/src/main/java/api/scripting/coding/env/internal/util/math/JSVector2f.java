@@ -8,7 +8,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-@JSCodingClass(binding = "JSVector2f", description = "...")
+@JSCodingClass(binding = "JSVector2f", description = "Wrapper for a 2D float vector, used for positions, sizes, and other 2D coordinates in scripting.")
 public class JSVector2f {
     private final Vector2f vector2f;
 

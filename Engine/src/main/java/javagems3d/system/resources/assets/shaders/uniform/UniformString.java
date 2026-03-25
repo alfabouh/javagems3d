@@ -19,6 +19,20 @@ public final class UniformString {
         this.uniformArrayIndex = uniformArrayIndex;
     }
 
+    public UniformString(DefaultUniformDefinitions uniformRoot) {
+        this(uniformRoot.getS(), "", -1);
+    }
+
+    public UniformString(DefaultUniformDefinitions uniformRoot, int uniformArrayIndex) {
+        this(uniformRoot.getS(), "", uniformArrayIndex);
+    }
+
+    public UniformString(DefaultUniformDefinitions uniformRoot, String uniformPostfix, int uniformArrayIndex) {
+        this.uniformRoot = uniformRoot.getS();
+        this.uniformPostfix = uniformPostfix;
+        this.uniformArrayIndex = uniformArrayIndex;
+    }
+
     @Override
     public int hashCode() {
         return this.toString().hashCode();

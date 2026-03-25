@@ -11,6 +11,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
@@ -40,10 +41,10 @@ public class MarkerSimpleTransparentRenderFabric extends DirectRenderFabric {
                 if (functionToHandleUniforms != null) {
                     functionToHandleUniforms.accept(new Pair<>(shaderManager, renderedItem));
                 }
-                shaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-                shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
-                shaderManager.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-                shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(markerObject.getColor(), 0.5f)));
+                shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
+                shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(markerObject.getColor(), 0.5f)));
                 JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }
         }

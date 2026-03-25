@@ -16,6 +16,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -33,25 +34,25 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         if (renderedItem instanceof IModeled modeled) {
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
-                shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
+                shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
                 this.renderModelForShadow(modeled, shaderManager, model);
             }
         }
     }
 
     protected void renderModelForShadow(IModeled modeled, JGemsShaderManager shaderManager, Model3D model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
         JGemsHelper.render().performAnimationsInfo(JGemsHelper.resources().getResourceManager(), shaderManager, modeled);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
                 ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-                shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.color()));
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), UniformFunctions.VEC4F(diffuseColor.color()));
                 if (diffuseMap != null) {
-                    shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
-                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
+                    shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.DIFFUSE_MAP), diffuseMap);
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_TEXTURE), UniformFunctions.BOOLEAN(true));
                 } else {
-                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_TEXTURE), UniformFunctions.BOOLEAN(false));
                 }
                 GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
                 meshNode3D.getMeshData().enableAllMeshAttributes();

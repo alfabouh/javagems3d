@@ -9,7 +9,7 @@ import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 
-@JSCodingClass(binding = "JSMeshBuffer", description = "...")
+@JSCodingClass(binding = "JSMeshBuffer", description = "Wrapper for a 3D mesh buffer, allowing caching and access to the underlying Java MeshStructure3D object.")
 public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
     @JSHideFromDoc
     private final MeshBuffer meshBuffer;
@@ -18,7 +18,7 @@ public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
         this.meshBuffer = meshBuffer;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java MeshBuffer object.")
     public MeshBuffer getMeshBuffer() {
         return this.meshBuffer;
     }

@@ -4,6 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.internal.util.misc.JSRequiresClearResources;
 import api.scripting.coding.env.internal.util.resources.cache.JSMeshStructure3D;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshBuffer;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshGroup;
@@ -14,8 +15,10 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 
-@JSCodingClass(binding = "JSModel3D", description = "...")
-public class JSModel3D {
+@JSCodingClass(binding = "JSModel3D", description = "3D model with pose and mesh structure, supporting copy and mesh retrieval. " +
+        "If a model is created every frame, call clear() after use to free resources.")
+public class JSModel3D implements JSRequiresClearResources {
+    @JSHideFromDoc
     private final Model3D model3D;
 
     @JSCodingConstructor(description = "Create model", paramNames = {"pose", "mesh"})
@@ -46,12 +49,8 @@ public class JSModel3D {
     @JSCodingFunctionOrMethod(description = "Get mesh structure")
     public JSMeshStructure3D getMesh() {
         MeshStructure3D<? extends IMesh> mesh = this.model3D.getMeshStructure();
-        if (mesh instanceof MeshBuffer mb) {
-            return new JSMeshBuffer(mb);
-        }
-        if (mesh instanceof MeshGroup mg) {
-            return new JSMeshGroup(mg);
-        }
+        if (mesh instanceof MeshBuffer mb) return new JSMeshBuffer(mb);
+        if (mesh instanceof MeshGroup mg) return new JSMeshGroup(mg);
         return null;
     }
 
@@ -66,7 +65,12 @@ public class JSModel3D {
         return new JSModel3D(this);
     }
 
-    @JSCodingFunctionOrMethod(description = "Get underlying Model3D")
+    @JSCodingFunctionOrMethod(description = "Clear model resources. Use this if the model is created each frame.")
+    public void clear() {
+        this.model3D.clear();
+    }
+
+    @JSHideFromDoc
     public Model3D getJavaModel3D() {
         return this.model3D;
     }

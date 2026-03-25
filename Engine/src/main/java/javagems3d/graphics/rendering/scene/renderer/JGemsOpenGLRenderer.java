@@ -50,6 +50,7 @@ import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
@@ -311,8 +312,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
-        imgShader.performUniformTexture(new UniformString("texture_map"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
-        imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        imgShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
+        imgShader.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }

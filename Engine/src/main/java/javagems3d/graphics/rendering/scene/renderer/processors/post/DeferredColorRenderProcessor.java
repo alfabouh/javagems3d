@@ -10,6 +10,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,31 +44,31 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
         final ICubeMapProgram cubeMapProgram = this.getWorld().getEnvironment().getSkyBox().getTexture();
-        deferredShader.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(this.getWorld().getCamera().getCamPosition()));
-        if (cubeMapProgram != null && deferredShader.isUniformExist(new UniformString("ambient_cubemap"))) {
-            deferredShader.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
-            if (deferredShader.isUniformExist(new UniformString("useCubeMap"))) {
-                deferredShader.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(true));
+        deferredShader.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(this.getWorld().getCamera().getCamPosition()));
+        if (cubeMapProgram != null && deferredShader.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+            deferredShader.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
+            if (deferredShader.isUniformExist(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP))) {
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP), UniformFunctions.BOOLEAN(true));
             }
         } else {
-            if (deferredShader.isUniformExist(new UniformString("useCubeMap"))) {
-                deferredShader.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(false));
+            if (deferredShader.isUniformExist(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP))) {
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP), UniformFunctions.BOOLEAN(false));
             }
         }
-        deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
-        deferredShader.performUniform(new UniformString("showCascades"), UniformFunctions.BOOLEAN(JGemsConfig.DEBUG.SHOW_CASCADES));
-        deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
-        deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
-        deferredShader.performUniformTexture(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
-        deferredShader.performUniformTexture(new UniformString("gMetallicRoughness"), gBuffer.getTextureByIndex(4));
+        deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
+        deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.SHOW_CASCADES), UniformFunctions.BOOLEAN(JGemsConfig.DEBUG.SHOW_CASCADES));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_POSITIONS), gBuffer.getTextureByIndex(0));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_NORMALS), gBuffer.getTextureByIndex(1));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_TEXTURE), gBuffer.getTextureByIndex(2));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_EMISSION), gBuffer.getTextureByIndex(3));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_METALLIC_ROUGHNESS), gBuffer.getTextureByIndex(4));
         if (ssaoBuffer != null) {
-            deferredShader.performUniformTexture(new UniformString("ssao_map"), ssaoBuffer.getTextureByIndex(0));
-            deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(true));
+            deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.SSAO_MAP), ssaoBuffer.getTextureByIndex(0));
+            deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.IS_SSAO_VALID), UniformFunctions.BOOLEAN(true));
         } else {
-            deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(false));
+            deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.IS_SSAO_VALID), UniformFunctions.BOOLEAN(false));
         }
-        deferredShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        deferredShader.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().performShadowsInfo(this.getOpenGLRenderer().getWorld().getEnvironment(), deferredShader);
         JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();

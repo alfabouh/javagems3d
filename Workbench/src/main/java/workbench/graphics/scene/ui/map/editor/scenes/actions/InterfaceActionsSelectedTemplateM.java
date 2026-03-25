@@ -17,6 +17,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import org.jetbrains.annotations.NotNull;
@@ -85,19 +86,19 @@ public class InterfaceActionsSelectedTemplateM {
         final Pose3D pose3D = new Pose3D(new Vector3f(0.0f, -diagonal * 0.25f, 0.0f));
 
         shaderManager.beginShading();
-        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
-        shaderManager.performMatrix4(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D));
-        shaderManager.performMatrix4(new UniformString("view_matrix"), new Matrix4f().identity().lookAt(new Vector3f(diagonal), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
+        shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), TransformUtils.getModelMatrix(pose3D));
+        shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), new Matrix4f().identity().lookAt(new Vector3f(diagonal), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         JGemsHelper.render().performEmptyAnimationsInfo(shaderManager);
         for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
             ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
-            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.color()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), UniformFunctions.VEC4F(diffuseColor.color()));
             if (diffuseMap != null) {
-                shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
-                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
+                shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.DIFFUSE_MAP), diffuseMap);
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_TEXTURE), UniformFunctions.BOOLEAN(true));
             } else {
-                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_TEXTURE), UniformFunctions.BOOLEAN(false));
             }
             GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
             meshNode3D.getMeshData().enableAllMeshAttributes();

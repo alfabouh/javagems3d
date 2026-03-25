@@ -7,7 +7,7 @@ import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIPictureSizable;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIPictureStatic;
 
-@JSCodingClass(binding = "JSUIPictureSizable", description = "...")
+@JSCodingClass(binding = "JSUIPictureSizable", description = "UI element representing an image with configurable size.")
 public class JSUIPictureSizable {
     @JSHideFromDoc private final UIPictureSizable uiPictureSizable;
 
@@ -16,17 +16,17 @@ public class JSUIPictureSizable {
         this.uiPictureSizable = uiPictureSizable;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get image position.")
     public JSVector2f getPosition() {
         return new JSVector2f(this.uiPictureSizable.getPosition().x, this.uiPictureSizable.getPosition().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get image size.")
     public JSVector2f getSize() {
         return new JSVector2f(this.uiPictureSizable.getSize().x, this.uiPictureSizable.getSize().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get underlying Java UI image instance.")
     public UIPictureSizable getJavaUIPicture() {
         return this.uiPictureSizable;
     }

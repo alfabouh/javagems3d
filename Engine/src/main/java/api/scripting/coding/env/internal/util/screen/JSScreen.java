@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
-@JSCodingClass(binding = "JSScreen", description = "...")
+@JSCodingClass(binding = "JSScreen", description = "Represents a screen with rendering, window, and timer functionality.")
 public class JSScreen {
     @JSHideFromDoc private final JGemsScreen screen;
     private final JSTimerPool timerPool;
@@ -24,32 +24,32 @@ public class JSScreen {
         this.timerPool = new JSTimerPool(screen.getTimerPool());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Switches between screen modes.")
     public void switchScreenMode() {
         this.screen.switchScreenMode();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Refreshes scene resources.")
     public void refreshSceneResources() {
         this.screen.refreshSceneResources();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Returns the current render ticks.")
     public float getRenderTicks() {
         return this.screen.getRenderTicks();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get window dimensions as a vector.")
     public JSVector2f getWindowDimensions() {
         return new JSVector2f(this.screen.getWindowDimensions().x, this.screen.getWindowDimensions().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get window instance.")
     public JSWindow getWindow() {
         return new JSWindow(this.screen.getWindow());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get timer pool.")
     public JSTimerPool getTimerPool() {
         return this.timerPool;
     }

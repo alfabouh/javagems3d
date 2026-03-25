@@ -29,7 +29,7 @@ public class JSLogger implements JSGlobalVarFactory<JSLogger> {
     }
 
     @JSCodingFunctionOrMethod(description = "Logs a message with parameters at the DEBUG level.", paramNames = {"message"})
-    public void debug(String message) {
+    public void debugMsg(String message) {
         Log.get().debug(message);
     }
 

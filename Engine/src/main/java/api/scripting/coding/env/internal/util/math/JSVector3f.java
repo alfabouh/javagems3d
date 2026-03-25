@@ -6,7 +6,7 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import org.joml.Vector3f;
 
-@JSCodingClass(binding = "JSVector3f", description = "...")
+@JSCodingClass(binding = "JSVector3f", description = "Wrapper for 3D vector operations in scripting, providing access to x, y, z components and common vector math utilities.")
 public class JSVector3f {
     private final Vector3f vector3f;
 

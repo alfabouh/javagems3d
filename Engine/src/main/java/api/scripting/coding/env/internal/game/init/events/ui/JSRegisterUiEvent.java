@@ -8,11 +8,11 @@ import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
 import api.system.scripting.JavaToJsAPI;
 import javagems3d.system.service.collections.Pair;
 
-@JSCodingClass(binding = "JSRegisterUiEvent", description = "...")
+@JSCodingClass(binding = "JSRegisterUiEvent", description = "Event for registering UI panels in the game, including main menu and custom panels.")
 public class JSRegisterUiEvent implements JSEventI {
     @JSHideFromDoc private JSScreen jsScreen;
 
-    @JSCodingConstructor(description = "...")
+    @JSCodingConstructor(description = "Creates a new JSRegisterUiEvent instance.")
     public JSRegisterUiEvent() {
     }
 
@@ -21,17 +21,17 @@ public class JSRegisterUiEvent implements JSEventI {
         this.jsScreen = jsScreen;
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"uniqueName"})
+    @JSCodingFunctionOrMethod(description = "Register a new UI panel by its unique name.", paramNames = {"uniqueName"})
     public void registerPanel(String uniqueName) {
         JavaToJsAPI.uiContainer.setPanelUI(uniqueName, new JSUIPanelWrapper());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Register the main menu panel with a unique name.", paramNames = {"uniqueName"})
     public void registerMainMenuPanel(String uniqueName) {
         JavaToJsAPI.uiContainer.setMainMenuPanel(new Pair<>(uniqueName, new JSUIPanelWrapper()));
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the screen associated with this UI registration event.")
     public JSScreen getScreen() {
         return this.jsScreen;
     }

@@ -10,12 +10,15 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 
-@JSCodingClass(binding = "JSInitShadersEvent", description = "...")
+@JSCodingClass(binding = "JSInitShadersEvent", description = "Event used to load shaders and register shader libraries.")
 public class JSInitShadersEvent implements JSEventI {
-    @JSCodingField(description = "systemResources") public JSSystemResources systemResources;
+
+    @JSCodingField(description = "Access to system resources required for shader creation.")
+    public JSSystemResources systemResources;
+
     @JSHideFromDoc private ShadersInitializer<JGemsShaderManager> shadersInitializer;
 
-    @JSCodingConstructor(description = "...")
+    @JSCodingConstructor(description = "Internal event instance. Do not create manually.")
     public JSInitShadersEvent() {
     }
 
@@ -25,26 +28,27 @@ public class JSInitShadersEvent implements JSEventI {
         this.shadersInitializer = shadersInitializer;
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"pathToShader", "shadersInitializer"})
+    @JSCodingFunctionOrMethod(description = "Load and create shader from path.", paramNames = {"pathToShader"})
     public JSShader createShader(JSPath pathToShader) {
         return new JSShader(this.shadersInitializer.createShaderManager(this.systemResources.getJavaSystemResources().getResourceCache(), new JGemsPathSource(pathToShader.getJavaPath(), ISource.Source.OUTSIDE_JAR)));
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"pathToLibrary", "shadersInitializer"})
+    @JSCodingFunctionOrMethod(description = "Register external shader library.", paramNames = {"pathToLibrary"})
     public void registerShaderLibrary(JSPath pathToLibrary) {
         this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource(pathToLibrary.getJavaPath(), ISource.Source.OUTSIDE_JAR));
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
+    @JSCodingFunctionOrMethod(description = "Register built-in shadow shader library.", paramNames = {})
     public void registerDefaultShaderLibrary_SHADOWS() {
         this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
+    @JSCodingFunctionOrMethod(description = "Register built-in animation shader library.", paramNames = {})
     public void registerDefaultShaderLibrary_ANIMATIONS() {
         this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/animations", ISource.Source.INSIDE_JAR));
     }
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"shadersInitializer"})
+
+    @JSCodingFunctionOrMethod(description = "Register built-in lighting shader library.", paramNames = {})
     public void registerShaderLibrary_LIGHTING() {
         this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
     }

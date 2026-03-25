@@ -7,7 +7,7 @@ import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIDefaultButton;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UISlider;
 
-@JSCodingClass(binding = "JSUISlider", description = "...")
+@JSCodingClass(binding = "JSUISlider", description = "Wrapper for a UI slider component, exposing position, size, and underlying Java UISlider object.")
 public class JSUISlider {
     @JSHideFromDoc private final UISlider uiSlider;
 
@@ -16,17 +16,17 @@ public class JSUISlider {
         this.uiSlider = uiSlider;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the position of the slider as a JSVector2f.")
     public JSVector2f getPosition() {
         return new JSVector2f(this.uiSlider.getPosition().x, this.uiSlider.getPosition().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the size of the slider as a JSVector2f.")
     public JSVector2f getSize() {
         return new JSVector2f(this.uiSlider.getSize().x, this.uiSlider.getSize().y);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java UISlider object.")
     public UISlider getJavaUISlider() {
         return this.uiSlider;
     }

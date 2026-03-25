@@ -12,6 +12,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
@@ -37,15 +38,15 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
             GL46.glEnable(GL46.GL_BLEND);
             GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
             WBenchResourceManager.localShaderAssets.simple_flat.beginShading();
-            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString("model_matrix"), TransformUtils.getModelMatrix(WBenchOpenGLRenderer.flatTerrain.getPose()));
-            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), TransformUtils.getModelMatrix(WBenchOpenGLRenderer.flatTerrain.getPose()));
+            WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
             if (WBenchOpenGLRenderer.isRenderingBackgroundScene()) {
-                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.65f, 0.35f, 0.5f)));
-                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(128.0f / wBenchWorld.getEnvironment().getSkyBox().getBackground().getViewScaling()));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.65f, 0.35f, 0.5f)));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_CENTER_RECT), UniformFunctions.FLOAT(128.0f / wBenchWorld.getEnvironment().getSkyBox().getBackground().getViewScaling()));
             } else {
-                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
-                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(-1.0f));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_CENTER_RECT), UniformFunctions.FLOAT(-1.0f));
             }
             JGemsHelper.render().renderModel3D(WBenchOpenGLRenderer.flatTerrain, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             WBenchResourceManager.localShaderAssets.simple_flat.endShading();

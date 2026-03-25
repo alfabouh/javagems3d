@@ -11,12 +11,12 @@ import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
 import api.system.scripting.JavaToJsAPI;
 import logger.Log;
 
-@JSCodingClass(binding = "JSUiBehaviourEvent", description = "...")
+@JSCodingClass(binding = "JSUiBehaviourEvent", description = "Event used to register UI panel behaviours such as draw, lifecycle and window events.")
 public class JSUiBehaviourEvent implements JSEventI {
     @JSHideFromDoc private JSScreen jsScreen;
     @JSHideFromDoc private JSUIDrawer uiDrawer;
 
-    @JSCodingConstructor(description = "...")
+    @JSCodingConstructor(description = "Internal event instance. Do not create manually.")
     public JSUiBehaviourEvent() {
     }
 
@@ -26,7 +26,7 @@ public class JSUiBehaviourEvent implements JSEventI {
         this.uiDrawer = uiDrawer;
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"uniqueName", "uiBehaviourTarget", "function"})
+    @JSCodingFunctionOrMethod(description = "Bind function to UI panel behaviour (draw, construct, destruct, resize).", paramNames = {"uniqueName", "uiBehaviourTarget", "function"})
     public void registerUiBehaviour(String uniqueName, JSUiBehaviourTargets uiBehaviourTarget, JSFunction function) {
         JSUIPanelWrapper panelWrapper = JavaToJsAPI.uiContainer.getPanelUIMap().get(uniqueName);
         if (panelWrapper == null && uniqueName.equals(JavaToJsAPI.uiContainer.getMainMenuPanel().first())) {
@@ -39,27 +39,27 @@ public class JSUiBehaviourEvent implements JSEventI {
         switch (uiBehaviourTarget) {
             case ON_DRAW -> panelWrapper.setDrawPanel(function);
             case ON_CONSTRUCT -> panelWrapper.setOnConstruct(function);
-            case ON_DESTRUCT ->  panelWrapper.setOnDestruct(function);
+            case ON_DESTRUCT -> panelWrapper.setOnDestruct(function);
             case ON_WINDOW_RESIZED -> panelWrapper.setOnWindowResize(function);
         }
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get current window.")
     public JSWindow getWindow() {
         return this.getScreen().getWindow();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get current screen.")
     public JSScreen getScreen() {
         return this.jsScreen;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get UI drawer for rendering elements.")
     public JSUIDrawer getUiDrawer() {
         return this.uiDrawer;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get frame delta time.")
     public float getFrameDeltaTime() {
         return this.uiDrawer.getJavaUI().frameDeltaTicks;
     }

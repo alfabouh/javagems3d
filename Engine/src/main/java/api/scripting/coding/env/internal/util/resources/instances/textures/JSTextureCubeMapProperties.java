@@ -6,19 +6,19 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import org.jetbrains.annotations.NotNull;
 
-@JSCodingClass(binding = "JSTextureCubeMapProperties", description = "...")
+@JSCodingClass(binding = "JSTextureCubeMapProperties", description = "Properties for cube map textures, e.g., linear filtration setting.")
 public record JSTextureCubeMapProperties(boolean linearFiltration) {
     @JSCodingConstructor(description = "Constructor", paramNames = {"linearFiltration"})
     public JSTextureCubeMapProperties(boolean linearFiltration) {
         this.linearFiltration = linearFiltration;
     }
 
-    @JSCodingConstructor(description = "Lite constructor", paramNames = {"mipMap", "qualityAffected"})
+    @JSCodingConstructor(description = "Default constructor")
     public JSTextureCubeMapProperties() {
         this(true);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if linear filtration is enabled")
     @Override
     public boolean linearFiltration() {
         return this.linearFiltration;

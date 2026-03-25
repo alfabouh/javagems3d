@@ -13,6 +13,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
@@ -85,16 +86,16 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager ssaoComputeShader = this.getSsaoComputing();
         ssaoComputeShader.beginComputing();
 
-        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_BIAS));
-        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RADIUS));
-        ssaoComputeShader.performUniform(new UniformString("ssao_range"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RANGE));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_BIAS), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_BIAS));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RADIUS), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RADIUS));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RANGE), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RANGE));
 
-        ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfig.SYSTEM.SSAO_NOISE_SIZE)));
-        ssaoComputeShader.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
-        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
-        ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
-        ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.NOISE_SCALE), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfig.SYSTEM.SSAO_NOISE_SIZE)));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
+        ssaoComputeShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_POSITIONS), gBuffer.getTextureByIndex(0));
+        ssaoComputeShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_NORMALS), gBuffer.getTextureByIndex(1));
+        ssaoComputeShader.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.SSAO_NOISE), this.getSsaoNoiseTexture());
+        ssaoComputeShader.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.SSAO_KERNEL), this.getSsaoKernelTexture());
         GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
         int groupCountX = (windowSize.x + 16 - 1) / 16;
         int groupCountY = (windowSize.y + 16 - 1) / 16;
@@ -103,8 +104,8 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
         ssaoBlur.beginShading();
-        ssaoBlur.performUniformTexture(new UniformString("texture_map"), this.getSsaoBufferTexture());
-        ssaoBlur.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        ssaoBlur.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getSsaoBufferTexture());
+        ssaoBlur.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
     }

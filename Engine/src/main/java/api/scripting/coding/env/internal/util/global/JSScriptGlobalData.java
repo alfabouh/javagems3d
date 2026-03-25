@@ -9,32 +9,31 @@ import api.scripting.coding.env.internal.util.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import javagems3d.system.service.files.JGemsPath;
 
-@JSCodingClass(binding = "JSScriptGlobalData", description = "...")
+@JSCodingClass(binding = "JSScriptGlobalData", description = "Provides access to global script data such as game folder path, screen, and settings.")
 public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlobalData> {
     @JSHideFromDoc public static JSPath absPath;
     @JSHideFromDoc public static JSScreen jsScreen;
     @JSHideFromDoc public static JSGameSettings jsGameSettings;
 
-    //@JSHideFromDoc
     public JSScriptGlobalData() {
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get absolute path to the game's folder.")
     public JSPath getGameFolderPath() {
         return JSScriptGlobalData.absPath;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get current game settings.")
     public static JSGameSettings getGameSettings() {
         return JSScriptGlobalData.jsGameSettings;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get current screen object.")
     public JSScreen getScreen() {
         return JSScriptGlobalData.jsScreen;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if the screen object is valid.")
     public boolean isScreenValid() {
         return JSScriptGlobalData.jsScreen != null;
     }

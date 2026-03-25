@@ -69,7 +69,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_initAssets__EVENT(IAssetsInitializer assetsInitializer, SystemResources manager) {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_ASSETS), new JSInitAssetsEvent(assetsInitializer, new JSSystemResources(manager)));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_ASSETS);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.INIT_ASSETS.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSInitAssetsEvent(assetsInitializer, new JSSystemResources(manager)));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -77,7 +82,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_initShaders__EVENT(ShadersInitializer<JGemsShaderManager> shadersInitializer, SystemResources manager) {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_SHADERS), new JSInitShadersEvent(shadersInitializer, new JSSystemResources(manager)));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_SHADERS);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.INIT_SHADERS.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSInitShadersEvent(shadersInitializer, new JSSystemResources(manager)));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -85,7 +95,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_registerUI__EVENT() {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.REGISTER_UI), new JSRegisterUiEvent(JSScriptGlobalData.jsScreen));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.REGISTER_UI);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.REGISTER_UI.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSRegisterUiEvent(JSScriptGlobalData.jsScreen));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -93,7 +108,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_registerUIBehaviour__EVENT(JGemsUI jGemsUI) {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.REGISTER_UI_BEHAVIOUR), new JSUiBehaviourEvent(new JSUIDrawer(jGemsUI, JSScriptGlobalData.jsScreen), JSScriptGlobalData.jsScreen));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.REGISTER_UI_BEHAVIOUR);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.REGISTER_UI_BEHAVIOUR.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSUiBehaviourEvent(new JSUIDrawer(jGemsUI, JSScriptGlobalData.jsScreen), JSScriptGlobalData.jsScreen));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -101,7 +121,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_settingsInitEvent__EVENT(JSGameSettings gameSettings) {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_SETTINGS), new JSInitSettingsEvent(gameSettings));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.INIT_SETTINGS);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.INIT_SETTINGS.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSInitSettingsEvent(gameSettings));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -109,7 +134,12 @@ public class JavaToJsAPI {
 
     public static void Js_GAME_afterSettingsPerfTestEvent__EVENT(JSPerfTestResult perfTestResult, JSGameSettings gameSettings) {
         try {
-            JavaToJsAPI.callFunction(Target.Game, JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.AFTER_SETTINGS_PERF_TEST_EVENT), new JSAfterSettingsPerfTestEvent(perfTestResult, gameSettings));
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(JSGameRegistry.AFTER_SETTINGS_PERF_TEST_EVENT);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + JSGameRegistry.AFTER_SETTINGS_PERF_TEST_EVENT.name());
+                return;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, new JSAfterSettingsPerfTestEvent(perfTestResult, gameSettings));
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

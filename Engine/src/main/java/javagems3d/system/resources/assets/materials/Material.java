@@ -3,6 +3,7 @@ package javagems3d.system.resources.assets.materials;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.assets.texturing.ISample;
@@ -120,7 +121,7 @@ public class Material {
             ShaderStorageBufferProgram.clearBufferData(JGemsResourceManager.globalShaderAssets.TextureScan, GL46.GL_R32UI, GL46.GL_RED, GL46.GL_UNSIGNED_INT, null);
             try (GPUSyncer.SyncObj syncObj = GPUSyncer.create(1000)) {
                 computing.beginComputing();
-                computing.performUniformTextureBindless(new UniformString("inputTexture"), imageTexture);
+                computing.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.INPUT_TEXTURE), imageTexture);
                 computing.dispatchComputeShader((texWidth + 15) / 16, (texHeight + 15) / 16, 1, GL46.GL_SHADER_STORAGE_BARRIER_BIT);
                 computing.endComputing();
             }

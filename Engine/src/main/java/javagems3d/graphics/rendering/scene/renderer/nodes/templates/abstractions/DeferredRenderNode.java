@@ -23,6 +23,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.service.collections.Pair;
@@ -142,13 +143,13 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = this.getWorld().getEnvironment().getSkyBox().getTexture();
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
-                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
+            shaderManager.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(camera.getCamPosition()));
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+                shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
             }
-            shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-            shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
-            shaderManager.performUniformTexture(new UniformString("animations_matrix"), this.getAnimationsTexture());
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
+            shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), this.getAnimationsTexture());
         };
 
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
@@ -245,12 +246,12 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
-                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
+            shaderManager.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(camera.getCamPosition()));
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+                shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
             }
-            shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
-            shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
         };
 
         IndirectBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();

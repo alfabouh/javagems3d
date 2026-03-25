@@ -9,6 +9,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -43,9 +44,9 @@ public class UIText extends UIElement {
     public void render(float frameDeltaTicks) {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.getFontTexture().getTexture());
-        shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getFontTexture().getTexture());
+        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsHelper.render().renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

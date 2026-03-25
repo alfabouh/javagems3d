@@ -6,6 +6,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -35,9 +36,9 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
         Vector2f res = new Vector2f(window.getWindowSize().x, window.getWindowSize().y);
         try (Model2D model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
-            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC3F(color));
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString(DefaultUniformDefinitions.W_TICK), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
+            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
             JGemsHelper.render().renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }

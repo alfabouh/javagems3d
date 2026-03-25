@@ -7,7 +7,7 @@ import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 
-@JSCodingClass(binding = "JSModelPose3D", description = "...")
+@JSCodingClass(binding = "JSModelPose3D", description = "Represents a 3D pose with position, rotation, scale, and view orientation flag.")
 public class JSModelPose3D {
     private final Pose3D pose;
 

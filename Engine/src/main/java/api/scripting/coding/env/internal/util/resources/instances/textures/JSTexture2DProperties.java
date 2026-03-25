@@ -6,9 +6,9 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import org.jetbrains.annotations.NotNull;
 
-@JSCodingClass(binding = "JSTexture2DProperties", description = "...")
+@JSCodingClass(binding = "JSTexture2DProperties", description = "Wrapper for 2D texture settings, including mipmapping, filtration, tiling, anisotropic filtering, and quality influence.")
 public record JSTexture2DProperties(boolean mipMap, boolean linearFiltration, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) {
-    @JSCodingConstructor(description = "Constructor", paramNames = {"mipMap", "linearFiltration", "shouldBeRepeated", "anisotropicFiltration", "qualityAffected"})
+    @JSCodingConstructor(description = "Full constructor with all texture properties.", paramNames = {"mipMap", "linearFiltration", "shouldBeRepeated", "anisotropicFiltration", "qualityAffected"})
     public JSTexture2DProperties(boolean mipMap, boolean linearFiltration, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) {
         this.mipMap = mipMap;
         this.linearFiltration = linearFiltration;
@@ -17,7 +17,7 @@ public record JSTexture2DProperties(boolean mipMap, boolean linearFiltration, bo
         this.qualityAffected = qualityAffected;
     }
 
-    @JSCodingConstructor(description = "Lite constructor", paramNames = {"mipMap", "qualityAffected"})
+    @JSCodingConstructor(description = "Simplified constructor with mipMap and qualityAffected only.", paramNames = {"mipMap", "qualityAffected"})
     public JSTexture2DProperties(boolean mipMap, boolean qualityAffected) {
         this(mipMap, true, true, true, qualityAffected);
     }
@@ -44,31 +44,31 @@ public record JSTexture2DProperties(boolean mipMap, boolean linearFiltration, bo
         return "";
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Whether mipmaps are enabled for this texture.")
     @Override
     public boolean mipMap() {
         return this.mipMap;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Whether linear filtering is enabled for this texture.")
     @Override
     public boolean linearFiltration() {
         return this.linearFiltration;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Whether the texture should be repeated when UVs exceed 1.0.")
     @Override
     public boolean shouldBeRepeated() {
         return this.shouldBeRepeated;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Whether anisotropic filtering is enabled for this texture.")
     @Override
     public boolean anisotropicFiltration() {
         return this.anisotropicFiltration;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Whether this texture affects quality-dependent rendering settings.")
     @Override
     public boolean qualityAffected() {
         return this.qualityAffected;

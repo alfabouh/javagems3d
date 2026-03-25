@@ -5,6 +5,7 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
+import api.scripting.coding.env.internal.util.misc.JSRequiresClearResources;
 import api.scripting.coding.env.internal.util.resources.cache.JSMeshStructure2D;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMesh2D;
 import api.scripting.coding.env.internal.util.resources.instances.models.pose.JSModelPose2D;
@@ -12,9 +13,10 @@ import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure2D;
 import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
 
-@JSCodingClass(binding = "JSModel2D", description = "...")
-public class JSModel2D {
-    private final Model2D model2D;
+@JSCodingClass(binding = "JSModel2D", description = "2D model with pose and mesh, supporting transformations and copying. " +
+        "If a model is created every frame, call clear() after use to free resources.")
+public class JSModel2D implements JSRequiresClearResources {
+    @JSHideFromDoc private final Model2D model2D;
 
     @JSCodingConstructor(description = "Create model", paramNames = {"pose", "mesh"})
     public JSModel2D(JSModelPose2D pose, JSMeshStructure2D mesh) {
@@ -44,9 +46,6 @@ public class JSModel2D {
     @JSCodingFunctionOrMethod(description = "Get mesh")
     public JSMeshStructure2D getMesh() {
         MeshStructure2D mesh = this.model2D.getMeshStructure();
-        if (mesh == null) {
-            return null;
-        }
         if (mesh instanceof MeshGui gui) {
             return new JSMesh2D(gui);
         }
@@ -76,7 +75,12 @@ public class JSModel2D {
         return new JSModel2D(this);
     }
 
-    @JSCodingFunctionOrMethod(description = "Get underlying Model2D")
+    @JSCodingFunctionOrMethod(description = "Clear model resources. Use this if the model is created each frame.")
+    public void clear() {
+        this.model2D.clear();
+    }
+
+    @JSHideFromDoc
     public Model2D getJavaModel2D() {
         return this.model2D;
     }

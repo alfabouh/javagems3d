@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.scene.renderer.debug;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,9 +72,9 @@ public class DebugLinesDrawer {
                 MemoryUtil.memFree(request.indexes());
 
                 this.getDrawerShader().beginShading();
-                this.getDrawerShader().performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(request.color(), 1.0f)));
-                this.getDrawerShader().performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-                this.getDrawerShader().performMatrix4(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                this.getDrawerShader().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(request.color(), 1.0f)));
+                this.getDrawerShader().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                this.getDrawerShader().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
                 GL46.glEnableVertexAttribArray(0);
                 GL46.glDrawElements(GL46.GL_LINES, request.indexes.remaining(), GL46.GL_UNSIGNED_INT, 0);
                 GL46.glDisableVertexAttribArray(0);

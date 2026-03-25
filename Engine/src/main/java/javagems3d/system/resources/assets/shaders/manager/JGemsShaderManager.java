@@ -47,11 +47,11 @@ public class JGemsShaderManager extends ShaderManager {
         this.performUniform(uniform, UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(model.getPose(), orthographicMatrix)));
     }
 
-    public void performModel3DViewMatrix(UniformString uniform, Model3D model, Matrix4f view) {//new UniformString("model_view_matrix")
+    public void performModel3DViewMatrix(UniformString uniform, Model3D model, Matrix4f view) {//new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX)
         this.performUniform(uniform, UniformFunctions.MAT4F(TransformUtils.getModelViewMatrix(model.getPose(), view)));
     }
 
-    public void performModel3DViewMatrix(UniformString uniform, Matrix4f model, Matrix4f view) {//new UniformString("model_view_matrix")
+    public void performModel3DViewMatrix(UniformString uniform, Matrix4f model, Matrix4f view) {//new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX)
         this.performUniform(uniform, UniformFunctions.MAT4F(new Matrix4f(view).mul(model)));
     }
 
@@ -59,7 +59,7 @@ public class JGemsShaderManager extends ShaderManager {
         this.performUniform(uniform, UniformFunctions.MAT4F(perspective));
     }
 
-    public void performModel3DMatrix(UniformString uniform, Model3D model) {//new UniformString("model_matrix")
+    public void performModel3DMatrix(UniformString uniform, Model3D model) {//new UniformString(DefaultUniformDefinitions.MODEL_MATRIX)
         this.performUniform(uniform, UniformFunctions.MAT4F(TransformUtils.getModelMatrix(model.getPose())));
     }
 }

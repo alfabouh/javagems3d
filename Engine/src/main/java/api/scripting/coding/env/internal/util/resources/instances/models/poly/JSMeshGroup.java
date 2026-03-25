@@ -9,7 +9,7 @@ import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 
-@JSCodingClass(binding = "JSMeshGroup", description = "...")
+@JSCodingClass(binding = "JSMeshGroup", description = "Represents a group of 3D meshes, exposing access to the underlying MeshGroup and supporting caching.")
 public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D {
     @JSHideFromDoc
     private final MeshGroup meshGroup;
@@ -18,7 +18,7 @@ public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D {
         this.meshGroup = meshGroup;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the underlying MeshGroup instance.")
     public MeshGroup getMeshGroup() {
         return this.meshGroup;
     }

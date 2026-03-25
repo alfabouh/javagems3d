@@ -9,7 +9,7 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.service.files.source.ISource;
 import org.jetbrains.annotations.NotNull;
 
-@JSCodingClass(binding = "JSWindow", description = "...")
+@JSCodingClass(binding = "JSWindow", description = "Wrapper for window operations and properties.")
 public class JSWindow {
     @JSHideFromDoc private final IWindow window;
 

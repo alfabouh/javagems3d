@@ -14,6 +14,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -54,21 +55,21 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         skyShaderManager.beginShading();
         GL46.glDisable(GL46.GL_CULL_FACE);
         GL46.glDepthFunc(GL46.GL_LEQUAL);
-        skyShaderManager.performMatrix4(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+        skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
         Matrix4f viewMatrix = JGemsTransformManager.getModelViewMatrix(model);
         viewMatrix.m30(0);
         viewMatrix.m31(0);
         viewMatrix.m32(0);
         if (this.getSkyBox() != null) {
-            skyShaderManager.performUniformTextureBindless(new UniformString("skybox_cube"), this.getSkyBox().getTexture());
+            skyShaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.SKYBOX_CUBE), this.getSkyBox().getTexture());
         }
         if (this.getBackgroundTexture() != null) {
-            skyShaderManager.performUniformTexture(new UniformString("skybox_background"), this.getBackgroundTexture());
+            skyShaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SKYBOX_BACKGROUND), this.getBackgroundTexture());
         }
-        skyShaderManager.performUniform(new UniformString("covered_by_fog"), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
-        skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
-        skyShaderManager.performMatrix4(new UniformString("model_view_matrix"), viewMatrix);
-        skyShaderManager.performUniform(new UniformString("draw_sun_mult"), UniformFunctions.FLOAT(!this.getSkyBox().isDrawSunOnSkyBox() ? 0.0f : 1.0f));
+        skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COVERED_BY_FOG), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
+        skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MAT_INVERTED), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
+        skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX), viewMatrix);
+        skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_SUN_MULT), UniformFunctions.FLOAT(!this.getSkyBox().isDrawSunOnSkyBox() ? 0.0f : 1.0f));
         JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);

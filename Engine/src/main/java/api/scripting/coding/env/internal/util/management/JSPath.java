@@ -8,31 +8,31 @@ import javagems3d.system.service.files.JGemsPath;
 
 import java.util.Arrays;
 
-@JSCodingClass(binding = "JSPath", description = "...")
+@JSCodingClass(binding = "JSPath", description = "Wrapper for file system paths used in scripting, allowing hierarchical construction and access to Java-side path objects.")
 public class JSPath {
     private final JGemsPath jGemsPath;
 
-    @JSCodingConstructor(description = "...", paramNames = {"path"})
+    @JSCodingConstructor(description = "Create a JSPath from an existing JGemsPath instance.", paramNames = {"path"})
     public JSPath(JGemsPath path) {
         this.jGemsPath = path;
     }
 
-    @JSCodingConstructor(description = "...", paramNames = {"path"})
+    @JSCodingConstructor(description = "Create a JSPath from a string representing the path.", paramNames = {"path"})
     public JSPath(String path) {
         this.jGemsPath = new JGemsPath(path);
     }
 
-    @JSCodingConstructor(description = "...", paramNames = {"root", "foldersTrace"})
+    @JSCodingConstructor(description = "Create a JSPath from a root string and a sequence of folder names.", paramNames = {"root", "foldersTrace"})
     public JSPath(String root, String... foldersTrace) {
         this.jGemsPath = new JGemsPath(root, foldersTrace);
     }
 
-    @JSCodingConstructor(description = "...", paramNames = {"root", "foldersTrace"})
+    @JSCodingConstructor(description = "Create a JSPath from another JSPath as root and additional folder names.", paramNames = {"root", "foldersTrace"})
     public JSPath(JSPath root, String... foldersTrace) {
         this.jGemsPath = new JGemsPath(root.getJavaPath(), foldersTrace);
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"..."})
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java JGemsPath object.")
     public JGemsPath getJavaPath() {
         return this.jGemsPath;
     }

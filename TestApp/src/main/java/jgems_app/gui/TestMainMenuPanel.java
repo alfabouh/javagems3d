@@ -19,6 +19,7 @@ import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
@@ -47,9 +48,9 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         Vector2f res = new Vector2f(window.getWindowSize().x, window.getWindowSize().y);
         try (Model2D model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
-            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC3F(color));
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString(DefaultUniformDefinitions.W_TICK), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
+            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
             JGemsHelper.render().renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }

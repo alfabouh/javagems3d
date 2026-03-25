@@ -52,6 +52,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
@@ -509,46 +510,46 @@ public final class JGemsHelper {
 
             ICubeMapProgram cubeMapProgram = environment.getSkyBox().getTexture();
 
-            if (shaderManager.isUniformExist(new UniformString("opacity"))) {
-                shaderManager.performUniform(new UniformString("opacity"), UniformFunctions.FLOAT(material.getOpacity()));
+            if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.OPACITY))) {
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.OPACITY), UniformFunctions.FLOAT(material.getOpacity()));
             }
 
             shaderManager.disableWarns();
             if (cubeMapProgram != null) {
-                if (shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
-                    shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+                    shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
                 }
-                if (shaderManager.isUniformExist(new UniformString("useCubeMap"))) {
-                    shaderManager.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(true));
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP))) {
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP), UniformFunctions.BOOLEAN(true));
                 }
             } else {
-                if (shaderManager.isUniformExist(new UniformString("useCubeMap"))) {
-                    shaderManager.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(false));
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP))) {
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.USE_CUBE_MAP), UniformFunctions.BOOLEAN(false));
                 }
             }
 
-            shaderManager.performUniformSample(new UniformString("diffuse_color"), diffuseColor);
-            shaderManager.performUniformSample(new UniformString("emission_color"), emissionColor);
-            shaderManager.performUniform(new UniformString("metallic_factor"), UniformFunctions.FLOAT(metallicFactor));
-            shaderManager.performUniform(new UniformString("roughness_factor"), UniformFunctions.FLOAT(roughnessFactor));
+            shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), diffuseColor);
+            shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_COLOR), emissionColor);
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.METALLIC_FACTOR), UniformFunctions.FLOAT(metallicFactor));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ROUGHNESS_FACTOR), UniformFunctions.FLOAT(roughnessFactor));
 
             if (diffuseMap != null) {
-                shaderManager.performUniformSample(new UniformString("diffuse_map"), diffuseMap);
+                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.DIFFUSE_MAP), diffuseMap);
             }
 
             if (emissionMap != null) {
-                shaderManager.performUniformSample(new UniformString("emission_map"), emissionMap);
+                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_MAP), emissionMap);
             }
 
             if (normalsMap != null) {
-                shaderManager.performUniformSample(new UniformString("normals_map"), normalsMap);
+                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.NORMALS_MAP), normalsMap);
             }
 
             if (metallicRoughnessMap != null) {
-                shaderManager.performUniformSample(new UniformString("metallicRoughnessMap"), metallicRoughnessMap);
+                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.METALLIC_ROUGHNESS_MAP), metallicRoughnessMap);
             }
 
-            shaderManager.performUniform(new UniformString("texturing_code"), UniformFunctions.INTEGER(this.getTexturingCodeForShader(material)));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.TEXTURING_CODE), UniformFunctions.INTEGER(this.getTexturingCodeForShader(material)));
             shaderManager.enableWarns();
         }
 
@@ -564,7 +565,7 @@ public final class JGemsHelper {
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
             if (animated.hasAnimationData()) {
-                shaderManager.performUniformTexture(new UniformString("animations_matrix"), resourceManager.getAnimationMatricesTexture());
+                shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), resourceManager.getAnimationMatricesTexture());
                 shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
             }
             shaderManager.enableWarns();
@@ -575,19 +576,19 @@ public final class JGemsHelper {
             ShadowScene shadowScene = (ShadowScene) environment.getShadowScene();
             for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
                 SunLightShadow.Cascade cascade = shadowScene.getSunLightShadow().getCascades().get(i);
-                if (shaderManager.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    shaderManager.performUniformTexture(new UniformString("sun_shadow_map", i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
-                    shaderManager.performUniform(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
-                    shaderManager.performUniform(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
-                    shaderManager.performUniform(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-                    shaderManager.performUniform(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_NEGATIVE_EXPONENT));
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i))) {
+                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW, ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW, ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POS_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.NEG_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_NEGATIVE_EXPONENT));
                 }
             }
             for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = shadowScene.getPointLightShadows().get(i);
-                shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
-                if (shaderManager.isUniformExist(new UniformString("point_light_cubemap", i))) {
-                    shaderManager.performUniformTexture(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP, i))) {
+                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP, i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
                 }
             }
             shaderManager.enableWarns();
