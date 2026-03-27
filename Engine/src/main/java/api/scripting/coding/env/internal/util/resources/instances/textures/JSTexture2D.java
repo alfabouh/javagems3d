@@ -21,7 +21,7 @@ public class JSTexture2D implements JSCanBeCachedInMemory, JSTextureI {
         return this.texture2DProgram;
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public ITextureProgram getJavaTextureI() {
         return this.texture2DProgram;

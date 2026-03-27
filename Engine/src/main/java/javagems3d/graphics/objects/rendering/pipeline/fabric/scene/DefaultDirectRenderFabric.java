@@ -53,7 +53,7 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
 
     public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
         for (MeshNode3D<RenderMesh> meshNode3D : model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
-            JGemsHelper.render().performModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial());
+            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial());
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }
     }

@@ -131,7 +131,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(IRenderWorld renderWorld) {
         return (pair) -> {
-            JGemsHelper.render().performModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
     }
 

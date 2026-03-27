@@ -83,7 +83,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
             final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
-            JGemsHelper.render().performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performDefaultModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.BACKGROUND, this.getOpenGLRenderer());

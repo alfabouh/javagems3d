@@ -104,7 +104,7 @@ public class JSShader {
     }
 
     @JSCodingFunctionOrMethod(description = "Get underlying shader manager")
-    public JGemsShaderManager getShaderManager() {
+    public JGemsShaderManager getJavaShaderManager() {
         return this.shaderManager;
     }
 

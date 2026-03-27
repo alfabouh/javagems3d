@@ -5,10 +5,14 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.resources.JSCanBeCachedInMemory;
-import api.scripting.coding.env.internal.util.resources.cache.JSMeshStructure2D;
+import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode2D;
+import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure2D;
 import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
+
+import java.util.List;
 
 @JSCodingClass(binding = "JSMesh2D", description = "2D mesh wrapper over MeshGui")
 public class JSMesh2D implements JSCanBeCachedInMemory, JSMeshStructure2D {
@@ -39,6 +43,11 @@ public class JSMesh2D implements JSCanBeCachedInMemory, JSMeshStructure2D {
     @JSCodingFunctionOrMethod(description = "Get underlying MeshGui")
     public MeshGui getJavaMeshGui() {
         return this.meshGui;
+    }
+
+    @JSCodingFunctionOrMethod(description = "...")
+    public List<JSMeshNode2D> getNodes() {
+        return this.meshGui.getNodes().stream().map(JSMeshNode2D::new).toList();
     }
 
     @JSHideFromDoc

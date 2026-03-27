@@ -1,0 +1,136 @@
+package api.scripting.coding.env.internal.util.world.physical.entity.instances;
+
+import api.scripting.coding.env.def.JSCodingClass;
+import api.scripting.coding.env.def.JSCodingField;
+import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
+import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.internal.util.math.JSVector3f;
+import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSColliderConstructor;
+import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
+import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
+import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSPhysMaterial;
+import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
+import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
+import javagems3d.physics.entities.properties.collision.CollisionType;
+import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+
+@JSCodingClass(binding = "JSPhysicalStaticBody", description = "Static physics body with full runtime control.")
+public class JSPhysicalStaticBody implements JSWorldItemI {
+    @JSCodingField(description = "Underlying static body (Java side)")
+    private final JGemsStaticBody staticBody;
+
+    @JSHideFromDoc
+    public JSPhysicalStaticBody(JGemsStaticBody staticBody) {
+        this.staticBody = staticBody;
+    }
+
+    public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
+        this.staticBody = new JGemsStaticBody(colliderConstructor.getJavaConstructor(), world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
+    }
+
+    public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
+        this(colliderConstructor, world, pos, rot, new Vector3f(1.0f), itemName);
+    }
+
+    public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, String itemName) {
+        this(colliderConstructor, world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
+    }
+
+    public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, String itemName) {
+        this(colliderConstructor, world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get position")
+    public JSVector3f getPosition() {
+        Vector3f v = this.staticBody.getPosition();
+        return new JSVector3f(v.x, v.y, v.z);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set position", paramNames = {"pos"})
+    public void setPosition(JSVector3f pos) {
+        this.staticBody.setPosition(pos.getJavaVector3f());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get rotation")
+    public JSVector3f getRotation() {
+        Vector3f v = this.staticBody.getRotation();
+        return new JSVector3f(v.x, v.y, v.z);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set rotation", paramNames = {"rot"})
+    public void setRotation(JSVector3f rot) {
+        this.staticBody.setRotation(rot.getJavaVector3f());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get scaling")
+    public JSVector3f getScaling() {
+        Vector3f v = this.staticBody.getScaling();
+        return new JSVector3f(v.x, v.y, v.z);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set scaling", paramNames = {"scale"})
+    public void setScaling(JSVector3f scale) {
+        this.staticBody.setScaling(scale.getJavaVector3f());
+    }
+
+
+    @JSCodingFunctionOrMethod(description = "Set physics material", paramNames = {"material"})
+    public void setMaterial(JSPhysMaterial material) {
+        this.staticBody.setMaterial(material.getJavaMaterial());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set collision group", paramNames = {"types"})
+    public void setCollisionGroup(JSCollisionType... types) {
+        CollisionType[] arr = new CollisionType[types.length];
+        for (int i = 0; i < types.length; i++) {
+            arr[i] = types[i].getJavaType();
+        }
+        this.staticBody.setCollisionGroup(arr);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set collision filter", paramNames = {"types"})
+    public void setCollisionFilter(JSCollisionType... types) {
+        CollisionType[] arr = new CollisionType[types.length];
+        for (int i = 0; i < types.length; i++) {
+            arr[i] = types[i].getJavaType();
+        }
+        this.staticBody.setCollisionFilter(arr);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get entity state")
+    public JSEntityState getState() {
+        return new JSEntityState(this.staticBody.getEntityState());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Destroy body")
+    public void destroy() {
+        this.staticBody.destroy();
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get name")
+    public String getName() {
+        return this.staticBody.getItemName();
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get id")
+    public int getId() {
+        return this.staticBody.getItemId();
+    }
+
+    @JSCodingFunctionOrMethod(description = "Returns underlying Java object (unsafe)")
+    @JSHideFromDoc
+    public JGemsStaticBody getJavaStaticBody() {
+        return this.staticBody;
+    }
+
+    @JSHideFromDoc
+    @Override
+    public WorldItem getJavaWorldItem() {
+        return this.staticBody;
+    }
+}

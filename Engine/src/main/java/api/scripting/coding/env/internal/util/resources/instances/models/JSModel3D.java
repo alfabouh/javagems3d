@@ -5,7 +5,7 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.misc.JSRequiresClearResources;
-import api.scripting.coding.env.internal.util.resources.cache.JSMeshStructure3D;
+import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure3D;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshBuffer;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshGroup;
 import api.scripting.coding.env.internal.util.resources.instances.models.pose.JSModelPose3D;

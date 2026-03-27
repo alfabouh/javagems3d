@@ -1,4 +1,4 @@
-package api.scripting.coding.env.internal.util.resources.cache;
+package api.scripting.coding.env.internal.util.resources.instances.models.poly;
 
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;

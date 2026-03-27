@@ -5,6 +5,7 @@ import com.jme3.bullet.collision.CollisionFlag;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.bullet.collision.PhysicsSweepTestResult;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -27,7 +28,6 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -69,29 +69,41 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this(world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
-    protected ConvexShape createGhostShape() {
-        return new CapsuleCollisionShape(this.shapeSize().x, this.shapeSize().y, 1);
+    protected ConvexShape createDefaultGhostShape() {
+        return new CapsuleCollisionShape(1.0f, 2.0f, 1);
     }
 
-    protected ConvexShape createPhysicsShape() {
-        return new CapsuleCollisionShape(this.shapeSize().x + 0.01f, this.shapeSize().y - 0.01f, 1);
+    protected ConvexShape createDefaultPhysicsShape() {
+        return new CapsuleCollisionShape((1.0f) + 0.01f, (2.0f) - 0.01f, 1);
     }
 
-    protected ConvexShape createGhostShapeShapeForGroundCheck() {
-        return new CapsuleCollisionShape(this.shapeSize().x - 0.01f, this.shapeSize().y - 0.01f, 1);
+    protected ConvexShape createDefaultGhostShapeShapeForGroundCheck() {
+        return new CapsuleCollisionShape((1.0f) - 0.01f, (2.0f) - 0.01f, 1);
+    }
+
+    public void setCapsuleShape(float radius, float height) {
+        this.ghostBody.setCollisionShape(new CapsuleCollisionShape(radius, height, 1));
+        this.physicsBody.setCollisionShape(new CapsuleCollisionShape(radius + 0.01f, height - 0.01f, 1));
+        this.groundCheckShape = new CapsuleCollisionShape(radius - 0.01f, height - 0.01f, 1);
+    }
+
+    public void setBoxShape(float xz, float height) {
+        this.ghostBody.setCollisionShape(new BoxCollisionShape(xz, height, 1));
+        this.physicsBody.setCollisionShape(new BoxCollisionShape(xz + 0.01f, height - 0.01f, 1));
+        this.groundCheckShape = new BoxCollisionShape(xz - 0.01f, height - 0.01f, 1);
     }
 
     public ConvexShape getGroundCheckShape() {
         return this.groundCheckShape;
     }
 
-    protected abstract Vector2f shapeSize();
     protected abstract Vector3f getMoveVector();
 
     protected void createObject() {
-        this.ghostBody = new PhysicsRigidBody(this.createGhostShape());
-        this.physicsBody = new PhysicsRigidBody(this.createPhysicsShape());
-        this.groundCheckShape = this.createGhostShapeShapeForGroundCheck();
+        this.ghostBody = new PhysicsRigidBody(this.createDefaultGhostShape());
+        this.physicsBody = new PhysicsRigidBody(this.createDefaultPhysicsShape());
+        this.groundCheckShape = this.createDefaultGhostShapeShapeForGroundCheck();
+        this.setShapeAfterInit();
         this.setCollisionGroup(CollisionType.PLAYER);
         this.setCollisionFilter(CollisionType.UNIVERSAL);
         this.getGhostBody().setUserObject(this);
@@ -110,6 +122,9 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.setStepHeight(0.5f); //TODO
         this.setLinearVelDamping(0.7f);
         this.setJumpCooldown(JGemsPhysics.TICKS_PER_SECOND / 2);
+    }
+
+    protected void setShapeAfterInit() {
     }
 
     protected float gravityDiv() {
@@ -345,7 +360,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         return this.jumpCooldownR <= 0;
     }
 
-    protected void jump(float gravity, float height) {
+    public void jump(float gravity, float height) {
         if (!this.canJump()) {
             return;
         }

@@ -491,7 +491,7 @@ public final class JGemsHelper {
             return code;
         }
 
-        public void performModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material) {
+        public void performDefaultModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material) {
             if (material == null) {
                 return;
             }

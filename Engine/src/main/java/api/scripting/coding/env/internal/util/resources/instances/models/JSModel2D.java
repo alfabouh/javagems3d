@@ -6,7 +6,7 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
 import api.scripting.coding.env.internal.util.misc.JSRequiresClearResources;
-import api.scripting.coding.env.internal.util.resources.cache.JSMeshStructure2D;
+import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure2D;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMesh2D;
 import api.scripting.coding.env.internal.util.resources.instances.models.pose.JSModelPose2D;
 import javagems3d.system.resources.assets.models.Model2D;

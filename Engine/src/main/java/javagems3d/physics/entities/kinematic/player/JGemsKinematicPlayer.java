@@ -1,5 +1,6 @@
 package javagems3d.physics.entities.kinematic.player;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
 import javagems3d.physics.world.IWorld;
@@ -34,6 +35,11 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
+    protected void setShapeAfterInit() {
+        super.setCapsuleShape(0.4f, 1.4f);
+    }
+
+    @Override
     protected void setDefaults() {
         super.setDefaults();
         this.createInventory();
@@ -43,22 +49,13 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
         this.inventoryBase = new InventoryBase(this, 4);
     }
 
-    protected Vector2f shapeSize() {
-        return new Vector2f(0.4f, 1.4f);
-    }
-
     @Override
-    protected ConvexShape createGhostShape() {
-        return new CapsuleCollisionShape(this.shapeSize().x, this.shapeSize().y, 1);
-    }
-
-    @Override
-    protected Vector3f getMoveVector() {
+    public Vector3f getMoveVector() {
         return this.getControllerMoveMotion();
     }
 
     @Override
-    protected void onTick(IWorld iWorld) {
+    public void onTick(IWorld iWorld) {
         super.onTick(iWorld);
         this.scalarSpeed = this.getPrevPosition().distance(this.getPosition());
     }
@@ -70,7 +67,9 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
 
     @Override
     public float getPlayerHeight() {
-        return this.shapeSize().y;
+        BoundingBox boundingBox = new BoundingBox();
+        this.getGhostBody().boundingBox(boundingBox);
+        return boundingBox.getYExtent() * 2.0f;
     }
 
     @Override

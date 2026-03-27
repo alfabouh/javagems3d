@@ -17,16 +17,16 @@ public class EntityState {
         return this.stateBits;
     }
 
-    public void removeState(Type stateBit) {
-        this.stateBits = this.getStateBits() & ~stateBit.getState();
+    public void removeState(int stateBit) {
+        this.stateBits = this.getStateBits() & ~stateBit;
     }
 
-    public void setState(Type stateBit) {
-        this.stateBits = this.getStateBits() | stateBit.getState();
+    public void setState(int stateBit) {
+        this.stateBits = this.getStateBits() | stateBit;
     }
 
-    public boolean checkState(Type stateBit) {
-        return (this.getStateBits() & stateBit.getState()) != 0;
+    public boolean checkState(int stateBit) {
+        return (this.getStateBits() & stateBit) != 0;
     }
 
     public boolean isCanBeSelectedByPlayer() {
@@ -37,18 +37,8 @@ public class EntityState {
         this.canBeSelectedByPlayer = canBeSelectedByPlayer;
     }
 
-    public enum Type {
-        IN_LIQUID(1 << 2),
-        IS_SELECTED_BY_PLAYER(1 << 3);
-
-        private final int state;
-
-        Type(int i) {
-            this.state = i;
-        }
-
-        public int getState() {
-            return this.state;
-        }
+    public static class Type {
+        public static final int IN_LIQUID = (1 << 2);
+        public static final int IS_SELECTED_BY_PLAYER = (1 << 3);
     }
 }
