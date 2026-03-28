@@ -131,7 +131,7 @@ public class JSKinematicItem implements JSWorldItemI {
         return this.item;
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public IWorldObject getJavaWorldItem() {
         return this.item;

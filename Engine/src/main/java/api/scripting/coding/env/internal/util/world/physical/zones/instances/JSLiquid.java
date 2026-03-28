@@ -1,9 +1,6 @@
 package api.scripting.coding.env.internal.util.world.physical.zones.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSTriggerAction;
@@ -16,11 +13,12 @@ public class JSLiquid {
     @JSCodingField(description = "Underlying liquid (Java side)")
     private final Liquid liquid;
 
+    @JSCodingConstructor(description = "Create a liquid from JSZone", paramNames = {"zone"})
     public JSLiquid(JSZone zone) {
         this.liquid = new Liquid(zone.getJavaZone()) {
             @Override
             public void setDead() {
-
+                // default empty
             }
 
             @Override
@@ -30,10 +28,12 @@ public class JSLiquid {
 
             @Override
             protected void onEntityEnteredLiquid(Object e) {
+                // default empty
             }
         };
     }
 
+    @JSCodingConstructor(description = "Wrap existing Liquid instance", paramNames = {"liquid"})
     public JSLiquid(Liquid liquid) {
         this.liquid = liquid;
     }
@@ -59,8 +59,7 @@ public class JSLiquid {
         this.liquid.onDestroy(world.getJavaPhysicsWorld());
     }
 
-    @JSCodingFunctionOrMethod(description = "Returns underlying Java object (unsafe)")
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Get underlying Java Liquid object")
     public Liquid getJavaLiquid() {
         return this.liquid;
     }

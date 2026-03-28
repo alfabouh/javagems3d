@@ -12,7 +12,7 @@ import api.scripting.coding.env.internal.util.events.JSEventI;
 import api.scripting.coding.env.internal.util.events.JSEventSubscriber;
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
 import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
-import api.scripting.coding.env.internal.util.screen.JSScreen;
+import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.settings.JSPerfTestResult;
 import api.scripting.coding.env.internal.util.ui.JSUIDrawer;

@@ -1,6 +1,7 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.real;
 
 import api.scripting.coding.env.def.JSCodingClass;
+import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
@@ -19,30 +20,33 @@ import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSRealJavaDynamicPhysicsBodyWrapped", description = "Base class for creating custom dynamic physics bodies in Java with JS exposure.")
 public abstract class JSRealJavaDynamicPhysicsBodyWrapped extends JGemsDynamicBody implements JSWorldItemI {
+    @JSCodingConstructor(description = "Create dynamic body with full transform", paramNames = {"colliderConstructor", "world", "position", "rotation", "scale", "itemName"})
     protected JSRealJavaDynamicPhysicsBodyWrapped(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
         super(colliderConstructor.getJavaConstructor(), world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with position and rotation, default scale (1,1,1)", paramNames = {"colliderConstructor", "world", "position", "rotation", "itemName"})
     protected JSRealJavaDynamicPhysicsBodyWrapped(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
         this(colliderConstructor, world, pos, rot, new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with position only, default rotation (0,0,0) and scale (1,1,1)", paramNames = {"colliderConstructor", "world", "position", "itemName"})
     protected JSRealJavaDynamicPhysicsBodyWrapped(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, String itemName) {
         this(colliderConstructor, world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with defaults: position (0,0,0), rotation (0,0,0), scale (1,1,1)", paramNames = {"colliderConstructor", "world", "itemName"})
     protected JSRealJavaDynamicPhysicsBodyWrapped(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, String itemName) {
         this(colliderConstructor, world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
-    @JSCodingFunctionOrMethod(description = "Called every tick (override in JS)")
+    @JSCodingFunctionOrMethod(description = "Called every tick (override in JS)", paramNames = {"world"})
     protected void onTick(JSPhysicsWorld world) {
     }
 
     @Override
     protected void onTick(IWorld iWorld) {
         super.onTick(iWorld);
-
         if (iWorld instanceof PhysicsWorld physicsWorld) {
             this.onTick(new JSPhysicsWorld(physicsWorld));
         }
@@ -75,7 +79,7 @@ public abstract class JSRealJavaDynamicPhysicsBodyWrapped extends JGemsDynamicBo
         return this;
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public IWorldObject getJavaWorldItem() {
         return this;

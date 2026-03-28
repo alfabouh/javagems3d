@@ -1,12 +1,9 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSAbstractWorldItem;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSPhysMaterial;
@@ -16,11 +13,11 @@ import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSPhysicalEntity", description = "Advanced physics entity with full control over material, collision and state.")
-public class JSPhysicalEntity extends JSAbstractWorldItem {
-
+public class JSPhysicalEntity extends JSWorldItem {
     @JSCodingField(description = "Underlying JGemsBody (Java side)")
     private final JGemsBody body;
 
+    @JSCodingConstructor(description = "Create a physical entity from existing JGemsBody", paramNames = {"world", "body"})
     public JSPhysicalEntity(JSPhysicsWorld world, JGemsBody body) {
         super(world, new JSVector3f(body.getPosition()), new JSVector3f(body.getRotation()), new JSVector3f(body.getScaling()), body.getItemName());
         this.body = body;
@@ -59,7 +56,7 @@ public class JSPhysicalEntity extends JSAbstractWorldItem {
         this.body.setScaling(scale.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Make body dynamic (with default material)")
+    @JSCodingFunctionOrMethod(description = "Make body dynamic (default material)")
     public void makeDynamic() {
         this.body.makeDynamic();
     }
@@ -87,27 +84,21 @@ public class JSPhysicalEntity extends JSAbstractWorldItem {
     @JSCodingFunctionOrMethod(description = "Set collision group", paramNames = {"types"})
     public void setCollisionGroup(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
         this.body.setCollisionGroup(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Set collision filter", paramNames = {"types"})
     public void setCollisionFilter(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
         this.body.setCollisionFilter(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Exclude collision types", paramNames = {"types"})
     public void setCollisionFilterNegative(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
         this.body.setCollisionFilterNegative(arr);
     }
 

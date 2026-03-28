@@ -23,11 +23,11 @@ public abstract class CameraBase implements ICamera {
         this(new Vector3f(0.0f), new Vector3f(0.0f));
     }
 
-    protected void setCameraPosition(Vector3f vector3f) {
+    public void setCameraPosition(Vector3f vector3f) {
         this.camPosition.set(vector3f);
     }
 
-    protected void setCameraRotation(Vector3f vector3f) {
+    public void setCameraRotation(Vector3f vector3f) {
         this.camRotation.set(vector3f);
     }
 

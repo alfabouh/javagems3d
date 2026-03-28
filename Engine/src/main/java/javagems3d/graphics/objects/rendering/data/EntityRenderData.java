@@ -94,11 +94,10 @@ public class EntityRenderData {
         return this.sceneObjectConstructor;
     }
 
-    protected EntityRenderData copyObject() {
+    public EntityRenderData copyObject() {
         EntityRenderData entityRenderData = new EntityRenderData(this.getSceneObjectConstructor(), this.getObjectRenderAttributes() == null ? null : this.getObjectRenderAttributes().copy());
         entityRenderData.setMeshDataGroup(this.getMeshStructure());
         entityRenderData.setEntityModelConstructor(this.getEntityModelConstructor());
         return entityRenderData;
     }
-
 }

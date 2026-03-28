@@ -1,9 +1,6 @@
 package api.scripting.coding.env.internal.util.world.physical.zones.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
@@ -22,6 +19,7 @@ public class JSBasicTriggerZone implements JSWorldItemI {
     @JSCodingField(description = "Underlying trigger zone (Java side)")
     private final AbstractTriggerZone zone;
 
+    @JSCodingConstructor(description = "Wrap existing AbstractTriggerZone", paramNames = {"zone"})
     public JSBasicTriggerZone(AbstractTriggerZone zone) {
         this.zone = zone;
     }
@@ -89,7 +87,6 @@ public class JSBasicTriggerZone implements JSWorldItemI {
         return this.zone;
     }
 
-    @JSHideFromDoc
     @Override
     public IWorldObject getJavaWorldItem() {
         return this.zone;

@@ -1,9 +1,6 @@
 package api.scripting.coding.env.internal.util.resources.instances.shaders;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingConstructor;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSMatrix4f;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
@@ -16,6 +13,7 @@ import org.lwjgl.opengl.GL46;
 
 @JSCodingClass(binding = "JSShader", description = "Shader wrapper for scripts. Set uniforms, textures, and manage shader state.")
 public class JSShader {
+    @JSCodingField(description = "Real java object")
     private final JGemsShaderManager shaderManager;
 
     @JSCodingConstructor(description = "Wrap existing shader manager", paramNames = {"shaderManager"})

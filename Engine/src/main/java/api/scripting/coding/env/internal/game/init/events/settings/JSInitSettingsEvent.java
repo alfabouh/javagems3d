@@ -5,12 +5,8 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.events.JSEventI;
-import api.scripting.coding.env.internal.util.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingI;
-import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
-import api.system.scripting.JavaToJsAPI;
-import javagems3d.system.service.collections.Pair;
 
 @JSCodingClass(binding = "JSInitSettingsEvent", description = "Event triggered during game settings initialization, allows creating and registering settings.")
 public class JSInitSettingsEvent implements JSEventI {

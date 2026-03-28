@@ -1,6 +1,7 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.real;
 
 import api.scripting.coding.env.def.JSCodingClass;
+import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
@@ -13,13 +14,15 @@ import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-@JSCodingClass(binding = "JSRealJavaBulletBodyWrapped", description = "Physics-based world object backed by a rigid body. " + "Provides access to position, rotation and scaling through physics simulation.")
+@JSCodingClass(binding = "JSRealJavaBulletBodyWrapped", description = "Physics-based world object backed by a rigid body. Provides access to position, rotation and scaling through physics simulation.")
 public abstract class JSRealJavaBulletBodyWrapped extends BulletBody implements JSWorldItemI {
 
+    @JSCodingConstructor(description = "Create bullet body with physics world, rigid body and name", paramNames = {"world", "body", "itemName"})
     public JSRealJavaBulletBodyWrapped(PhysicsWorld world, @NotNull PhysicsRigidBody body, String itemName) {
         super(world, body, itemName);
     }
 
+    @JSCodingConstructor(description = "Create bullet body with physics world and rigid body (default name)", paramNames = {"world", "body"})
     public JSRealJavaBulletBodyWrapped(PhysicsWorld world, @NotNull PhysicsRigidBody body) {
         super(world, body);
     }
@@ -98,7 +101,7 @@ public abstract class JSRealJavaBulletBodyWrapped extends BulletBody implements 
         return super.getItemName();
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public IWorldObject getJavaWorldItem() {
         return this;

@@ -3,21 +3,15 @@ package api.scripting.coding.env.internal.util.ui;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
 import api.scripting.coding.env.internal.util.resources.instances.font.JSFont;
-import api.scripting.coding.env.internal.util.screen.JSScreen;
+import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingFloat;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingSlotI;
 import api.scripting.coding.env.internal.util.ui.instances.*;
 import api.system.scripting.JavaToJsAPI;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
-import javagems3d.system.settings.objects.SettingFloatBar;
-import javagems3d.system.settings.objects.SettingSlot;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 
 @JSCodingClass(binding = "JSUIDrawer", description = "UI drawing API used to create and control interface elements during rendering.")

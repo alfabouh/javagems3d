@@ -1,6 +1,7 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.real;
 
 import api.scripting.coding.env.def.JSCodingClass;
+import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
@@ -14,18 +15,22 @@ import org.joml.Vector3f;
 @JSCodingClass(binding = "JSRealJavaWorldItemWrapped", description = "Base class for real world objects. Provides access to position, rotation, scaling and lifecycle control.")
 public abstract class JSRealJavaWorldItemWrapped extends WorldItem implements JSWorldItemI {
 
+    @JSCodingConstructor(description = "Create world item with full transform", paramNames = {"world", "position", "rotation", "scaling", "itemName"})
     public JSRealJavaWorldItemWrapped(PhysicsWorld world, @NotNull Vector3f position, @NotNull Vector3f rotation, @NotNull Vector3f scaling, String itemName) {
         super(world, position, rotation, scaling, itemName);
     }
 
+    @JSCodingConstructor(description = "Create world item with position and rotation", paramNames = {"world", "position", "rotation", "itemName"})
     public JSRealJavaWorldItemWrapped(PhysicsWorld world, Vector3f position, Vector3f rotation, String itemName) {
         super(world, position, rotation, itemName);
     }
 
+    @JSCodingConstructor(description = "Create world item with position only", paramNames = {"world", "position", "itemName"})
     public JSRealJavaWorldItemWrapped(PhysicsWorld world, Vector3f position, String itemName) {
         super(world, position, itemName);
     }
 
+    @JSCodingConstructor(description = "Create world item with only world and name", paramNames = {"world", "itemName"})
     public JSRealJavaWorldItemWrapped(PhysicsWorld world, String itemName) {
         super(world, itemName);
     }
@@ -109,7 +114,7 @@ public abstract class JSRealJavaWorldItemWrapped extends WorldItem implements JS
         return super.getItemName();
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public IWorldObject getJavaWorldItem() {
         return this;

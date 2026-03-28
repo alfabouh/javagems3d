@@ -7,6 +7,7 @@ import api.scripting.coding.env.internal.util.resources.JSCanBeCachedInMemory;
 import api.scripting.coding.env.internal.util.resources.instances.models.animation.JSAnimation;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.bound.JSMeshBoundingBox;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -15,7 +16,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 import java.util.List;
 
 @JSCodingClass(binding = "JSMeshBuffer", description = "Wrapper for a 3D mesh buffer, allowing caching and access to the underlying Java MeshStructure3D object.")
-public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
+public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D<DataMesh> {
     @JSHideFromDoc
     private final MeshBuffer meshBuffer;
 
@@ -113,7 +114,7 @@ public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
 
     @JSCodingFunctionOrMethod(description = "Get Java object.")
     @Override
-    public MeshStructure3D<? extends IMesh> getJavaMeshStructure3D() {
+    public MeshStructure3D<DataMesh> getJavaMeshStructure3D() {
         return this.getJavaMeshBuffer();
     }
 }

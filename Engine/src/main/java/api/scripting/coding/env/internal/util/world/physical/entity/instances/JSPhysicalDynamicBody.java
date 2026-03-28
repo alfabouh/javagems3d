@@ -29,7 +29,8 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
     }
 
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
-        this.dynamicBody = new JGemsDynamicBody(colliderConstructor.getJavaConstructor(), world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
+        this.dynamicBody = new JGemsDynamicBody(colliderConstructor.getJavaConstructor(),
+                world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
     }
 
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
@@ -46,115 +47,111 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
 
     @JSCodingFunctionOrMethod(description = "Get position")
     public JSVector3f getPosition() {
-        Vector3f v = this.dynamicBody.getPosition();
+        Vector3f v = dynamicBody.getPosition();
         return new JSVector3f(v.x, v.y, v.z);
     }
 
     @JSCodingFunctionOrMethod(description = "Set position", paramNames = {"pos"})
     public void setPosition(JSVector3f pos) {
-        this.dynamicBody.setPosition(pos.getJavaVector3f());
+        dynamicBody.setPosition(pos.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Get rotation")
     public JSVector3f getRotation() {
-        Vector3f v = this.dynamicBody.getRotation();
+        Vector3f v = dynamicBody.getRotation();
         return new JSVector3f(v.x, v.y, v.z);
     }
 
     @JSCodingFunctionOrMethod(description = "Set rotation", paramNames = {"rot"})
     public void setRotation(JSVector3f rot) {
-        this.dynamicBody.setRotation(rot.getJavaVector3f());
+        dynamicBody.setRotation(rot.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Get scaling")
     public JSVector3f getScaling() {
-        Vector3f v = this.dynamicBody.getScaling();
+        Vector3f v = dynamicBody.getScaling();
         return new JSVector3f(v.x, v.y, v.z);
     }
 
     @JSCodingFunctionOrMethod(description = "Set scaling", paramNames = {"scale"})
     public void setScaling(JSVector3f scale) {
-        this.dynamicBody.setScaling(scale.getJavaVector3f());
+        dynamicBody.setScaling(scale.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Get linear velocity")
     public JSVector3f getVelocity() {
-        com.jme3.math.Vector3f v = this.dynamicBody.getPhysicsRigidBody().getLinearVelocity(new com.jme3.math.Vector3f());
+        com.jme3.math.Vector3f v = dynamicBody.getPhysicsRigidBody().getLinearVelocity(new com.jme3.math.Vector3f());
         return new JSVector3f(v.x, v.y, v.z);
     }
 
     @JSCodingFunctionOrMethod(description = "Set linear velocity", paramNames = {"vel"})
     public void setVelocity(JSVector3f vel) {
-        this.dynamicBody.getPhysicsRigidBody().setLinearVelocity(DynamicsUtils.convertV3F_JME(vel.getJavaVector3f()));
+        dynamicBody.getPhysicsRigidBody().setLinearVelocity(DynamicsUtils.convertV3F_JME(vel.getJavaVector3f()));
     }
 
     @JSCodingFunctionOrMethod(description = "Add velocity", paramNames = {"vel"})
     public void addVelocity(JSVector3f vel) {
-        this.dynamicBody.getPhysicsRigidBody().addLinearVelocity(vel.getJavaVector3f());
+        dynamicBody.getPhysicsRigidBody().addLinearVelocity(vel.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Apply impulse instantly", paramNames = {"impulse"})
     public void applyImpulse(JSVector3f impulse) {
-        this.dynamicBody.getPhysicsRigidBody().applyCentralImpulse(DynamicsUtils.convertV3F_JME(impulse.getJavaVector3f()));
+        dynamicBody.getPhysicsRigidBody().applyCentralImpulse(DynamicsUtils.convertV3F_JME(impulse.getJavaVector3f()));
     }
 
     @JSCodingFunctionOrMethod(description = "Apply continuous force", paramNames = {"force"})
     public void applyForce(JSVector3f force) {
-        this.dynamicBody.getPhysicsRigidBody().applyCentralForce(DynamicsUtils.convertV3F_JME(force.getJavaVector3f()));
+        dynamicBody.getPhysicsRigidBody().applyCentralForce(DynamicsUtils.convertV3F_JME(force.getJavaVector3f()));
     }
 
     @JSCodingFunctionOrMethod(description = "Set physics material", paramNames = {"material"})
     public void setMaterial(JSPhysMaterial material) {
-        this.dynamicBody.setMaterial(material.getJavaMaterial());
+        dynamicBody.setMaterial(material.getJavaMaterial());
     }
 
     @JSCodingFunctionOrMethod(description = "Set collision group", paramNames = {"types"})
     public void setCollisionGroup(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
-        this.dynamicBody.setCollisionGroup(arr);
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
+        dynamicBody.setCollisionGroup(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Set collision filter", paramNames = {"types"})
     public void setCollisionFilter(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
-        this.dynamicBody.setCollisionFilter(arr);
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
+        dynamicBody.setCollisionFilter(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Get entity state")
     public JSEntityState getState() {
-        return new JSEntityState(this.dynamicBody.getEntityState());
+        return new JSEntityState(dynamicBody.getEntityState());
     }
 
     @JSCodingFunctionOrMethod(description = "Destroy body")
     public void destroy() {
-        this.dynamicBody.destroy();
+        dynamicBody.destroy();
     }
 
     @JSCodingFunctionOrMethod(description = "Get name")
     public String getName() {
-        return this.dynamicBody.getItemName();
+        return dynamicBody.getItemName();
     }
 
     @JSCodingFunctionOrMethod(description = "Get id")
     public int getId() {
-        return this.dynamicBody.getItemId();
+        return dynamicBody.getItemId();
     }
 
     @JSCodingFunctionOrMethod(description = "Returns underlying Java object (unsafe)")
     @JSHideFromDoc
     public JGemsDynamicBody getJavaDynamicBody() {
-        return this.dynamicBody;
+        return dynamicBody;
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public WorldItem getJavaWorldItem() {
-        return this.dynamicBody;
+        return dynamicBody;
     }
 }

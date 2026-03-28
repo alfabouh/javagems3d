@@ -19,6 +19,7 @@ public class JSWater implements JSWorldItemI {
         this.water = water;
     }
 
+    @JSHideFromDoc
     public JSWater(Zone zone) {
         this.water = new Water(zone);
     }
@@ -28,6 +29,8 @@ public class JSWater implements JSWorldItemI {
         return this.water;
     }
 
+
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public IWorldObject getJavaWorldItem() {
         return this.water;

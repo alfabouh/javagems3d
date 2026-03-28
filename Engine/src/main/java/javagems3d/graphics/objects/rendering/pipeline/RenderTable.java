@@ -188,7 +188,7 @@ public class RenderTable implements ICopyable<RenderTable> {
         return this.dataMap.containsKey(pipeline) && this.dataMap.get(pipeline) != null;
     }
 
-    protected Map<Pipeline, Data> getDataMap() {
+    public Map<Pipeline, Data> getDataMap() {
         return new EnumMap<>(this.dataMap);
     }
 

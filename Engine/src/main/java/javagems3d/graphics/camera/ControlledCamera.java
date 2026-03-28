@@ -74,7 +74,7 @@ public class ControlledCamera extends FixedCamera {
         return 10.0f;
     }
 
-    protected void moveCamera(Vector3f direction) {
+    public void moveCamera(Vector3f direction) {
         float[] motion = new float[3];
         float[] input = new float[3];
         input[0] = direction.x;

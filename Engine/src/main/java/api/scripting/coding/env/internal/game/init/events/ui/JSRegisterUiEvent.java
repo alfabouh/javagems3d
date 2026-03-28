@@ -2,8 +2,7 @@ package api.scripting.coding.env.internal.game.init.events.ui;
 
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.events.JSEventI;
-import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
-import api.scripting.coding.env.internal.util.screen.JSScreen;
+import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
 import api.system.scripting.JavaToJsAPI;
 import javagems3d.system.service.collections.Pair;

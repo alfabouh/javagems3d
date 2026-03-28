@@ -5,7 +5,7 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSGlobalVarFactory;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.management.JSPath;
-import api.scripting.coding.env.internal.util.screen.JSScreen;
+import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import javagems3d.system.service.files.JGemsPath;
 

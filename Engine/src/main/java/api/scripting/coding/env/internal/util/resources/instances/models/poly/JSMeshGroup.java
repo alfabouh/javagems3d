@@ -9,6 +9,7 @@ import api.scripting.coding.env.internal.util.resources.instances.models.poly.bo
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode3D;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -19,7 +20,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import java.util.List;
 
 @JSCodingClass(binding = "JSMeshGroup", description = "Represents a group of 3D meshes, exposing access to the underlying MeshGroup and supporting caching.")
-public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D {
+public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D<RenderMesh> {
     @JSHideFromDoc
     private final MeshGroup meshGroup;
 
@@ -118,7 +119,7 @@ public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D {
 
     @JSCodingFunctionOrMethod(description = "Get Java object.")
     @Override
-    public MeshStructure3D<? extends IMesh> getJavaMeshStructure3D() {
+    public MeshStructure3D<RenderMesh> getJavaMeshStructure3D() {
         return this.getJavaMeshGroup();
     }
 }

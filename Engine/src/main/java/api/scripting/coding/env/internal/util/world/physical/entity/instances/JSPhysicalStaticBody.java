@@ -1,9 +1,6 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
@@ -29,18 +26,22 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
         this.staticBody = staticBody;
     }
 
+    @JSCodingConstructor(description = "Create static body with collider, world, position, rotation, scale, and name", paramNames = {"colliderConstructor", "world", "pos", "rot", "scale", "itemName"})
     public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
         this.staticBody = new JGemsStaticBody(colliderConstructor.getJavaConstructor(), world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
     }
 
+    @JSCodingConstructor(description = "Create static body with collider, world, position, rotation, and name (default scale)", paramNames = {"colliderConstructor", "world", "pos", "rot", "itemName"})
     public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
         this(colliderConstructor, world, pos, rot, new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create static body with collider, world, position, and name (default rotation and scale)", paramNames = {"colliderConstructor", "world", "pos", "itemName"})
     public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, String itemName) {
         this(colliderConstructor, world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create static body with collider, world, and name (default position, rotation and scale)", paramNames = {"colliderConstructor", "world", "itemName"})
     public JSPhysicalStaticBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, String itemName) {
         this(colliderConstructor, world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
@@ -78,7 +79,6 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
         this.staticBody.setScaling(scale.getJavaVector3f());
     }
 
-
     @JSCodingFunctionOrMethod(description = "Set physics material", paramNames = {"material"})
     public void setMaterial(JSPhysMaterial material) {
         this.staticBody.setMaterial(material.getJavaMaterial());
@@ -87,18 +87,14 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
     @JSCodingFunctionOrMethod(description = "Set collision group", paramNames = {"types"})
     public void setCollisionGroup(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
         this.staticBody.setCollisionGroup(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Set collision filter", paramNames = {"types"})
     public void setCollisionFilter(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
-        for (int i = 0; i < types.length; i++) {
-            arr[i] = types[i].getJavaType();
-        }
+        for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
         this.staticBody.setCollisionFilter(arr);
     }
 
@@ -128,7 +124,7 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
         return this.staticBody;
     }
 
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
     public WorldItem getJavaWorldItem() {
         return this.staticBody;

@@ -92,7 +92,7 @@ public class PropRenderData {
         return this.sceneObjectConstructor;
     }
 
-    protected PropRenderData copyObject() {
+    public PropRenderData copyObject() {
         PropRenderData entityRenderData = new PropRenderData(this.getSceneObjectConstructor(), this.getObjectRenderAttributes() == null ? null : this.getObjectRenderAttributes().copy());
         entityRenderData.setMeshDataGroup(this.getMeshDataGroup());
         entityRenderData.setPropModelConstructor(this.getPropModelConstructor());
