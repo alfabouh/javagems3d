@@ -2,21 +2,25 @@ package api.scripting.coding.env.internal.util.world.render;
 
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.world.render.screen.JSWindow;
+import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import javagems3d.graphics.rendering.scene.JGemsScene;
+import javagems3d.graphics.world.SceneWorld;
 
 @JSCodingClass(binding = "JSScene", description = "Wrapper for JGemsScene providing access to rendering and window.")
 public class JSScene {
     @JSCodingField(description = "Underlying Java scene object")
     private final JGemsScene scene;
+    private final JSSceneWorld sceneWorld;
 
     @JSHideFromDoc
     public JSScene(JGemsScene scene) {
         this.scene = scene;
+        this.sceneWorld = new JSSceneWorld((SceneWorld) scene.getWorld());
     }
 
-    @JSCodingConstructor(description = "Create JSScene with window and render world", paramNames = {"window", "renderWorld"})
-    public JSScene(JSWindow window, JSRenderWorld renderWorld) {
-        this.scene = new JGemsScene(window.getJavaWindow(), renderWorld.getJavaRenderWorld());
+    @JSCodingFunctionOrMethod(description = "Get associated window")
+    public JSSceneWorld getSceneWorld() {
+        return this.sceneWorld;
     }
 
     @JSCodingFunctionOrMethod(description = "Get associated window")

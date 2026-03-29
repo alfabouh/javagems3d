@@ -1,12 +1,10 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSColliderConstructor;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
@@ -28,24 +26,27 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         this.dynamicBody = dynamicBody;
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with full parameters", paramNames = {"colliderConstructor", "world", "pos", "rot", "scale", "itemName"})
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
-        this.dynamicBody = new JGemsDynamicBody(colliderConstructor.getJavaConstructor(),
-                world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
+        this.dynamicBody = new JGemsDynamicBody(colliderConstructor.getJavaConstructor(), world.getJavaPhysicsWorld(), pos, rot, scale, itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with position and rotation", paramNames = {"colliderConstructor", "world", "pos", "rot", "itemName"})
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
         this(colliderConstructor, world, pos, rot, new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with position only", paramNames = {"colliderConstructor", "world", "pos", "itemName"})
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, @NotNull Vector3f pos, String itemName) {
         this(colliderConstructor, world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
+    @JSCodingConstructor(description = "Create dynamic body with default position and rotation", paramNames = {"colliderConstructor", "world", "itemName"})
     public JSPhysicalDynamicBody(JSColliderConstructor colliderConstructor, JSPhysicsWorld world, String itemName) {
         this(colliderConstructor, world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
-    @JSCodingFunctionOrMethod(description = "Get position")
+    @JSCodingFunctionOrMethod(description = "Get position", paramNames = {})
     public JSVector3f getPosition() {
         Vector3f v = dynamicBody.getPosition();
         return new JSVector3f(v.x, v.y, v.z);
@@ -56,7 +57,7 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         dynamicBody.setPosition(pos.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get rotation")
+    @JSCodingFunctionOrMethod(description = "Get rotation", paramNames = {})
     public JSVector3f getRotation() {
         Vector3f v = dynamicBody.getRotation();
         return new JSVector3f(v.x, v.y, v.z);
@@ -67,7 +68,7 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         dynamicBody.setRotation(rot.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get scaling")
+    @JSCodingFunctionOrMethod(description = "Get scaling", paramNames = {})
     public JSVector3f getScaling() {
         Vector3f v = dynamicBody.getScaling();
         return new JSVector3f(v.x, v.y, v.z);
@@ -78,7 +79,7 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         dynamicBody.setScaling(scale.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get linear velocity")
+    @JSCodingFunctionOrMethod(description = "Get linear velocity", paramNames = {})
     public JSVector3f getVelocity() {
         com.jme3.math.Vector3f v = dynamicBody.getPhysicsRigidBody().getLinearVelocity(new com.jme3.math.Vector3f());
         return new JSVector3f(v.x, v.y, v.z);
@@ -89,7 +90,7 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         dynamicBody.getPhysicsRigidBody().setLinearVelocity(DynamicsUtils.convertV3F_JME(vel.getJavaVector3f()));
     }
 
-    @JSCodingFunctionOrMethod(description = "Add velocity", paramNames = {"vel"})
+    @JSCodingFunctionOrMethod(description = "Add linear velocity", paramNames = {"vel"})
     public void addVelocity(JSVector3f vel) {
         dynamicBody.getPhysicsRigidBody().addLinearVelocity(vel.getJavaVector3f());
     }
@@ -123,35 +124,35 @@ public class JSPhysicalDynamicBody implements JSWorldItemI {
         dynamicBody.setCollisionFilter(arr);
     }
 
-    @JSCodingFunctionOrMethod(description = "Get entity state")
+    @JSCodingFunctionOrMethod(description = "Get entity state", paramNames = {})
     public JSEntityState getState() {
         return new JSEntityState(dynamicBody.getEntityState());
     }
 
-    @JSCodingFunctionOrMethod(description = "Destroy body")
+    @JSCodingFunctionOrMethod(description = "Destroy body", paramNames = {})
     public void destroy() {
         dynamicBody.destroy();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get name")
+    @JSCodingFunctionOrMethod(description = "Get item name", paramNames = {})
     public String getName() {
         return dynamicBody.getItemName();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get id")
+    @JSCodingFunctionOrMethod(description = "Get item id", paramNames = {})
     public int getId() {
         return dynamicBody.getItemId();
     }
 
-    @JSCodingFunctionOrMethod(description = "Returns underlying Java object (unsafe)")
+    @JSCodingFunctionOrMethod(description = "Returns underlying Java object (unsafe)", paramNames = {})
     @JSHideFromDoc
     public JGemsDynamicBody getJavaDynamicBody() {
         return dynamicBody;
     }
 
-    @JSCodingFunctionOrMethod(description = "Real java object")
+    @JSCodingFunctionOrMethod(description = "Real java object", paramNames = {})
     @Override
-    public WorldItem getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return dynamicBody;
     }
 }

@@ -1,7 +1,5 @@
 package javagems3d.graphics.environment.lights.scene;
 
-import api.events.EventBus;
-import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
@@ -15,7 +13,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
-import api.events.EventLauncher;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 

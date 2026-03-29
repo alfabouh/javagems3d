@@ -4,9 +4,10 @@ import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.controlling.JSControllableItem;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
+import api.scripting.coding.env.internal.util.world.physical.player.real.JSPlayer;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSPlayer", description = "Wrapper for JGemsKinematicPlayer providing full access to movement, physics, collisions, inventory, and more.")
-public class JSKinematicPlayer implements JSWorldItemI, JSControllableItem {
+public class JSKinematicPlayer implements JSWorldObjectI, JSControllableItem, JSPlayer {
     @JSCodingField(description = "Underlying Java player object")
     private final JGemsKinematicPlayer player;
 
@@ -178,7 +179,7 @@ public class JSKinematicPlayer implements JSWorldItemI, JSControllableItem {
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this.player;
     }
 

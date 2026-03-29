@@ -1,7 +1,6 @@
 package javagems3d.graphics.environment.lights;
 
-import javagems3d.graphics.objects.ILighted;
-import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.physics.world.basic.IWorldObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,10 +8,10 @@ import org.joml.Vector3f;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
 
-public class PointLight extends Light implements ILightAttached {
+public class PointLight extends Light implements ILightAttachable {
     private int attachedShadowSceneId = -1;
     private float brightness;
-    private ILighted lighted;
+    private IObjectWithLights lighted;
     private ActionOnDetach actionOnDetach;
 
     public PointLight() {
@@ -92,12 +91,12 @@ public class PointLight extends Light implements ILightAttached {
     }
 
     @Override
-    public void attachTo(@Nullable ILighted lighted) {
+    public void attachTo(@Nullable IObjectWithLights lighted) {
         this.lighted = lighted;
     }
 
     @Override
-    public @Nullable ILighted getAttachedTo() {
+    public @Nullable IObjectWithLights getAttachedTo() {
         return this.lighted;
     }
 

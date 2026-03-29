@@ -5,7 +5,7 @@ import api.scripting.coding.env.def.JSCodingField;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSTriggerAction;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSZone;
 import javagems3d.physics.world.IWorld;
@@ -15,7 +15,7 @@ import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
 
 @JSCodingClass(binding = "JSRealLiquid", description = "Liquid with JS-defined behavior (inheritance-based).")
-public abstract class JSRealLiquid extends Liquid implements JSWorldItemI {
+public abstract class JSRealLiquid extends Liquid implements JSWorldObjectI {
     @JSCodingField(description = "Trigger callback")
     private ITriggerAction action;
 
@@ -69,7 +69,7 @@ public abstract class JSRealLiquid extends Liquid implements JSWorldItemI {
 
     @JSHideFromDoc
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this;
     }
 }

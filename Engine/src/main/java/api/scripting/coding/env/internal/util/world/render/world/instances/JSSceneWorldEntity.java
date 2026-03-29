@@ -3,7 +3,7 @@ package api.scripting.coding.env.internal.util.world.render.world.instances;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
 import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import javagems3d.graphics.objects.entities.world.SceneWorldEntity;
@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class JSSceneWorldEntity extends JSSceneEntity {
 
     @JSCodingConstructor(description = "Create a JSSceneWorldEntity instance", paramNames = {"sceneWorld", "worldItem", "renderData"})
-    public JSSceneWorldEntity(@NotNull JSSceneWorld sceneWorld, @NotNull JSWorldItem worldItem, @NotNull JSEntityRenderData renderData) {
-        super(new SceneWorldEntity(sceneWorld.getJavaSceneWorld(), worldItem.getJavaWorldItem(), renderData.getJavaEntityRenderData()));
+    public JSSceneWorldEntity(@NotNull JSSceneWorld sceneWorld, @NotNull JSWorldObject worldItem, @NotNull JSEntityRenderData renderData) {
+        super(new SceneWorldEntity(sceneWorld.getJavaSceneWorld(), worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData()));
     }
 
     @JSCodingFunctionOrMethod(description = "Returns underlying Java SceneWorldEntity object (unsafe, internal use)")

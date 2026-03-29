@@ -7,17 +7,19 @@ import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.resources.instances.models.JSModel3D;
 import api.scripting.coding.env.internal.util.resources.instances.models.animation.JSAnimationData;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneEntityI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithModelI;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
+import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(binding = "JSSceneEntity", description = "Wrapper for SceneEntity. Handles model, animation, rendering, and lights.")
 public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, JSSceneObjectWithLightsI {
@@ -30,8 +32,8 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
     }
 
     @JSCodingConstructor(description = "Create SceneEntity from world, worldItem, and renderData")
-    public JSSceneEntity(JSSceneWorld world, JSWorldItem worldItem, EntityRenderData renderData) {
-        this.entity = new SceneEntity(world.getJavaSceneWorld(), worldItem.getJavaWorldItem(), renderData) {};
+    public JSSceneEntity(JSSceneWorld world, JSWorldObject worldItem, EntityRenderData renderData) {
+        this.entity = new SceneEntity(world.getJavaSceneWorld(), worldItem.getJavaWorldObject(), renderData) {};
     }
 
     @JSCodingFunctionOrMethod(description = "Get underlying Java SceneEntity")
@@ -50,8 +52,8 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
     }
 
     @JSCodingFunctionOrMethod(description = "Get associated WorldItem")
-    public JSWorldItem getWorldItem() {
-        return new JSWorldItem(this.entity.getWorldItem());
+    public JSWorldObject getWorldItem() {
+        return new JSWorldObject(this.entity.getWorldItem());
     }
 
     @JSCodingFunctionOrMethod(description = "Set visibility of the entity")
@@ -94,10 +96,20 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
         this.entity.updateRenderPos(physicsSyncTicks);
     }
 
+    @Override
+    public JSAnimationData getAnimationData() {
+        return new JSAnimationData(this.entity.getAnimationData());
+    }
+
     @JSCodingFunctionOrMethod(description = "Set animation by ID")
     public JSAnimationData setAnimationByID(int id) {
         AnimationData data = this.entity.setAnimationByID(id);
         return data != null ? new JSAnimationData(data) : null;
+    }
+
+    @Override
+    public void setAnimationData(@NotNull JSAnimationData animationData) {
+        this.entity.setAnimationData(animationData.getJavaAnimationData());
     }
 
     @JSCodingFunctionOrMethod(description = "Get the underlying model")
@@ -120,7 +132,7 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
 
     @JSCodingFunctionOrMethod(description = "Get java object")
     @Override
-    public ILighted getJavaLightedObject() {
+    public IObjectWithLights getJavaLightedObject() {
         return this.entity;
     }
 
@@ -132,5 +144,11 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
     @JSCodingFunctionOrMethod(description = "Get scaling vector of the entity")
     public JSVector3f getScaling() {
         return new JSVector3f(this.entity.getScaling());
+    }
+
+
+    @Override
+    public IAnimated getJavaAnimated() {
+        return null;
     }
 }

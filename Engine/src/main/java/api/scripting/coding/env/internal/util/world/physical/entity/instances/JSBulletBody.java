@@ -1,12 +1,9 @@
 package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 
-import api.scripting.coding.env.def.JSCodingClass;
-import api.scripting.coding.env.def.JSCodingField;
-import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
@@ -15,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSBulletBody", description = "Physics body backed by Bullet, with full control over transform, velocity and forces.")
-public class JSBulletBody extends JSWorldItem {
+public class JSBulletBody extends JSWorldObject {
     @JSCodingField(description = "Underlying BulletBody (Java side)")
     private final BulletBody bulletBody;
 
@@ -25,16 +22,18 @@ public class JSBulletBody extends JSWorldItem {
         this.bulletBody = bulletBody;
     }
 
+    @JSCodingConstructor(description = "Create Bullet body with custom PhysicsRigidBody and world", paramNames = {"world", "physicsRigidBody", "itemName"})
     public JSBulletBody(JSPhysicsWorld world, @NotNull PhysicsRigidBody physicsRigidBody, String itemName) {
         super(world, new JSVector3f(DynamicsUtils.getObjectBodyPos(physicsRigidBody)), new JSVector3f(DynamicsUtils.getObjectBodyRot(physicsRigidBody)), new JSVector3f(DynamicsUtils.getObjectBodyScaling(physicsRigidBody)), itemName);
         this.bulletBody = new BulletBody(world.getJavaPhysicsWorld(), physicsRigidBody, itemName);
     }
 
+    @JSCodingConstructor(description = "Create Bullet body with default item name", paramNames = {"world", "physicsRigidBody"})
     public JSBulletBody(JSPhysicsWorld world, @NotNull PhysicsRigidBody physicsRigidBody) {
         this(world, physicsRigidBody, "js_bullet_ent");
     }
 
-    @JSCodingFunctionOrMethod(description = "Get position")
+    @JSCodingFunctionOrMethod(description = "Get position", paramNames = {})
     public JSVector3f getPosition() {
         Vector3f v = bulletBody.getPosition();
         return new JSVector3f(v.x, v.y, v.z);
@@ -45,7 +44,7 @@ public class JSBulletBody extends JSWorldItem {
         bulletBody.setPosition(pos.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get rotation")
+    @JSCodingFunctionOrMethod(description = "Get rotation", paramNames = {})
     public JSVector3f getRotation() {
         Vector3f v = bulletBody.getRotation();
         return new JSVector3f(v.x, v.y, v.z);
@@ -56,7 +55,7 @@ public class JSBulletBody extends JSWorldItem {
         bulletBody.setRotation(rot.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get scaling")
+    @JSCodingFunctionOrMethod(description = "Get scaling", paramNames = {})
     public JSVector3f getScaling() {
         Vector3f v = bulletBody.getScaling();
         return new JSVector3f(v.x, v.y, v.z);
@@ -67,7 +66,7 @@ public class JSBulletBody extends JSWorldItem {
         bulletBody.setScaling(scale.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get linear velocity")
+    @JSCodingFunctionOrMethod(description = "Get linear velocity", paramNames = {})
     public JSVector3f getVelocity() {
         com.jme3.math.Vector3f v = bulletBody.getPhysicsRigidBody().getLinearVelocity(new com.jme3.math.Vector3f());
         return new JSVector3f(v.x, v.y, v.z);
@@ -93,7 +92,7 @@ public class JSBulletBody extends JSWorldItem {
         bulletBody.getPhysicsRigidBody().applyForce(DynamicsUtils.convertV3F_JME(force.getJavaVector3f()), DynamicsUtils.convertV3F_JME(relativePos.getJavaVector3f()));
     }
 
-    @JSCodingFunctionOrMethod(description = "Get angular velocity")
+    @JSCodingFunctionOrMethod(description = "Get angular velocity", paramNames = {})
     public JSVector3f getAngularVelocity() {
         com.jme3.math.Vector3f v = bulletBody.getPhysicsRigidBody().getAngularVelocity(new com.jme3.math.Vector3f());
         return new JSVector3f(v.x, v.y, v.z);
@@ -104,41 +103,41 @@ public class JSBulletBody extends JSWorldItem {
         bulletBody.getPhysicsRigidBody().setAngularVelocity(DynamicsUtils.convertV3F_JME(vel.getJavaVector3f()));
     }
 
-    @JSCodingFunctionOrMethod(description = "Activate body")
+    @JSCodingFunctionOrMethod(description = "Activate body", paramNames = {})
     public void activate() {
         bulletBody.getPhysicsRigidBody().activate();
     }
 
-    @JSCodingFunctionOrMethod(description = "Check if body is active")
+    @JSCodingFunctionOrMethod(description = "Check if body is active", paramNames = {})
     public boolean isActive() {
         return bulletBody.getPhysicsRigidBody().isActive();
     }
 
-    @JSCodingFunctionOrMethod(description = "Destroy entity")
+    @JSCodingFunctionOrMethod(description = "Destroy entity", paramNames = {})
     public void destroy() {
         bulletBody.destroy();
     }
 
-    @JSCodingFunctionOrMethod(description = "Check if entity is dead")
+    @JSCodingFunctionOrMethod(description = "Check if entity is dead", paramNames = {})
     public boolean isDead() {
         return bulletBody.isDead();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get forward/look vector")
+    @JSCodingFunctionOrMethod(description = "Get forward/look vector", paramNames = {})
     public JSVector3f getLookVector() {
         Vector3f v = bulletBody.getLookVector();
         return new JSVector3f(v.x, v.y, v.z);
     }
 
-    @JSCodingFunctionOrMethod(description = "Get underlying BulletBody (unsafe)")
+    @JSCodingFunctionOrMethod(description = "Get underlying BulletBody (unsafe)", paramNames = {})
     @JSHideFromDoc
     public BulletBody getJavaBulletBody() {
         return bulletBody;
     }
 
-    @JSCodingFunctionOrMethod(description = "Real java object")
+    @JSCodingFunctionOrMethod(description = "Real java object", paramNames = {})
     @Override
-    public WorldItem getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return bulletBody;
     }
 }

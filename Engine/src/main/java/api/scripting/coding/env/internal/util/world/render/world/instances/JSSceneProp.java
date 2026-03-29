@@ -5,6 +5,7 @@ import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.resources.instances.models.JSModel3D;
+import api.scripting.coding.env.internal.util.resources.instances.models.animation.JSAnimationData;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure3D;
 import api.scripting.coding.env.internal.util.world.render.data.JSMeshStructureConstructor;
 import api.scripting.coding.env.internal.util.world.render.data.JSPropRenderData;
@@ -12,14 +13,16 @@ import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithModelI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSScenePropI;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
+import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(binding = "JSSceneProp", description = "Base wrapper for SceneProp, handling visibility, death state, and model access.")
 public abstract class JSSceneProp implements JSScenePropI, JSSceneObjectWithModelI, JSSceneObjectWithLightsI {
@@ -84,6 +87,22 @@ public abstract class JSSceneProp implements JSScenePropI, JSSceneObjectWithMode
         return new JSSceneWorld((SceneWorld) this.prop.getWorld());
     }
 
+    @Override
+    public JSAnimationData getAnimationData() {
+        return new JSAnimationData(this.prop.getAnimationData());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set animation by ID")
+    public JSAnimationData setAnimationByID(int id) {
+        AnimationData data = this.prop.setAnimationByID(id);
+        return data != null ? new JSAnimationData(data) : null;
+    }
+
+    @Override
+    public void setAnimationData(@NotNull JSAnimationData animationData) {
+        this.prop.setAnimationData(animationData.getJavaAnimationData());
+    }
+
     @JSHideFromDoc
     @Override
     public SceneObject getJavaSceneObject() {
@@ -96,7 +115,7 @@ public abstract class JSSceneProp implements JSScenePropI, JSSceneObjectWithMode
     }
 
     @Override
-    public ILighted getJavaLightedObject() {
+    public IObjectWithLights getJavaLightedObject() {
         return this.prop;
     }
 

@@ -1,15 +1,14 @@
 package workbench.graphics.scene.world;
 
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.physics.world.basic.IWorldTicked;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
@@ -88,17 +87,17 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
         }
     }
 
-    public void removeLight(Light light, @Nullable ILighted lighted) {
+    public void removeLight(Light light, @Nullable IObjectWithLights lighted) {
         this.getEnvironment().getLightScene().removeLight(light);
         if (lighted != null) {
-            lighted.removeLightAttachment((ILightAttached) light);
+            lighted.removeLightAttachment((ILightAttachable) light);
         }
     }
 
-    public void addLight(Light light, @Nullable ILighted lighted) {
+    public void addLight(Light light, @Nullable IObjectWithLights lighted) {
         this.getEnvironment().getLightScene().addLight(light);
         if (lighted != null) {
-            lighted.addLightAttachment((ILightAttached) light);
+            lighted.addLightAttachment((ILightAttachable) light);
         }
     }
 

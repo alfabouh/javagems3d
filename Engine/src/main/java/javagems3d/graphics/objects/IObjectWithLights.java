@@ -1,13 +1,13 @@
 package javagems3d.graphics.objects;
 
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.Set;
 
-public interface ILighted {
-    default void addLightAttachment(ILightAttached light) {
+public interface IObjectWithLights {
+    default void addLightAttachment(ILightAttachable light) {
         if (light == null) {
             return;
         }
@@ -15,7 +15,7 @@ public interface ILighted {
         this.getAttachedLights().add(light);
     }
 
-    default void removeLightAttachment(ILightAttached light) {
+    default void removeLightAttachment(ILightAttachable light) {
         if (light == null) {
             return;
         }
@@ -23,11 +23,11 @@ public interface ILighted {
         this.getAttachedLights().remove(light);
     }
 
-    @NotNull Set<ILightAttached> getAttachedLights();
+    @NotNull Set<ILightAttachable> getAttachedLights();
 
     Vector3f getPositionToAttachLights();
 
-    default boolean isLightAttached(ILightAttached light) {
+    default boolean isLightAttached(ILightAttachable light) {
         return this.getAttachedLights().contains(light);
     }
 

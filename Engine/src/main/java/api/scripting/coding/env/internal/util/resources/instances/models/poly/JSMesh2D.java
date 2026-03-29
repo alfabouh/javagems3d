@@ -45,7 +45,7 @@ public class JSMesh2D implements JSCanBeCachedInMemory, JSMeshStructure2D {
         return this.meshGui;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Nodes list")
     public List<JSMeshNode2D> getNodes() {
         return this.meshGui.getNodes().stream().map(JSMeshNode2D::new).toList();
     }

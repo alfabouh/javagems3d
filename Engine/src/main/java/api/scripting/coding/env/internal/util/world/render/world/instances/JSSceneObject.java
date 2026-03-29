@@ -12,7 +12,7 @@ import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithModelI;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
@@ -44,7 +44,7 @@ public abstract class JSSceneObject implements JSSceneObjectI, JSSceneObjectWith
 
     @JSCodingFunctionOrMethod(description = "Get underlying lighted object", paramNames = {})
     @Override
-    public ILighted getJavaLightedObject() {
+    public IObjectWithLights getJavaLightedObject() {
         return this.sceneObject;
     }
 

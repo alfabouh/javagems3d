@@ -7,13 +7,13 @@ import api.scripting.coding.env.internal.util.math.JSVector3f;
 import javagems3d.graphics.camera.base.CameraBase;
 import javagems3d.graphics.camera.base.ICamera;
 
-@JSCodingClass(binding = "JSCamera", description = "Base JS wrapper for any camera implementation.")
-public abstract class JSCamera implements JSCameraI {
+@JSCodingClass(binding = "JSCameraBasic", description = "Base JS wrapper for any camera implementation.")
+public class JSCamera implements JSCameraI {
     @JSHideFromDoc
-    protected final CameraBase camera;
+    protected final ICamera camera;
 
     @JSHideFromDoc
-    public JSCamera(CameraBase camera) {
+    public JSCamera(ICamera camera) {
         this.camera = camera;
     }
 
@@ -28,35 +28,9 @@ public abstract class JSCamera implements JSCameraI {
     public JSVector3f getCamRotation() {
         return new JSVector3f(this.camera.getCamRotation());
     }
-
-    @JSCodingFunctionOrMethod(description = "Sets camera position.")
-    public void setCamPosition(JSVector3f pos) {
-        this.camera.setCameraPosition(pos.getJavaVector3f());
-    }
-
-    @JSCodingFunctionOrMethod(description = "Sets camera rotation.")
-    public void setCamRotation(JSVector3f rot) {
-        this.camera.setCameraRotation(rot.getJavaVector3f());
-    }
-
-    @JSCodingFunctionOrMethod(description = "Moves camera by given offset.")
-    public void addPosition(JSVector3f delta) {
-        this.camera.setCameraPosition(this.camera.getCamPosition().add(delta.getJavaVector3f()));
-    }
-
-    @JSCodingFunctionOrMethod(description = "Rotates camera by given offset.")
-    public void addRotation(JSVector3f delta) {
-        this.camera.setCameraRotation(this.camera.getCamRotation().add(delta.getJavaVector3f()));
-    }
-
     @Override
-    @JSHideFromDoc
+    @JSCodingFunctionOrMethod(description = "Real java object.")
     public ICamera getJavaCamera() {
-        return this.camera;
-    }
-
-    @JSHideFromDoc
-    public CameraBase getJavaCameraBase() {
         return this.camera;
     }
 }

@@ -4,6 +4,7 @@ import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure3D;
 import api.scripting.coding.env.internal.util.world.render.processing.JSRenderAttributes;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneProp;
+import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
@@ -14,7 +15,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 @JSCodingClass(binding = "JSPropRenderData", description = "Wrapper for PropRenderData, handling mesh, model constructor, and render attributes.")
 public class JSPropRenderData {
     @JSCodingField(description = "DEFAULT_OBJECT_CONSTRUCTOR")
-    public static JSScenePropConstructor DEFAULT_OBJECT_CONSTRUCTOR = (name, world, renderData) -> new JSSceneProp(new SceneWorldProp(name, world.getJavaSceneWorld(), renderData.getJavaPropRenderData())) {};
+    public static JSScenePropConstructor DEFAULT_OBJECT_CONSTRUCTOR = (name, world, renderData) -> new JSSceneWorldProp(new SceneWorldProp(name, world.getJavaSceneWorld(), renderData.getJavaPropRenderData())) {};
 
     @JSHideFromDoc
     private final PropRenderData propRenderData;

@@ -6,36 +6,36 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@JSCodingClass(binding = "JSBasicWorldItem", description = "Basic world item representing an entity in the physics world with position, rotation, scaling, and basic state management.")
-public class JSBasicWorldItem extends JSWorldItem {
+@JSCodingClass(binding = "JSBasicWorldObject", description = "Basic world item representing an entity in the physics world with position, rotation, scaling, and basic state management.")
+public class JSBasicWorldObject extends JSWorldObject {
 
     @JSHideFromDoc
-    public JSBasicWorldItem(WorldItem worldItem) {
+    public JSBasicWorldObject(WorldItem worldItem) {
         super(worldItem);
     }
 
     @JSCodingConstructor(description = "Create a world item with full transformations and custom name", paramNames = {"world", "position", "rotation", "scaling", "itemName"})
-    public JSBasicWorldItem(JSPhysicsWorld world, @NotNull JSVector3f position, @NotNull JSVector3f rotation, @NotNull JSVector3f scaling, String itemName) {
+    public JSBasicWorldObject(JSPhysicsWorld world, @NotNull JSVector3f position, @NotNull JSVector3f rotation, @NotNull JSVector3f scaling, String itemName) {
         super(world, position, rotation, scaling, itemName);
     }
 
     @JSCodingConstructor(description = "Create a world item with position and rotation; scaling defaults to (1,1,1)", paramNames = {"world", "position", "rotation", "itemName"})
-    public JSBasicWorldItem(JSPhysicsWorld world, JSVector3f position, JSVector3f rotation, String itemName) {
+    public JSBasicWorldObject(JSPhysicsWorld world, JSVector3f position, JSVector3f rotation, String itemName) {
         super(world, position, rotation, itemName);
     }
 
     @JSCodingConstructor(description = "Create a world item with position only; rotation defaults to (0,0,0), scaling defaults to (1,1,1)", paramNames = {"world", "position", "itemName"})
-    public JSBasicWorldItem(JSPhysicsWorld world, JSVector3f position, String itemName) {
+    public JSBasicWorldObject(JSPhysicsWorld world, JSVector3f position, String itemName) {
         super(world, position, itemName);
     }
 
     @JSCodingConstructor(description = "Create a world item with default position, rotation, and scaling; only custom name", paramNames = {"world", "itemName"})
-    public JSBasicWorldItem(JSPhysicsWorld world, String itemName) {
+    public JSBasicWorldObject(JSPhysicsWorld world, String itemName) {
         super(world, itemName);
     }
 
@@ -150,7 +150,7 @@ public class JSBasicWorldItem extends JSWorldItem {
 
     @JSCodingFunctionOrMethod(description = "Get the underlying Java WorldItem object (unsafe, internal use)")
     @Override
-    public WorldItem getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return super.worldItem;
     }
 }

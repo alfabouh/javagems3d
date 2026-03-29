@@ -3,12 +3,12 @@ package api.scripting.coding.env.internal.util.world.physical;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 
-@JSCodingClass(binding = "JSPhysicalWorld", description = "Wrapper for PhysicsWorld, providing entity management and physics ticks access.")
+@JSCodingClass(binding = "JSPhysicsWorld", description = "Wrapper for PhysicsWorld, providing entity management and physics ticks access.")
 public class JSPhysicsWorld {
     @JSHideFromDoc
     private final PhysicsWorld physicsWorld;
@@ -34,22 +34,22 @@ public class JSPhysicsWorld {
     }
 
     @JSCodingFunctionOrMethod(description = "Add object to the world", paramNames = {"worldItem"})
-    public void addObject(JSWorldItemI worldItem) {
-        this.physicsWorld.addObject(worldItem.getJavaWorldItem());
+    public void addObject(JSWorldObjectI worldItem) {
+        this.physicsWorld.addObject(worldItem.getJavaWorldObject());
     }
 
     @JSCodingFunctionOrMethod(description = "Remove object from the world", paramNames = {"worldItem"})
-    public void removeObject(JSWorldItemI worldItem) {
-        this.physicsWorld.removeItem(worldItem.getJavaWorldItem());
+    public void removeObject(JSWorldObjectI worldItem) {
+        this.physicsWorld.removeItem(worldItem.getJavaWorldObject());
     }
 
     @JSCodingFunctionOrMethod(description = "Check if world contains given object", paramNames = {"worldItem"})
-    public boolean contains(JSWorldItemI worldItem) {
-        return this.physicsWorld.contains((WorldItem) worldItem.getJavaWorldItem());
+    public boolean contains(JSWorldObjectI worldItem) {
+        return this.physicsWorld.contains((WorldItem) worldItem.getJavaWorldObject());
     }
 
     @JSCodingFunctionOrMethod(description = "Get object by ID", paramNames = {"id"})
-    public JSWorldItemI getItemByID(int id) {
+    public JSWorldObjectI getItemByID(int id) {
         WorldItem item = this.physicsWorld.getItemByID(id);
         if (item == null) {
             return null;

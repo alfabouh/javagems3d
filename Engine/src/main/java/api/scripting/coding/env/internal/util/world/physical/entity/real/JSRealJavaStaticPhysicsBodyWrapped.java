@@ -4,16 +4,14 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSColliderConstructor;
-import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
+import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -61,7 +59,7 @@ public abstract class JSRealJavaStaticPhysicsBodyWrapped extends JGemsStaticBody
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return this;
     }
 }

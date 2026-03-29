@@ -1,7 +1,7 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.IWorld;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class SceneObject implements IModeled, IRendered, ILighted, IWorldObject {
+public abstract class SceneObject implements IModeled, IRendered, IObjectWithLights, IWorldObject {
     private AnimationData animationData;
     private final IRenderWorld world;
     private RenderAttributes renderAttributes;
@@ -26,7 +26,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
     private float animationProgress;
     private double lastTick;
     private CullingAABB cullingAABB;
-    private final Set<ILightAttached> lights;
+    private final Set<ILightAttachable> lights;
 
     public SceneObject(IRenderWorld world, Model3D model, RenderAttributes renderAttributes) {
         this.animationData = null;
@@ -46,7 +46,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
     }
 
     public void clearLights() {
-        for (ILightAttached lightAttached : new HashSet<>(this.getAttachedLights())) {
+        for (ILightAttachable lightAttached : new HashSet<>(this.getAttachedLights())) {
             Light light = (Light) lightAttached;
             switch (lightAttached.getActionOnDeath()) {
                 case DESTROY: {
@@ -135,7 +135,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
     }
 
     @Override
-    public @NotNull Set<ILightAttached> getAttachedLights() {
+    public @NotNull Set<ILightAttachable> getAttachedLights() {
         return this.lights;
     }
 

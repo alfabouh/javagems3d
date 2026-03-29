@@ -8,7 +8,7 @@ import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 
 @JSCodingClass(binding = "JSSceneObjectWithModelI", description = "Interface for objects that have 3D model and animation control")
-public interface JSSceneObjectWithModelI {
+public interface JSSceneObjectWithModelI extends JSAnimatedObjectI {
 
     @JSCodingFunctionOrMethod(description = "Get underlying Java modeled object")
     IModeled getJavaModeledObject();

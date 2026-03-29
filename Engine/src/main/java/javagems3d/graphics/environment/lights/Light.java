@@ -70,7 +70,7 @@ public abstract class Light implements IWorldTicked {
     }
 
     public boolean canBeAttached() {
-        return this instanceof ILightAttached;
+        return this instanceof ILightAttachable;
     }
 
     public boolean isActive() {

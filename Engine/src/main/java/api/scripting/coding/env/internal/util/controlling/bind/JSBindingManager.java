@@ -8,7 +8,7 @@ import api.scripting.coding.env.internal.util.controlling.bind.keys.JSKey;
 import javagems3d.system.controller.binding.BindingManager;
 
 @JSCodingClass(binding = "JSBindingManager", description = "Manages a set of key bindings and provides access to movement keys.")
-public abstract class JSBindingManager {
+public class JSBindingManager {
     @JSHideFromDoc
     protected final BindingManager manager;
 
@@ -18,22 +18,34 @@ public abstract class JSBindingManager {
     }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move left.")
-    public abstract JSKey keyMoveLeft();
+    public JSKey keyMoveLeft() {
+        return new JSKey(this.manager.keyMoveLeft());
+    }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move right.")
-    public abstract JSKey keyMoveRight();
+    public JSKey keyMoveRight(){
+        return new JSKey(this.manager.keyMoveRight());
+    }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move forward.")
-    public abstract JSKey keyMoveForward();
+    public JSKey keyMoveForward(){
+        return new JSKey(this.manager.keyMoveForward());
+    }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move backward.")
-    public abstract JSKey keyMoveBackward();
+    public JSKey keyMoveBackward(){
+        return new JSKey(this.manager.keyMoveBackward());
+    }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move up.")
-    public abstract JSKey keyMoveUp();
+    public JSKey keyMoveUp(){
+        return new JSKey(this.manager.keyMoveUp());
+    }
 
     @JSCodingFunctionOrMethod(description = "Returns the key used to move down.")
-    public abstract JSKey keyMoveDown();
+    public JSKey keyMoveDown(){
+        return new JSKey(this.manager.keyMoveDown());
+    }
 
     @JSCodingFunctionOrMethod(description = "Adds a new binding.")
     public void addBinding(JSBinding binding) {

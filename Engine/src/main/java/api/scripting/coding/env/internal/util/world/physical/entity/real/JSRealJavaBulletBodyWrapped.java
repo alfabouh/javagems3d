@@ -3,13 +3,12 @@ package api.scripting.coding.env.internal.util.world.physical.entity.real;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
-import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -103,7 +102,7 @@ public abstract class JSRealJavaBulletBodyWrapped extends BulletBody implements 
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return this;
     }
 }

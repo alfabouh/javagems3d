@@ -2,11 +2,10 @@ package javagems3d.graphics.world;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.lights.ILightAttached;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.environment.lights.ILightAttachable;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -38,7 +37,7 @@ public final class SceneWorld implements IRenderWorld {
     private final IEnvironment environment;
 
     private final ParticlesEmitter particlesEmitter;
-    private final Set<Pair<WorldItem, ILightAttached>> lightAttachmentQueue;
+    private final Set<Pair<WorldItem, ILightAttachable>> lightAttachmentQueue;
     private final Map<Integer, SceneEntity> objectMap;
 
     private final Set<SceneObject> toRenderSet;
@@ -76,9 +75,9 @@ public final class SceneWorld implements IRenderWorld {
         if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             //JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
             //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
-            Iterator<Pair<WorldItem, ILightAttached>> iterator = this.lightAttachmentQueue.iterator();
+            Iterator<Pair<WorldItem, ILightAttachable>> iterator = this.lightAttachmentQueue.iterator();
             while (iterator.hasNext()) {
-                Pair<WorldItem, ILightAttached> pair = iterator.next();
+                Pair<WorldItem, ILightAttachable> pair = iterator.next();
                 this.addWorldItemLight(pair.first(), pair.second());
                 iterator.remove();
             }
@@ -188,20 +187,20 @@ public final class SceneWorld implements IRenderWorld {
 
     public void removeLight(Light light) {
         this.getEnvironment().getLightScene().removeLight(light);
-        ILightAttached lighted = (ILightAttached) light;
+        ILightAttachable lighted = (ILightAttachable) light;
         if (lighted.getAttachedTo() != null) {
-            lighted.getAttachedTo().removeLightAttachment((ILightAttached) light);
+            lighted.getAttachedTo().removeLightAttachment((ILightAttachable) light);
         }
     }
 
-    public void addLight(Light light, @Nullable ILighted lighted) {
+    public void addLight(Light light, @Nullable IObjectWithLights lighted) {
         this.getEnvironment().getLightScene().addLight(light);
         if (lighted != null) {
-            lighted.addLightAttachment((ILightAttached) light);
+            lighted.addLightAttachment((ILightAttachable) light);
         }
     }
 
-    public void addWorldItemLight(WorldItem worldItem, ILightAttached light) {
+    public void addWorldItemLight(WorldItem worldItem, ILightAttachable light) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
             this.lightAttachmentQueue.add(new Pair<>(worldItem, light));
@@ -260,6 +259,10 @@ public final class SceneWorld implements IRenderWorld {
 
     public ParticlesEmitter getParticlesEmitter() {
         return this.particlesEmitter;
+    }
+
+    public SceneObject getSceneObject(WorldItem worldItem) {
+        return this.getObjectMap().get(worldItem.getItemId());
     }
 
     public IAnimated getAnimatedObject(WorldItem worldItem) {

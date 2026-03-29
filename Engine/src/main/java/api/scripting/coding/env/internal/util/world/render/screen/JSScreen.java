@@ -4,6 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
+import api.scripting.coding.env.internal.util.world.render.JSScene;
 import api.scripting.coding.env.internal.util.world.render.screen.timer.JSTimerPool;
 import javagems3d.graphics.screen.JGemsScreen;
 
@@ -11,11 +12,13 @@ import javagems3d.graphics.screen.JGemsScreen;
 public class JSScreen {
     @JSHideFromDoc private final JGemsScreen screen;
     private final JSTimerPool timerPool;
+    private final JSScene jsScene;
 
     @JSHideFromDoc
     public JSScreen(JGemsScreen screen) {
         this.screen = screen;
         this.timerPool = new JSTimerPool(screen.getTimerPool());
+        this.jsScene = new JSScene(screen.getScene());
     }
 
     @JSCodingFunctionOrMethod(description = "Switches between screen modes.")
@@ -38,6 +41,11 @@ public class JSScreen {
         return new JSVector2f(this.screen.getWindowDimensions().x, this.screen.getWindowDimensions().y);
     }
 
+    @JSCodingFunctionOrMethod(description = "Get rendering scene.")
+    public JSScene getJsScene() {
+        return this.jsScene;
+    }
+
     @JSCodingFunctionOrMethod(description = "Get window instance.")
     public JSWindow getWindow() {
         return new JSWindow(this.screen.getWindow());
@@ -46,5 +54,10 @@ public class JSScreen {
     @JSCodingFunctionOrMethod(description = "Get timer pool.")
     public JSTimerPool getTimerPool() {
         return this.timerPool;
+    }
+
+    @JSCodingFunctionOrMethod(description = "Real java object")
+    public JGemsScreen getJavaScreen() {
+        return this.screen;
     }
 }

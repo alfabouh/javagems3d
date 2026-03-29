@@ -7,10 +7,10 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneEntityI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IObjectWithLights;
 import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(
@@ -106,11 +106,11 @@ public class JSPointLight implements JSLightI, JSLightAttachableI {
 
     @JSCodingFunctionOrMethod(description = "Get action on detach")
     public JSActionOnDetach getActionOnDetach() {
-        return this.pointLight.getActionOnDeath().equals(ILightAttached.ActionOnDetach.DESTROY) ? JSActionOnDetach.DESTROY : JSActionOnDetach.KEEP_IN_WORLD;
+        return this.pointLight.getActionOnDeath().equals(ILightAttachable.ActionOnDetach.DESTROY) ? JSActionOnDetach.DESTROY : JSActionOnDetach.KEEP_IN_WORLD;
     }
 
     @Override
-    public ILightAttached getJavaLightAttached() {
+    public ILightAttachable getJavaLightAttached() {
         return null;
     }
 
@@ -121,7 +121,7 @@ public class JSPointLight implements JSLightI, JSLightAttachableI {
 
     @JSCodingFunctionOrMethod(description = "Get the scene object this light is attached to")
     public JSSceneObjectWithLightsI getAttachedTo() {
-        ILighted attached = this.pointLight.getAttachedTo();
+        IObjectWithLights attached = this.pointLight.getAttachedTo();
         if (attached == null) return null;
         return () -> attached;
     }
@@ -132,7 +132,7 @@ public class JSPointLight implements JSLightI, JSLightAttachableI {
     }
 
     @Override
-    public Light getJavaLight() {
+    public PointLight getJavaLight() {
         return this.pointLight;
     }
 }

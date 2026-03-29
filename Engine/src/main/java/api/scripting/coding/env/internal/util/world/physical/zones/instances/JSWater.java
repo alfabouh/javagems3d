@@ -4,13 +4,13 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingField;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
 
 @JSCodingClass(binding = "JSWater", description = "Wrapper for Water liquid object")
-public class JSWater implements JSWorldItemI {
+public class JSWater implements JSWorldObjectI {
     @JSCodingField(description = "Real Water object")
     private final Water water;
 
@@ -32,7 +32,7 @@ public class JSWater implements JSWorldItemI {
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this.water;
     }
 }

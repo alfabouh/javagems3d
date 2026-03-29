@@ -8,7 +8,7 @@ import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
@@ -17,7 +17,7 @@ import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -31,6 +31,8 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.physics.world.IWorld;
+import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
@@ -372,6 +374,14 @@ public final class JGemsHelper {
             JGemsHelper.this.getSceneWorld().removeObject(sceneProp);
         }
 
+        public void addWorldObject(IWorldObject worldItem) {
+            JGemsHelper.this.getPhysicsWorld().addObject(worldItem);
+        }
+
+        public void removeWorldObject(IWorldObject worldItem) {
+            JGemsHelper.this.getPhysicsWorld().removeItem(worldItem);
+        }
+
         public void addWorldItem(WorldItem worldItem, EntityRenderData renderData) {
             JGemsHelper.this.getPhysicsWorld().addObject(worldItem);
             JGemsHelper.this.getSceneWorld().addWorldItem(worldItem, renderData);
@@ -398,11 +408,11 @@ public final class JGemsHelper {
             JGemsHelper.this.getSceneWorld().addLight(light, null);
         }
 
-        public void addLight(Light light, @Nullable ILighted lighted) {
+        public void addLight(Light light, @Nullable IObjectWithLights lighted) {
             JGemsHelper.this.getSceneWorld().addLight(light, lighted);
         }
 
-        public void addWorldItemLight(WorldItem worldItem, ILightAttached light) {
+        public void addWorldItemLight(WorldItem worldItem, ILightAttachable light) {
             JGemsHelper.this.getSceneWorld().addWorldItemLight(worldItem, light);
         }
     }
@@ -411,7 +421,6 @@ public final class JGemsHelper {
         public JGemsLocalisation getLocalisation() {
             return JGems3D.get().getLocalisation();
         }
-
 
         public Lang createLocalisation(@NotNull JGemsPathSource path, String langName) {
             return JGemsLocalisation.createLocalisation(path, langName);

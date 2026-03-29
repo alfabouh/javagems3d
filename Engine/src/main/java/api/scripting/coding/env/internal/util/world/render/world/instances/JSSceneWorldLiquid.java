@@ -11,12 +11,13 @@ import api.scripting.coding.env.internal.util.world.physical.zones.instances.JSL
 import api.scripting.coding.env.internal.util.world.render.data.JSLiquidRenderData;
 import api.scripting.coding.env.internal.util.world.render.processing.JSCullingRules;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
+import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneLiquid;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 
 @JSCodingClass(binding = "JSSceneWorldLiquid", description = "Wrapper for SceneWorldLiquid, representing liquid volumes in the scene.")
-public class JSSceneWorldLiquid {
+public class JSSceneWorldLiquid implements JSSceneLiquid {
     @JSHideFromDoc
     private final SceneWorldLiquid liquidObj;
 

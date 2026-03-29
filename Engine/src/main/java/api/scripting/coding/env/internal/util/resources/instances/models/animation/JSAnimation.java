@@ -8,9 +8,10 @@ import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 
 import java.util.List;
 
-@JSCodingClass(binding = "JSAnimation", description = "...")
+@JSCodingClass(binding = "JSAnimation", description = "Wrapper for handling animations, including frames, duration, and FPS.")
 public class JSAnimation {
-    @JSHideFromDoc private Animation animation;
+    @JSHideFromDoc
+    private Animation animation;
 
     @JSHideFromDoc
     public JSAnimation(Animation animation) {
@@ -22,27 +23,28 @@ public class JSAnimation {
         this.animation = new Animation(name, duration, fps, frameList.stream().map(JSAnimationFrame::getJavaAnimationFrame).toList());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get animation name")
     public String name() {
         return this.animation.name();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get animation duration in seconds")
     public double duration() {
         return this.animation.duration();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get animation FPS")
     public double fps() {
         return this.animation.fps();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get list of animation frames")
     public List<JSAnimationFrame> getFrameList() {
         return this.animation.frameList().stream().map(JSAnimationFrame::new).toList();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get underlying Java animation (unsafe)")
+    @JSHideFromDoc
     public Animation getJavaAnimation() {
         return this.animation;
     }

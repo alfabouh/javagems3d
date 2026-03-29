@@ -15,8 +15,8 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 
 import java.util.List;
 
-@JSCodingClass(binding = "JSMeshBuffer", description = "Wrapper for a 3D mesh buffer, allowing caching and access to the underlying Java MeshStructure3D object.")
-public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D<DataMesh> {
+@JSCodingClass(binding = "JSMeshBuffer", description = "Wrapper for a 3D mesh buffer, providing access to nodes, animations, AABB and caching control.")
+public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
     @JSHideFromDoc
     private final MeshBuffer meshBuffer;
 
@@ -24,95 +24,97 @@ public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D<Da
         this.meshBuffer = meshBuffer;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get the underlying Java MeshBuffer object.")
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java MeshBuffer object (unsafe).")
     public MeshBuffer getJavaMeshBuffer() {
         return this.meshBuffer;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get all solid (opaque) 3D mesh nodes in this buffer.")
     public List<JSMeshNode3D> getSolidNodes() {
         return this.meshBuffer.getSolidNodes().stream().map(JSMeshNode3D::new).toList();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get all 3D mesh nodes with blended transparency.")
     public List<JSMeshNode3D> getBlendedTransparencyNodes() {
         return this.meshBuffer.getBlendedTransparencyNodes().stream().map(JSMeshNode3D::new).toList();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Load a list of animations into this mesh buffer.")
     public void loadAnimations(List<JSAnimation> animations) {
         this.meshBuffer.loadAnimations(animations.stream().map(JSAnimation::getJavaAnimation).toList());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if this mesh buffer can be used with indirect rendering.")
     public boolean canBeUsedInIndirectRendering() {
         return this.meshBuffer.canBeUsedInIndirectRendering();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Clear all mesh buffer data, including nodes and animations.")
     public void clear() {
         this.meshBuffer.clear();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if mesh nodes are kept in memory even when not used.")
     public boolean isKeepNodesInMemory() {
         return this.meshBuffer.isKeepNodesInMemory();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Set whether to keep mesh nodes in memory.")
     public void setKeepNodesInMemory(boolean keepNodesInMemory) {
         this.meshBuffer.setKeepNodesInMemory(keepNodesInMemory);
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Clear mesh nodes data without removing the nodes themselves.")
     public void clearNodesData() {
         this.meshBuffer.clearNodesData();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if any node in the buffer has transparency.")
     public boolean hasTransparency() {
         return this.meshBuffer.hasTransparency();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if this buffer contains an animated structure.")
     public boolean isAnimatedStructure() {
         return this.meshBuffer.isAnimatedStructure();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if animations list is not empty.")
     public boolean isAnimationsNotEmpty() {
         return this.meshBuffer.isAnimationsNotEmpty();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the total number of animations in this mesh buffer.")
     public int getAnimationsNum() {
         return this.meshBuffer.getAnimationsNum();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get the list of animations contained in this mesh buffer.")
     public List<JSAnimation> getAnimationsList() {
         return this.meshBuffer.getAnimationsList().stream().map(JSAnimation::new).toList();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Set bounding box data for a specific animation frame.")
     public void setMeshAABBDataForAnimationFrame(JSAnimation animation, JSMeshBoundingBox meshBoundingBoxData) {
         this.meshBuffer.setMeshAABBDataForAnimationFrame(animation.getJavaAnimation(), meshBoundingBoxData.getJavaMeshBoundingBoxData());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get normalized bounding box for a specific animation.")
     public JSMeshBoundingBox getMeshAABBDataForAnimation(JSAnimation animation) {
         return new JSMeshBoundingBox(this.meshBuffer.getMeshAABBDataForAnimation(animation.getJavaAnimation()));
     }
 
+    @JSCodingFunctionOrMethod(description = "Get the overall bounding box of this mesh buffer.")
     public JSMeshBoundingBox getBoundingBox() {
         return new JSMeshBoundingBox(this.meshBuffer.getMeshAABBData());
     }
 
+    @JSCodingFunctionOrMethod(description = "Get the underlying mesh collision data.")
     public MeshCollisionData getJavaMeshCollisionData() {
         return this.meshBuffer.getMeshCollisionData();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get Java object.")
+    @JSCodingFunctionOrMethod(description = "Get Java MeshStructure3D object.")
     @Override
     public MeshStructure3D<DataMesh> getJavaMeshStructure3D() {
         return this.getJavaMeshBuffer();

@@ -6,7 +6,7 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSTriggerAction;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSZone;
@@ -17,7 +17,7 @@ import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
 
 @JSCodingClass(binding = "JSRealBasicTriggerZone", description = "Concrete trigger zone with JS callback support.")
-public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone implements JSWorldItemI {
+public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone implements JSWorldObjectI {
     @JSCodingField(description = "Trigger callback") private ITriggerAction action;
 
     public JSRealBasicTriggerZone(JSZone zone) {
@@ -81,7 +81,7 @@ public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone impleme
 
     @JSHideFromDoc
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this;
     }
 }

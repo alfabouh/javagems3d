@@ -10,36 +10,38 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@JSCodingClass(binding = "JSMeshNode3D", description = "...")
+@JSCodingClass(binding = "JSMeshNode3D", description = "Wrapper for MeshNode3D providing access to 3D mesh data and material management.")
 public class JSMeshNode3D implements JSMeshNodeI {
-    @JSHideFromDoc private final MeshNode3D<?> meshNode3D;
+    @JSHideFromDoc
+    private final MeshNode3D<?> meshNode3D;
 
     @JSHideFromDoc
     public JSMeshNode3D(MeshNode3D<?> meshNode3D) {
         this.meshNode3D = meshNode3D;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Check if the mesh has transparency")
     public boolean hasTransparency() {
         return this.meshNode3D.hasTransparency();
     }
 
-    @JSCodingFunctionOrMethod(description = "...", paramNames = {"material"})
+    @JSCodingFunctionOrMethod(description = "Set material for this mesh node", paramNames = {"material"})
     public void setMaterial(@NotNull JSMaterial material) {
         this.meshNode3D.setMaterial(material.getJavaMaterial());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get current material of this mesh node")
     public JSMaterial getMaterial() {
         return new JSMaterial(this.meshNode3D.getMaterial());
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Clear mesh node data")
     public void clear() {
         this.meshNode3D.clear();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get underlying Java MeshNode3D (unsafe)")
+    @JSHideFromDoc
     public MeshNode3D<?> getJavaMeshNode3D() {
         return this.meshNode3D;
     }

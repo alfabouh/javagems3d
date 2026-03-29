@@ -5,8 +5,8 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 
-@JSCodingClass(binding = "JSWorldItemI", description = "...")
-public interface JSWorldItemI {
-    @JSCodingFunctionOrMethod(description = "...")
-    IWorldObject getJavaWorldItem();
+@JSCodingClass(binding = "JSWorldObjectI", description = "Interface for world items, exposing access to the underlying Java world object.")
+public interface JSWorldItemI extends JSWorldObjectI {
+    @JSCodingFunctionOrMethod(description = "Get the underlying Java world item (WorldItem).")
+    WorldItem getJavaWorldObject();
 }

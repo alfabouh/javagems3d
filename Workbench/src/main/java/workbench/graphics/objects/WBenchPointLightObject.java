@@ -2,7 +2,7 @@ package workbench.graphics.objects;
 
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
-import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
@@ -137,7 +137,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
         this.pointLight = new PointLight(this.getPosition(), new Vector3f(1.0f)).on();
-        this.pointLight.setActionOnDetach(ILightAttached.ActionOnDetach.KEEP_IN_WORLD);
+        this.pointLight.setActionOnDetach(ILightAttachable.ActionOnDetach.KEEP_IN_WORLD);
 
         WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
         wBenchWorld.addLight(this.pointLight, this);

@@ -5,19 +5,19 @@ import api.scripting.coding.env.def.JSCodingField;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
 import javagems3d.physics.entities.kinematic.JGemsKinematicItem;
 import javagems3d.physics.world.basic.IWorldObject;
 
-@JSCodingClass(binding = "JSKinematicItem", description = "Wrapper for JGemsKinematicItem")
-public class JSKinematicItem implements JSWorldItemI {
+@JSCodingClass(binding = "JSKinematicObject", description = "Wrapper for JGemsKinematicItem")
+public class JSKinematicObject implements JSWorldObjectI {
 
     @JSCodingField(description = "Real kinematic item object")
     private final JGemsKinematicItem item;
 
     @JSHideFromDoc
-    public JSKinematicItem(JGemsKinematicItem item) {
+    public JSKinematicObject(JGemsKinematicItem item) {
         this.item = item;
     }
 
@@ -133,7 +133,7 @@ public class JSKinematicItem implements JSWorldItemI {
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this.item;
     }
 }

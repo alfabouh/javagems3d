@@ -9,21 +9,23 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.jetbrains.annotations.NotNull;
 
-@JSCodingClass(binding = "JSMeshNode2D", description = "...")
+@JSCodingClass(binding = "JSMeshNode2D", description = "Wrapper for MeshNode2D providing 2D mesh operations.")
 public class JSMeshNode2D implements JSMeshNodeI {
-    @JSHideFromDoc private final MeshNode2D meshNode2D;
+    @JSHideFromDoc
+    private final MeshNode2D meshNode2D;
 
     @JSHideFromDoc
     public JSMeshNode2D(MeshNode2D meshNode2D) {
         this.meshNode2D = meshNode2D;
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Clear mesh node data")
     public void clear() {
         this.meshNode2D.clear();
     }
 
-    @JSCodingFunctionOrMethod(description = "...")
+    @JSCodingFunctionOrMethod(description = "Get underlying Java MeshNode2D (unsafe)")
+    @JSHideFromDoc
     public MeshNode2D getJavaMeshNode2D() {
         return this.meshNode2D;
     }

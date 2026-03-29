@@ -4,15 +4,14 @@ import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSColliderConstructor;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSPhysMaterial;
-import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -126,7 +125,7 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
 
     @JSCodingFunctionOrMethod(description = "Real java object")
     @Override
-    public WorldItem getJavaWorldItem() {
+    public WorldItem getJavaWorldObject() {
         return this.staticBody;
     }
 }

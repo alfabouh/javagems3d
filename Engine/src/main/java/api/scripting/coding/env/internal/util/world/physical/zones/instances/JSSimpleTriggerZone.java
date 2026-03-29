@@ -3,7 +3,7 @@ package api.scripting.coding.env.internal.util.world.physical.zones.instances;
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSTriggerAction;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSZone;
@@ -13,7 +13,7 @@ import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 
 @JSCodingClass(binding = "JSSimpleTriggerZone", description = "Wrapper around simple trigger zone.")
-public class JSSimpleTriggerZone implements JSWorldItemI {
+public class JSSimpleTriggerZone implements JSWorldObjectI {
     @JSCodingField(description = "Underlying trigger zone (Java side)")
     private final SimpleTriggerZone zone;
 
@@ -83,7 +83,7 @@ public class JSSimpleTriggerZone implements JSWorldItemI {
     }
 
     @JSCodingFunctionOrMethod(description = "Real java object")    @Override
-    public IWorldObject getJavaWorldItem() {
+    public IWorldObject getJavaWorldObject() {
         return this.zone;
     }
 }
