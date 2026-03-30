@@ -81,9 +81,9 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return Math.min(f1_r, f2_r);
     }
 
-    public void setPanel(PanelUI panelUI) {
+    public void setUiPanel(PanelUI panelUI) {
         if (panelUI == null) {
-            this.removePanel();
+            this.currentPanel = null;
             return;
         }
         if (this.getCurrentPanel() != null) {
@@ -95,7 +95,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     public void removePanel() {
-        this.setPanel(null);
+        this.setUiPanel(null);
     }
 
     public void renderFrame(float frameDeltaTicks) {

@@ -437,7 +437,11 @@ public final class JGemsHelper {
         }
 
         public void openPanel(PanelUI panelUI) {
-            ((IJGemsUIImp) JGemsHelper.this.core.getScreen().getScene().getSceneRenderer()).openUIPanel(panelUI);
+            if (panelUI == null) {
+                Log.get().warn("Couldn't open NULL ui");
+            } else {
+                ((IJGemsUIImp) JGemsHelper.this.core.getScreen().getScene().getSceneRenderer()).openUIPanel(panelUI);
+            }
         }
 
         public void closePanel() {

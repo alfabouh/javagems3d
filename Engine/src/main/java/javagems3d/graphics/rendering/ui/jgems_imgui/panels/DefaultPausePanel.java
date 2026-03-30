@@ -41,6 +41,6 @@ public class DefaultPausePanel extends AbstractPanelUI {
     }
 
     protected void openGamePanel(JGemsUI ui) {
-        ui.setPanel(new DefaultGamePanel(null));
+        ui.setUiPanel(new DefaultGamePanel(null));
     }
 }

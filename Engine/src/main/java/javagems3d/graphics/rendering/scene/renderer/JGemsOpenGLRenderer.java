@@ -340,7 +340,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void openUIPanel(@Nullable PanelUI panelUI) {
-        this.getJGemsUI().setPanel(panelUI);
+        this.getJGemsUI().setUiPanel(panelUI);
     }
 
     @Override

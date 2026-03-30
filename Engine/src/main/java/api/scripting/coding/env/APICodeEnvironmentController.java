@@ -8,6 +8,7 @@ import javagems3d.system.service.exceptions.JGemsAPIException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL46;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -112,6 +113,13 @@ public class APICodeEnvironmentController implements Closeable {
         if (sampleClass != null) {
             Log.get().debug("Reading class-entrypoint: " + sampleClass.aClass().getSimpleName());
             this.fillEntrypointDoc(sampleClass);
+        }
+
+        {
+            if (this.apiCodingContext.getContext() != null) {
+                String jsInitGl = "var GL30 = Java.type('org.lwjgl.opengl.GL30');";
+                this.apiCodingContext.getContext().eval(JGemsAPIScriptingCore.LAN, jsInitGl);
+            }
         }
     }
 

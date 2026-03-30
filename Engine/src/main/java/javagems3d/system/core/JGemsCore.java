@@ -1,7 +1,6 @@
 package javagems3d.system.core;
 
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
-import api.scripting.coding.env.internal.util.resources.init.JSDefaultGameResources;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.settings.JSPerfTestResult;
 import api.system.JGemsAPI;
@@ -59,7 +58,7 @@ public final class JGemsCore implements ICore {
         this.jGemsSoundManager = new JGemsSoundManager();
         this.jGemsScreen = new JGemsScreen();
         {
-            JavaToJsAPI.setScreen(this.jGemsScreen);
+            JavaToJsAPI.setJSScreen(this.jGemsScreen);
         }
         this.resourceManager = new JGemsResourceManager();
 

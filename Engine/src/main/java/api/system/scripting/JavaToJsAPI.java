@@ -146,7 +146,7 @@ public class JavaToJsAPI {
     }
 
 
-    public static void setScreen(JGemsScreen gemsScreen) {
+    public static void setJSScreen(JGemsScreen gemsScreen) {
         JSScriptGlobalData.setScreen(new JSScreen(gemsScreen));
     }
 

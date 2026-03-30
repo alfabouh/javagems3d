@@ -42,40 +42,61 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.controller.base.IController;
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
+import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.files.JGemsPath;
+import logger.Log;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-@JSCodingClass(binding = "JSScriptGlobalData", description = "Provides access to global script data such as game folder path, screen, and settings.")
+@JSCodingClass(
+        binding = "JSScriptGlobalData",
+        description = "Provides access to global script data such as game folder path, screen, settings, scene, world, and resources. " +
+                "All returned objects may interact with game state and rendering."
+)
 public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlobalData> {
-    @JSHideFromDoc public static JSPath absPath;
-    @JSHideFromDoc public static JSScreen jsScreen;
-    @JSHideFromDoc public static JSGameSettings jsGameSettings;
 
-    public JSScriptGlobalData() {
-    }
+    @JSHideFromDoc
+    public static JSPath absPath;
+
+    @JSHideFromDoc
+    public static JSScreen jsScreen;
+
+    @JSHideFromDoc
+    public static JSGameSettings jsGameSettings;
+
+    public JSScriptGlobalData() {}
+
+    // ----------------------
+    // Paths and Settings
+    // ----------------------
 
     @JSCodingFunctionOrMethod(description = "Get absolute path to the game's folder.")
     public JSPath getGameFolderPath() {
         return JSScriptGlobalData.absPath;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current game settings.")
+    @JSCodingFunctionOrMethod(description = "Get current game settings object. Use to read or modify game parameters.")
     public static JSGameSettings getGameSettings() {
         return JSScriptGlobalData.jsGameSettings;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current screen object.")
+    // ----------------------
+    // Screen and Scene
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Get current screen object. The screen manages rendering, window, and timers.")
     public JSScreen getScreen() {
         return JSScriptGlobalData.jsScreen;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current scene object.")
+    @JSCodingFunctionOrMethod(description = "Get current scene object. Scene contains all renderable objects, lights, environment, and timers. Changes affect world rendering.")
     public JSScene getScene() {
         return JSScriptGlobalData.jsScreen.getJsScene();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current environment object.")
+    @JSCodingFunctionOrMethod(description = "Get current environment from scene.")
     public JSEnvironment getSceneEnvironment() {
         return JSScriptGlobalData.jsScreen.getJsScene().getSceneWorld().getEnvironment();
     }
@@ -90,261 +111,295 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
         return JSScriptGlobalData.jsScreen != null;
     }
 
+    // ----------------------
+    // Resources
+    // ----------------------
 
-    @JSCodingFunctionOrMethod(description = "Get local game resources")
+    @JSCodingFunctionOrMethod(description = "Get local game resources. May consume memory; call `clear()` or `destroy()` after use if available.")
     public JSSystemResources getLocalGameResources() {
         return new JSSystemResources(JGemsHelper.resources().getLocalGameResources());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get global game resources")
+    @JSCodingFunctionOrMethod(description = "Get global game resources. May consume memory; call `clear()` or `destroy()` after use if available.")
     public JSSystemResources getGlobalGameResources() {
         return new JSSystemResources(JGemsHelper.resources().getGlobalGameResources());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get animations texture buffer")
+    @JSCodingFunctionOrMethod(description = "Get animations texture buffer. Remember to release memory after use if supported.")
     public JSTexture2D getAnimationsTextureBuffer() {
         return new JSTexture2D(JGemsHelper.resources().getAnimationsTextureBuffer());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get underlying Java resource manager")
+    @JSCodingFunctionOrMethod(description = "Get underlying Java resource manager.")
     public JGemsResourceManager getJavaResourceManager() {
         return JGemsHelper.resources().getResourceManager();
     }
 
-    @JSCodingFunctionOrMethod(description = "Reload all resources")
+    @JSCodingFunctionOrMethod(description = "Reload all resources. Be aware that previous objects may need to be cleared to avoid memory leaks.")
     public void reloadResources() {
         JGemsHelper.resources().reloadResources();
     }
 
-    @JSCodingFunctionOrMethod(description = "Open main menu")
+    // ----------------------
+    // UI
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Open main menu UI.")
     public void openMainMenu() {
         JGemsHelper.ui().openMainMenu();
     }
 
-    @JSCodingFunctionOrMethod(description = "Open UI panel by name", paramNames = {"panelUI"})
+    @JSCodingFunctionOrMethod(description = "Open UI panel by name. Use panel name from registered panels map.", paramNames = {"panelUI"})
     public void openPanel(String panelUI) {
         JGemsHelper.ui().openPanel(JavaToJsAPI.uiContainer.getPanelUIMap().get(panelUI));
     }
 
-    @JSCodingFunctionOrMethod(description = "Close current UI panel")
+    @JSCodingFunctionOrMethod(description = "Close current UI panel.")
     public void closePanel() {
         JGemsHelper.ui().closePanel();
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove all items in world")
+    // ----------------------
+    // World manipulation
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Remove all items in world.")
     public void killItemsInWorld() {
         JGemsHelper.world().killItems();
     }
 
-    @JSCodingFunctionOrMethod(description = "Bind point light shadow to scene", paramNames = {"sceneId", "pointLight"})
+    @JSCodingFunctionOrMethod(description = "Bind point light shadow to scene.", paramNames = {"sceneId", "pointLight"})
     public void bindPointLightShadow(int sceneId, JSPointLight pointLight) {
         JGemsHelper.world().bindPointLightShadow(sceneId, pointLight.getJavaLight());
     }
 
-    @JSCodingFunctionOrMethod(description = "Add scene prop to world", paramNames = {"sceneProp"})
+    @JSCodingFunctionOrMethod(description = "Add scene prop to world.", paramNames = {"sceneProp"})
     public void addProp(JSScenePropI sceneProp) {
         JGemsHelper.world().addProp(sceneProp.getJavaSceneProp());
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove scene prop from world", paramNames = {"sceneProp"})
+    @JSCodingFunctionOrMethod(description = "Remove scene prop from world.", paramNames = {"sceneProp"})
     public void removeProp(JSScenePropI sceneProp) {
         JGemsHelper.world().removeProp(sceneProp.getJavaSceneProp());
     }
 
-    @JSCodingFunctionOrMethod(description = "Add world object", paramNames = {"worldItem"})
+    @JSCodingFunctionOrMethod(description = "Add world object.", paramNames = {"worldItem"})
     public void addWorldObject(JSWorldObjectI worldItem) {
         JGemsHelper.world().addWorldObject(worldItem.getJavaWorldObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove world object", paramNames = {"worldItem"})
+    @JSCodingFunctionOrMethod(description = "Remove world object.", paramNames = {"worldItem"})
     public void removeWorldObject(JSWorldObjectI worldItem) {
         JGemsHelper.world().removeWorldObject(worldItem.getJavaWorldObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Add world item with render data", paramNames = {"worldItem", "renderData"})
+    @JSCodingFunctionOrMethod(description = "Add world item with render data.", paramNames = {"worldItem", "renderData"})
     public void addWorldItem(JSWorldItemI worldItem, JSEntityRenderData renderData) {
         JGemsHelper.world().addWorldItem(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove world item", paramNames = {"worldItem"})
+    @JSCodingFunctionOrMethod(description = "Remove world item.", paramNames = {"worldItem"})
     public void removeWorldItem(JSWorldItemI worldItem) {
         JGemsHelper.world().removeWorldItem((WorldItem) worldItem);
     }
 
-    @JSCodingFunctionOrMethod(description = "Add liquid to world", paramNames = {"liquid", "liquidRenderData"})
+    @JSCodingFunctionOrMethod(description = "Add liquid to world.", paramNames = {"liquid", "liquidRenderData"})
     public void addLiquid(JSLiquid liquid, JSLiquidRenderData liquidRenderData) {
         JGemsHelper.world().addLiquid(liquid.getJavaLiquid(), liquidRenderData.getJavaLiquidRenderData());
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove liquid from world", paramNames = {"liquid"})
+    @JSCodingFunctionOrMethod(description = "Remove liquid from world.", paramNames = {"liquid"})
     public void removeLiquid(JSLiquid liquid) {
         JGemsHelper.world().removeLiquid(liquid.getJavaLiquid());
     }
 
-    @JSCodingFunctionOrMethod(description = "Remove light from world", paramNames = {"light"})
-    public void removeLight(JSLightI light) {
-        JGemsHelper.world().removeLight(light.getJavaLight());
-    }
-
-    @JSCodingFunctionOrMethod(description = "Add light to world", paramNames = {"light"})
+    @JSCodingFunctionOrMethod(description = "Add light to world.", paramNames = {"light"})
     public void addLight(JSLightI light) {
         JGemsHelper.world().addLight(light.getJavaLight());
     }
 
-    @JSCodingFunctionOrMethod(description = "Add light to lighted object", paramNames = {"light", "lighted"})
+    @JSCodingFunctionOrMethod(description = "Remove light from world.", paramNames = {"light"})
+    public void removeLight(JSLightI light) {
+        JGemsHelper.world().removeLight(light.getJavaLight());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Add light to lighted object.", paramNames = {"light", "lighted"})
     public void addLight(JSLightI light, JSSceneObjectWithLightsI lighted) {
         JGemsHelper.world().addLight(light.getJavaLight(), lighted.getJavaLightedObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Attach light to world item", paramNames = {"worldItem", "light"})
+    @JSCodingFunctionOrMethod(description = "Attach light to world item.", paramNames = {"worldItem", "light"})
     public void addWorldItemLight(JSWorldItemI worldItem, JSLightAttachableI light) {
         JGemsHelper.world().addWorldItemLight(worldItem.getJavaWorldObject(), light.getJavaLightAttached());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get scene object by world item", paramNames = {"worldItem"})
+    @JSCodingFunctionOrMethod(description = "Get scene object by world item.", paramNames = {"worldItem"})
     public JSSceneObjectI tryGetSceneObjectByWorldItem(JSWorldItemI worldItem) {
         return () -> JSScriptGlobalData.this.getScene().getSceneWorld().getJavaSceneWorld().getSceneObject(worldItem.getJavaWorldObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Reset render tick")
+    // ----------------------
+    // Render and timers
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Reset render tick.")
     public void zeroRenderTick() {
         JGemsHelper.screen().zeroRenderTick();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get timer pool")
+    @JSCodingFunctionOrMethod(description = "Get timer pool.")
     public JSTimerPool getTimerPool() {
         return this.getScreen().getTimerPool();
     }
 
-    @JSCodingFunctionOrMethod(description = "Create a new timed action")
+    @JSCodingFunctionOrMethod(description = "Create a new timed action.")
     public JSTimedAction createTimer() {
         return this.getScreen().getTimerPool().createTimer();
     }
 
-    @JSCodingFunctionOrMethod(description = "Set window focus", paramNames = {"focus"})
+    // ----------------------
+    // Window / focus
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Set window focus.", paramNames = {"focus"})
     public void setWindowFocus(boolean focus) {
         JGemsHelper.screen().setWindowFocus(focus);
     }
 
-    @JSCodingFunctionOrMethod(description = "Check if window is active")
+    @JSCodingFunctionOrMethod(description = "Check if window is active.")
     public boolean isWindowActive() {
         return JGemsHelper.screen().isWindowActive();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current game map")
-    public JSGameMap getCurrentGameMap() {
-        return new JSGameMap(JGemsHelper.map().getCurrentGameMap());
-    }
+    // ----------------------
+    // Map loading
+    // ----------------------
 
-    @JSCodingFunctionOrMethod(description = "Check if current game map has a valid player")
-    public boolean isCurrentGameMapPlayerValid() {
-        return JGemsHelper.map().isCurrentGameMapPlayerValid();
-    }
-
-    @JSCodingFunctionOrMethod(description = "Check if current game map is valid")
-    public boolean isCurrentGameMapValid() {
-        return JGemsHelper.map().isCurrentGameMapValid();
-    }
-
-    @JSCodingFunctionOrMethod(description = "Get current game map player")
-    public JSPlayer getCurrentGameMapPlayer() {
-        return () -> JGemsHelper.map().getCurrentGameMapPlayer();
-    }
-
-    @JSCodingFunctionOrMethod(description = "Get real map path from relative path", paramNames = {"relativePath"})
+    @JSCodingFunctionOrMethod(
+            description = "Get real map path from relative path. The path should be relative to the game maps folder (absolute game folder path + '/game_maps/'). " +
+                    "Example: if the map is located at 'MyGame/game_maps/level1.map', pass 'level1.map'. " +
+                    "Ensure the map file is copied to the game_maps folder before calling this method.",
+            paramNames = {"relativePath"}
+    )
     public JSPath getRealMapPath(String relativePath) {
         return new JSPath(JGemsHelper.map().getMapPath(relativePath));
     }
 
-    @JSCodingFunctionOrMethod(description = "Exit current map")
+    @JSCodingFunctionOrMethod(
+            description = "Load map by relative path. The path is relative to the game maps folder ('<game folder>/game_maps/'). " +
+                    "Make sure the map file exists at this location before loading.",
+            paramNames = {"mapRelativePath"}
+    )
+    public void loadMap(String mapRelativePath) {
+        JGemsPath mapPath = JGemsHelper.map().getMapPath(mapRelativePath);
+        if (mapPath == null) {
+            Log.get().warn("Map file at " + mapRelativePath + " does not exist.");
+        } else {
+            JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath(mapRelativePath)));
+        }
+    }
+
+    @JSCodingFunctionOrMethod(description = "Exit current map.")
     public void exitMap() {
         JGemsHelper.map().exitMap();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get controller dispatcher")
+    // ----------------------
+    // Controller and camera
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Get controller dispatcher.")
     public JSControllerDispatcher getControllerDispatcher() {
         return new JSControllerDispatcher(JGemsHelper.screen().getScreen().getControllerDispatcher());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current controller")
+    @JSCodingFunctionOrMethod(description = "Get current controller.")
     public JSController getCurrentController() {
         return new JSController(this.getControllerDispatcher().getCurrentController().getJavaController());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get binding manager")
+    @JSCodingFunctionOrMethod(description = "Get binding manager.")
     public JSBindingManager getBindingManager() {
         return new JSBindingManager(this.getCurrentController().getBindingManager().getJavaManager());
     }
 
-    @JSCodingFunctionOrMethod(description = "Center cursor")
+    @JSCodingFunctionOrMethod(description = "Center cursor in screen.")
     public void setCursorInCenter() {
         JGemsHelper.controller().setCursorInCenter();
     }
 
-    @JSCodingFunctionOrMethod(description = "Attach controller to remote controllable", paramNames = {"controller", "remoteController"})
+    @JSCodingFunctionOrMethod(description = "Attach controller to remote controllable.", paramNames = {"controller", "remoteController"})
     public void attachControllerTo(JSController controller, JSControllableItem remoteController) {
         JGemsHelper.controller().attachControllerTo(controller.getJavaController(), remoteController.getJavaControllable());
     }
 
-    @JSCodingFunctionOrMethod(description = "Detach controller")
+    @JSCodingFunctionOrMethod(description = "Detach controller.")
     public void detachController() {
         JGemsHelper.controller().detachController();
     }
 
-    @JSCodingFunctionOrMethod(description = "Lock controller")
+    @JSCodingFunctionOrMethod(description = "Lock controller input.")
     public void lockController() {
         JGemsHelper.controller().lockController();
     }
 
-    @JSCodingFunctionOrMethod(description = "Unlock controller")
+    @JSCodingFunctionOrMethod(description = "Unlock controller input.")
     public void unLockController() {
         JGemsHelper.controller().unLockController();
     }
 
-    @JSCodingFunctionOrMethod(description = "Get current camera")
+    @JSCodingFunctionOrMethod(description = "Get current camera.")
     public JSCameraI getCurrentCamera() {
         return new JSCamera(JGemsHelper.camera().getCurrentCamera());
     }
 
-    @JSCodingFunctionOrMethod(description = "Set current camera", paramNames = {"camera"})
+    @JSCodingFunctionOrMethod(description = "Set current camera.", paramNames = {"camera"})
     public void setCurrentCamera(JSCameraI camera) {
         JGemsHelper.camera().setCurrentCamera(camera.getJavaCamera());
     }
 
-    @JSCodingFunctionOrMethod(description = "Enable free camera", paramNames = {"controller", "pos", "rot"})
+    @JSCodingFunctionOrMethod(description = "Enable free camera.", paramNames = {"controller", "pos", "rot"})
     public void enableFreeCamera(JSController controller, JSVector3f pos, JSVector3f rot) {
         JGemsHelper.camera().enableFreeCamera(controller.getJavaController(), pos.getJavaVector3f(), rot.getJavaVector3f());
     }
 
-    @JSCodingFunctionOrMethod(description = "Enable attached camera to world item", paramNames = {"worldItem"})
+    @JSCodingFunctionOrMethod(description = "Enable camera attached to a world item.", paramNames = {"worldItem"})
     public void enableAttachedCamera(JSWorldItemI worldItem) {
         JGemsHelper.camera().enableAttachedCamera(worldItem.getJavaWorldObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Enable attached camera to scene entity", paramNames = {"abstractSceneEntity"})
+    @JSCodingFunctionOrMethod(description = "Enable camera attached to a scene entity.", paramNames = {"abstractSceneEntity"})
     public void enableAttachedCamera(JSSceneEntityI abstractSceneEntity) {
         JGemsHelper.camera().enableAttachedCamera(abstractSceneEntity.getJavaSceneEntity());
     }
 
-    @JSCodingFunctionOrMethod(description = "Pause game and lock resume", paramNames = {"pauseSounds"})
+    // ----------------------
+    // Game state
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Pause game and lock resume.", paramNames = {"pauseSounds"})
     public void pauseGameAndLockResume(boolean pauseSounds) {
         JGemsHelper.state().pauseGameAndLockResume(pauseSounds);
     }
 
-    @JSCodingFunctionOrMethod(description = "Unpause game and unlock unpausing")
+    @JSCodingFunctionOrMethod(description = "Unpause game and unlock unpausing.")
     public void unPauseGameAndUnLockUnPausing() {
         JGemsHelper.state().unPauseGameAndUnLockUnPausing();
     }
 
-    @JSCodingFunctionOrMethod(description = "Pause game", paramNames = {"pauseSounds"})
+    @JSCodingFunctionOrMethod(description = "Pause game.", paramNames = {"pauseSounds"})
     public void pauseGame(boolean pauseSounds) {
         JGemsHelper.state().pauseGame(pauseSounds);
     }
 
-    @JSCodingFunctionOrMethod(description = "Resume game")
+    @JSCodingFunctionOrMethod(description = "Resume game.")
     public void resumeGame() {
         JGemsHelper.state().resumeGame();
     }
+
+    // ----------------------
+    // Hidden / internal
+    // ----------------------
 
     @JSHideFromDoc
     public static void setSettings(JSGameSettings settings) {
@@ -375,6 +430,6 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
     @JSHideFromDoc
     @Override
     public String getVarName() {
-        return "JSGlobal";
+        return "Js_Global";
     }
 }

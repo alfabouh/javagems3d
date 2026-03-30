@@ -54,6 +54,6 @@ public class JSTransformationManager implements JSGlobalVarFactory<JSTransformat
     @JSHideFromDoc
     @Override
     public String getVarName() {
-        return "JSTransformationManager";
+        return "Js_TransformationManager";
     }
 }

@@ -57,7 +57,7 @@ public class JSUIDrawer {
 
     @JSCodingFunctionOrMethod(description = "Switch active UI panel by its id.", paramNames = {"panelId"})
     public void setPanel(String panelId) {
-        this.getJavaUI().setPanel(JavaToJsAPI.uiContainer.getPanelUIMap().get(panelId));
+        this.getJavaUI().setUiPanel(JavaToJsAPI.uiContainer.getPanelUIMap().get(panelId));
     }
 
     @JSCodingFunctionOrMethod(description = "Remove current UI panel.")

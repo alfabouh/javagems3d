@@ -32,7 +32,7 @@ public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
 
     public void goBack(JGemsUI ui) {
         if (ui != null) {
-            ui.setPanel(this.prevPanel);
+            ui.setUiPanel(this.prevPanel);
         } else {
             Log.get().warn("Couldn't go back to NULL UI panel");
         }

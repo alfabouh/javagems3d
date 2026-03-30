@@ -109,6 +109,6 @@ public class JSRenderHelperClass implements JSGlobalVarFactory<JSRenderHelperCla
     @JSHideFromDoc
     @Override
     public String getVarName() {
-        return "JSRenderHelper";
+        return "Js_RenderHelper";
     }
 }

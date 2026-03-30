@@ -18,7 +18,7 @@ public class JSScreen {
     public JSScreen(JGemsScreen screen) {
         this.screen = screen;
         this.timerPool = new JSTimerPool(screen.getTimerPool());
-        this.jsScene = new JSScene(screen.getScene());
+        this.jsScene = new JSScene(screen);
     }
 
     @JSCodingFunctionOrMethod(description = "Switches between screen modes.")

@@ -57,6 +57,6 @@ public class JSMeshHelper implements JSGlobalVarFactory<JSMeshHelper> {
     @JSHideFromDoc
     @Override
     public String getVarName() {
-        return "MeshHelper";
+        return "Js_MeshHelper";
     }
 }

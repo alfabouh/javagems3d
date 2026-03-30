@@ -227,6 +227,6 @@ public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaul
     @JSHideFromDoc
     @Override
     public String getVarName() {
-        return "JSDefaultResources";
+        return "Js_DefaultResources";
     }
 }
