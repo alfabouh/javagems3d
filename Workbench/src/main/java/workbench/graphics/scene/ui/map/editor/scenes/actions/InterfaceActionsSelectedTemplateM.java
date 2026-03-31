@@ -50,7 +50,7 @@ public class InterfaceActionsSelectedTemplateM {
         this.setPreviewDistance(5.0f);
     }
 
-    public void spawnInWorld(WBenchObject wBenchObject, @Nullable Vector3f pos) {
+    public void spawnInWorld(WBenchObject<?> wBenchObject, @Nullable Vector3f pos) {
         CullingAABB cullingAABB = wBenchObject.getCullingData();
         if (cullingAABB != null) {
             if (pos != null) {
@@ -118,7 +118,7 @@ public class InterfaceActionsSelectedTemplateM {
                     float[] coordinates = new float[]{0.0f, 0.0f, 0.0f};
                     ImGui.inputFloat3("##coords", coordinates);
                     if (ImGui.button("Confirm")) {
-                        WBenchObject wBenchObject = selected.createObject(this.mapEditorInterface.getWorld(), null);
+                        WBenchObject<?> wBenchObject = selected.createObject(this.mapEditorInterface.getWorld(), null);
                         this.spawnInWorld(wBenchObject, new Vector3f(coordinates));
                     }
                     ImGui.sameLine();

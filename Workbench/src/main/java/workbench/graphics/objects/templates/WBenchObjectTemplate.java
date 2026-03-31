@@ -27,7 +27,7 @@ public class WBenchObjectTemplate extends WBenchTemplate {
         this.modelDef = "NULL";
     }
 
-    public WBenchObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer overridedTagsContainer) {
+    public WBenchObject<?> createObject(@NotNull WBenchWorld world, @Nullable TagsContainer overridedTagsContainer) {
         return new WBenchCommonObject(world, this, overridedTagsContainer);
     }
 

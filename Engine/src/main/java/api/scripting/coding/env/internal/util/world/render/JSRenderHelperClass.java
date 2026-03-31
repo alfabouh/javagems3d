@@ -7,6 +7,7 @@ import api.scripting.coding.env.internal.util.resources.instances.models.JSModel
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure3D;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode3D;
 import api.scripting.coding.env.internal.util.resources.instances.shaders.JSShader;
+import api.scripting.coding.env.internal.util.world.render.table.properties.JSRenderProperties;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.help.JGemsHelper;
@@ -80,9 +81,9 @@ public class JSRenderHelperClass implements JSGlobalVarFactory<JSRenderHelperCla
         return JGemsHelper.render().getTexturingCodeForShader(material.getJavaMaterial());
     }
 
-    @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "shaderManager", "material"})
-    public void performDefaultModelMaterialOnShader(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager, @NotNull JSMaterial material) {
-        JGemsHelper.render().performDefaultModelMaterialOnShader(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager(), material.getJavaMaterial());
+    @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "shaderManager", "material", "discardAlphaLevel"})
+    public void performDefaultModelMaterialOnShader(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager, @NotNull JSMaterial material, float discardAlphaLevel) {
+        JGemsHelper.render().performDefaultModelMaterialOnShader(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager(), material.getJavaMaterial(), discardAlphaLevel);
     }
 
     @JSCodingFunctionOrMethod(description = "Prepares empty animations info for shader.", paramNames = {"shaderManager"})

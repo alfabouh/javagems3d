@@ -1,5 +1,7 @@
 package javagems3d.system.external.gaming.def.world;
 
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.external.gaming.def.IAsset;
@@ -9,11 +11,13 @@ public abstract class GameResourceWorldObjectAsset implements IAsset {
     private String modelAssetRelativePath;
     private TagsContainer tagsContainer;
     private TranslationConstraints axisConstraints;
+    private RenderProperties renderProperties;
 
-    public GameResourceWorldObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, TranslationConstraints axisConstraints) {
+    public GameResourceWorldObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, RenderProperties renderProperties, TranslationConstraints axisConstraints) {
         this.ID = ID;
         this.modelAssetRelativePath = modelAssetRelativePath;
         this.tagsContainer = tagsContainer;
+        this.renderProperties = renderProperties;
         this.axisConstraints = axisConstraints;
     }
 
@@ -45,6 +49,15 @@ public abstract class GameResourceWorldObjectAsset implements IAsset {
 
     public GameResourceWorldObjectAsset setAxisConstraints(TranslationConstraints axisConstraints) {
         this.axisConstraints = axisConstraints;
+        return this;
+    }
+
+    public RenderProperties getRenderProperties() {
+        return this.renderProperties;
+    }
+
+    public GameResourceWorldObjectAsset setRenderProperties(RenderProperties renderProperties) {
+        this.renderProperties = renderProperties;
         return this;
     }
 

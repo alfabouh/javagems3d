@@ -2,6 +2,7 @@ package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
@@ -9,6 +10,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -46,14 +48,17 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
                 shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
                 shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
                 shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-                this.renderMeshList3D(openGLRenderer, shaderManager, model, this.transparency ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER);
+                this.renderMeshList3D(openGLRenderer, shaderManager, model, this.transparency ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER,
+                        renderedItem.getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
+                        (float) renderedItem.getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
+                        JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT);
             }
         }
     }
 
-    public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
+    public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer, float alpha) {
         for (MeshNode3D<RenderMesh> meshNode3D : model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial());
+            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), alpha);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }
     }

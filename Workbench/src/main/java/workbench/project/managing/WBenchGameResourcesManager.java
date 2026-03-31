@@ -33,7 +33,6 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class WBenchGameResourcesManager {
-
     private final SystemResources systemResources;
     private GameResourceAssetsFolder<GameResourceModelAsset> modelAssetsFolder;
     private GameResourceAssetsFolder<GameResourceTextureAsset> textureAssetsFolder;

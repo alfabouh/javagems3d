@@ -1,14 +1,10 @@
 package javagems3d.graphics.rendering.scene.renderer.debug;
 
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -51,7 +47,7 @@ public class DebugLinesDrawer {
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
     }
 
-    public void render() {
+    public void renderAndClearRequests(@NotNull Consumer<Pair<Vector3f, JGemsShaderManager>> uniformsConsumer) {
         synchronized (DebugLinesDrawer.monitor) {
             Iterator<Request> requestIterator = this.getRequests().iterator();
             while (requestIterator.hasNext()) {
@@ -72,9 +68,7 @@ public class DebugLinesDrawer {
                 MemoryUtil.memFree(request.indexes());
 
                 this.getDrawerShader().beginShading();
-                this.getDrawerShader().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(request.color(), 1.0f)));
-                this.getDrawerShader().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-                this.getDrawerShader().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                uniformsConsumer.accept(new Pair<>(request.color(), this.getDrawerShader()));
                 GL46.glEnableVertexAttribArray(0);
                 GL46.glDrawElements(GL46.GL_LINES, request.indexes.remaining(), GL46.GL_UNSIGNED_INT, 0);
                 GL46.glDisableVertexAttribArray(0);

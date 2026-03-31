@@ -14,6 +14,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
@@ -61,6 +62,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 
@@ -227,7 +229,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.POST, toRenderObjects, this));
         }
 
-        JGemsOpenGLRenderer.DebugLinesDrawer().render();
+        JGemsOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
+            color_shader.second().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(color_shader.first(), 1.0f)));
+            color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+            color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        });
     }
 
     public static void updateTimerSSBO(IScreen screen, ShaderStorageBufferObject shaderStorageBufferObject) {

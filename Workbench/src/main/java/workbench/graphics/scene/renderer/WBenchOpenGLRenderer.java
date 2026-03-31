@@ -6,6 +6,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
@@ -24,6 +25,8 @@ import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -34,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.nodes.*;
@@ -171,7 +175,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         if (this.getWorld().getCamera() == null) {
-            WBenchOpenGLRenderer.DebugLinesDrawer().render();
+            WBenchOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
+                color_shader.second().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(color_shader.first(), 1.0f)));
+                color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+            });
             OpenGLRenderer.setViewPort(this.getWindowSize());
             uiRenderNode.onRender(frameTicking);
             return;
@@ -202,7 +210,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(gluingRenderNode.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
         gluingRenderNode.getOutColorBuffer().bindFBO();
-        WBenchOpenGLRenderer.DebugLinesDrawer().render();
+        WBenchOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
+            color_shader.second().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(color_shader.first(), 1.0f)));
+            color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+            color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        });
         gluingRenderNode.getOutColorBuffer().unBindFBO();
 
         GL46.glDepthMask(false);
@@ -236,7 +248,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     @Override
     public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
         this.setDefaultNodes();
-        this.getDebugLinesDrawer().setup();
+        //this.getDebugLinesDrawer().setup();
 
         resourceManager.writeResourcesDataCache();
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
@@ -253,7 +265,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     @Override
     public void onClosingProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
         this.destroySceneIndirectRenderBuffer();
-        this.getDebugLinesDrawer().clear();
 
         if (this.getWorld().getEnvironment() != null) {
             this.getWorld().getEnvironment().destroyEnvironment();

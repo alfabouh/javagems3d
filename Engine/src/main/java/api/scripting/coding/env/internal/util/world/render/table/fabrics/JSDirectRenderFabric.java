@@ -39,9 +39,9 @@ public class JSDirectRenderFabric implements JSRenderFabricI {
     }
 
     @JSCodingFunctionOrMethod(description = "Render all meshes of a 3D model at a given layer using the specified shader and renderer", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
-    public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, int layer) {
+    public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
         for (MeshNode3D<RenderMesh> meshNode3D : jsModel.getJavaModel3D().<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(jsRenderer.getJavaRenderer().getWorld().getEnvironment(), jsShader.getJavaShaderManager(), meshNode3D.getMaterial());
+            JGemsHelper.render().performDefaultModelMaterialOnShader(jsRenderer.getJavaRenderer().getWorld().getEnvironment(), jsShader.getJavaShaderManager(), meshNode3D.getMaterial(), discardAlphaLevel);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }
     }

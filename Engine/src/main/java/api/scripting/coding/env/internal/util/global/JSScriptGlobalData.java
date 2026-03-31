@@ -8,14 +8,14 @@ import api.scripting.coding.env.internal.util.controlling.JSControllableItem;
 import api.scripting.coding.env.internal.util.controlling.JSController;
 import api.scripting.coding.env.internal.util.controlling.JSControllerDispatcher;
 import api.scripting.coding.env.internal.util.controlling.bind.JSBindingManager;
+import api.scripting.coding.env.internal.util.lang.JSLang;
+import api.scripting.coding.env.internal.util.lang.JSLocalization;
 import api.scripting.coding.env.internal.util.management.JSPath;
-import api.scripting.coding.env.internal.util.map.JSGameMap;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
 import api.scripting.coding.env.internal.util.resources.instances.textures.JSTexture2D;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
-import api.scripting.coding.env.internal.util.world.physical.player.real.JSPlayer;
 import api.scripting.coding.env.internal.util.world.physical.zones.instances.JSLiquid;
 import api.scripting.coding.env.internal.util.world.render.JSScene;
 import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
@@ -36,19 +36,15 @@ import api.scripting.coding.env.internal.util.world.render.world.instances.inter
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSScenePropI;
 import api.system.scripting.JavaToJsAPI;
-import javagems3d.graphics.camera.ControlledCamera;
-import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.objects.entities.SceneEntity;
+import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.controller.base.IController;
 import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
-import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 @JSCodingClass(
         binding = "JSScriptGlobalData",
@@ -66,6 +62,9 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
     @JSHideFromDoc
     public static JSGameSettings jsGameSettings;
 
+    @JSHideFromDoc
+    public static JSLocalization jsLocalization;
+
     public JSScriptGlobalData() {}
 
     // ----------------------
@@ -75,6 +74,11 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
     @JSCodingFunctionOrMethod(description = "Get absolute path to the game's folder.")
     public JSPath getGameFolderPath() {
         return JSScriptGlobalData.absPath;
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get current game localisation object. Use to read localized strings.")
+    public static JSLocalization getLocalisation() {
+        return JSScriptGlobalData.jsLocalization;
     }
 
     @JSCodingFunctionOrMethod(description = "Get current game settings object. Use to read or modify game parameters.")
@@ -272,6 +276,40 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
     }
 
     // ----------------------
+    // Localization
+    // ----------------------
+
+    @JSCodingFunctionOrMethod(description = "Load language file from path.", paramNames = {"lang", "path"})
+    public void loadLanguage(JSLang lang, JSPath path) throws Exception {
+        JGems3D.get().getLocalisation().readLanguageMap(lang.getRaw(), new JGemsPathSource(path.getJavaPath(), ISource.Source.OUTSIDE_JAR));
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get current language.")
+    public JSLang getCurrentLanguage() {
+        return new JSLang(JGems3D.get().getLocalisation().getCurrentLang());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Set current language.", paramNames = {"lang"})
+    public void setCurrentLanguage(JSLang lang) {
+        JGems3D.get().getLocalisation().setCurrentLang(lang.getRaw());
+    }
+
+    @JSCodingFunctionOrMethod(description = "Format localized string by key.", paramNames = {"key", "args"})
+    public String formatText(String key, Object... args) {
+        return JGems3D.get().getLocalisation().format(key, args);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get language by index.", paramNames = {"id"})
+    public JSLang getLanguage(int id) {
+        return new JSLang(JGems3D.get().getLocalisation().getLangByID(id));
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get total languages count.")
+    public int getLanguagesCount() {
+        return JGems3D.get().getLocalisation().max();
+    }
+
+    // ----------------------
     // Map loading
     // ----------------------
 
@@ -400,6 +438,11 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
     // ----------------------
     // Hidden / internal
     // ----------------------
+
+    @JSHideFromDoc
+    public static void setLocalisation(JSLocalization localisation) {
+        JSScriptGlobalData.jsLocalization = localisation;
+    }
 
     @JSHideFromDoc
     public static void setSettings(JSGameSettings settings) {

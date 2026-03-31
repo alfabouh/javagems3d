@@ -25,7 +25,7 @@ public class DefaultIndirectRenderFabric extends IndirectRenderFabric {
 
     @Override
     public void onFillBufferWithProperties(Pipeline pipeline, IRendered renderedItem, RenderAttributes defaultAttributes, ByteBuffer properties, ArbitraryArguments metaData) {
-        properties.putFloat(defaultAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD));
+        properties.putFloat((float) defaultAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD));
     }
 
     @Override

@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.game;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
@@ -69,7 +70,7 @@ public class GameEditorInterface implements DearUIInterface {
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Game Project")) {
             //TODO
-            if (ImGui.menuItem("Run Game")) {
+            if (ImGui.menuItem("Run Game (WIP)")) {
                 //JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
@@ -94,12 +95,19 @@ public class GameEditorInterface implements DearUIInterface {
             ImGui.endMenu();
         }
         if (ImGui.beginMenu("Build")) {
-            if (ImGui.menuItem("Compile")) {
+            if (ImGui.menuItem("Compile (WIP)")) {
 
             }
             ImGui.endMenu();
         }
         ImGui.endMainMenuBar();
+
+        ImGui.begin("Output",ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        final boolean flagOut = ImGui.isWindowCollapsed();
+        ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
+        ImGui.setWindowPos(sceneWindowOffset, flagOut ? windowSize.y - YOffset : windowSize.y - consoleWindowSizeY);
+        ProjectUIUtils.consoleContent();
+        ImGui.end();
 
         ImGui.begin("Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.MenuBar);
         if (ImGui.isWindowHovered()) {
@@ -115,16 +123,10 @@ public class GameEditorInterface implements DearUIInterface {
         int posX = (int) sceneWindowOffset;
         int posY = (int) YOffset;
         int sizeX = (int) sceneWindowSizeX;
-        int sizeY = (int) (sceneWindowSizeY - YOffset);
+        int sizeY = (int) (flagOut ? (windowSize.y - YOffset * 2) : sceneWindowSizeY - YOffset);
         ImGui.setWindowSize(sizeX, sizeY);
         ImGui.setWindowPos(posX, posY);
         this.getWindowInterfaceComponentG().windowContent();
-        ImGui.end();
-
-        ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
-        ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
-        ImGui.setWindowPos(sceneWindowOffset, windowSize.y - consoleWindowSizeY);
-        ProjectUIUtils.consoleContent();
         ImGui.end();
 
         ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);

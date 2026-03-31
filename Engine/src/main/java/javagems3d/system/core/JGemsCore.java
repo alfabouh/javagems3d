@@ -1,6 +1,7 @@
 package javagems3d.system.core;
 
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
+import api.scripting.coding.env.internal.util.lang.JSLocalization;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.settings.JSPerfTestResult;
 import api.system.JGemsAPI;
@@ -16,9 +17,12 @@ import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.external.mapping.processing.callbacks.IMapActionCallback;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
+import javagems3d.system.resources.localisation.JGemsLocalisation;
+import javagems3d.system.resources.localisation.LocalisationManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
+import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +49,7 @@ public final class JGemsCore implements ICore {
     private final JGemsScreen jGemsScreen;
     private final JGemsPhysics jGemsPhysics;
     private final JGemsResourceManager resourceManager;
+    private final JGemsLocalisation localisation;
 
     private final EngineState engineState;
     private final RequestsFromThreads requestsFromThreads;
@@ -61,6 +66,7 @@ public final class JGemsCore implements ICore {
             JavaToJsAPI.setJSScreen(this.jGemsScreen);
         }
         this.resourceManager = new JGemsResourceManager();
+        this.localisation = new JGemsLocalisation();
 
         this.engineState = new EngineState();
         this.systemThread = null;
@@ -190,12 +196,13 @@ public final class JGemsCore implements ICore {
         this.systemThread = new Thread(() -> {
             try {
                 JGemsAPI.APIAppData().preInit(this);
-                JGems3D.get().getLocalisation().setLanguage(ISource.Source.INSIDE_JAR, JGems3D.get().getGameSettings().language.getCurrentLanguage());
+                this.getLocalisation().readLanguageMap(LocalisationManager.ENGLISH, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.LANG, "english.lang"), ISource.Source.INSIDE_JAR));
                 if (externalGamePath != null) {
                     JGemsAPI.getAPIScriptingCore().initGame(JGemsGaming.getScriptsFolder(new JGemsPath(externalGamePath)));
                     JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
                 }
                 JavaToJsAPI.Js_GAME_initEvents();
+                JSScriptGlobalData.setLocalisation(new JSLocalization(this.getLocalisation()));
                 final JSGameSettings gameSettings = new JSGameSettings(JGems3D.get().getGameSettings());
                 JSScriptGlobalData.setSettings(gameSettings);
                 JavaToJsAPI.Js_GAME_settingsInitEvent__EVENT(gameSettings);
@@ -295,6 +302,10 @@ public final class JGemsCore implements ICore {
 
     public JGemsResourceManager getResourceManager() {
         return this.resourceManager;
+    }
+
+    public JGemsLocalisation getLocalisation() {
+        return this.localisation;
     }
 
     public Thread getSystemThread() {

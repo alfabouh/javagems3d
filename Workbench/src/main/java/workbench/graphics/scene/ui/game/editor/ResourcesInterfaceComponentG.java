@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.game.editor;
 
+import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import api.system.JGemsAPI;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -70,7 +71,7 @@ public class ResourcesInterfaceComponentG {
                 }},
                 (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourcePropObjectAsset gameResourcePropObjectAsset = new GameResourcePropObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    final GameResourcePropObjectAsset gameResourcePropObjectAsset = new GameResourcePropObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new WBenchRenderProperties(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
                     e.first().putObjectThere(gameResourcePropObjectAsset);
                     return gameResourcePropObjectAsset;
                 },
@@ -102,7 +103,7 @@ public class ResourcesInterfaceComponentG {
                 }},
                 (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
                 (e) -> {
-                    final GameResourceEntityObjectAsset gameResourceEntityObjectAsset = new GameResourceEntityObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
+                    final GameResourceEntityObjectAsset gameResourceEntityObjectAsset = new GameResourceEntityObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new WBenchRenderProperties(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
                     e.first().putObjectThere(gameResourceEntityObjectAsset);
                     return gameResourceEntityObjectAsset;
                 },

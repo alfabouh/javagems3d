@@ -120,6 +120,7 @@ public class WBenchGameProjectManager {
     private void initLocalGameResources() {
         LoadingInterfaceSwing.invoke();
         this.wBenchGameResourcesManager = new WBenchGameResourcesManager(WBench.get().getResourceManager().getLocalGameEditorResources());
+        ((WBenchOpenGLRenderer) (WBench.get().getScreen().getScene().getSceneRenderer())).getDebugLinesDrawer().setup();
         this.refreshModelFiles(false);
         this.refreshTextureFiles(false);
         this.refreshMaps(false);
@@ -133,6 +134,7 @@ public class WBenchGameProjectManager {
 
     private void destroyLocalGameResources() {
         WBench.get().getResourceManager().destroyLocalGameEditorResources();
+        ((WBenchOpenGLRenderer) (WBench.get().getScreen().getScene().getSceneRenderer())).getDebugLinesDrawer().clear();
     }
 
     public boolean openGameProject(JGemsPath path) {

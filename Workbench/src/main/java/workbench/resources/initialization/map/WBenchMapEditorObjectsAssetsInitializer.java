@@ -11,6 +11,7 @@ import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -41,10 +42,14 @@ import java.util.function.BiFunction;
 
 public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializer {
     private WBenchObjectTemplate createMapObjectTemplateFromGameSource(String prefix, String path, GameResourceWorldObjectAsset gameResourceWorldObjectAsset) {
+        final boolean validProps = gameResourceWorldObjectAsset.getRenderProperties() != null;
         final WBenchObject.ID ID = new WBenchObject.ID(prefix + gameResourceWorldObjectAsset.getID(), path);
         final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceWorldObjectAsset.getModelAssetRelativePath());
         final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
-        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), WBenchRenderProperties.getDefault());
+        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), new WBenchRenderProperties()
+                .setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER) || gameResourceWorldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER))
+                .setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER)) ? 1.0f : gameResourceWorldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD))
+        );
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
         final TranslationConstraints translationConstraints = gameResourceWorldObjectAsset.getAxisConstraints();
         return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(gameResourceWorldObjectAsset.getModelAssetRelativePath());

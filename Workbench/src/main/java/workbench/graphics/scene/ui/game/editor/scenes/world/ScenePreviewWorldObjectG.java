@@ -1,12 +1,17 @@
 package workbench.graphics.scene.ui.game.editor.scenes.world;
 
+import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.type.ImFloat;
 import imgui.type.ImInt;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
@@ -74,10 +79,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 if (ImGui.combo("Position", selectInt, constraintsPosS)) {
                     if (selectInt.get() > 0) {
                         worldObjectAsset.setAxisConstraints(
-                                new TranslationConstraints(
-                                        constraintsPos.get(selectInt.get()).second(),
-                                        worldObjectAsset.getAxisConstraints().rotationConstraints(),
-                                        worldObjectAsset.getAxisConstraints().scalingConstraints())
+                                new TranslationConstraints(constraintsPos.get(selectInt.get()).second(), worldObjectAsset.getAxisConstraints().rotationConstraints(), worldObjectAsset.getAxisConstraints().scalingConstraints())
                         );
                     }
                 }
@@ -115,7 +117,6 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     if (ImGui.combo("+ Tags", imInt, listForTagCombo)) {
                         worldObjectAsset.getTagsContainer().copyTagsFrom(allTagsAsset.get(imInt.get()).second().getTagContainer());
                     }
-                    ImGui.text("Tags Included:");
                     if (worldObjectAsset.getTagsContainer().tags().isEmpty()) {
                         ImGui.text("<Empty>!");
                     } else {
@@ -138,7 +139,80 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                         ImGui.endChild();
                     }
                 }
-
+                {
+                    ImGui.spacing();
+                    ImGui.bulletText("Rendering");
+                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 150, true);
+                    if (worldObjectAsset.getRenderProperties() == null) {
+                        worldObjectAsset.setRenderProperties(new WBenchRenderProperties());
+                        Log.get().debug("Null renderProp. Created");
+                    }
+                    ImGui.indent();
+                    {
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0xff982cff);
+                        ImGui.bulletText("Properties");
+                        ImGui.popStyleColor();
+                        if (worldObjectAsset.getRenderProperties().propertiesMap == null || worldObjectAsset.getRenderProperties().propertiesMap.isEmpty()) {
+                            ImGui.text("<Error: Empty>!");
+                        } else {
+                            if (worldObjectAsset.getRenderProperties().propertiesMap.containsKey(JGemsRenderProperties.KEY_RENDER_DISTANCE)) {
+                                float[] f1 = new float[]{(float) worldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE)};
+                                ImGui.text(JGemsRenderProperties.KEY_RENDER_DISTANCE);
+                                ImGui.sameLine();
+                                ImGui.setNextItemWidth(80);
+                                ImGui.dragFloat("##" + JGemsRenderProperties.KEY_RENDER_DISTANCE, f1, 0.5f, -1.0f, 1024.0f);
+                                worldObjectAsset.getRenderProperties().setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, f1[0]);
+                            }
+                            if (worldObjectAsset.getRenderProperties().propertiesMap.containsKey(JGemsRenderProperties.KEY_ALPHA_DISCARD)) {
+                                float[] f1 = new float[]{(float) worldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD)};
+                                ImGui.text(JGemsRenderProperties.KEY_ALPHA_DISCARD);
+                                ImGui.sameLine();
+                                ImGui.setNextItemWidth(80);
+                                ImGui.dragFloat("##" + JGemsRenderProperties.KEY_ALPHA_DISCARD, f1, 0.0001f, 0.0f, 1.0f);
+                                worldObjectAsset.getRenderProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, f1[0]);
+                            }
+                            if (worldObjectAsset.getRenderProperties().propertiesMap.containsKey(JGemsRenderProperties.KEY_SHADOW_CASTER)) {
+                                boolean res = worldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER);
+                                ImGui.text(JGemsRenderProperties.KEY_SHADOW_CASTER);
+                                ImGui.sameLine();
+                                if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_SHADOW_CASTER, res)) {
+                                    worldObjectAsset.getRenderProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !res);
+                                }
+                            }
+                            if (worldObjectAsset.getRenderProperties().propertiesMap.containsKey(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION)) {
+                                boolean res = worldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION);
+                                ImGui.text(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION);
+                                ImGui.sameLine();
+                                if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, res)) {
+                                    worldObjectAsset.getRenderProperties().setValueBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, !res);
+                                }
+                            }
+                        }
+                    }
+                    {
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0xff982cff);
+                        ImGui.bulletText("Culling");
+                        ImGui.popStyleColor();
+                        {
+                            boolean res = worldObjectAsset.getRenderProperties().getCullingRules().isIgnoreDistanceCulling();
+                            ImGui.text("Ignore Distance Culling");
+                            ImGui.sameLine();
+                            if (ImGui.checkbox("## Ignore Distance Culling", res)) {
+                                worldObjectAsset.getRenderProperties().getCullingRules().setIgnoreDistanceCulling(!res);
+                            }
+                        }
+                        {
+                            boolean res = worldObjectAsset.getRenderProperties().getCullingRules().isIgnoreFrustumCulling();
+                            ImGui.text("Ignore Frustum Culling");
+                            ImGui.sameLine();
+                            if (ImGui.checkbox("## Ignore Frustum Culling", res)) {
+                                worldObjectAsset.getRenderProperties().getCullingRules().setIgnoreFrustumCulling(!res);
+                            }
+                        }
+                    }
+                    ImGui.unindent();
+                    ImGui.endChild();
+                }
                 ImGui.spacing();
                 if (ImGui.button("Save")) {
                     WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);

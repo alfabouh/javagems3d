@@ -6,21 +6,22 @@ import api.scripting.coding.env.def.JSCodingField;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.internal.util.world.render.processing.JSCullingRules;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(binding = "JSRenderProperties", description = "Wrapper for JGemsRenderProperties, providing JS access to render properties.")
 public class JSRenderProperties {
 
     @JSCodingField(description = "Underlying JGemsRenderProperties object")
-    private final JGemsRenderProperties properties;
+    private final RenderProperties properties;
 
     @JSCodingConstructor(description = "Wraps an existing JGemsRenderProperties object", paramNames = {"properties"})
-    public JSRenderProperties(@NotNull JGemsRenderProperties properties) {
+    public JSRenderProperties(@NotNull RenderProperties properties) {
         this.properties = properties;
     }
 
     @JSCodingFunctionOrMethod(description = "Returns the underlying Java JGemsRenderProperties object", paramNames = {})
-    public @NotNull JGemsRenderProperties getJavaProperties() {
+    public @NotNull RenderProperties getJavaProperties() {
         return this.properties;
     }
 
@@ -44,7 +45,7 @@ public class JSRenderProperties {
 
     @JSCodingFunctionOrMethod(description = "Get a float property by key", paramNames = {"key"})
     public float getFloat(@NotNull String key) {
-        return this.properties.getFloat(key);
+        return (float) this.properties.getFloat(key);
     }
 
     @JSCodingFunctionOrMethod(description = "Get a boolean property by key", paramNames = {"key"})

@@ -84,6 +84,8 @@ public class JGemsScreen implements IScreen {
             }
             this.adjustVSync();
             GL.createCapabilities();
+            GL46.glEnable(GL46.GL_LINE_SMOOTH);
+            GL46.glHint(GL46.GL_LINE_SMOOTH_HINT, GL46.GL_NICEST);
             String validate = OpenGLSysUtils.validateOGLFunctions();
             if (validate != null) {
                 throw new JGemsRuntimeException(validate);

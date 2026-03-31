@@ -61,10 +61,15 @@ public class ModelPreviewEditorWindow {
         GL46.glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         OpenGLRenderer.setViewPort(new Vector2i(1024, 1024));
-        if (cullingAABB != null && this.actionsInterfaceComponentG.getScenePreviewModelG().isShowAABB()) {
-            WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-        }
         this.renderPreviewModel(model, projection, view, WBenchResourceManager.localShaderAssets.preview, modelAsset);
+        if (cullingAABB != null && this.actionsInterfaceComponentG.getScenePreviewModelG().isShowAABB()) {
+            WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            WBenchOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
+                color_shader.second().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(color_shader.first(), 1.0f)));
+                color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), projection);
+                color_shader.second().performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), view);
+            });
+        }
         if (this.actionsInterfaceComponentG.getScenePreviewModelG().isShowChessTerrain()) {
             this.CHESS_TERRAIN(model, projection, view, fboTexture2DProgram);
         }

@@ -6,6 +6,7 @@ import com.zaxxer.nuprocess.NuProcessBuilder;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -23,7 +24,6 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNotFoundException;
@@ -56,7 +56,6 @@ public final class JGems3D {
 
     private JGemsCore core;
     private final JGemsSettings jGemsSettings;
-    private final JGemsLocalisation jGemsLocalisation;
 
     private boolean shouldBeClosed;
 
@@ -79,7 +78,6 @@ public final class JGems3D {
         JGems3D.random = new Random(JGems3D.rngSeed);
 
         this.jGemsSettings = new JGemsSettings(new File(JGems3D.getGameFilesFolder().toFile(), "jgems_settings.txt"));
-        this.jGemsLocalisation = new JGemsLocalisation();
         this.shouldBeClosed = false;
     }
 
@@ -286,8 +284,8 @@ public final class JGems3D {
     }
 
     public JGemsLocalisation getLocalisation() {
-        synchronized (this.jGemsLocalisation) {
-            return this.jGemsLocalisation;
+        synchronized (this.getCore().getLocalisation()) {
+            return this.core.getLocalisation();
         }
     }
 

@@ -20,6 +20,9 @@ import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -31,7 +34,6 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
@@ -45,6 +47,7 @@ import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.JGemsCore;
+import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
@@ -59,7 +62,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
-import javagems3d.system.resources.localisation.Lang;
+import javagems3d.system.resources.localisation.LocalisationManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -422,12 +425,20 @@ public final class JGemsHelper {
             return JGems3D.get().getLocalisation();
         }
 
-        public Lang createLocalisation(@NotNull JGemsPathSource path, String langName) {
-            return JGemsLocalisation.createLocalisation(path, langName);
+        public void readLanguageMap(LocalisationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
+            this.getLocalisation().readLanguageMap(lang, path);
         }
 
-        public void setLangLocalisationPath(@NotNull JGemsPathSource path, Lang lang) {
-            JGemsLocalisation.setLangLocalisationPath(path, lang);
+        public LocalisationManager.Lang getCurrentLanguage() {
+            return this.getLocalisation().getCurrentLang();
+        }
+
+        public void setCurrentLanguage(LocalisationManager.Lang lang) {
+            this.getLocalisation().setCurrentLang(lang);
+        }
+
+        public String format(String key, Object... args) {
+            return this.getLocalisation().format(key, args);
         }
     }
 
@@ -504,7 +515,7 @@ public final class JGemsHelper {
             return code;
         }
 
-        public void performDefaultModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material) {
+        public void performDefaultModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material, float discardAlphaLevel) {
             if (material == null) {
                 return;
             }
@@ -541,6 +552,7 @@ public final class JGemsHelper {
                 }
             }
 
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD), UniformFunctions.FLOAT(1.0f));
             shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), diffuseColor);
             shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_COLOR), emissionColor);
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.METALLIC_FACTOR), UniformFunctions.FLOAT(metallicFactor));
@@ -632,7 +644,6 @@ public final class JGemsHelper {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
             JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
             JGems3D.get().getScreen().refreshSceneResources();
-            JGems3D.get().getLocalisation().setLanguage(ISource.Source.INSIDE_JAR, JGemsHelper.this.getGameSettings().language.getCurrentLanguage());
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();
         }
@@ -742,7 +753,7 @@ public final class JGemsHelper {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogTitle("Choose folder");
-            int returnValue = chooser.showOpenDialog(null);
+            int returnValue = chooser.showDialog(null, "Choose");
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFolder = chooser.getSelectedFile();
                 return selectedFolder.getAbsolutePath();

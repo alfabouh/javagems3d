@@ -87,7 +87,7 @@ public final class GLTF2Material {
 
     public GLTF2Material setMetallicRoughnessTexture(GLTF2ImageTexture metallicRoughnessTexture) {
         this.metallicRoughnessTexture = metallicRoughnessTexture;
-        this.matFlags |= GLTF2Material.EMISSION_TEXTURE;
+        this.matFlags |= GLTF2Material.METALLIC_ROUGHNESS_TEXTURE;
         return this;
     }
 

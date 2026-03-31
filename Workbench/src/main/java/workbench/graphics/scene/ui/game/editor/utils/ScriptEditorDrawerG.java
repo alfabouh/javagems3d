@@ -406,7 +406,7 @@ public class ScriptEditorDrawerG {
                     }
                     if (ImGui.button("Export .txt")) {
                         String path = JGemsHelper.files().openFolderViewChooser("");
-                        if (path != null) {
+                        if (path != null && !path.isEmpty()) {
                             if (new File(path).exists()) {
                                 File f = new File(path, "jgems_aiPrompt.txt");
                                 try (java.io.FileWriter writer = new java.io.FileWriter(f)) {
@@ -619,6 +619,7 @@ public class ScriptEditorDrawerG {
             final Set<String> allTypes = new HashSet<>(this.apiCodeEnvironmentController.getArgumentsMap().keySet());
             allTypes.add("java.lang.Enum");
             allTypes.add("java.lang.Record");
+            allTypes.add("java.lang.Object");
             allTypes.addAll(this.apiCodeEnvironmentController.getFields());
 
             {
@@ -640,7 +641,10 @@ public class ScriptEditorDrawerG {
             //style.put("\\b(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield)\\b", TextEditorPaletteIndex.Keyword);
             style.put("0[xX][0-9a-fA-F]+|[+-]?([0-9]*[.])?[0-9]+([eE][-+]?[0-9]+)?", TextEditorPaletteIndex.Number);
             {
-                String exclude = String.join("|", allTypes);
+                String exclude = String.join("|", new HashSet<String>() {{
+                    addAll(allTypes);
+                    addAll(identifiers.keySet());
+                }});
                 String identifierRegex = "\\b(?!(" + exclude + ")\\b)[_a-zA-Z][_a-zA-Z0-9]*\\b";
                 style.put(identifierRegex, TextEditorPaletteIndex.Identifier);
             }

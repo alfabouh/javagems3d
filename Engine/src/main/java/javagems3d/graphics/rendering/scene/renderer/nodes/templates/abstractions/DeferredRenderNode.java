@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstraction
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -20,6 +21,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -131,7 +133,11 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(IRenderWorld renderWorld) {
         return (pair) -> {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
+                    pair.second().getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
+                            (float) pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
+                            JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT
+            );
         };
     }
 

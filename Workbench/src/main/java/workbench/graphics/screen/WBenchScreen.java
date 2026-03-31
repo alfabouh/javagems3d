@@ -54,6 +54,8 @@ public class WBenchScreen implements IScreen {
             JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), WBenchConstants.FOV, WBenchConstants.Z_NEAR, WBenchConstants.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
             GL.createCapabilities();
+            GL46.glEnable(GL46.GL_LINE_SMOOTH);
+            GL46.glHint(GL46.GL_LINE_SMOOTH_HINT, GL46.GL_NICEST);
             String validate = OpenGLSysUtils.validateOGLFunctions();
             if (validate != null) {
                 throw new JGemsRuntimeException(validate);

@@ -7,6 +7,7 @@ import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -21,6 +22,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -83,7 +85,11 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
             final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
-            JGemsHelper.render().performDefaultModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performDefaultModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
+                    pair.second().getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
+                            (float) pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
+                            JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT
+            );
         };
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.BACKGROUND, this.getOpenGLRenderer());

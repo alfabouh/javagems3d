@@ -57,7 +57,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
                 return false;
             }
             RenderAttributes renderAttributes = sceneObject.getRenderAttributes();
-            float distance = renderAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE);
+            float distance = (float) renderAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE);
             return distance < 0.0f || position.distance(camera.getCamPosition()) < distance;
         }
         return true;

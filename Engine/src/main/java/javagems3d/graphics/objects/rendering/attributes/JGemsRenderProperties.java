@@ -11,24 +11,17 @@ public class JGemsRenderProperties extends RenderProperties {
 
     public JGemsRenderProperties() {
         super(CullingRules.get());
+        this.setDefaults();
     }
 
     public static JGemsRenderProperties getDefault() {
         return new JGemsRenderProperties();
     }
 
-    @Override
     protected void setDefaults() {
         this.setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, -1.0f);
-        this.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 1.0f);
+        this.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.0f);
         this.setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, true);
         this.setValueBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, true);
-    }
-
-    @Override
-    public JGemsRenderProperties copy() {
-        JGemsRenderProperties renderProperties = new JGemsRenderProperties();
-        renderProperties.setPropertiesMap(this.copyPropertiesMap());
-        return renderProperties;
     }
 }
