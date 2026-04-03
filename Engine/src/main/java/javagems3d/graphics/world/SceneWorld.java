@@ -61,7 +61,7 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
-        EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.START, this));
+        //EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.START, this));
         JGemsConfig.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
@@ -72,7 +72,7 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
+        //if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             //JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
             //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             Iterator<Pair<WorldItem, ILightAttachable>> iterator = this.lightAttachmentQueue.iterator();
@@ -82,14 +82,14 @@ public final class SceneWorld implements IRenderWorld {
                 iterator.remove();
             }
             this.ticks += 1;
-            EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.POST, this));
-        }
+            //EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.POST, this));
+        //}
     }
 
     //section WorldEnd
     @Override
     public void onWorldEnd() {
-        EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.END, this));
+        //EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.END, this));
         if (this.getParticlesEmitter() != null) {
             this.getParticlesEmitter().destroy(this);
         }

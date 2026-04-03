@@ -16,7 +16,7 @@ public interface IModeled extends IAnimated {
             return null;
         }
         Pose3D pose3D = this.getModel().getPose();
-        if (this.hasAnimationData()) {
+        if (this.isAnimated()) {
             return this.getModel().getMeshStructure().getMeshAABBDataForAnimation(this.getAnimationData().getCurrentAnimation()).getNormalizedAABB(pose3D);
         }
         MeshBoundingBoxData meshBoundingBoxData = this.getModel().getMeshStructure().getMeshAABBData();

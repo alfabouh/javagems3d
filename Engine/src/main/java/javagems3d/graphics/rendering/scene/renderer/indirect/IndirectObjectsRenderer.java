@@ -78,9 +78,9 @@ public abstract class IndirectObjectsRenderer {
             }
             this.passMatricesInBuffer(this.getPipeline(), sceneObject, modelMatrices);
 
-            int animToPass = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getCurrentAnimationFrame().getOffset() : -1;
-            int animToPassPrev = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getPreviousAnimationFrame().getOffset() : -1;
-            double animationFrameDelta = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getAnimationFrameDelta() : -1.0f;
+            int animToPass = sceneObject.isAnimated() ? sceneObject.getAnimationData().getCurrentAnimationFrame().getOffset() : -1;
+            int animToPassPrev = sceneObject.isAnimated() ? sceneObject.getAnimationData().getPreviousAnimationFrame().getOffset() : -1;
+            double animationFrameDelta = sceneObject.isAnimated() ? sceneObject.getAnimationData().getAnimationFrameDelta() : -1.0f;
             animationMatricesOffsets.put(animToPass);
             animationMatricesOffsetsPrev.put(animToPassPrev);
             deltaFrames.put((float) animationFrameDelta);

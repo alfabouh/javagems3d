@@ -3,12 +3,16 @@ package api.events;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
+import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
+import javagems3d.system.controller.base.IController;
 import javagems3d.system.resources.managing.ResourceManager;
 
 import java.util.Set;
@@ -138,6 +142,12 @@ public abstract class EventBus {
         }
     }
 
+    public record ReloadResourcesEvent(ResourceManager resourceManager) implements IEvent {
+    }
+
+
+    // NEW
+
     public static class CollisionTriggered extends Cancellable implements IEvent {
         public final IHasCollisionTrigger object;
         public final ITriggerAction triggerAction;
@@ -148,6 +158,25 @@ public abstract class EventBus {
         }
     }
 
-    public record ReloadResourcesEvent(ResourceManager resourceManager) implements IEvent {
+    public static class RenderUIEvent extends Cancellable implements IEvent {
+        public final JGemsUI jGemsUI;
+        public final FrameTicking frameTicking;
+
+        public RenderUIEvent(JGemsUI jGemsUI, FrameTicking frameTicking) {
+            this.jGemsUI = jGemsUI;
+            this.frameTicking = frameTicking;
+        }
+    }
+
+    public static class RenderIMGUIEvent implements IEvent {
+        public final DearUIInterface dearUIInterface;
+        public final IController controller;
+        public final FrameTicking frameTicking;
+
+        public RenderIMGUIEvent(DearUIInterface dearUIInterface, IController controller, FrameTicking frameTicking) {
+            this.dearUIInterface = dearUIInterface;
+            this.controller = controller;
+            this.frameTicking = frameTicking;
+        }
     }
 }

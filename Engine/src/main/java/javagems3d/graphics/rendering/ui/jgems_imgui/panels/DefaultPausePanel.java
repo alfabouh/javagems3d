@@ -40,6 +40,11 @@ public class DefaultPausePanel extends AbstractPanelUI {
                 });
     }
 
+    @Override
+    public String getPanelID() {
+        return "default_pause_panel";
+    }
+
     protected void openGamePanel(JGemsUI ui) {
         ui.setUiPanel(new DefaultGamePanel(null));
     }

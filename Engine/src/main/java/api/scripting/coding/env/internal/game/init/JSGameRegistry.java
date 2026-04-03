@@ -4,6 +4,8 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingField;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
+import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderIMGUIEvent;
+import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderUIEvent;
 import api.scripting.coding.env.internal.game.init.events.resources.JSInitAssetsEvent;
 import api.scripting.coding.env.internal.game.init.events.resources.JSInitShadersEvent;
 import api.scripting.coding.env.internal.game.init.events.settings.JSAfterSettingsPerfTestEvent;
@@ -39,6 +41,12 @@ public class JSGameRegistry {
 
     @JSCodingField(description = "Event triggered after settings performance test is completed.")
     public static final JSAfterSettingsPerfTestEvent AFTER_SETTINGS_PERF_TEST_EVENT = new JSAfterSettingsPerfTestEvent();
+
+    @JSCodingField(description = "...")
+    public static final JSRenderUIEvent UI_RENDER_EVENT = new JSRenderUIEvent();
+
+    @JSCodingField(description = "...")
+    public static final JSRenderIMGUIEvent IMGUI_RENDER_EVENT = new JSRenderIMGUIEvent();
 
     @JSCodingFunctionOrMethod(description = "Subscribe a script function to a specific engine event.", paramNames = {"eventToSubscribe", "jsFunctionName"})
     public void registerEvent(JSEventI eventToSubscribe, String jsFunctionName) {

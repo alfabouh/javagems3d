@@ -48,6 +48,11 @@ public class WBenchMarkerTemplate extends WBenchObjectTemplate {
         return renderAttributes;
     }
 
+    public WBenchMarkerTemplate setModelDef(String modelDef) {
+        this.modelDef = modelDef;
+        return this;
+    }
+
     public boolean isTransparent() {
         return this.transparent;
     }

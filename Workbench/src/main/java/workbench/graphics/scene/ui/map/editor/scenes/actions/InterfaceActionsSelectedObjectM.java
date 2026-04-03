@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.map.editor.scenes.actions;
 
+import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
@@ -13,6 +14,7 @@ import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.external.mapping.tags.items.TagItem;
 import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -20,6 +22,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
+import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.*;
@@ -412,9 +415,25 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Tags");
             ImGui.popStyleColor();
-            ImGui.indent();
-            this.showTags(selectedObject);
-            ImGui.unindent();
+            {
+                ImGui.indent();
+                this.showTags(selectedObject);
+                ImGui.unindent();
+            }
+            ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
+            ImGui.bulletText("Rendering");
+            ImGui.popStyleColor();
+            {
+                ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true);
+                if (selectedObject.getRenderAttributes().getProperties() == null) {
+                    selectedObject.getRenderAttributes().setRenderProperties(new WBenchRenderProperties());
+                    Log.get().debug("Null renderProp. Created");
+                }
+                ImGui.indent();
+                ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties());
+                ImGui.unindent();
+                ImGui.endChild();
+            }
             ImGui.endChild();
             ImGui.popID();
         }

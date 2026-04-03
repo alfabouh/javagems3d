@@ -170,7 +170,8 @@ public final class WBenchMapProjectManager {
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         MapObjectsDataPack mapObjectsDataPack;
         try {
-            mapObjectsDataPack = jsonFileManaging.readFromFile(file, new TypeToken<MapObjectsDataPack>(){}, null);
+            mapObjectsDataPack = jsonFileManaging.readFromFile(file, new TypeToken<>() {
+            }, null);
             final SkyData skyData = mapObjectsDataPack.getSkyData();
             final SunData sunData = mapObjectsDataPack.getSunData();
             final FogData fogData = mapObjectsDataPack.getFogData();
@@ -347,7 +348,7 @@ public final class WBenchMapProjectManager {
 
                         for (Map.Entry<String, Set<RowMapObjectData>> entry : categoryMap.entrySet()) {
                             if (nameId.startsWith(entry.getKey())) {
-                                entry.getValue().add(new RowMapObjectData(wBenchObject.getListID(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                                entry.getValue().add(new RowMapObjectData(wBenchObject.getListID(), wBenchObject.getRenderAttributes().getProperties(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                                 break;
                             }
                         }
@@ -358,7 +359,7 @@ public final class WBenchMapProjectManager {
                         WBenchObject wBenchObject = (WBenchObject) sceneObject;
                         final WBenchObject.ID objectId = wBenchObject.getObjectNameId();
                         final String nameId = objectId.nameId();
-                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getListID(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                        categoryMap.get("backgroundProps").add(new RowMapObjectData(wBenchObject.getListID(), wBenchObject.getRenderAttributes().getProperties(), objectId.nameId(), objectId.objectPath(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                     }
                 }
 

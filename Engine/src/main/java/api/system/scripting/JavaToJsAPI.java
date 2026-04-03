@@ -8,6 +8,7 @@ import api.scripting.coding.env.internal.game.init.events.settings.JSAfterSettin
 import api.scripting.coding.env.internal.game.init.events.settings.JSInitSettingsEvent;
 import api.scripting.coding.env.internal.game.init.events.ui.JSRegisterUiEvent;
 import api.scripting.coding.env.internal.game.init.events.ui.JSUiBehaviourEvent;
+import api.scripting.coding.env.internal.util.events.JSEventCancellableI;
 import api.scripting.coding.env.internal.util.events.JSEventI;
 import api.scripting.coding.env.internal.util.events.JSEventSubscriber;
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
@@ -46,7 +47,7 @@ public class JavaToJsAPI {
     public static final JSEventSubscriber mapEventSubscriber = new JSEventSubscriber();
     public static final UIContainer uiContainer = new UIContainer();
 
-    public static boolean DEBUG_MODE = true;
+    public static boolean DEBUG_MODE = false;
 
     public static void callEvent(@NotNull Target target, @NotNull JSEventI eventI, @NotNull Object... args) {
         JavaToJsAPI.callFunction(target, JavaToJsAPI.gameEventSubscriber.getEventName(eventI), args);
@@ -143,6 +144,23 @@ public class JavaToJsAPI {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    public static boolean Js_GAME_SomeEvent__EVENT(JSEventI eventI) {
+        try {
+            final String eventName = JavaToJsAPI.gameEventSubscriber.getEventName(eventI);
+            if (eventName == null) {
+                Log.get().error("Event is null: " + eventI.name());
+                return false;
+            }
+            JavaToJsAPI.callFunction(Target.Game, eventName, eventI);
+            if (eventI instanceof JSEventCancellableI cancellableI) {
+                return cancellableI.isCancelled();
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+        return false;
     }
 
 

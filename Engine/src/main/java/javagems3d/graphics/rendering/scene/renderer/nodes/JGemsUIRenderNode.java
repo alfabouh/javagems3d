@@ -1,5 +1,13 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderIMGUIEvent;
+import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderUIEvent;
+import api.scripting.coding.env.internal.util.controlling.JSController;
+import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.ui.JSUIDrawer;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IUIRenderNode;
@@ -32,12 +40,14 @@ public final class JGemsUIRenderNode implements IUIRenderNode {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.ui.renderFrame(frameTicking.frameDeltaTime());
+        EventLauncher.pushEvent(new EventBus.RenderUIEvent(this.ui, frameTicking), new JSRenderUIEvent(new JSUIDrawer(this.ui, JSScriptGlobalData.jsScreen), new JSFrameTicking(frameTicking)));
         GL46.glDisable(GL46.GL_BLEND);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
 
         JGemsControllerDispatcher controllerDispatcher = JGemsHelper.controller().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.dearUIRenderer.onRender((MouseKeyboardController) controllerDispatcher.getCurrentController(), this.getAnInterface(), frameTicking);
+            EventLauncher.pushEvent(new EventBus.RenderIMGUIEvent(this.getAnInterface(), controllerDispatcher.getCurrentController(), frameTicking), new JSRenderIMGUIEvent(JSScriptGlobalData.jsScreen, new JSFrameTicking(frameTicking), new JSController(controllerDispatcher.getCurrentController())));
         }
     }
 

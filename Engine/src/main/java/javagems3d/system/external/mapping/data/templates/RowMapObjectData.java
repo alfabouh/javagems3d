@@ -1,6 +1,8 @@
 package javagems3d.system.external.mapping.data.templates;
 
 import com.google.gson.*;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -17,6 +19,7 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
     private String objectId;
     private String objectPath;
     private TagsContainer tagsContainer;
+    private RenderProperties renderProperties;
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scaling;
@@ -24,8 +27,9 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
     private RowMapObjectData() {
     }
 
-    public RowMapObjectData(int id, String objectId, String objectPath, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
+    public RowMapObjectData(int id, RenderProperties renderProperties, String objectId, String objectPath, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
         this.id = id;
+        this.renderProperties = renderProperties;
         this.objectPath = objectPath;
         this.objectId = objectId;
         this.tagsContainer = tagsContainer;
@@ -36,6 +40,10 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
 
     public int getId() {
         return this.id;
+    }
+
+    public RenderProperties getRenderProperties() {
+        return this.renderProperties;
     }
 
     public String getObjectPath() {
@@ -75,6 +83,7 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
                     JsonObject jsonObject = new JsonObject();
 
                     jsonObject.add("id", context.serialize(toWrite.id));
+                    jsonObject.add("renderProperties", context.serialize(toWrite.renderProperties));
                     jsonObject.add("objectPath", context.serialize(toWrite.objectPath));
                     jsonObject.add("objectId", context.serialize(toWrite.objectId));
                     jsonObject.add("position", context.serialize(toWrite.position));
@@ -96,6 +105,8 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
                     RowMapObjectData rowMapObjectData = new RowMapObjectData();
 
                     rowMapObjectData.id = context.deserialize(jsonObject.get("id"), String.class);
+                    Object rProp = context.deserialize(jsonObject.get("renderProperties"), RenderProperties.class);
+                    rowMapObjectData.renderProperties = rProp == null ? new JGemsRenderProperties() : (RenderProperties) rProp;
                     rowMapObjectData.objectPath = context.deserialize(jsonObject.get("objectPath"), String.class);
                     rowMapObjectData.objectId = context.deserialize(jsonObject.get("objectId"), String.class);
                     rowMapObjectData.position = context.deserialize(jsonObject.get("position"), Vector3f.class);

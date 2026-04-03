@@ -14,6 +14,7 @@ import api.application.workbench.resources.data.wbench.properties.WBenchRenderPr
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
@@ -29,7 +30,7 @@ import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.objects.templates.WBenchTemplate;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
@@ -53,6 +54,15 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
         final TranslationConstraints translationConstraints = gameResourceWorldObjectAsset.getAxisConstraints();
         return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(gameResourceWorldObjectAsset.getModelAssetRelativePath());
+    }
+
+    private WBenchMarkerTemplate createMapMarkerTemplateFromGameSource(String prefix, String path, GameResourceMarkerObjectAsset gameResourceMarkerObjectAsset) {
+        final WBenchObject.ID ID = new WBenchObject.ID(prefix + gameResourceMarkerObjectAsset.getID(), path);
+        final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceMarkerObjectAsset.getModelAssetRelativePath());
+        final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
+        final TagsContainer tagsContainer = gameResourceMarkerObjectAsset.getTagsContainer();
+        final TranslationConstraints translationConstraints = gameResourceMarkerObjectAsset.getAxisConstraints();
+        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, gameResourceMarkerObjectAsset.getColor(), gameResourceMarkerObjectAsset.isTransparent()).setModelDef(gameResourceMarkerObjectAsset.getModelAssetRelativePath());
     }
 
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp) {
@@ -79,7 +89,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent());
     }
 
-    private <T extends AbstractObjectsFolder.ObjectWithName, E extends WBenchTemplate> void copyPlusConvertFolder(AbstractObjectsFolder<T> from, MapObjectTemplatesFolder<E> to, BiFunction<String, T, E> convert) {
+    private <T extends VirtualObjectsFolder.ObjectWithName, E extends WBenchTemplate> void copyPlusConvertFolder(VirtualObjectsFolder<T> from, MapObjectTemplatesFolder<E> to, BiFunction<String, T, E> convert) {
         for (T obj : from.getObjectsThere()) {
             if (to.getObjectsThereMap().containsKey(obj.name())) {
                 Log.get().error("MapObjectTemplatesFolder folder " + to.getHierarchy() + " already contains object " + obj.name());
@@ -89,7 +99,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         }
 
         MapObjectTemplatesFolder<E> newFolderPut = null;
-        for (AbstractObjectsFolder<T> folderInside : from.getFoldersThere()) {
+        for (VirtualObjectsFolder<T> folderInside : from.getFoldersThere()) {
             final String folderName = folderInside.getName();
             if (to.getFoldersThereMap().containsKey(folderName)) {
                 Log.get().warn("MapObjectTemplatesFolder folder " + to.getHierarchy() + " already contains folder " + folderInside.getHierarchy());
@@ -106,6 +116,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final APIWBenchDataManager api = WBench.APIEditorResources().getEditorResourcesManager();
         final GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder = WBench.get().getGameProjectManager().getGameResourcesManager().getPropAssetsFolder();
         final GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder = WBench.get().getGameProjectManager().getGameResourcesManager().getEntityAssetsFolder();
+        final GameResourceAssetsFolder<GameResourceMarkerObjectAsset> markerAssetsFolder = WBench.get().getGameProjectManager().getGameResourcesManager().getMarkerAssetsFolder();
         final ApiResourceObjectsFolder<?, ?, ApiResourceEntity> apiEntities = api.getEntities();
         final ApiResourceObjectsFolder<?, ?, ApiResourceProp> apiProps = api.getProps();
         final ApiResourceObjectsFolder<?, ?, ApiResourceMarker> apiMarkers = api.getMarkers();
@@ -113,6 +124,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         {
             this.copyPlusConvertFolder(propAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.PROP, path, e));
             this.copyPlusConvertFolder(entityAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.ENTITY, path, e));
+            this.copyPlusConvertFolder(markerAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), (path, e) -> this.createMapMarkerTemplateFromGameSource(MapObjectsIdentifiers.MARKER, path, e));
         }
         {
             this.copyPlusConvertFolder(apiProps, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e));

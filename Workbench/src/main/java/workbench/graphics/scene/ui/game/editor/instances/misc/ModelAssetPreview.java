@@ -47,7 +47,7 @@ public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject
     }
 
     public void updateAnimation() {
-        if (!this.hasAnimationData()) {
+        if (!this.isAnimated()) {
             return;
         }
         double fps = this.getAnimationData().getCurrentAnimation().fps();
@@ -86,7 +86,7 @@ public final class ModelAssetPreview implements IAnimated, IPreviewWrapperObject
     }
 
     public void nextAnimationFrame() {
-        if (this.hasAnimationData()) {
+        if (this.isAnimated()) {
             this.getAnimationData().nextFrame();
         }
     }

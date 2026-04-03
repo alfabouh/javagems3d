@@ -1,5 +1,6 @@
 package api.scripting.coding.env.internal.util.ui;
 
+import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -12,6 +13,13 @@ public class JSUIPanelWrapper implements PanelUI {
     private @Nullable Runnable onDestruct;
     private @Nullable Runnable drawPanel;
     private @Nullable Runnable onWindowResize;
+    @JSHideFromDoc
+    private String panelId;
+
+    @JSHideFromDoc
+    public JSUIPanelWrapper(String panelId) {
+        this.panelId = panelId;
+    }
 
     public JSUIPanelWrapper setOnConstruct(@Nullable Runnable onConstruct) {
         this.onConstruct = onConstruct;
@@ -52,6 +60,12 @@ public class JSUIPanelWrapper implements PanelUI {
         if (this.drawPanel != null) {
             this.drawPanel.run();
         }
+    }
+
+    @JSCodingFunctionOrMethod(description = "Panel ID")
+    @Override
+    public String getPanelID() {
+        return this.panelId;
     }
 
     @Override

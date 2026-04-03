@@ -245,7 +245,7 @@ public class APICodeEnvironmentController implements Closeable {
         }
         if (!clazz.isEnum()) {
             Method[] methods = clazz.getDeclaredMethods();
-            Arrays.sort(methods, Comparator.comparingInt((Method m) -> m.getName().length()).thenComparing(Method::getName));
+            Arrays.sort(methods, Comparator.comparingInt((Method m) -> (Modifier.isStatic(m.getModifiers())) ? 1 : 0).thenComparing((Method m) -> m.getName().length()).thenComparing(Method::getName));
             for (Method method : methods) {
                 if (method.isAnnotationPresent(JSHideFromDoc.class)) {
                     continue;

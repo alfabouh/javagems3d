@@ -9,4 +9,6 @@ public interface PanelUI extends IWindow.ResizeEvent {
     void onDestruct(JGemsUI ui);
 
     void drawPanel(JGemsUI ui, float frameDeltaTicks);
+
+    String getPanelID();
 }

@@ -22,12 +22,12 @@ public class JSRegisterUiEvent implements JSEventI {
 
     @JSCodingFunctionOrMethod(description = "Register a new UI panel by its unique name.", paramNames = {"uniqueName"})
     public void registerPanel(String uniqueName) {
-        JavaToJsAPI.uiContainer.setPanelUI(uniqueName, new JSUIPanelWrapper());
+        JavaToJsAPI.uiContainer.setPanelUI(uniqueName, new JSUIPanelWrapper(uniqueName));
     }
 
     @JSCodingFunctionOrMethod(description = "Register the main menu panel with a unique name.", paramNames = {"uniqueName"})
     public void registerMainMenuPanel(String uniqueName) {
-        JavaToJsAPI.uiContainer.setMainMenuPanel(new Pair<>(uniqueName, new JSUIPanelWrapper()));
+        JavaToJsAPI.uiContainer.setMainMenuPanel(new Pair<>(uniqueName, new JSUIPanelWrapper(uniqueName)));
     }
 
     @JSCodingFunctionOrMethod(description = "Get the screen associated with this UI registration event.")

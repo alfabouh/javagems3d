@@ -15,7 +15,7 @@ import javagems3d.system.external.gaming.def.world.GameResourceWorldObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -171,14 +171,14 @@ public class JGemsGaming {
         });
     }
 
-    private void convertSkyBoxes(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull AbstractObjectsFolder<GameResourceSkyboxAsset> folder, Consumer<Pair<AbstractObjectsFolder<GameResourceSkyboxAsset>, GameResourceSkyboxAsset>> convertor) {
+    private void convertSkyBoxes(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull VirtualObjectsFolder<GameResourceSkyboxAsset> folder, Consumer<Pair<VirtualObjectsFolder<GameResourceSkyboxAsset>, GameResourceSkyboxAsset>> convertor) {
         try {
             for (GameResourceSkyboxAsset asset : folder.getObjectsThere()) {
                 Log.get().debug("Loader got: " + folder.getHierarchy() + "/" + asset.name());
                 convertor.accept(new Pair<>(folder, asset));
                 Log.get().debug("Success");
             }
-            for (AbstractObjectsFolder<GameResourceSkyboxAsset> folderInside : folder.getFoldersThere()) {
+            for (VirtualObjectsFolder<GameResourceSkyboxAsset> folderInside : folder.getFoldersThere()) {
                 this.convertSkyBoxes(apiDataManager, folderInside, convertor);
             }
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public class JGemsGaming {
         }
     }
 
-    private <T extends GameResourceWorldObjectAsset> void convertWorldObject(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull AbstractObjectsFolder<T> folder, Consumer<Pair<AbstractObjectsFolder<T>, T>> convertor) {
+    private <T extends GameResourceWorldObjectAsset> void convertWorldObject(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull VirtualObjectsFolder<T> folder, Consumer<Pair<VirtualObjectsFolder<T>, T>> convertor) {
         try {
             for (T asset : folder.getObjectsThere()) {
                 Log.get().debug("Loader got: " + folder.getHierarchy() + "/" + asset.getID());
@@ -196,7 +196,7 @@ public class JGemsGaming {
                 convertor.accept(new Pair<>(folder, asset));
                 Log.get().debug("Success");
             }
-            for (AbstractObjectsFolder<T> folderInside : folder.getFoldersThere()) {
+            for (VirtualObjectsFolder<T> folderInside : folder.getFoldersThere()) {
                 this.convertWorldObject(apiDataManager, folderInside, convertor);
             }
         } catch (Exception e) {

@@ -4,7 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.project.map.MapObjectTemplatesFolder;
@@ -12,7 +12,7 @@ import workbench.project.map.MapObjectTemplatesFolder;
 import java.util.function.Supplier;
 
 public record CreatableObjectsTreeDrawerM<T extends WBenchObjectTemplate>(MapEditorInterface mapEditorInterface, Supplier<MapObjectTemplatesFolder<T>> folderSupplier, String tab) {
-    private void tree(AbstractObjectsFolder<T> folder, boolean root) {
+    private void tree(VirtualObjectsFolder<T> folder, boolean root) {
         ImGui.pushID(this.tab + "_" + folder.getName());
         String folderName = root ? "View" : folder.getName();
         ImGui.pushStyleColor(ImGuiCol.Text, 0xffffb0b0);
@@ -31,7 +31,7 @@ public record CreatableObjectsTreeDrawerM<T extends WBenchObjectTemplate>(MapEdi
                 }
                 ImGui.popID();
             }
-            for (AbstractObjectsFolder<T> child : folder.getFoldersThere()) {
+            for (VirtualObjectsFolder<T> child : folder.getFoldersThere()) {
                 this.tree(child, false);
             }
             ImGui.treePop();

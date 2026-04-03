@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingField;
 import javagems3d.system.external.mapping.tags.TagID;
 
-@JSCodingClass(binding = "JSTagID.DEFAULT", description = "Default predefined TagIDs.")
+@JSCodingClass(binding = "JSDefaultTagIDs", description = "Default predefined TagIDs.")
 public class JSDefaultTagIDs {
 
     @JSCodingField(description = "Physics state tag")

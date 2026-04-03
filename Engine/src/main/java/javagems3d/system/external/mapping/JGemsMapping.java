@@ -79,7 +79,7 @@ public final class JGemsMapping {
         Log.get().info("Loading Map: " + processor.getMapName() + "(" + processor.getMapInformation() + ")");
         this.createWorlds();
 
-        EventLauncher.pushEvent(new EventBus.MapLoading(EventBus.Run.PRE, this.getPhysicsWorld(), this.getSceneWorld()));
+        //EventLauncher.pushEvent(new EventBus.MapLoading(EventBus.Run.PRE, this.getPhysicsWorld(), this.getSceneWorld()));
         //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onInitialization, JGemsAPI.getAPIScripting().createInitializationJS())) {
         //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onInitialization);
         //}
@@ -117,7 +117,7 @@ public final class JGemsMapping {
         for (IMapActionCallback mapActionCallback : callbacks) {
             mapActionCallback.onLoaded(processor, this.getCurrentLoadedMap(), this.getResourceManager());
         }
-        EventLauncher.pushEvent(new EventBus.MapLoading(EventBus.Run.POST, this.getPhysicsWorld(), this.getSceneWorld()));
+        //EventLauncher.pushEvent(new EventBus.MapLoading(EventBus.Run.POST, this.getPhysicsWorld(), this.getSceneWorld()));
         Log.get().info("Successfully loaded map: " + this.getCurrentLoadedMap().getName());
     }
 

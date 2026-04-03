@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class WindowInterfaceComponentG {
     private final ModelPreviewEditorWindow modelPreviewRenderFunctions;
@@ -138,7 +137,10 @@ public class WindowInterfaceComponentG {
         if (ImGui.isWindowHovered() && ImGui.isWindowFocused()) {
             this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling += WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().getScrollVector() * -0.25f;
         }
-        final CullingAABB cullingAABB = modelAssetPreview.getAsset().meshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
+        CullingAABB cullingAABB = modelAssetPreview.getAsset().meshGroup().getMeshAABBData().getNormalizedAABB(new Pose3D());
+        if (modelAssetPreview.isAnimated() && modelAssetPreview.getAnimationData().getCurrentAnimation() != null) {
+            cullingAABB = modelAssetPreview.getAsset().meshGroup().getMeshAABBDataForAnimation(modelAssetPreview.getAnimationData().getCurrentAnimation()).getNormalizedAABB(new Pose3D());
+        }
         final float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
         final float diagonalOffset = (float) Math.sqrt(diagonal * 8.0f);
         if (this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling < -((diagonalOffset) - 0.1f)) {
@@ -161,13 +163,11 @@ public class WindowInterfaceComponentG {
     }
 
     private void renderFBO(FBOTexture2DProgram modelScenePreview) {
-        final int sizeX = (int) ImGui.getWindowSizeX();
-        final int sizeY = (int) ImGui.getWindowSizeY();
-        final int quadSize = Math.min(sizeX, sizeY);
-        final float dX = 52.0f;
-        final float cursorX = ImGui.getCursorPosX() + (ImGui.getWindowSizeX() / 2.0f - (quadSize - dX) / 2.0f);
-        ImGui.setCursorPos(cursorX, ImGui.getCursorPosY());
-        ImGui.image(modelScenePreview.getTextureIDByIndex(0), quadSize - dX, quadSize - dX, 0.0f, 1.0f, 1.0f, 0.0f);
+        final float sx = ImGui.getWindowSizeX();
+        final float sy = ImGui.getWindowSizeY();
+        final float square = Math.min(sx - 32, sy - 64);
+        ImGui.setCursorPos(sx / 2 - square / 2, sy / 2 - square / 2);
+        ImGui.image(modelScenePreview.getTextureIDByIndex(0), square, square, 0.0f, 1.0f, 1.0f, 0.0f);
     }
 
     public ScriptEditorDrawerG getScenePreviewScriptG() {

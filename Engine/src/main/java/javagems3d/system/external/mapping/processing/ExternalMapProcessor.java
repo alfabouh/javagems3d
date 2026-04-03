@@ -313,7 +313,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
-            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.propRenderData(), buffer));
+            final PropRenderData propRenderData = new PropRenderData(propData.propRenderData(), buffer);
+            propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
+            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, propRenderData);
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
@@ -324,7 +326,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
-            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.propRenderData(), buffer));
+            final PropRenderData propRenderData = new PropRenderData(propData.propRenderData(), buffer);
+            propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
+            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, propRenderData);
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
@@ -349,7 +353,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             } else {
                 jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
             }
-            JGemsHelper.world().addWorldItem(jGemsBody, new EntityRenderData(entityData.entityRenderData(), buffer));
+            final EntityRenderData entityRenderData = new EntityRenderData(entityData.entityRenderData(), buffer);
+            entityRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : entityRenderData.getObjectRenderAttributes().getProperties());
+            JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());

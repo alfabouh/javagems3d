@@ -1,4 +1,4 @@
-package api.scripting.coding.env.internal.util.map;
+package api.scripting.coding.env.internal.util.mapping;
 
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;

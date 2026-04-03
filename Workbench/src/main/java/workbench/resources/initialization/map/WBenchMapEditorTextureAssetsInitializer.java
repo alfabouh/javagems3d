@@ -7,7 +7,7 @@ import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import workbench.WBench;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.external.gaming.def.misc.GameResourceSkyboxAsset;
@@ -16,13 +16,13 @@ import workbench.project.map.MapObjectTemplatesManager;
 import java.util.*;
 
 public class WBenchMapEditorTextureAssetsInitializer implements IAssetsInitializer {
-    public static <E extends GameResourceSkyboxAsset> void parseTreeS(SystemResources systemResources, AbstractObjectsFolder<E> folder, MapObjectTemplatesManager manager) {
+    public static <E extends GameResourceSkyboxAsset> void parseTreeS(SystemResources systemResources, VirtualObjectsFolder<E> folder, MapObjectTemplatesManager manager) {
         for (E asset : folder.getObjectsThere()) {
-            final String path = folder.getHierarchy() + asset.name();
+            final String path = folder.getHierarchy() + "/" + asset.name();
             ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(JGemsGaming.getTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), asset.getCmTextures()), new CubeMapTexture.Properties(true));
             manager.addSkyBox(path, new MapObjectTemplatesManager.SkyBoxTemplate(path, asset.getCmTextures()).setCubeMapProgram(cubeMapProgram));
         }
-        for (AbstractObjectsFolder<E> child : folder.getFoldersThere()) {
+        for (VirtualObjectsFolder<E> child : folder.getFoldersThere()) {
             WBenchMapEditorTextureAssetsInitializer.parseTreeS(systemResources, child, manager);
         }
     }

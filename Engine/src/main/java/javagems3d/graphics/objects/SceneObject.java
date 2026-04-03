@@ -82,7 +82,7 @@ public abstract class SceneObject implements IModeled, IRendered, IObjectWithLig
     }
 
     public void updateAnimation() {
-        if (!this.hasAnimationData()) {
+        if (!this.isAnimated()) {
             return;
         }
         double fps = this.getAnimationData().getCurrentAnimation().fps();
@@ -101,7 +101,7 @@ public abstract class SceneObject implements IModeled, IRendered, IObjectWithLig
     }
 
     public void nextAnimationFrame() {
-        if (this.hasAnimationData()) {
+        if (this.isAnimated()) {
             this.getAnimationData().nextFrame();
         }
     }

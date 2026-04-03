@@ -113,6 +113,11 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 });
     }
 
+    @Override
+    public String getPanelID() {
+        return "test_main_menu_panel";
+    }
+
     private void renderContent(JGemsUI ui, IWindow window, float frameDeltaTicks) {
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;

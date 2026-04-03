@@ -9,9 +9,7 @@ import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.system.service.files.AbstractObjectsFolder;
-import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.files.JGemsPath;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,9 +23,9 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     private final Map<String, ICubeMapProgram.CMTextures> skyBoxesMap;
 
     public APIWBenchDataManager() {
-        this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
-        this.propApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
-        this.markerApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.entityApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(VirtualObjectsFolder.DEF_PATH);
+        this.propApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(VirtualObjectsFolder.DEF_PATH);
+        this.markerApiResourceObjectsFolder = new ApiResourceObjectsFolder<>(VirtualObjectsFolder.DEF_PATH);
         this.skyBoxesMap = new HashMap<>();
     }
 

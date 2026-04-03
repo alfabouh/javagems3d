@@ -26,21 +26,21 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldStart() {
-        EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.START, this));
+        //EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.START, this));
         this.ticks = 0;
     }
 
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
+        //if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             this.getWorldObjectsContainer().onUpdate();
             //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             this.ticks += 1;
-            EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.POST, this));
-        }
+            //EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.POST, this));
+        //}
     }
 
     public void onWorldEnd() {
-        EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.END, this));
+        //EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.END, this));
         this.removeNavGraph();
         this.clear();
     }

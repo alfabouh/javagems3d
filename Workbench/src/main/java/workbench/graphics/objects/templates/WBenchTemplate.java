@@ -2,9 +2,9 @@ package workbench.graphics.objects.templates;
 
 import org.jetbrains.annotations.NotNull;
 import workbench.graphics.objects.WBenchObject;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 
-public abstract class WBenchTemplate implements AbstractObjectsFolder.ObjectWithName {
+public abstract class WBenchTemplate implements VirtualObjectsFolder.ObjectWithName {
     protected final WBenchObject.ID objectId;
 
     public WBenchTemplate(@NotNull WBenchObject.ID objectId) {

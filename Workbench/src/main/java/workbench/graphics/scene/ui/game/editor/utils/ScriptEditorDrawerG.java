@@ -290,9 +290,9 @@ public class ScriptEditorDrawerG {
             if (classData != null) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff66ff66);
                 classData.functions().forEach((function) -> {
-                    final String toIns = function.funName() + "()";
+                    final String toIns = function.funName() + "(" + Arrays.toString(function.funDescription().paramNames()) + ")";
                     if (ImGui.selectable(toIns)) {
-                        editor.insertText(toIns);
+                        editor.insertText(function.funName() + "()");
                         editor.setCursorPosition(editor.getCursorPositionLine(), editor.getCursorPositionColumn() - 1);
                     }
                 });

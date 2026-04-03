@@ -5,12 +5,13 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.gaming.def.misc.*;
+import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -25,12 +26,14 @@ import workbench.project.managing.instances.WBenchResourceMapAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 import workbench.project.map.WBenchMapProject;
+import workbench.resources.WBenchResourceManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.List;
 
 public class WBenchGameResourcesManager {
     private final SystemResources systemResources;
@@ -40,6 +43,7 @@ public class WBenchGameResourcesManager {
     private GameResourceAssetsFolder<GameResourceScriptAsset> scriptAssetsFolder;
     private GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder;
     private GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceMarkerObjectAsset> markerAssetsFolder;
     private GameResourceAssetsFolder<GameResourceObjectTagData> tagAssetsFolder;
     private GameResourceAssetsFolder<GameResourceSkyboxAsset> skyBoxesAssetsFolder;
 
@@ -49,6 +53,7 @@ public class WBenchGameResourcesManager {
     public enum AssetsTarget {
         ALL,
         PROPS,
+        MARKERS,
         ENTITIES,
         TAGS,
         SCRIPTS,
@@ -161,6 +166,20 @@ public class WBenchGameResourcesManager {
         this.createSystemFolders(pathToGameFolder.toFile());
         this.modelAssetsFolder = this.readModelsFolder(JGemsGaming.getModelsFolder(pathToGameFolder));
         WBenchOpenGLRenderer.reloadModelResources();
+
+        {
+            VirtualObjectsFolder<GameResourceModelAsset> defaultModels = new VirtualObjectsFolder<>("defaults");
+            GameResourceModelAsset model1 = new GameResourceModelAsset("DefaultPoint", "/defaults/DefaultPoint", WBenchResourceManager.gameEditorModelAssets.markerCube);
+            GameResourceModelAsset model2 = new GameResourceModelAsset("DefaultCursor", "/defaults/DefaultCursor", WBenchResourceManager.gameEditorModelAssets.markerCursor);
+            GameResourceModelAsset model3 = new GameResourceModelAsset("DefaultAABB", "/defaults/DefaultAABB", WBenchResourceManager.gameEditorModelAssets.markerAabb);
+            defaultModels.putObjectThere(model1);
+            defaultModels.putObjectThere(model2);
+            defaultModels.putObjectThere(model3);
+            this.modelsKeysCache.put("/defaults/DefaultPoint", model1);
+            this.modelsKeysCache.put("/defaults/DefaultCursor", model2);
+            this.modelsKeysCache.put("/defaults/DefaultAABB", model3);
+            this.modelAssetsFolder.putFolderThere(defaultModels);
+        }
     }
 
     public void refreshMaps(JGemsPath pathToGameFolder) {
@@ -183,6 +202,9 @@ public class WBenchGameResourcesManager {
         if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
             TagsContainer.createJSONFileManaging().writeToFile(this.getEntityAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_entities.json").toFile(), null);
         }
+        if (assetsTarget.equals(AssetsTarget.MARKERS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            TagsContainer.createJSONFileManaging().writeToFile(this.getMarkerAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_markers.json").toFile(), null);
+        }
         if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
             TagsContainer.createJSONFileManaging().writeToFile(this.getTagAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_tags.json").toFile(), null);
         }
@@ -191,42 +213,57 @@ public class WBenchGameResourcesManager {
     public void readCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
         if (assetsTarget.equals(AssetsTarget.PROPS) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>() {
+                this.propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.propAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.propAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
+                this.propAssetsFolder = new GameResourceAssetsFolder<>(VirtualObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
+                Log.get().info("CREATED DEFAULT!!!");
             }
         }
         if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_entities.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceEntityObjectAsset>>() {
+                this.entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_entities.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.entityAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.entityAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
+                this.entityAssetsFolder = new GameResourceAssetsFolder<>(VirtualObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
+                Log.get().info("CREATED DEFAULT!!!");
+            }
+        }
+        if (assetsTarget.equals(AssetsTarget.MARKERS) || assetsTarget.equals(AssetsTarget.ALL)) {
+            try {
+                this.markerAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_markers.json").toFile(), new TypeToken<>() {
+                }, null);
+                this.markerAssetsFolder.buildRelations();
+            } catch (Exception e) {
+                this.markerAssetsFolder = new GameResourceAssetsFolder<>(VirtualObjectsFolder.DEF_PATH);
+                Log.get().exception(e);
+                Log.get().info("CREATED DEFAULT!!!");
             }
         }
         if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.tagAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceObjectTagData>>() {
+                this.tagAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.tagAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.tagAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
+                this.tagAssetsFolder = new GameResourceAssetsFolder<>(VirtualObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
+                Log.get().info("CREATED DEFAULT!!!");
             }
         }
         if (assetsTarget.equals(AssetsTarget.SKYBOXES) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.skyBoxesAssetsFolder = JSONFileManaging.createSerializationRules().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourceSkyboxAsset>>() {
+                this.skyBoxesAssetsFolder = JSONFileManaging.createSerializationRules().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.skyBoxesAssetsFolder.buildRelations();
             } catch (Exception e) {
-                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>(AbstractObjectsFolder.DEF_PATH);
+                this.skyBoxesAssetsFolder = new GameResourceAssetsFolder<>(VirtualObjectsFolder.DEF_PATH);
                 Log.get().exception(e);
+                Log.get().info("CREATED DEFAULT!!!");
             }
         }
     }
@@ -418,6 +455,10 @@ public class WBenchGameResourcesManager {
         return this.skyBoxesAssetsFolder;
     }
 
+    public GameResourceAssetsFolder<GameResourceMarkerObjectAsset> getMarkerAssetsFolder() {
+        return this.markerAssetsFolder;
+    }
+
     public GameResourceAssetsFolder<GameResourceEntityObjectAsset> getEntityAssetsFolder() {
         return this.entityAssetsFolder;
     }
@@ -444,6 +485,17 @@ public class WBenchGameResourcesManager {
 
     public GameResourceAssetsFolder<GameResourceTextureAsset> getTextureAssetsFolder() {
         return this.textureAssetsFolder;
+    }
+
+
+    public void getAllMapsDataPaths(List<JGemsPath> init, VirtualObjectsFolder<WBenchResourceMapAsset> root) {
+        for (WBenchResourceMapAsset map : root.getObjectsThere()) {
+            init.add(map.getMapProject().getPathToDataMapFile());
+        }
+
+        for (VirtualObjectsFolder<WBenchResourceMapAsset> inner : root.getFoldersThere()) {
+            this.getAllMapsDataPaths(init, inner);
+        }
     }
 
     //public void readModelsJSON(JGemsPath pathToGameFolder) {

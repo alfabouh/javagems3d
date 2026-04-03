@@ -121,7 +121,7 @@ public abstract class ResourceManager {
     }
 
     public void writeResourcesDataCache() {
-        this.getResourceDataCache().writeAll(this.gameResourcesMap.values().stream().map(SystemResources::getResourceArrays).collect(Collectors.toList()));
+        this.getResourceDataCache().writeAll(this.gameResourcesMap.values().stream().map(SystemResources::getResourceArrays).toList());
     }
 
     public void destroyResourcesDataCache() {

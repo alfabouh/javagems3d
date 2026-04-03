@@ -1,12 +1,14 @@
 package workbench.graphics.scene.ui.game.editor;
 
 import imgui.ImGui;
+import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewMapG;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewSkyBoxG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewModelG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTagG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTextureG;
 import workbench.graphics.scene.ui.game.editor.scenes.scripting.ScenePreviewScriptG;
+import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewMarkerObjectG;
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
@@ -16,6 +18,7 @@ public class ActionsInterfaceComponentG {
     private final ScenePreviewModelG scenePreviewModelG;
     private final ScenePreviewWorldObjectG<GameResourcePropObjectAsset> scenePreviewPropObjectG;
     private final ScenePreviewWorldObjectG<GameResourceEntityObjectAsset> scenePreviewEntityObjectG;
+    private final ScenePreviewMarkerObjectG<GameResourceMarkerObjectAsset> scenePreviewMarkerObjectG;
     private final ScenePreviewTextureG scenePreviewTextureG;
     private final ScenePreviewTagG scenePreviewTagG;
     private final ScenePreviewSkyBoxG scenePreviewSkyBoxG;
@@ -26,6 +29,7 @@ public class ActionsInterfaceComponentG {
         this.scenePreviewModelG = new ScenePreviewModelG(resourcesInterfaceComponentG);
         this.scenePreviewPropObjectG = new ScenePreviewWorldObjectG<>("Prop", () -> resourcesInterfaceComponentG.getPropResourceTreeDrawer().getCurrentSelectedAsset(), resourcesInterfaceComponentG);
         this.scenePreviewEntityObjectG = new ScenePreviewWorldObjectG<>("Entity", () -> resourcesInterfaceComponentG.getEntityResourceTreeDrawer().getCurrentSelectedAsset(), resourcesInterfaceComponentG);
+        this.scenePreviewMarkerObjectG = new ScenePreviewMarkerObjectG<>("Marker", () -> resourcesInterfaceComponentG.getMarkerResourceTreeDrawer().getCurrentSelectedAsset(), resourcesInterfaceComponentG);
         this.scenePreviewTextureG = new ScenePreviewTextureG(resourcesInterfaceComponentG);
         this.scenePreviewTagG = new ScenePreviewTagG(resourcesInterfaceComponentG);
         this.scenePreviewSkyBoxG = new ScenePreviewSkyBoxG(resourcesInterfaceComponentG);
@@ -39,6 +43,7 @@ public class ActionsInterfaceComponentG {
         this.scenePreviewTagG.render();
         this.scenePreviewPropObjectG.render();
         this.scenePreviewEntityObjectG.render();
+        this.scenePreviewMarkerObjectG.render();
         this.scenePreviewTextureG.render();
         this.scenePreviewSkyBoxG.render();
         ImGui.dummy(0.0f, 20.0f);

@@ -20,6 +20,11 @@ public class DefaultGamePanel extends AbstractPanelUI {
         this.renderImagesOnScreen(ui, frameDeltaTicks);
     }
 
+    @Override
+    public String getPanelID() {
+        return "default_game_panel";
+    }
+
     protected void renderTextOnScreen(JGemsUI ui, float frameDeltaTicks) {
         IWindow window = ui.getWindow();
         int windowW = window.getWindowSize().x;

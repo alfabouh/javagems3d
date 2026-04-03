@@ -83,7 +83,7 @@ public class ResourceCache {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> getAllCachedObjectsCollection(Class<T> tClass) {
-        return this.cache.values().stream().filter(tClass::isInstance).map(e -> (T) e).collect(Collectors.toList());
+        return this.cache.values().stream().filter(tClass::isInstance).map(e -> (T) e).toList();
     }
 
     public ICached getCachedObject(JGemsPathSource key) {

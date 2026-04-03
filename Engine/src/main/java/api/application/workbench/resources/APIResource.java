@@ -1,9 +1,9 @@
 package api.application.workbench.resources;
 
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class APIResource<T, E> implements AbstractObjectsFolder.ObjectWithName {
+public abstract class APIResource<T, E> implements VirtualObjectsFolder.ObjectWithName {
     private final MapObjectFabric<T> fabricWBench;
     private final MapObjectFabric<E> fabricGame;
     private final String name;

@@ -1,23 +1,25 @@
 package javagems3d.system.external.gaming.def.world;
 
-import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
+import javagems3d.system.external.gaming.def.IAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
-import javagems3d.system.external.gaming.def.IAsset;
+import org.joml.Vector3f;
 
-public abstract class GameResourceWorldObjectAsset implements IAsset, IWBenchAssetWithTranslationConstraints {
+public class GameResourceMarkerObjectAsset implements IAsset, IWBenchAssetWithTranslationConstraints {
     private final String ID;
     private String modelAssetRelativePath;
     private TagsContainer tagsContainer;
     private TranslationConstraints axisConstraints;
-    private RenderProperties renderProperties;
+    private Vector3f color;
+    private boolean transparent;
 
-    public GameResourceWorldObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, RenderProperties renderProperties, TranslationConstraints axisConstraints) {
+    public GameResourceMarkerObjectAsset(String ID, String modelAssetRelativePath, TagsContainer tagsContainer, TranslationConstraints axisConstraints, Vector3f color, boolean transparent) {
         this.ID = ID;
+        this.axisConstraints = axisConstraints;
         this.modelAssetRelativePath = modelAssetRelativePath;
         this.tagsContainer = tagsContainer;
-        this.renderProperties = renderProperties;
-        this.axisConstraints = axisConstraints;
+        this.color = color;
+        this.transparent = transparent;
     }
 
     public String getID() {
@@ -28,7 +30,7 @@ public abstract class GameResourceWorldObjectAsset implements IAsset, IWBenchAss
         return this.modelAssetRelativePath;
     }
 
-    public GameResourceWorldObjectAsset setModelAssetRelativePath(String modelAssetRelativePath) {
+    public GameResourceMarkerObjectAsset setModelAssetRelativePath(String modelAssetRelativePath) {
         this.modelAssetRelativePath = modelAssetRelativePath;
         return this;
     }
@@ -37,7 +39,7 @@ public abstract class GameResourceWorldObjectAsset implements IAsset, IWBenchAss
         return this.tagsContainer;
     }
 
-    public GameResourceWorldObjectAsset setTagsContainer(TagsContainer tagsContainer) {
+    public GameResourceMarkerObjectAsset setTagsContainer(TagsContainer tagsContainer) {
         this.tagsContainer = tagsContainer;
         return this;
     }
@@ -46,17 +48,26 @@ public abstract class GameResourceWorldObjectAsset implements IAsset, IWBenchAss
         return this.axisConstraints;
     }
 
-    public GameResourceWorldObjectAsset setAxisConstraints(TranslationConstraints axisConstraints) {
+    public GameResourceMarkerObjectAsset setAxisConstraints(TranslationConstraints axisConstraints) {
         this.axisConstraints = axisConstraints;
         return this;
     }
 
-    public RenderProperties getRenderProperties() {
-        return this.renderProperties;
+    public Vector3f getColor() {
+        return this.color;
     }
 
-    public GameResourceWorldObjectAsset setRenderProperties(RenderProperties renderProperties) {
-        this.renderProperties = renderProperties;
+    public GameResourceMarkerObjectAsset setColor(Vector3f color) {
+        this.color = color;
+        return this;
+    }
+
+    public boolean isTransparent() {
+        return this.transparent;
+    }
+
+    public GameResourceMarkerObjectAsset setTransparent(boolean transparent) {
+        this.transparent = transparent;
         return this;
     }
 

@@ -89,7 +89,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void updatePointLightsBuffer(ShaderStorageBufferObject pointLightsBuffer, MemoryStack stack, Matrix4f viewMatrix) {
-        List<PointLight> pointLights = this.getPointLights().stream().filter(PointLight::isActive).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1.0f)).collect(Collectors.toList());
+        List<PointLight> pointLights = this.getPointLights().stream().filter(PointLight::isActive).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1.0f)).toList();
         final int sizeMainBuffer = JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE * (4);
         ByteBuffer buffer = stack.malloc(sizeMainBuffer);
         ByteBuffer buffer2 = stack.malloc(Integer.BYTES);

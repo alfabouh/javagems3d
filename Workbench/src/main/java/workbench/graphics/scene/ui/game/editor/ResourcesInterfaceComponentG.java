@@ -1,18 +1,23 @@
 package workbench.graphics.scene.ui.game.editor;
 
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import api.system.JGemsAPI;
+import com.google.gson.*;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.JGems3D;
 import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.def.IAsset;
 import javagems3d.system.external.gaming.def.misc.*;
+import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
+import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.GameEditorInterface;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPreview;
@@ -22,6 +27,7 @@ import workbench.graphics.scene.ui.game.editor.instances.misc.ObjectTagPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.scripting.ScriptAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectEntityPreview;
+import workbench.graphics.scene.ui.game.editor.instances.world.ObjectMarkerPreview;
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectPropPreview;
 import workbench.graphics.scene.ui.game.editor.utils.CreatableResourcesTreeDrawerG;
 import workbench.graphics.scene.ui.game.editor.utils.FolderResourcesTreeDrawerG;
@@ -32,8 +38,13 @@ import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ResourcesInterfaceComponentG {
     private final GameEditorInterface gameEditorInterface;
@@ -41,6 +52,7 @@ public class ResourcesInterfaceComponentG {
     private final FolderResourcesTreeDrawerG<GameResourceTextureAsset, TextureAssetPreview> textureAssetsTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
+    private final CreatableResourcesTreeDrawerG<GameResourceMarkerObjectAsset, ObjectMarkerPreview> markerResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceObjectTagData, ObjectTagPreview> tagResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> mapResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceScriptAsset, ScriptAssetPreview> scriptResourceTreeDrawer;
@@ -93,6 +105,9 @@ public class ResourcesInterfaceComponentG {
                 }
             }
             ImGui.endDisabled();
+        }).setAfterAssetMoved((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.PROP, new String[] {"propObjects", "backgroundProps"}, e);
         });
 
         this.entityResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -125,6 +140,44 @@ public class ResourcesInterfaceComponentG {
                 }
             }
             ImGui.endDisabled();
+        }).setAfterAssetMoved((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.ENTITY, new String[] {"entityObjects"}, e);
+        });
+
+        this.markerResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
+                "Markers",
+                () -> WBench.get().getGameProjectManager().getGameResourcesManager().getMarkerAssetsFolder(),
+                new ArrayList<>() {{
+                    add(new CreatableResourcesTreeDrawerG.PopupConstructorData("Marker's ID", "[a-zA-Z\\d]+", "Digits, spec. symbols and spaces are not allowed!"));
+                }},
+                (e) -> e.first().getFoldersThereMap().containsKey(e.second().getInputStrings().getFirst().get()),
+                (e) -> {
+                    final GameResourceMarkerObjectAsset gameResourceMarkerObjectAsset = new GameResourceMarkerObjectAsset(e.second().getInputStrings().getFirst().get(), null, new TagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ), new Vector3f(1.0f), false);
+                    e.first().putObjectThere(gameResourceMarkerObjectAsset);
+                    return gameResourceMarkerObjectAsset;
+                },
+                ObjectMarkerPreview::new
+        ).setAfterFolderCreated((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+        }).setAfterFolderDeleted((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+        }).setAfterAssetCreated((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+        }).setAfterAssetDeleted((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+        }).setOnContextOnItem((e) -> {
+            final GameResourceModelAsset extractModelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(e.getModelAssetRelativePath());
+            ImGui.beginDisabled(extractModelAsset == null);
+            if (ImGui.menuItem("View Model")) {
+                if (extractModelAsset != null) {
+                    this.getModelAssetsTreeDrawer().setPreviewWrapperObject(new ModelAssetPreview(extractModelAsset));
+                }
+            }
+            ImGui.endDisabled();
+        }).setAfterAssetMoved((e) -> {
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.MARKER, new String[] {"markerObjects"}, e);
         });
 
         this.skyBoxResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -204,6 +257,8 @@ public class ResourcesInterfaceComponentG {
             new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), e.getHierarchy()).recursiveDelete();
         }).setOnRefreshButton((e) -> {
             WBench.get().getGameProjectManager().refreshMaps(true);
+        }).setOnOpenFolderButton((e) -> {
+            WBenchGameResourcesManager.openMapsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
         });
 
         this.scriptResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -241,6 +296,8 @@ public class ResourcesInterfaceComponentG {
             if (e != null) {
                 this.gameEditorInterface.getWindowInterfaceComponentG().getScenePreviewScriptG().setScriptPreviewObject(e);
             }
+        }).setOnOpenFolderButton((e) -> {
+            WBenchGameResourcesManager.openScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
         });
     }
 
@@ -263,6 +320,10 @@ public class ResourcesInterfaceComponentG {
         return this.propResourceTreeDrawer;
     }
 
+    public CreatableResourcesTreeDrawerG<GameResourceMarkerObjectAsset, ObjectMarkerPreview> getMarkerResourceTreeDrawer() {
+        return this.markerResourceTreeDrawer;
+    }
+
     public CreatableResourcesTreeDrawerG<WBenchResourceMapAsset, MapProjectPreview> getMapResourceTreeDrawer() {
         return this.mapResourceTreeDrawer;
     }
@@ -277,6 +338,48 @@ public class ResourcesInterfaceComponentG {
 
     public CreatableResourcesTreeDrawerG<GameResourceScriptAsset, ScriptAssetPreview> getScriptResourceTreeDrawer() {
         return this.scriptResourceTreeDrawer;
+    }
+
+    private static void changeMapDatObjProperties(String prefix, String[] rootNames, CreatableResourcesTreeDrawerG.AssetMovedData<? extends IAsset> e) {
+        final List<JGemsPath> getAllMapDataFiles = new ArrayList<>();
+        WBench.get().getGameProjectManager().getGameResourcesManager().getAllMapsDataPaths(getAllMapDataFiles, WBench.get().getGameProjectManager().getGameResourcesManager().getMapAssetsFolder());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        for (JGemsPath path : getAllMapDataFiles) {
+            try (FileReader reader = new FileReader(path.toFile())) {
+                JsonElement root = JsonParser.parseReader(reader);
+                AtomicBoolean changed = new AtomicBoolean(false);
+                JsonObject inner = root.getAsJsonObject().get("objectsData").getAsJsonObject();
+                Arrays.stream(rootNames).forEach(name -> {
+                    if (inner != null && inner.has(name)) {
+                        JsonArray array = inner.getAsJsonObject().getAsJsonArray(name);
+                        for (JsonElement el : array) {
+                            if (!el.isJsonObject()) {
+                                continue;
+                            }
+                            JsonObject obj = el.getAsJsonObject();
+                            if (!obj.has("objectId")) {
+                                continue;
+                            }
+                            String objectId = obj.get("objectId").getAsString();
+                            String objectPath = obj.get("objectPath").getAsString();
+                            if (objectId.equals(prefix + e.asset().name()) && objectPath.equals(e.from().getHierarchy())) {
+                                Log.get().debug("Changed map-obj-path: " + e.asset().name());
+                                obj.addProperty("objectPath", e.to().getHierarchy());
+                                changed.set(true);
+                            }
+                        }
+                    }
+                });
+                if (changed.get()) {
+                    try (FileWriter writer = new FileWriter(path.toFile())) {
+                        gson.toJson(root, writer);
+                    }
+                }
+
+            } catch (Exception ex) {
+                Log.get().exception(ex);
+            }
+        }
     }
 
     public void resourcesContent() {
@@ -307,6 +410,7 @@ public class ResourcesInterfaceComponentG {
             this.getTagResourceTreeDrawer().render();
             this.getPropResourceTreeDrawer().render();
             this.getEntityResourceTreeDrawer().render();
+            this.getMarkerResourceTreeDrawer().render();
             ImGui.unindent();
         }
     }

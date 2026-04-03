@@ -4,19 +4,19 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public record AssetsChooseCombo<T extends AbstractObjectsFolder.ObjectWithName>(String tab,
-                                                                                Supplier<AbstractObjectsFolder<T>> folderSupplier) {
-    public AssetsChooseCombo(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> folderSupplier) {
-        this.folderSupplier = folderSupplier;
-        this.tab = tab;
+public record AssetsChooseCombo<T extends VirtualObjectsFolder.ObjectWithName>(String tab, Supplier<VirtualObjectsFolder<T>> folderSupplier, @Nullable Collection<Pair<String, Supplier<T>>> additional) {
+    public AssetsChooseCombo(@NotNull String tab, @NotNull Supplier<VirtualObjectsFolder<T>> folderSupplier) {
+        this(tab, folderSupplier, null);
     }
 
     public void render(Supplier<T> extractAssetFromRelativePath, Consumer<T> onSetObj, Consumer<T> onSetNull) {
@@ -31,8 +31,14 @@ public record AssetsChooseCombo<T extends AbstractObjectsFolder.ObjectWithName>(
             allAssets.add(new Pair<>("Select...", null));
         }
 
+        if (additional != null) {
+            additional.forEach(e -> {
+                allAssets.add(new Pair<>(e.first(), e.second().get()));
+            });
+        }
+
         this.parseTree(this.folderSupplier().get(), allAssets);
-        String[] listForCombo = allAssets.stream().map(Pair::first).collect(Collectors.toList()).toArray(new String[]{});
+        String[] listForCombo = allAssets.stream().map(Pair::first).toList().toArray(new String[]{});
         ImInt selectInt = new ImInt(0);
         if (ImGui.combo(this.tab(), selectInt, listForCombo)) {
             T getAsset = allAssets.get(selectInt.get()).second();
@@ -44,15 +50,15 @@ public record AssetsChooseCombo<T extends AbstractObjectsFolder.ObjectWithName>(
         }
     }
 
-    private void parseTree(AbstractObjectsFolder<T> folder, List<Pair<String, T>> allAssets) {
+    private void parseTree(VirtualObjectsFolder<T> folder, List<Pair<String, T>> allAssets) {
         AssetsChooseCombo.parseTreeS(folder, allAssets);
     }
 
-    public static <E extends AbstractObjectsFolder.ObjectWithName> void parseTreeS(AbstractObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
+    public static <E extends VirtualObjectsFolder.ObjectWithName> void parseTreeS(VirtualObjectsFolder<E> folder, List<Pair<String, E>> allModelsAsset) {
         for (E asset : folder.getObjectsThere()) {
             allModelsAsset.add(new Pair<>(folder.getHierarchy() + "/" + asset.name(), asset));
         }
-        for (AbstractObjectsFolder<E> child : folder.getFoldersThere()) {
+        for (VirtualObjectsFolder<E> child : folder.getFoldersThere()) {
             AssetsChooseCombo.parseTreeS(child, allModelsAsset);
         }
     }

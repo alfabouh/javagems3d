@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import workbench.graphics.scene.ui.game.editor.instances.IPreviewWrapperObject;
 import javagems3d.system.external.gaming.def.IAsset;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 
 import java.util.ArrayList;
@@ -31,20 +31,22 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
     private final PopupContext popupCreateObjectContext;
     private final PopupContext popupCreateGroupContext;
     private final List<PopupConstructorData> popupConstructorData;
-    private final Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> existenceCheck;
-    private final Supplier<AbstractObjectsFolder<T>> groupSupplier;
-    private final Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> assetCreation;
+    private final Predicate<Pair<VirtualObjectsFolder<T>, PopupContext>> existenceCheck;
+    private final Supplier<VirtualObjectsFolder<T>> groupSupplier;
+    private final Function<Pair<VirtualObjectsFolder<T>, PopupContext>, T> assetCreation;
 
-    private @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetCreated;
-    private @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetDeleted;
-    private @Nullable Consumer<AbstractObjectsFolder<T>> afterFolderCreated;
-    private @Nullable Consumer<AbstractObjectsFolder<T>> afterFolderDeleted;
+    private @Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> afterAssetCreated;
+    private @Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> afterAssetDeleted;
+    private @Nullable Consumer<VirtualObjectsFolder<T>> afterFolderCreated;
+    private @Nullable Consumer<VirtualObjectsFolder<T>> afterFolderDeleted;
+    private @Nullable Consumer<AssetMovedData<T>> afterAssetMoved;
     private @Nullable Consumer<Void> onRefreshButton;
+    private @Nullable Consumer<Void> onOpenFolderButton;
     private @Nullable Consumer<T> onContextOnItem;
     private final Function<T, E> previewInstanceFactory;
     private Consumer<E> onItemSelection;
 
-    public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<AbstractObjectsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
+    public CreatableResourcesTreeDrawerG(@NotNull String tab, @NotNull Supplier<VirtualObjectsFolder<T>> groupSupplier, @NotNull List<PopupConstructorData> popupConstructorData, @NotNull Predicate<Pair<VirtualObjectsFolder<T>, PopupContext>> existenceCheck, @NotNull Function<Pair<VirtualObjectsFolder<T>, PopupContext>, T> assetCreation, @NotNull Function<T, E> previewInstanceFactory) {
         this.tab = tab;
         this.popupConstructorData = popupConstructorData;
         this.popupCreateObjectContext = new PopupContext(popupConstructorData.size());
@@ -55,16 +57,18 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         this.getSelectedGroup = new ImInt(-1);
         this.previewWrapperObject = null;
         this.onRefreshButton = null;
+        this.onOpenFolderButton = null;
+        this.afterAssetMoved = null;
         this.previewInstanceFactory = previewInstanceFactory;
         this.onContextOnItem = null;
         this.onItemSelection = null;
     }
 
-    private void getFoldersToChoose(Map<String, AbstractObjectsFolder<T>> init, AbstractObjectsFolder<T> root) {
-        for (AbstractObjectsFolder<T> inside : root.getFoldersThere()) {
+    private void getFoldersToChoose(Map<String, VirtualObjectsFolder<T>> init, VirtualObjectsFolder<T> root) {
+        for (VirtualObjectsFolder<T> inside : root.getFoldersThere()) {
             init.put(inside.getHierarchy(), inside);
         }
-        for (AbstractObjectsFolder<T> inside : root.getFoldersThere()) {
+        for (VirtualObjectsFolder<T> inside : root.getFoldersThere()) {
             this.getFoldersToChoose(init, inside);
         }
     }
@@ -76,7 +80,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 ImGui.text(popupConstructorData1.fieldName());
                 ImGui.inputText("##" + popupConstructorData1.fieldName(), this.popupCreateObjectContext.getInputStrings().get(i++));
             }
-            final Map<String, AbstractObjectsFolder<T>> groupsMap = new LinkedHashMap<>();
+            final Map<String, VirtualObjectsFolder<T>> groupsMap = new LinkedHashMap<>();
             this.getFoldersToChoose(groupsMap, this.getGroupSupplier().get());
             String[] groups = new String[groupsMap.size()];
             int j = 0;
@@ -91,7 +95,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             i = 0;
             if (ImGui.button("Create")) {
                 this.popupCreateObjectContext.resetErr();
-                final AbstractObjectsFolder<T> group1 = this.getSelectedGroup.get() < 0 || this.getSelectedGroup.get() > groups.length ? this.getGroupSupplier().get() : groupsMap.get(groups[this.getSelectedGroup.get()]);
+                final VirtualObjectsFolder<T> group1 = this.getSelectedGroup.get() < 0 || this.getSelectedGroup.get() > groups.length ? this.getGroupSupplier().get() : groupsMap.get(groups[this.getSelectedGroup.get()]);
 
                 for (ImString input : this.popupCreateObjectContext.getInputStrings()) {
                     final PopupConstructorData context = this.popupConstructorData.get(i++);
@@ -129,9 +133,9 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         }
     }
 
-    private void popUpFolder(AbstractObjectsFolder<T> placeIn) {
+    private void popUpFolder(VirtualObjectsFolder<T> placeIn) {
         if (ImGui.beginPopup("popupGroupCreation_" + this.tab)) {
-            ImGui.text("Group:");
+            ImGui.text("Folder Name:");
             ImGui.inputText("##objectsGroup_" + this.tab, this.popupCreateGroupContext.inputStrings.get(0));
             String group = this.popupCreateGroupContext.inputStrings.get(0).get();
             ImGui.beginDisabled(group.isEmpty());
@@ -168,7 +172,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         }
     }
 
-    private void drawObjectsTree(boolean wantsToDeleteCurrentSelected, AbstractObjectsFolder<T> groupParent, AbstractObjectsFolder<T> group, boolean root) {
+    private void drawObjectsTree(boolean wantsToDeleteCurrentSelected, VirtualObjectsFolder<T> groupParent, VirtualObjectsFolder<T> group, boolean root) {
         String folderName = group.getName();
         if (root) {
             folderName = "View";
@@ -216,7 +220,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
             if (openObjCreate) {
                 ImGui.openPopup("short_popupDataCreation_" + this.tab);
             }
-            for (T asset : group.getObjectsThere()) {
+            for (T asset : new ArrayList<>(group.getObjectsThere())) {
                 String label = asset.name();
                 if (label == null) {
                     continue;
@@ -232,17 +236,46 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     }
                 }
                 if (ImGui.beginPopupContextItem("ctx_item" + "##" + group.getName())) {
-                    ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
-                    if (ImGui.menuItem("* Select")) {
-                        this.setPreviewWrapperObject(this.getPreviewInstanceFactory().apply(asset));
+                    {
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
+                        if (ImGui.menuItem("* Select")) {
+                            this.setPreviewWrapperObject(this.getPreviewInstanceFactory().apply(asset));
+                        }
+                        ImGui.popStyleColor();
                     }
-                    ImGui.popStyleColor();
 
-                    ImGui.pushStyleColor(ImGuiCol.Text, 0xff6868ff);
-                    if (ImGui.menuItem("- Delete")) {
-                        wantsToDeleteCurrentSelected = true;
+                    {
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0xff6868ff);
+                        if (ImGui.menuItem("- Delete")) {
+                            wantsToDeleteCurrentSelected = true;
+                        }
+                        ImGui.popStyleColor();
                     }
-                    ImGui.popStyleColor();
+
+                    {
+                        final Map<String, VirtualObjectsFolder<T>> groupsMap = new LinkedHashMap<>();
+                        if (!root) {
+                            groupsMap.put(VirtualObjectsFolder.DEF_PATH, this.getGroupSupplier().get());
+                        }
+                        this.getFoldersToChoose(groupsMap, this.getGroupSupplier().get());
+                        String[] groups = new String[groupsMap.size()];
+                        int j = 0;
+                        for (String key : groupsMap.keySet()) {
+                            groups[j] = key;
+                            if (key.equals(group.getHierarchy())) {
+                                this.getSelectedGroup.set(j);
+                            }
+                            j += 1;
+                        }
+                        if (ImGui.combo("Folder", this.getSelectedGroup, groups)) {
+                            group.removeObjectFromThere(asset.name());
+                            final VirtualObjectsFolder<T> group1 = this.getSelectedGroup.get() < 0 || this.getSelectedGroup.get() > groups.length ? this.getGroupSupplier().get() : groupsMap.get(groups[this.getSelectedGroup.get()]);
+                            group1.putObjectThere(asset);
+                            if (this.getAfterAssetMoved() != null) {
+                                this.getAfterAssetMoved().accept(new AssetMovedData<>(asset, group, group1));
+                            }
+                        }
+                    }
 
                     ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
                     if (this.getOnContextOnItem() != null) {
@@ -264,7 +297,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 }
                 ImGui.popID();
             }
-            for (AbstractObjectsFolder<T> child : new ArrayList<>(group.getFoldersThere())) {
+            for (VirtualObjectsFolder<T> child : new ArrayList<>(group.getFoldersThere())) {
                 this.drawObjectsTree(wantsToDeleteCurrentSelected, group, child, false);
             }
             ImGui.treePop();
@@ -275,7 +308,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            final float dynHeight = JGemsHelper.math().clamp(this.getGroupSupplier().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 20.0f, 140.0f, ImGui.getWindowHeight() * 0.5f);
+            final float dynHeight = JGemsHelper.math().clamp(this.getGroupSupplier().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 26.0f, 160.0f, ImGui.getWindowHeight() * 0.5f);
             ImGui.beginChild("##ObjChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushID("##IDC" + this.tab);
             this.popUpObject("button", null);
@@ -284,6 +317,16 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                 if (ImGui.button("Refresh")) {
                     this.getOnRefreshButton().accept(null);
                     this.setPreviewWrapperObject(null);
+                }
+                ImGui.popStyleColor();
+            }
+            if (this.getOnOpenFolderButton() != null) {
+                if (this.getOnRefreshButton() != null) {
+                    ImGui.sameLine();
+                }
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff8c8cff);
+                if (ImGui.button("Open Explorer")) {
+                    this.getOnOpenFolderButton().accept(null);
                 }
                 ImGui.popStyleColor();
             }
@@ -324,38 +367,38 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         return this;
     }
 
-    public @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> getAfterAssetCreated() {
+    public @Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> getAfterAssetCreated() {
         return this.afterAssetCreated;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetCreated(@Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetCreated) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetCreated(@Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> afterAssetCreated) {
         this.afterAssetCreated = afterAssetCreated;
         return this;
     }
 
-    public @Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> getAfterAssetDeleted() {
+    public @Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> getAfterAssetDeleted() {
         return this.afterAssetDeleted;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetDeleted(@Nullable Consumer<Pair<AbstractObjectsFolder<T>, T>> afterAssetDeleted) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetDeleted(@Nullable Consumer<Pair<VirtualObjectsFolder<T>, T>> afterAssetDeleted) {
         this.afterAssetDeleted = afterAssetDeleted;
         return this;
     }
 
-    public @Nullable Consumer<AbstractObjectsFolder<T>> getAfterFolderCreated() {
+    public @Nullable Consumer<VirtualObjectsFolder<T>> getAfterFolderCreated() {
         return this.afterFolderCreated;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderCreated(@Nullable Consumer<AbstractObjectsFolder<T>> afterFolderCreated) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderCreated(@Nullable Consumer<VirtualObjectsFolder<T>> afterFolderCreated) {
         this.afterFolderCreated = afterFolderCreated;
         return this;
     }
 
-    public @Nullable Consumer<AbstractObjectsFolder<T>> getAfterFolderDeleted() {
+    public @Nullable Consumer<VirtualObjectsFolder<T>> getAfterFolderDeleted() {
         return this.afterFolderDeleted;
     }
 
-    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderDeleted(@Nullable Consumer<AbstractObjectsFolder<T>> afterFolderDeleted) {
+    public CreatableResourcesTreeDrawerG<T, E> setAfterFolderDeleted(@Nullable Consumer<VirtualObjectsFolder<T>> afterFolderDeleted) {
         this.afterFolderDeleted = afterFolderDeleted;
         return this;
     }
@@ -373,16 +416,34 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         return this.previewInstanceFactory;
     }
 
-    public Function<Pair<AbstractObjectsFolder<T>, PopupContext>, T> getAssetCreation() {
+    public Function<Pair<VirtualObjectsFolder<T>, PopupContext>, T> getAssetCreation() {
         return this.assetCreation;
     }
 
-    public Supplier<AbstractObjectsFolder<T>> getGroupSupplier() {
+    public Supplier<VirtualObjectsFolder<T>> getGroupSupplier() {
         return this.groupSupplier;
     }
 
-    public Predicate<Pair<AbstractObjectsFolder<T>, PopupContext>> getExistenceCheck() {
+    public Predicate<Pair<VirtualObjectsFolder<T>, PopupContext>> getExistenceCheck() {
         return this.existenceCheck;
+    }
+
+    public @Nullable Consumer<AssetMovedData<T>> getAfterAssetMoved() {
+        return this.afterAssetMoved;
+    }
+
+    public CreatableResourcesTreeDrawerG<T, E> setAfterAssetMoved(@Nullable Consumer<AssetMovedData<T>> afterAssetMoved) {
+        this.afterAssetMoved = afterAssetMoved;
+        return this;
+    }
+
+    public @Nullable Consumer<Void> getOnOpenFolderButton() {
+        return this.onOpenFolderButton;
+    }
+
+    public CreatableResourcesTreeDrawerG<T, E> setOnOpenFolderButton(@Nullable Consumer<Void> onOpenFolderButton) {
+        this.onOpenFolderButton = onOpenFolderButton;
+        return this;
     }
 
     public E getPreviewWrapperObject() {
@@ -403,6 +464,8 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
     public String getTab() {
         return this.tab;
     }
+
+    public record AssetMovedData <S extends IAsset> (S asset, VirtualObjectsFolder<S> from, VirtualObjectsFolder<S> to) {}
 
     public record PopupConstructorData(String fieldName, String regex, String nonMatchError) {
     }

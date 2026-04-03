@@ -65,9 +65,9 @@ public class DynamicsSystem {
         for (Pair<IHasCollisionTrigger, Object> objectPair : triggerPairs) {
             ITriggerAction triggerAction = objectPair.first().onColliding();
             if (triggerAction != null) {
-                if (!EventLauncher.pushEvent(new EventBus.CollisionTriggered(objectPair.first(), triggerAction)).isCancelled()) {
+                //if (!EventLauncher.pushEvent(new EventBus.CollisionTriggered(objectPair.first(), triggerAction)).isCancelled()) {
                     triggerAction.action(objectPair.second());
-                }
+                //}
             }
         }
     }

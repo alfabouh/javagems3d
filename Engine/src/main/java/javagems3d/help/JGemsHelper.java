@@ -20,9 +20,6 @@ import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
-import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
-import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -47,7 +44,6 @@ import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
@@ -68,7 +64,6 @@ import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
-import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import javagems3d.system.settings.JGemsSettings;
 import logger.Log;
@@ -587,9 +582,9 @@ public final class JGemsHelper {
 
         public void performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
             shaderManager.disableWarns();
-            shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
-            shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
-            if (animated.hasAnimationData()) {
+            shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.isAnimated() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
+            shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.isAnimated() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
+            if (animated.isAnimated()) {
                 shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), resourceManager.getAnimationMatricesTexture());
                 shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
             }
@@ -639,7 +634,7 @@ public final class JGemsHelper {
 
 
         public void reloadResources() {
-            EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent(JGems3D.get().getResourceManager()));
+            //EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent(JGems3D.get().getResourceManager()));
             JGems3D.get().getScreen().showGameLoadingScreen("System01");
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
             JGems3D.get().getResourceManager().recreateTexturesInAllCaches();

@@ -20,7 +20,7 @@ public interface IAnimated {
         return this.setAnimationByID(0);
     }
 
-    default boolean hasAnimationData() {
+    default boolean isAnimated() {
         return this.getAnimationData() != null && this.getAnimationData().isValid();
     }
 }

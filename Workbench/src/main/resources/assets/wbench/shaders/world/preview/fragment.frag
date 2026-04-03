@@ -37,4 +37,7 @@ void main()
     frag_color = use_texture ? texture(sampler2D(diffuse_map), uv_texture) : vec4(vec3(f1), 1.0);
     frag_color *= vec4(diffuse_color.rgb, 1.);
     frag_color *= calc_sun_light(pos, normals);
+    if (frag_color.a < 0.5) {
+        frag_color = vec4(vec3(1., 0., 1.), 1.);
+    }
 }

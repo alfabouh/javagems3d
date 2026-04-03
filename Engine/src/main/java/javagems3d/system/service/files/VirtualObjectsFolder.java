@@ -5,14 +5,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.ObjectWithName> {
-    public static final String DEF_PATH = "root";
+public class VirtualObjectsFolder<T extends VirtualObjectsFolder.ObjectWithName> {
+    public static final String DEF_PATH = "/root";
     private final String name;
     private Map<String, T> objectsThere;
-    private Map<String, AbstractObjectsFolder<T>> objectFoldersInside;
-    private transient AbstractObjectsFolder<T> parent;
+    private Map<String, VirtualObjectsFolder<T>> objectFoldersInside;
+    private transient VirtualObjectsFolder<T> parent;
 
-    public AbstractObjectsFolder(@NotNull String name) {
+    public VirtualObjectsFolder(@NotNull String name) {
         this.name = name;
         this.objectsThere = new LinkedHashMap<>();
         this.objectFoldersInside = new LinkedHashMap<>();
@@ -23,26 +23,28 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         this.getObjectsThere().clear();
     }
 
-    public AbstractObjectsFolder<T> setParent(AbstractObjectsFolder<T> parent) {
+    public VirtualObjectsFolder<T> setParent(VirtualObjectsFolder<T> parent) {
         this.parent = parent;
         return this;
     }
 
     public void buildRelations() {
-        for (AbstractObjectsFolder<T> leaves : this.getFoldersThere()) {
+        for (VirtualObjectsFolder<T> leaves : this.getFoldersThere()) {
             leaves.setParent(this);
             leaves.buildRelations();
         }
     }
 
-    public AbstractObjectsFolder<T> getFolderThere(String group) {
+    public VirtualObjectsFolder<T> getFolderThere(String group) {
         return this.getFoldersThereMap().get(group);
     }
 
-    public void putFolderThere(@NotNull AbstractObjectsFolder<T> t) {
+    public void putFolderThere(@NotNull VirtualObjectsFolder<T> t) {
         if (!this.getFoldersThereMap().containsKey(t.getName())) {
             this.getFoldersThereMap().put(t.getName(), t);
             t.setParent(this);
+        } else {
+            this.getFoldersThereMap().get(t.getName()).putObjectsThere(t.getObjectsThere());
         }
     }
 
@@ -66,7 +68,7 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         if (total >= max) {
             return max;
         }
-        for (AbstractObjectsFolder<T> folder : this.getFoldersThere()) {
+        for (VirtualObjectsFolder<T> folder : this.getFoldersThere()) {
             int subTotal = folder.totalObjectsThere(countFolders, max - total);
             total += subTotal;
             if (total >= max) {
@@ -84,13 +86,13 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         return this.totalObjectsThere(true, max);
     }
 
-    public <E extends AbstractObjectsFolder<T>> void putObjectInside(@NotNull String path, @NotNull T t, Function<String, E> createNewFolder) {
-        AbstractObjectsFolder<T> next = this;
+    public <E extends VirtualObjectsFolder<T>> void putObjectInside(@NotNull String path, @NotNull T t, Function<String, E> createNewFolder) {
+        VirtualObjectsFolder<T> next = this;
         String[] pathNodes = path.split("/");
         for (String node : pathNodes) {
             if (!node.isEmpty()) {
                 if (!next.getFoldersThereMap().containsKey(node)) {
-                    AbstractObjectsFolder<T> tMapObjectTemplatesFolder = createNewFolder.apply(node);
+                    VirtualObjectsFolder<T> tMapObjectTemplatesFolder = createNewFolder.apply(node);
                     next.putFolderThere(tMapObjectTemplatesFolder);
                     next = tMapObjectTemplatesFolder;
                 } else {
@@ -110,7 +112,7 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         if (strs.length == 1) {
             return this.getObject(strs[0]);
         }
-        final AbstractObjectsFolder<T> objectsFolder = this.getFolderThere(strs[0]);
+        final VirtualObjectsFolder<T> objectsFolder = this.getFolderThere(strs[0]);
         if (objectsFolder != null) {
             return objectsFolder.find("/" + String.join("/", Arrays.copyOfRange(strs, 1, strs.length)));
         }
@@ -119,6 +121,10 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
 
     public void removeFolderFromThere(String group) {
         this.getFoldersThereMap().remove(group);
+    }
+
+    public void putObjectsThere(@NotNull Collection<T> t) {
+        t.forEach(this::putObjectThere);
     }
 
     public void putObjectThere(@NotNull T t) {
@@ -138,7 +144,7 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
     }
 
     @SuppressWarnings("all")
-    public Collection<AbstractObjectsFolder<T>> getFoldersThere() {
+    public Collection<VirtualObjectsFolder<T>> getFoldersThere() {
         return this.getFoldersThereMap().values();
     }
 
@@ -149,7 +155,7 @@ public abstract class AbstractObjectsFolder<T extends AbstractObjectsFolder.Obje
         return this.objectsThere;
     }
 
-    public Map<String, AbstractObjectsFolder<T>> getFoldersThereMap() {
+    public Map<String, VirtualObjectsFolder<T>> getFoldersThereMap() {
         if (this.objectFoldersInside == null) {
             this.objectFoldersInside = new LinkedHashMap<>();
         }

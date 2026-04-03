@@ -8,7 +8,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.service.collections.Pair;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 
 import java.util.ArrayList;
@@ -26,11 +26,11 @@ public class ScenePreviewModelG {
         this.showChessTerrain = true;
     }
 
-    private void parseModelsTree(AbstractObjectsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
+    private void parseModelsTree(VirtualObjectsFolder<GameResourceModelAsset> folder, boolean root, List<Pair<String, GameResourceModelAsset>> allModelsAsset) {
         for (GameResourceModelAsset asset : folder.getObjectsThere()) {
             allModelsAsset.add(new Pair<>(asset.relativePath(), asset));
         }
-        for (AbstractObjectsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
+        for (VirtualObjectsFolder<GameResourceModelAsset> child : folder.getFoldersThere()) {
             this.parseModelsTree(child, false, allModelsAsset);
         }
     }
@@ -98,9 +98,9 @@ public class ScenePreviewModelG {
                 if (ImGui.checkbox("Show Chess Terrain", this.showChessTerrain)) {
                     this.showChessTerrain = !this.showChessTerrain;
                 }
-                if (ImGui.checkbox("Flip Model", this.flipModel)) {
-                    this.flipModel = !this.flipModel;
-                }
+                //if (ImGui.checkbox("Flip Model", this.flipModel)) {
+                //    this.flipModel = !this.flipModel;
+                //}
                 ImGui.unindent();
                 ImGui.endChild();
             }

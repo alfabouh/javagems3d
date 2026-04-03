@@ -10,9 +10,13 @@ import api.scripting.coding.env.internal.util.settings.instances.JSSettingFloat;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingSlotI;
 import api.scripting.coding.env.internal.util.ui.instances.*;
 import api.system.scripting.JavaToJsAPI;
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
+import javagems3d.system.global.JGemsConfig;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSUIDrawer", description = "UI drawing API used to create and control interface elements during rendering.")
 public class JSUIDrawer {
@@ -60,9 +64,50 @@ public class JSUIDrawer {
         this.getJavaUI().setUiPanel(JavaToJsAPI.uiContainer.getPanelUIMap().get(panelId));
     }
 
+    @JSCodingFunctionOrMethod(description = "Get current panel ID.")
+    public String setPanel() {
+        return this.getJavaUI().getCurrentPanel().getPanelID();
+    }
+
+
     @JSCodingFunctionOrMethod(description = "Remove current UI panel.")
     public void removeCurrentPanel() {
         this.getJavaUI().removePanel();
+    }
+
+    @JSCodingFunctionOrMethod(description = "Convert HEX color (0xRRGGBB) to normalized RGB vector (0..1).", paramNames = {"hex"})
+    public static Vector3f HEX2RGB(int hex) {
+        return JGemsUI.HEX2RGB(hex);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get font height in pixels.", paramNames = {"fontTexture"})
+    public static int getFontHeight(JGemsGuiFont fontTexture) {
+        return JGemsUI.getFontHeight(fontTexture);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Calculate text width in pixels for given font.", paramNames = {"fontTexture", "text"})
+    public static int getTextWidth(JGemsGuiFont fontTexture, String text) {
+        return JGemsUI.getTextWidth(fontTexture, text);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Convert value using global UI scaling.", paramNames = {"value"})
+    public static int CALC_INT_WITH_GLOBAL_UI_SCALING(float in) {
+        return JGemsUI.CALC_INT_WITH_GLOBAL_UI_SCALING(in);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Convert value using screen-normalized UI scaling.", paramNames = {"value"})
+    public static int CALC_INT_WITH_SCREEN_NORMALIZED_UI_SCALING(float in) {
+        return JGemsUI.CALC_INT_WITH_SCREEN_NORMALIZED_UI_SCALING(in);
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get global UI scaling factor.")
+    public static float GET_GLOBAL_UI_SCALING() {
+        return JGemsUI.GET_GLOBAL_UI_SCALING();
+    }
+
+    @JSCodingFunctionOrMethod(description = "Get screen-normalized UI scaling factor.")
+    public static float GET_SCREEN_NORMALIZED_SCALING() {
+        return JGemsUI.GET_SCREEN_NORMALIZED_SCALING();
     }
 
     @JSCodingFunctionOrMethod(description = "Get current screen.")

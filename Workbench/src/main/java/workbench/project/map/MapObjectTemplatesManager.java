@@ -1,7 +1,7 @@
 package workbench.project.map;
 
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.system.service.files.AbstractObjectsFolder;
+import javagems3d.system.service.files.VirtualObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -15,9 +15,9 @@ public class MapObjectTemplatesManager {
     private final Map<ICubeMapProgram, SkyBoxTemplate> skyBoxesCache;
 
     public MapObjectTemplatesManager() {
-        this.entities = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
-        this.props = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
-        this.markers = new MapObjectTemplatesFolder<>(AbstractObjectsFolder.DEF_PATH);
+        this.entities = new MapObjectTemplatesFolder<>(VirtualObjectsFolder.DEF_PATH);
+        this.props = new MapObjectTemplatesFolder<>(VirtualObjectsFolder.DEF_PATH);
+        this.markers = new MapObjectTemplatesFolder<>(VirtualObjectsFolder.DEF_PATH);
         this.skyBoxes = new LinkedHashMap<>();
         this.skyBoxesCache = new HashMap<>();
     }

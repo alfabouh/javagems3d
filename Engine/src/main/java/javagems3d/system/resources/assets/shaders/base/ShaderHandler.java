@@ -65,7 +65,7 @@ public class ShaderHandler {
     }
 
     private void initUniformBuffers(Set<UniformBufferObject> uniformBufferObjects) {
-        for (UniformBufferObject uniformBufferObject : uniformBufferObjects.stream().filter(Objects::nonNull).collect(Collectors.toList())) {
+        for (UniformBufferObject uniformBufferObject : uniformBufferObjects.stream().filter(Objects::nonNull).toList()) {
             UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.id());
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.binding(), uniformBufferObject.bufferSize())) {
                 Log.get().info("[" + this.id + "] Linked UBO " + uniformBufferObject.id() + " at " + uniformBufferObject.binding());

@@ -51,4 +51,9 @@ public class DefaultSettingsPanel extends AbstractPanelUI {
                     this.goBack(ui);
                 });
     }
+
+    @Override
+    public String getPanelID() {
+        return "default_settings_panel";
+    }
 }

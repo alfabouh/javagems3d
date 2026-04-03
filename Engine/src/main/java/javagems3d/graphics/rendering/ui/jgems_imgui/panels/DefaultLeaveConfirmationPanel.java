@@ -35,4 +35,9 @@ public class DefaultLeaveConfirmationPanel extends AbstractPanelUI {
                     this.goBack(ui);
                 });
     }
+
+    @Override
+    public String getPanelID() {
+        return "default_leave_confirmation_panel";
+    }
 }
