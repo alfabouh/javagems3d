@@ -17,7 +17,7 @@ float rand(vec2 co)
 
 void main()
 {
-    vec2 tex = gl_FragCoord.xy / textureSize(sampler2D(texture_map), 0);
+    vec2 tex = gl_FragCoord.xy / textureSize((texture_map), 0);
     vec4 v4 = color * texture(texture_map, uv_coordinates);
     frag_color = vec4(v4.x * (rand(vec2(tex)) * 0.25 + 0.75), v4.y * (rand(vec2(tex)) * 0.25 + 0.75), v4.z * (rand(vec2(tex)) * 0.25 + 0.75), v4.a);
 }

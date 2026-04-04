@@ -10,11 +10,13 @@ import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.system.JGemsAPI;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.binding.DefaultBindings;
+import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -48,10 +50,13 @@ public class AppTest extends JGemsApplication {
         return new DefaultBindings();
     }
 
-    //@Override
-    //public @NotNull PanelUI getMainMenuPanel() {
-    //    return new TestMainMenuPanel(null);
-    //}
+    @Override
+    public @NotNull PanelUI getMainMenuPanel() {
+        if (JavaToJsAPI.uiContainer.getMainMenuPanel() == null) {
+            return new TestMainMenuPanel(null);
+        }
+        return JavaToJsAPI.uiContainer.getMainMenuPanel().second();
+    }
 
     @Override
     public @NotNull Window.WindowProperties getWindowProperties() {
