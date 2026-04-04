@@ -41,7 +41,7 @@ public class EntityRenderData {
     }
 
     public EntityRenderData(@NotNull EntityRenderData entityRenderData, @Nullable MeshStructure3D<?> meshStructure) {
-        this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes(), meshStructure);
+        this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes().copy(), meshStructure);
     }
 
     public EntityRenderData(@NotNull EntityRenderData entityRenderData, @NotNull RenderAttributes renderAttributes) {

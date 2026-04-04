@@ -1,7 +1,5 @@
 package javagems3d.help;
 
-import api.events.EventBus;
-import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
@@ -58,7 +56,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
-import javagems3d.system.resources.localisation.LocalisationManager;
+import javagems3d.system.resources.localisation.LocalizationManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -77,6 +75,7 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.List;
 
 //@SuppressWarnings("all")
@@ -417,18 +416,18 @@ public final class JGemsHelper {
 
     public static final class Localisation {
         public JGemsLocalisation getLocalisation() {
-            return JGems3D.get().getLocalisation();
+            return JGems3D.get().getLocalization();
         }
 
-        public void readLanguageMap(LocalisationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
+        public void readLanguageMap(LocalizationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
             this.getLocalisation().readLanguageMap(lang, path);
         }
 
-        public LocalisationManager.Lang getCurrentLanguage() {
+        public LocalizationManager.Lang getCurrentLanguage() {
             return this.getLocalisation().getCurrentLang();
         }
 
-        public void setCurrentLanguage(LocalisationManager.Lang lang) {
+        public void setCurrentLanguage(LocalizationManager.Lang lang) {
             this.getLocalisation().setCurrentLang(lang);
         }
 
@@ -684,6 +683,20 @@ public final class JGemsHelper {
     }
 
     public static final class Files {
+        public String md5(String str) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                byte[] digest = md.digest(str.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                StringBuilder sb = new StringBuilder();
+                for (byte b : digest) {
+                    sb.append(String.format("%02x", b));
+                }
+                return sb.toString();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         public String readTextFromFile(@NotNull JGemsPathSource path) {
             StringBuilder textBuilder = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.getInputStream(path), StandardCharsets.UTF_8))) {

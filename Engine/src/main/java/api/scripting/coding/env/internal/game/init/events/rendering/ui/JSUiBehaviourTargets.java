@@ -1,4 +1,4 @@
-package api.scripting.coding.env.internal.game.init.events.ui;
+package api.scripting.coding.env.internal.game.init.events.rendering.ui;
 
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingField;

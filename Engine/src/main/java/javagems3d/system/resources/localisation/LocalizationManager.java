@@ -11,20 +11,20 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class LocalisationManager {
+public class LocalizationManager {
     public static Lang ENGLISH = new Lang("English");
     public static Lang RUSSIAN = new Lang("Russian");
 
     private final Map<Lang, LangMap> laguages;
     private final Map<Integer, Lang> indexedLanguages;
 
-    public LocalisationManager() {
+    public LocalizationManager() {
         this.laguages = new LinkedHashMap<>();
         this.indexedLanguages = new HashMap<>();
 
         {
-            this.createNewLanguage(LocalisationManager.ENGLISH);
-            this.createNewLanguage(LocalisationManager.RUSSIAN);
+            this.createNewLanguage(LocalizationManager.ENGLISH);
+            this.createNewLanguage(LocalizationManager.RUSSIAN);
         }
     }
 
@@ -33,7 +33,7 @@ public class LocalisationManager {
         this.indexedLanguages.put(this.indexedLanguages.size(), langName);
     }
 
-    public void readLanguageMap(LocalisationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
+    public void readLanguageMap(LocalizationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
         LangMap langMap = this.laguages.get(lang);
         if (langMap == null) {
             Log.get().error("Language " + lang + " not found!");

@@ -12,6 +12,7 @@ import org.joml.Vector2i;
 public interface IRenderNode extends IWindow.ResizeEvent, IResourceInit {
     void onRender(FrameTicking frameTicking);
     @NotNull OpenGLRenderer getOpenGLRenderer();
+    NodeID getNodeID();
 
     default Vector2i getRenderingResolution() {
         return this.getOpenGLRenderer().getRenderingResolution();

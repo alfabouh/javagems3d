@@ -1,13 +1,25 @@
 package javagems3d.graphics.environment;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.coding.env.internal.game.init.events.rendering.environment.JSCreateRenderEnvironmentEvent;
+import api.scripting.coding.env.internal.game.init.events.rendering.environment.JSDestroyRenderEnvironmentEvent;
+import api.scripting.coding.env.internal.game.init.events.rendering.environment.JSUpdateRenderEnvironmentEvent;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
+import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamera;
+import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.JGemsSkyBox;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
+import javagems3d.system.service.collections.Pair;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -29,10 +41,12 @@ public class JGemsEnvironment implements IEnvironment {
 
     @Override
     public void createEnvironment(OpenGLRenderer openGLRenderer) {
+        EventLauncher.pushEvent(new EventBus.CreateRenderEnvironment(this, (JGemsOpenGLRenderer) openGLRenderer), new Pair<>(new JSCreateRenderEnvironmentEvent(new JSEnvironment(this), new JSOpenGLRenderer(openGLRenderer)), JavaToJsAPI.Target.Game));
         this.getShadowScene().createResources(openGLRenderer);
     }
 
     public void destroyEnvironment() {
+        EventLauncher.pushEvent(new EventBus.DestroyRenderEnvironment(this), new Pair<>(new JSDestroyRenderEnvironmentEvent(new JSEnvironment(this)), JavaToJsAPI.Target.Game));
         this.getShadowScene().destroyResources();
         this.clearPointLightsBuffer();
     }
@@ -46,6 +60,7 @@ public class JGemsEnvironment implements IEnvironment {
 
     @Override
     public void updateEnvironment(ICamera camera) {
+        EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironment(this, camera, EventBus.Run.PRE), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.PRE), JavaToJsAPI.Target.Game));
         this.getSkyBox().getSun().onUpdateWithEvent(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
@@ -53,6 +68,7 @@ public class JGemsEnvironment implements IEnvironment {
             this.updateLightsUBO(this.getWorld(), stack);
             this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
         }
+        EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironment(this, camera, EventBus.Run.POST), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 
     protected void updateLightsUBO(IWorld world, MemoryStack stack) {

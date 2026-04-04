@@ -1,6 +1,7 @@
 package javagems3d.system.external.mapping.processing;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
@@ -26,6 +27,9 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.Collection;
+import java.util.List;
 
 public abstract class ManualMapProcessor extends MapProcessor {
     public ManualMapProcessor() {
@@ -73,21 +77,26 @@ public abstract class ManualMapProcessor extends MapProcessor {
         }
 
         @Override
-        public void onSetupShadows(IShadowScene shadowScene) {
+        public void onSetupShadows(IShadowScene shadowScene, IEnvironment environment) {
         }
 
         @Override
-        public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
+        public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background, IEnvironment environment) {
             skyBox.setSky2DTexture(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
         }
 
         @Override
-        public void onSetupFog(IFogScene fogScene) {
+        public void onSetupFog(IFogScene fogScene, IEnvironment environment) {
         }
 
         @Override
-        public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor() {
-            return (world) -> new Pair<>(new JGemsKinematicPlayer(world, new Vector3f(0.0f), new Vector3f(0.0f)), null);
+        public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+            return ExternalMapProcessor.Default.getDefaultPlayerConstructor();
+        }
+
+        @Override
+        public @Nullable Collection<IGameMap.SpawnPlayerData> getSpawnPlayersSet() {
+            return IGameMap.SpawnPlayerData.createSingle(new Vector3f(), new Vector3f(0.0f, 0.0f, 0.0f));
         }
 
         @Override

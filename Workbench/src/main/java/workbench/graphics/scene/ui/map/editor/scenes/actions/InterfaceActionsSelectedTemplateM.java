@@ -178,7 +178,7 @@ public class InterfaceActionsSelectedTemplateM {
                 ImGui.popStyleColor();
                 ImGui.indent();
                 if (ImGui.button("Place")) {
-                    WBenchObject wBenchObject = selected.createObject(this.mapEditorInterface.getWorld(), null);
+                    WBenchObject<?> wBenchObject = selected.createObject(this.mapEditorInterface.getWorld(), null);
                     this.spawnInWorld(wBenchObject, null);
                 }
                 ImGui.sameLine();

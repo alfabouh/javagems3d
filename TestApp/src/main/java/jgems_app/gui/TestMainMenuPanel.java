@@ -77,12 +77,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
 
         ui.buttonUI("DefaultMap2", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGemsHelper.map().loadMap(new ManualMapProcessor.Default() {
-                        @Override
-                        public @NotNull IGameMap.IPlayerConstructor getPlayerConstructor() {
-                            return (world) -> new Pair<>(new TestPlayer(world, new Vector3f(0.0f), new Vector3f(0.0f)), null);
-                        }
-                    });
+                    JGemsHelper.map().loadMap(new ManualMapProcessor.Default());
                     JGemsHelper.ui().openPanel(new DefaultGamePanel(null));
                 });
 
@@ -98,7 +93,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGemsHelper.map().loadMap(new ExternalLoader(JGemsHelper.map().getMapPath("Test1")));
+                   JGemsHelper.map().loadMap(new ExternalLoader(JGemsHelper.map().getMapPath("Test1"), ExternalLoader.getDefaultPlayerConstructor()));
                    ui.setUiPanel(new DefaultGamePanel(null));
                });
 

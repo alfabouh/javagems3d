@@ -1,5 +1,14 @@
 package workbench.graphics.scene.renderer;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.JSRenderNode;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.JSRenderOGLNodeEvent;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
+import api.system.scripting.JavaToJsAPI;
+import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
@@ -21,6 +30,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -28,6 +38,7 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -40,6 +51,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
+import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 import workbench.graphics.scene.ui.game.GameEditorInterface;
@@ -197,6 +209,17 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         final boolean renderBackGround = WBenchOpenGLRenderer.isRenderingBackgroundScene();
+        JGemsConfig.DEBUG.DISABLE_POINT_LIGHTS = renderBackGround;
+        if (this.getCamera() instanceof ControlledCamera camera) {
+            WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();
+            if (wBenchBindingManager.keyCtrl.isPressed()) {
+                camera.setSpeed(5.0f);
+            } else if (wBenchBindingManager.keyAlt.isPressed()) {
+                camera.setSpeed(20.0f);
+            } else {
+                camera.setSpeed(10.0f);
+            }
+        }
         Set<SceneObject> toRender = new HashSet<>(renderBackGround ? this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getWorld().getSceneObjects());
 
         JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, Collections.emptyList(), forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {

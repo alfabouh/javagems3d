@@ -223,11 +223,11 @@ public final class JGems3D {
     }
 
     public String I18n(String key, Object... objects) {
-        if (this.getLocalisation() == null) {
+        if (this.getLocalization() == null) {
             Log.get().warn("Tried to get localised name from NULL Localisation Manager");
             return key;
         }
-        return String.format(this.getLocalisation().format(key), objects);
+        return String.format(this.getLocalization().format(key), objects);
     }
 
     public void changeIcon(@Nullable JGemsPath icon, ISource.Source source) {
@@ -283,9 +283,9 @@ public final class JGems3D {
         }
     }
 
-    public JGemsLocalisation getLocalisation() {
-        synchronized (this.getCore().getLocalisation()) {
-            return this.core.getLocalisation();
+    public JGemsLocalisation getLocalization() {
+        synchronized (this.getCore().getLocalization()) {
+            return this.core.getLocalization();
         }
     }
 

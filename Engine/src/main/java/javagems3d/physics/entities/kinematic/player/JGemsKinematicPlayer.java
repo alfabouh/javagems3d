@@ -29,9 +29,10 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
+
     protected void createObject() {
-        this.startPosition.y += this.getPlayerHeight();
         super.createObject();
+        this.startPosition.y += this.getPlayerHeight();
     }
 
     @Override

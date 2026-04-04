@@ -72,7 +72,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchObjectData.getTranslationConstraints();
-        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(wBenchObjectData.getPathToModel().toString());
+        return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(wBenchObjectData.getPathToModel().toString()).setModelDef(wBenchObjectData.getPathToModel() == null ? null : wBenchObjectData.getPathToModel().toString());
     }
 
     private WBenchMarkerTemplate createMapObjectTemplateFromApiMarkerSource(SystemResources systemResources, String path, APIResource<WBenchMarkerData, ?> apiResourceProp) {
@@ -86,7 +86,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         }
         final TagsContainer tagsContainer = wBenchMarkerData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchMarkerData.getTranslationConstraints();
-        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent());
+        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent()).setModelDef(wBenchMarkerData.getDefaultMarker() != null ? "DEFAULT" : (wBenchMarkerData.getPathToModel() == null ? null : wBenchMarkerData.getPathToModel().toString()));
     }
 
     private <T extends VirtualObjectsFolder.ObjectWithName, E extends WBenchTemplate> void copyPlusConvertFolder(VirtualObjectsFolder<T> from, MapObjectTemplatesFolder<E> to, BiFunction<String, T, E> convert) {

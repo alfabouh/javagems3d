@@ -4,6 +4,7 @@ import api.application.workbench.resources.data.wbench.properties.WBenchRenderPr
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
@@ -70,7 +71,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 {
                     ImGui.spacing();
                     ImGui.bulletText("Rendering");
-                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true);
+                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
                     if (worldObjectAsset.getRenderProperties() == null) {
                         worldObjectAsset.setRenderProperties(new WBenchRenderProperties());
                         Log.get().debug("Null renderProp. Created");

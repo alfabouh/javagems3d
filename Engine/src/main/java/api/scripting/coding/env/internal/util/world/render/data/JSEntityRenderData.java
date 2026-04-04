@@ -2,7 +2,7 @@ package api.scripting.coding.env.internal.util.world.render.data;
 
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.JSMeshStructure3D;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.render.processing.JSRenderAttributes;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneEntity;
@@ -55,10 +55,10 @@ public class JSEntityRenderData {
         return this;
     }
 
-    @JSCodingFunctionOrMethod(description = "Set mesh structure constructor for this entity (JSMeshStructureConstructor<JSWorldObject>)", paramNames = {"modelConstructor"})
-    public JSEntityRenderData setEntityModelConstructor(JSMeshStructureConstructor<JSWorldObject> modelConstructor) {
+    @JSCodingFunctionOrMethod(description = "Set mesh structure constructor for this entity (JSMeshStructureConstructor<JSWorldItem>)", paramNames = {"modelConstructor"})
+    public JSEntityRenderData setEntityModelConstructor(JSMeshStructureConstructor<JSWorldItem> modelConstructor) {
         if (modelConstructor != null) {
-            this.entityRenderData.setEntityModelConstructor(worldItem -> modelConstructor.toJavaConstructor().constructMeshDataGroup(new JSWorldObject(worldItem)));
+            this.entityRenderData.setEntityModelConstructor(worldItem -> modelConstructor.toJavaConstructor().constructMeshDataGroup(new JSWorldItem(worldItem)));
         }
         return this;
     }
@@ -72,8 +72,8 @@ public class JSEntityRenderData {
         return () -> mesh;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get model constructor of this entity (JSMeshStructureConstructor<JSWorldObject>)")
-    public JSMeshStructureConstructor<JSWorldObject> getEntityModelConstructor() {
+    @JSCodingFunctionOrMethod(description = "Get model constructor of this entity (JSMeshStructureConstructor<JSWorldItem>)")
+    public JSMeshStructureConstructor<JSWorldItem> getEntityModelConstructor() {
         IModelConstructor<WorldItem, ? extends IMesh> constructor = this.entityRenderData.getEntityModelConstructor();
         if (constructor == null) return null;
         return t -> (JSMeshStructure3D) () -> constructor.constructMeshDataGroup(t.getJavaWorldObject());
@@ -86,7 +86,7 @@ public class JSEntityRenderData {
     }
 
     @JSCodingFunctionOrMethod(description = "Construct a SceneEntity from this data and given world and worldItem", paramNames = {"world", "worldItem"})
-    public JSSceneEntity constructSceneObject(JSSceneWorld world, JSWorldObject worldItem) {
+    public JSSceneEntity constructSceneObject(JSSceneWorld world, JSWorldItem worldItem) {
         SceneEntity sceneEntity = this.entityRenderData.constructSceneObject(world.getJavaSceneWorld(), worldItem.getJavaWorldObject());
         return new JSSceneEntity(sceneEntity);
     }

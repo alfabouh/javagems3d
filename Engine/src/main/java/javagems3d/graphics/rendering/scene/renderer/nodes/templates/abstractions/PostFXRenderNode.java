@@ -3,8 +3,10 @@ package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstraction
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.BloomRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.FXAARenderProcessor;
@@ -97,5 +99,10 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
 
     public BloomRenderProcessor getBloomRenderProcessor() {
         return this.bloomRenderProcessor;
+    }
+
+    @Override
+    public NodeID getNodeID() {
+        return JGemsOpenGLRenderer.POST_EFFECTS_RENDER_PASS;
     }
 }

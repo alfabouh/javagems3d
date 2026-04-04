@@ -1,5 +1,6 @@
 package javagems3d.system.external.mapping.processing.base;
 
+import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import java.util.Collection;
+
 public interface IMapProcessor {
     void init();
 
@@ -19,11 +22,12 @@ public interface IMapProcessor {
     void onProcessing(PhysicsWorld world, SceneWorld sceneWorld);
     void postProcessing(PhysicsWorld world, SceneWorld sceneWorld);
 
-    void onSetupShadows(IShadowScene shadowScene);
-    void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background);
-    void onSetupFog(IFogScene fogScene);
+    void onSetupShadows(IShadowScene shadowScene, IEnvironment environment);
+    void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background, IEnvironment environment);
+    void onSetupFog(IFogScene fogScene, IEnvironment environment);
 
-    @Nullable IGameMap.IPlayerConstructor getPlayerConstructor();
+    @Nullable IGameMap.IPlayerConstructor getPlayerConstructor(PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    @Nullable Collection<IGameMap.SpawnPlayerData> getSpawnPlayersSet();
 
     @NotNull String getMapName();
     @NotNull String getMapInformation();

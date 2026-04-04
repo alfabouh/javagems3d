@@ -18,7 +18,7 @@ import java.util.*;
 public class WBenchMapEditorTextureAssetsInitializer implements IAssetsInitializer {
     public static <E extends GameResourceSkyboxAsset> void parseTreeS(SystemResources systemResources, VirtualObjectsFolder<E> folder, MapObjectTemplatesManager manager) {
         for (E asset : folder.getObjectsThere()) {
-            final String path = folder.getHierarchy() + "/" + asset.name();
+            final String path = ((folder.getParent() == null ? "" : folder.getHierarchy() + "/") + asset.name());
             ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(JGemsGaming.getTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), asset.getCmTextures()), new CubeMapTexture.Properties(true));
             manager.addSkyBox(path, new MapObjectTemplatesManager.SkyBoxTemplate(path, asset.getCmTextures()).setCubeMapProgram(cubeMapProgram));
         }

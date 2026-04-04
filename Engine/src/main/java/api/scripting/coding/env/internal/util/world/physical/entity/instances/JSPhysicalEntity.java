@@ -3,7 +3,7 @@ package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSPhysMaterial;
@@ -13,7 +13,7 @@ import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSPhysicalEntity", description = "Advanced physics entity with full control over material, collision and state.")
-public class JSPhysicalEntity extends JSWorldObject {
+public class JSPhysicalEntity extends JSWorldItem {
     @JSCodingField(description = "Underlying JGemsBody (Java side)")
     private final JGemsBody body;
 

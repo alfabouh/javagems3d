@@ -7,7 +7,7 @@ import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.resources.instances.models.JSModel3D;
 import api.scripting.coding.env.internal.util.resources.instances.models.animation.JSAnimationData;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneEntityI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
@@ -32,7 +32,7 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
     }
 
     @JSCodingConstructor(description = "Create SceneEntity from world, worldItem, and renderData")
-    public JSSceneEntity(JSSceneWorld world, JSWorldObject worldItem, EntityRenderData renderData) {
+    public JSSceneEntity(JSSceneWorld world, JSWorldItem worldItem, EntityRenderData renderData) {
         this.entity = new SceneEntity(world.getJavaSceneWorld(), worldItem.getJavaWorldObject(), renderData) {};
     }
 
@@ -52,8 +52,8 @@ public class JSSceneEntity implements JSSceneEntityI, JSSceneObjectWithModelI, J
     }
 
     @JSCodingFunctionOrMethod(description = "Get associated WorldItem")
-    public JSWorldObject getWorldItem() {
-        return new JSWorldObject(this.entity.getWorldItem());
+    public JSWorldItem getWorldItem() {
+        return new JSWorldItem(this.entity.getWorldItem());
     }
 
     @JSCodingFunctionOrMethod(description = "Set visibility of the entity")

@@ -10,8 +10,10 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
@@ -243,6 +245,10 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         return this.directGeometryRenderProcessor;
     }
 
+    @Override
+    public NodeID getNodeID() {
+        return JGemsOpenGLRenderer.DEFERRED_RENDER_PASS;
+    }
     /*
     public void MillionCubesTest() {
         final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {

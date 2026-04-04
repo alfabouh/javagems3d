@@ -2,6 +2,12 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.*;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
+import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldLiquid;
+import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
 import api.system.scripting.JavaToJsAPI;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
@@ -69,6 +75,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionCallback {
     public static JGemsShaderManager UBO_SHADER = null;
@@ -171,14 +178,18 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scenes node: " + e.name()));
         this.createResources();
 
-        //EventLauncher.pushEvent(new EventBus.OpenGLRendererState(EventBus.State.START, this));
+        EventLauncher.pushEvent(new EventBus.InitRendererOGLEvent(this), new Pair<>(new JSInitRendererOGLEvent(new JSOpenGLRenderer(this)), JavaToJsAPI.Target.Game));
     }
 
     public static void renderNodeWithEvent(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, IRenderNode node) {
-        //if (!EventLauncher.pushEvent(new EventBus.OpenGLNodeRenderProcess(EventBus.Run.PRE, node, openGLRenderer)).isCancelled()) {
+        if (openGLRenderer instanceof JGemsOpenGLRenderer) {
+            if (!EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent((JGemsOpenGLRenderer) openGLRenderer, node, frameTicking, EventBus.Run.PRE), new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.PRE), JavaToJsAPI.Target.Game)).isCancelled()) {
+                node.onRender(frameTicking);
+                EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent((JGemsOpenGLRenderer) openGLRenderer, node, frameTicking, EventBus.Run.POST),  new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.POST), JavaToJsAPI.Target.Game));
+            }
+        } else {
             node.onRender(frameTicking);
-            //EventLauncher.pushEvent(new EventBus.OpenGLNodeRenderProcess(EventBus.Run.POST, node, openGLRenderer));
-        //}
+        }
     }
 
     @Override
@@ -206,10 +217,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
-        Set<SceneObject> toRenderObjects = new HashSet<>(this.getWorld().getSceneObjects());
-        Set<SceneWorldLiquid> toRenderLiquids = new HashSet<>(this.getWorld().getLiquids());
+        final Set<SceneObject> toRenderObjects = new HashSet<>(this.getWorld().getSceneObjects());
+        final Set<SceneWorldLiquid> toRenderLiquids = new HashSet<>(this.getWorld().getLiquids());
 
-        //if (!EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.PRE, toRenderObjects, this)).isCancelled()) {
+        final Set<JSSceneObjectI> sceneObjectJS = toRenderObjects.stream().map(e -> (JSSceneObjectI) () -> e).collect(Collectors.toSet());
+        final Set<JSSceneWorldLiquid> sceneWorldLiquidsJS = toRenderLiquids.stream().map(JSSceneWorldLiquid::new).collect(Collectors.toSet());
+        if (!EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.PRE, toRenderObjects, toRenderLiquids), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.PRE, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game)).isCancelled()) {
             JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
                 @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids };
                 this.getSceneCulling().cull(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera(), collections);
@@ -224,10 +237,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
             uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, uiRenderNode);
-
             JGemsOpenGLRenderer.renderDebug(this.getWorld().getSceneObjects(), this.getWorld().getLiquids());
-            //EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.POST, toRenderObjects, this));
-        //}
+            EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.POST, toRenderObjects, toRenderLiquids), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.POST, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game));
+        }
 
         JGemsOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
             color_shader.second().performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(color_shader.first(), 1.0f)));
@@ -291,8 +303,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             cullingFun.accept(null);
         }
 
-
-
         List<SceneObject> redirectedInTransparency = new ArrayList<>();
         Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRenderObjects, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
@@ -326,7 +336,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void onStopRender() {
-        //EventLauncher.pushEvent(new EventBus.OpenGLRendererState(EventBus.State.END, this));
+        EventLauncher.pushEvent(new EventBus.StopRendererOGLEvent(this), new Pair<>(new JSStopRendererOGLEvent(new JSOpenGLRenderer(this)), JavaToJsAPI.Target.Game));
         if (this.screenModel != null) {
             this.screenModel.clear();
         }

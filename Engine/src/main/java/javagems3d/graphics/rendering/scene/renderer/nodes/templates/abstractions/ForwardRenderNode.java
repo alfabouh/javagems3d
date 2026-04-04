@@ -4,8 +4,10 @@ import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
@@ -118,5 +120,10 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
     @Override
     public Collection<SceneObject> getRejectedDirectForwardRenderingObjects() {
         return this.getDirectGeometryRenderProcessor().getRejected();
+    }
+
+    @Override
+    public NodeID getNodeID() {
+        return JGemsOpenGLRenderer.FORWARD_RENDER_PASS;
     }
 }

@@ -11,11 +11,17 @@ import api.scripting.coding.env.internal.util.controlling.bind.JSBindingManager;
 import api.scripting.coding.env.internal.util.lang.JSLang;
 import api.scripting.coding.env.internal.util.lang.JSLocalization;
 import api.scripting.coding.env.internal.util.management.JSPath;
+import api.scripting.coding.env.internal.util.mapping.player.JSPlayerCreatorFunction;
+import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTranslateData;
+import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerWorldData;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
+import api.scripting.coding.env.internal.util.misc.JSPair;
 import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
 import api.scripting.coding.env.internal.util.resources.instances.textures.JSTexture2D;
+import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
+import api.scripting.coding.env.internal.util.world.physical.player.real.JSPlayer;
 import api.scripting.coding.env.internal.util.world.physical.zones.instances.JSLiquid;
 import api.scripting.coding.env.internal.util.world.render.JSScene;
 import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
@@ -37,14 +43,27 @@ import api.scripting.coding.env.internal.util.world.render.world.instances.inter
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSScenePropI;
 import api.system.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.help.JGemsHelper;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
+import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @JSCodingClass(
         binding = "JSScriptGlobalData",
@@ -281,32 +300,32 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
 
     @JSCodingFunctionOrMethod(description = "Load language file from path.", paramNames = {"lang", "path"})
     public void loadLanguage(JSLang lang, JSPath path) throws Exception {
-        JGems3D.get().getLocalisation().readLanguageMap(lang.getRaw(), new JGemsPathSource(path.getJavaPath(), ISource.Source.OUTSIDE_JAR));
+        JGems3D.get().getLocalization().readLanguageMap(lang.getRaw(), new JGemsPathSource(path.getJavaPath(), ISource.Source.OUTSIDE_JAR));
     }
 
     @JSCodingFunctionOrMethod(description = "Get current language.")
     public JSLang getCurrentLanguage() {
-        return new JSLang(JGems3D.get().getLocalisation().getCurrentLang());
+        return new JSLang(JGems3D.get().getLocalization().getCurrentLang());
     }
 
     @JSCodingFunctionOrMethod(description = "Set current language.", paramNames = {"lang"})
     public void setCurrentLanguage(JSLang lang) {
-        JGems3D.get().getLocalisation().setCurrentLang(lang.getRaw());
+        JGems3D.get().getLocalization().setCurrentLang(lang.getRaw());
     }
 
     @JSCodingFunctionOrMethod(description = "Format localized string by key.", paramNames = {"key", "args"})
     public String formatText(String key, Object... args) {
-        return JGems3D.get().getLocalisation().format(key, args);
+        return JGems3D.get().getLocalization().format(key, args);
     }
 
     @JSCodingFunctionOrMethod(description = "Get language by index.", paramNames = {"id"})
     public JSLang getLanguage(int id) {
-        return new JSLang(JGems3D.get().getLocalisation().getLangByID(id));
+        return new JSLang(JGems3D.get().getLocalization().getLangByID(id));
     }
 
     @JSCodingFunctionOrMethod(description = "Get total languages count.")
     public int getLanguagesCount() {
-        return JGems3D.get().getLocalisation().max();
+        return JGems3D.get().getLocalization().max();
     }
 
     // ----------------------
@@ -325,6 +344,24 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
 
     @JSCodingFunctionOrMethod(
             description = "Load map by relative path. The path is relative to the game maps folder ('<game folder>/game_maps/'). " +
+                    "Make sure the map file exists at this location before loading. Function used to create player instance",
+            paramNames = {"mapRelativePath, createPlayerConsumer"}
+    )
+    public void loadMap(String mapRelativePath, JSPlayerCreatorFunction createPlayerConsumer) {
+        JGemsPath mapPath = JGemsHelper.map().getMapPath(mapRelativePath);
+        if (mapPath == null) {
+            Log.get().warn("Map file at " + mapRelativePath + " does not exist.");
+        } else {
+            JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath(mapRelativePath),
+                    (world, spawnPlayerData) -> {
+                JSPair<JSPlayer, JSEntityRenderData> pair = createPlayerConsumer.createPlayer(new JSPhysicsWorld(world), spawnPlayerData.stream().map(e -> new JSSpawnPlayerTranslateData(new JSVector3f(e.spawnPos()), new JSVector3f(e.spawnRot()))).collect(Collectors.toSet()));
+                return new Pair<>(pair.getFirst().getJavaPlayer(), pair.getSecond().getJavaEntityRenderData());
+            }));
+        }
+    }
+
+    @JSCodingFunctionOrMethod(
+            description = "Load map by relative path. The path is relative to the game maps folder ('<game folder>/game_maps/'). " +
                     "Make sure the map file exists at this location before loading.",
             paramNames = {"mapRelativePath"}
     )
@@ -333,7 +370,7 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
         if (mapPath == null) {
             Log.get().warn("Map file at " + mapRelativePath + " does not exist.");
         } else {
-            JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath(mapRelativePath)));
+            JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath(mapRelativePath), ExternalMapProcessor.Default.getDefaultPlayerConstructor()));
         }
     }
 

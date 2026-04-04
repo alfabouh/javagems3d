@@ -82,11 +82,11 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     public void renderSceneInShadowMap(Set<? extends SceneObject> modeledSceneObjectSet) {
+        this.getSunLightShadow().refreshCascades();
         if (this.shouldNotRenderShadows()) {
             this.renderNullShadows();
             return;
         }
-        this.getSunLightShadow().refreshCascades();
         Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER)).collect(Collectors.toSet());
         boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (JGemsConfig.SYSTEM.DRAW_BACK_FACES_FOR_SHADOWS) {

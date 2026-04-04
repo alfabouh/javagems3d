@@ -1,8 +1,5 @@
 package javagems3d.system.external.mapping;
 
-import api.events.EventBus;
-import api.events.EventLauncher;
-import api.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
@@ -87,21 +84,27 @@ public final class JGemsMapping {
 
         processor.setGlobalResources(this.getResourceManager().getGlobalResources());
         processor.setLocalResources(this.getResourceManager().getLocalResources());
-        processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground());
-        processor.onSetupFog(environment.getFogScene());
+        processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground(), environment);
+        processor.onSetupFog(environment.getFogScene(), environment);
        //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
        //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
        //}
         processor.preProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         processor.onProcessing(this.getPhysicsWorld(), this.getSceneWorld());
 
-        if (processor.getPlayerConstructor() != null) {
-            Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = processor.getPlayerConstructor().constructPlayer(this.getPhysicsWorld());
-            player = pair.first();
-            JGemsHelper.world().addWorldItem((WorldItem) player, pair.second() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.second());
-            JGemsHelper.controller().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
-            JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
-        } else {
+        boolean flag = false;
+        final IGameMap.IPlayerConstructor playerConstructor = processor.getPlayerConstructor(this.getPhysicsWorld(), this.getSceneWorld());
+        if (playerConstructor != null && (processor.getSpawnPlayersSet() != null)) {
+            Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = playerConstructor.constructPlayer(this.getPhysicsWorld(), processor.getSpawnPlayersSet());
+            if (pair != null) {
+                player = pair.first();
+                JGemsHelper.world().addWorldItem((WorldItem) player, pair.second() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.second());
+                JGemsHelper.controller().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
+                JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
+                flag = true;
+            }
+        }
+        if (!flag) {
             JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
         }
         processor.postProcessing(this.getPhysicsWorld(), this.getSceneWorld());

@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.render.screen.JSWindow;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.WorldItem;
@@ -52,10 +52,10 @@ public class JSControllerDispatcher {
     }
 
     @JSCodingFunctionOrMethod(description = "Returns the currently controlled item.")
-    public JSWorldObject getCurrentControlledItem() {
+    public JSWorldItem getCurrentControlledItem() {
         IControllable item = this.dispatcher.getCurrentControlledItem();
         if (item instanceof WorldItem worldItem) {
-            return new JSWorldObject(worldItem);
+            return new JSWorldItem(worldItem);
         }
         return null;
     }

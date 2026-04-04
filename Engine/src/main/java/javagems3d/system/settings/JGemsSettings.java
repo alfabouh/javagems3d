@@ -1,7 +1,6 @@
 package javagems3d.system.settings;
 
-import javagems3d.help.JGemsHelper;
-import javagems3d.system.resources.localisation.LocalisationManager;
+import javagems3d.system.resources.localisation.LocalizationManager;
 import javagems3d.system.service.stat.PerformanceStat;
 import javagems3d.system.settings.base.Settings;
 import javagems3d.system.settings.objects.SettingChooseLanguage;
@@ -38,7 +37,7 @@ public class JGemsSettings extends Settings {
         this.bloom = new SettingIntSlots("bloom", 0, 0, 1);
         this.texturesFiltering = new SettingIntSlots("texturesFiltering", 0, 0, 1);
 
-        this.language = new SettingChooseLanguage("lang", LocalisationManager.ENGLISH);
+        this.language = new SettingChooseLanguage("lang", LocalizationManager.ENGLISH);
 
         this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
 

@@ -1,5 +1,6 @@
 package jgems_app.map;
 
+import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -11,6 +12,7 @@ import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.mapping.IGameMap;
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
@@ -23,6 +25,8 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.Collection;
 
 public class TestMap extends ManualMapProcessor {
     @Override
@@ -48,23 +52,28 @@ public class TestMap extends ManualMapProcessor {
     }
 
     @Override
-    public void onSetupShadows(IShadowScene shadowScene) {
+    public void onSetupShadows(IShadowScene shadowScene, IEnvironment environment) {
 
     }
 
     @Override
-    public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
+    public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background, IEnvironment environment) {
         skyBox.getSun().setLightPosition(new Vector3f(0.35f, 1.0f, 0.125f));
         skyBox.getSun().setLightColor(new Vector3f(1.0f, 0.95f, 0.91f));
     }
 
     @Override
-    public void onSetupFog(IFogScene fogScene) {
+    public void onSetupFog(IFogScene fogScene, IEnvironment environment) {
 
     }
 
     @Override
-    public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor() {
+    public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Collection<IGameMap.SpawnPlayerData> getSpawnPlayersSet() {
         return null;
     }
 

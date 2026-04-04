@@ -6,43 +6,43 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 public class JGemsLocalisation {
-    private LocalisationManager.Lang currentLang;
-    private final LocalisationManager localisationManager;
+    private LocalizationManager.Lang currentLang;
+    private final LocalizationManager localizationManager;
 
     public JGemsLocalisation() {
-        this.localisationManager = new LocalisationManager();
-        this.currentLang = LocalisationManager.ENGLISH;
+        this.localizationManager = new LocalizationManager();
+        this.currentLang = LocalizationManager.ENGLISH;
     }
 
-    public LocalisationManager.Lang getLangByID(int id) {
-        return this.localisationManager.getIndexedLanguages().get(id);
+    public LocalizationManager.Lang getLangByID(int id) {
+        return this.localizationManager.getIndexedLanguages().get(id);
     }
 
-    public LocalisationManager.LangMap getLangMapByID(int id) {
-        return this.localisationManager.getLanguages().get(this.localisationManager.getIndexedLanguages().get(id));
+    public LocalizationManager.LangMap getLangMapByID(int id) {
+        return this.localizationManager.getLanguages().get(this.localizationManager.getIndexedLanguages().get(id));
     }
 
     public int max() {
-        return this.localisationManager.getLanguages().size();
+        return this.localizationManager.getLanguages().size();
     }
 
-    public void readLanguageMap(LocalisationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
-        this.localisationManager.readLanguageMap(lang, path);
+    public void readLanguageMap(LocalizationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
+        this.localizationManager.readLanguageMap(lang, path);
     }
 
     public String format(String key, Object... args) {
-        return this.localisationManager.format(this.currentLang, key, args);
+        return this.localizationManager.format(this.currentLang, key, args);
     }
 
-    public LocalisationManager getLocalisationManager() {
-        return this.localisationManager;
+    public LocalizationManager getLocalisationManager() {
+        return this.localizationManager;
     }
 
-    public LocalisationManager.Lang getCurrentLang() {
+    public LocalizationManager.Lang getCurrentLang() {
         return this.currentLang;
     }
 
-    public void setCurrentLang(LocalisationManager.Lang currentLang) {
+    public void setCurrentLang(LocalizationManager.Lang currentLang) {
         this.currentLang = currentLang;
     }
 }

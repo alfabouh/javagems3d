@@ -6,13 +6,13 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @JSCodingClass(binding = "JSBasicWorldObject", description = "Basic world item representing an entity in the physics world with position, rotation, scaling, and basic state management.")
-public class JSBasicWorldObject extends JSWorldObject {
+public class JSBasicWorldObject extends JSWorldItem {
 
     @JSHideFromDoc
     public JSBasicWorldObject(WorldItem worldItem) {

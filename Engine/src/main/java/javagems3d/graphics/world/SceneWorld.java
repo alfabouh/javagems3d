@@ -2,6 +2,18 @@ package javagems3d.graphics.world;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import api.scripting.coding.env.internal.game.init.events.camera.JSSceneCameraEvent;
+import api.scripting.coding.env.internal.game.init.events.rendering.world.*;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.events.JSEventState;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.world.physical.zones.instances.JSLiquid;
+import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
+import api.scripting.coding.env.internal.util.world.render.data.JSLiquidRenderData;
+import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamera;
+import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
+import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldLiquid;
+import api.system.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
@@ -61,81 +73,99 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
-        //EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.START, this));
+        EventLauncher.pushEvent(new EventBus.SceneWorldLifecycleEvent(this, EventBus.State.START), new Pair<>(new JSSceneWorldLifecycleEvent(new JSSceneWorld(this), JSEventState.START), JavaToJsAPI.Target.Game));
         JGemsConfig.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
+
         this.getParticlesEmitter().create(this);
         this.getEnvironment().getSkyBox().createSkyBox(this);
+
         this.ticks = 0;
     }
 
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        //if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
-            //JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
-            //JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
-            Iterator<Pair<WorldItem, ILightAttachable>> iterator = this.lightAttachmentQueue.iterator();
-            while (iterator.hasNext()) {
-                Pair<WorldItem, ILightAttachable> pair = iterator.next();
-                this.addWorldItemLight(pair.first(), pair.second());
-                iterator.remove();
-            }
-            this.ticks += 1;
-            //EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.POST, this));
-        //}
+        EventBus.SceneWorldUpdateEvent pre = new EventBus.SceneWorldUpdateEvent(this, EventBus.Run.PRE, this.ticks);
+        EventLauncher.pushEvent(pre, new Pair<>(new JSSceneWorldUpdateEvent(new JSSceneWorld(this), JSEventRun.PRE, this.ticks), JavaToJsAPI.Target.Game));
+        if (pre.isCancelled()) {
+            return;
+        }
+
+        Iterator<Pair<WorldItem, ILightAttachable>> iterator = this.lightAttachmentQueue.iterator();
+        while (iterator.hasNext()) {
+            Pair<WorldItem, ILightAttachable> pair = iterator.next();
+            this.addWorldItemLight(pair.first(), pair.second());
+            iterator.remove();
+        }
+
+        this.ticks += 1;
+        EventLauncher.pushEvent(new EventBus.SceneWorldUpdateEvent(this, EventBus.Run.POST, this.ticks), new Pair<>(new JSSceneWorldUpdateEvent(new JSSceneWorld(this), JSEventRun.POST, this.ticks), JavaToJsAPI.Target.Game));
     }
 
     //section WorldEnd
     @Override
     public void onWorldEnd() {
-        //EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.END, this));
+        EventLauncher.pushEvent(new EventBus.SceneWorldLifecycleEvent(this, EventBus.State.END), new Pair<>(new JSSceneWorldLifecycleEvent(new JSSceneWorld(this), JSEventState.END), JavaToJsAPI.Target.Game));
+
         if (this.getParticlesEmitter() != null) {
             this.getParticlesEmitter().destroy(this);
         }
+
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
+
         this.clearAll();
     }
 
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
+        EventBus.SceneWorldObjectsUpdateEvent pre = new EventBus.SceneWorldObjectsUpdateEvent(this, refresh, frameTicking, EventBus.Run.PRE);
+        EventLauncher.pushEvent(pre, new Pair<>(new JSSceneWorldObjectsUpdateEvent(new JSSceneWorld(this), refresh, new JSFrameTicking(frameTicking), JSEventRun.PRE), JavaToJsAPI.Target.Game));
+        if (pre.isCancelled()) {
+            return;
+        }
+
         this.getParticlesEmitter().onUpdateParticles(frameTicking.frameDeltaTime(), this);
 
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
-
             if (sceneObject.isDead()) {
-                if (sceneObject instanceof SceneEntity abstractSceneEntity) {
-                    this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
+                EventBus.SceneObjectDestroyEvent destroyEvent = new EventBus.SceneObjectDestroyEvent(this, sceneObject);
+                EventLauncher.pushEvent(destroyEvent, new Pair<>(new JSSceneObjectDestroyEvent(new JSSceneWorld(this), () -> sceneObject), JavaToJsAPI.Target.Game));
+                if (destroyEvent.isCancelled()) { continue; }
+                if (sceneObject instanceof SceneEntity e) {
+                    this.getObjectMap().remove(e.getWorldItem().getItemId());
                 }
                 sceneObject.onDestroyWithEvent(this);
                 iterator.remove();
                 continue;
             }
 
+            EventLauncher.pushEvent(new EventBus.SceneObjectUpdateEvent(this, sceneObject), new Pair<>(new JSSceneObjectUpdateEvent(new JSSceneWorld(this), () -> sceneObject), JavaToJsAPI.Target.Game));
             sceneObject.updateAnimation();
-
             if (sceneObject instanceof IWorldTicked worldTicked) {
                 worldTicked.onUpdateWithEvent(this);
             }
-
-            if (sceneObject instanceof SceneEntity abstractSceneEntity) {
+            if (sceneObject instanceof SceneEntity e) {
                 if (refresh) {
-                    abstractSceneEntity.refreshInterpolatingState();
+                    e.refreshInterpolatingState();
                 }
-                abstractSceneEntity.updateRenderPos(frameTicking.physicsSyncTicks());
-                abstractSceneEntity.updateModelTranslation();
+                e.updateRenderPos(frameTicking.physicsSyncTicks());
+                e.updateModelTranslation();
             }
         }
 
         this.getLiquids().removeIf(liquid -> {
             if (liquid.isDead()) {
+                EventLauncher.pushEvent(new EventBus.SceneLiquidDestroyEvent(this, liquid), new Pair<>(new JSSceneLiquidDestroyEvent(new JSSceneWorld(this), new JSSceneWorldLiquid(liquid)), JavaToJsAPI.Target.Game));
                 liquid.onDestroy(this);
                 return true;
             }
             return false;
         });
+
+        EventLauncher.pushEvent(new EventBus.SceneWorldObjectsUpdateEvent(this, refresh, frameTicking, EventBus.Run.POST), new Pair<>(new JSSceneWorldObjectsUpdateEvent(new JSSceneWorld(this), refresh, new JSFrameTicking(frameTicking), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 
     //section WorldClean
@@ -186,14 +216,25 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     public void removeLight(Light light) {
+        EventBus.SceneLightDestroyEvent event = new EventBus.SceneLightDestroyEvent(this, light);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneLightDestroyEvent(new JSSceneWorld(this), () -> light), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) {
+            return;
+        }
         this.getEnvironment().getLightScene().removeLight(light);
-        ILightAttachable lighted = (ILightAttachable) light;
-        if (lighted.getAttachedTo() != null) {
-            lighted.getAttachedTo().removeLightAttachment((ILightAttachable) light);
+        ILightAttachable l = (ILightAttachable) light;
+        if (l.getAttachedTo() != null) {
+            l.getAttachedTo().removeLightAttachment(l);
         }
     }
 
     public void addLight(Light light, @Nullable IObjectWithLights lighted) {
+        EventBus.SceneLightSpawnEvent event = new EventBus.SceneLightSpawnEvent(this, light);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneLightSpawnEvent(new JSSceneWorld(this), () -> light), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) {
+            return;
+        }
+
         this.getEnvironment().getLightScene().addLight(light);
         if (lighted != null) {
             lighted.addLightAttachment((ILightAttachable) light);
@@ -210,6 +251,37 @@ public final class SceneWorld implements IRenderWorld {
         this.getEnvironment().getLightScene().addLight((Light) light);
     }
 
+    public void addObject(SceneObject sceneObject, EntityRenderData renderData) {
+        EventBus.SceneObjectSpawnEvent event = new EventBus.SceneObjectSpawnEvent(this, sceneObject, renderData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneObjectSpawnEvent(new JSSceneWorld(this), () -> sceneObject, new JSEntityRenderData(renderData)), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) {
+            return;
+        }
+
+        this.getSceneObjects().add(sceneObject);
+        sceneObject.onSpawnWithEvent(this);
+
+        if (sceneObject instanceof SceneEntity e) {
+            this.getObjectMap().put(e.getWorldItem().getItemId(), e);
+        }
+    }
+
+    public void removeObject(SceneObject sceneObject) {
+        EventBus.SceneObjectDestroyEvent event = new EventBus.SceneObjectDestroyEvent(this, sceneObject);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneObjectDestroyEvent(new JSSceneWorld(this), () -> sceneObject), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) {
+            return;
+        }
+
+        this.getSceneObjects().remove(sceneObject);
+        sceneObject.onDestroyWithEvent(this);
+
+        if (sceneObject instanceof SceneEntity e) {
+            this.getObjectMap().remove(e.getWorldItem().getItemId());
+        }
+    }
+
+    @Override
     public void addObject(SceneObject sceneObject) {
         this.getSceneObjects().add(sceneObject);
         sceneObject.onSpawnWithEvent(this);
@@ -219,28 +291,31 @@ public final class SceneWorld implements IRenderWorld {
         }
     }
 
-    public void removeObject(SceneObject sceneObject) {
-        this.getSceneObjects().remove(sceneObject);
-        sceneObject.onDestroyWithEvent(this);
-
-        if (sceneObject instanceof SceneEntity sceneEntity) {
-            this.getObjectMap().remove(sceneEntity.getWorldItem().getItemId());
-        }
-    }
-
     public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
+        EventBus.SceneLiquidSpawnEvent event = new EventBus.SceneLiquidSpawnEvent(this, liquid, liquidRenderData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneLiquidSpawnEvent(new JSSceneWorld(this), new JSLiquid(liquid), new JSLiquidRenderData(liquidRenderData)), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) { return; }
+
         SceneWorldLiquid sceneWorldLiquid = new SceneWorldLiquid(liquid, liquidRenderData);
         sceneWorldLiquid.onSpawn(this);
         this.getLiquids().add(sceneWorldLiquid);
     }
 
     public void removeLiquid(SceneWorldLiquid liquid) {
+        EventBus.SceneLiquidDestroyEvent event = new EventBus.SceneLiquidDestroyEvent(this, liquid);
+        EventLauncher.pushEvent(event, new Pair<>(new JSSceneLiquidDestroyEvent(new JSSceneWorld(this), new JSSceneWorldLiquid(liquid)), JavaToJsAPI.Target.Game));
+        if (event.isCancelled()) {
+            return;
+        }
+
         liquid.onDestroy(this);
         this.getLiquids().remove(liquid);
     }
 
     public void setCamera(ICamera camera) {
         this.camera = camera;
+
+        EventLauncher.pushEvent(new EventBus.SceneCameraEvent(this, camera), new Pair<>(new JSSceneCameraEvent(new JSSceneWorld(this), new JSCamera(camera)), JavaToJsAPI.Target.Game));
     }
 
     public IEnvironment getEnvironment() {

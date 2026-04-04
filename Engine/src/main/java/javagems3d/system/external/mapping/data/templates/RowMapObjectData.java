@@ -71,7 +71,7 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
     }
 
     public boolean checkGroupName(String group, String name) {
-        return this.getObjectPath().equals(group) && this.getObjectNameId().equals(name);
+        return this.getObjectPath().equals("/" + group) && this.getObjectNameId().equals(name);
     }
 
     @Override

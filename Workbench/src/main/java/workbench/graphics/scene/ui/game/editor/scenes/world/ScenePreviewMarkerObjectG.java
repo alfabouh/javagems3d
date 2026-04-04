@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.game.editor.scenes.world;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import workbench.WBench;
@@ -65,7 +66,7 @@ public class ScenePreviewMarkerObjectG<T extends GameResourceMarkerObjectAsset> 
                 {
                     ImGui.spacing();
                     ImGui.bulletText("Rendering");
-                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 100, true);
+                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
                     ImGui.indent();
                     {
                         ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);

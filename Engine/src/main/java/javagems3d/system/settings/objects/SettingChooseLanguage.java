@@ -1,11 +1,11 @@
 package javagems3d.system.settings.objects;
 
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.resources.localisation.LocalisationManager;
+import javagems3d.system.resources.localisation.LocalizationManager;
 
 public class SettingChooseLanguage extends SettingSlot {
 
-    public SettingChooseLanguage(String name, LocalisationManager.Lang defaultLang) {
+    public SettingChooseLanguage(String name, LocalizationManager.Lang defaultLang) {
         super(name, 0, 0, 1);
         this.setValue(0);
     }
@@ -22,7 +22,7 @@ public class SettingChooseLanguage extends SettingSlot {
         return this.getName(this.getValue());
     }
 
-    public LocalisationManager.Lang getCurrentLanguage() {
+    public LocalizationManager.Lang getCurrentLanguage() {
         return JGemsHelper.localisation().getCurrentLanguage();
     }
 }

@@ -1,6 +1,8 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
 import javagems3d.graphics.objects.IRendered;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;

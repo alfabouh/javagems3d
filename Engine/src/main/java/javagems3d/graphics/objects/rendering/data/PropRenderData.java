@@ -43,7 +43,7 @@ public class PropRenderData {
     }
 
     public PropRenderData(@NotNull PropRenderData entityRenderData, @Nullable MeshStructure3D<?> meshStructure) {
-        this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes(), meshStructure);
+        this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes().copy(), meshStructure);
     }
 
     public static IScenePropConstructor defaultObjectConstructor() {

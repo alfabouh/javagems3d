@@ -23,6 +23,11 @@ public class JSTagsContainer {
         this.container = new TagsContainer();
     }
 
+    @JSHideFromDoc
+    public JSTagsContainer(TagsContainer other) {
+        this.container = other;
+    }
+
     @JSCodingConstructor(description = "Copy tags container.", paramNames = {"other"})
     public JSTagsContainer(JSTagsContainer other) {
         this.container = new TagsContainer(other.getJavaContainer());

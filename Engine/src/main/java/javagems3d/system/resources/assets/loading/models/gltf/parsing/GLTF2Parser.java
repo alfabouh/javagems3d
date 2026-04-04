@@ -55,11 +55,19 @@ public abstract class GLTF2Parser {
             if (bufferUri.startsWith("data:application")) {
                 String base64Data = bufferUri.substring(bufferUri.indexOf(",") + 1);
                 byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
-                buffersList.add(ByteBuffer.wrap(decodedBytes));
+                ByteBuffer buffer = MemoryUtil.memAlloc(decodedBytes.length);
+                buffer.put(decodedBytes).flip();
+                buffersList.add(buffer);
             } else {
                 JGemsPath pathToBin = new JGemsPath(pathToMainFile.getPath().getAbsolutePathDirectory(), bufferUri);
                 try (InputStream binInput = JGems3D.getInputStream(new JGemsPathSource(pathToBin, pathToMainFile.getSource()))) {
-                    buffersList.add(JGemsHelper.files().toByteBufferSized(binInput, bufferObj.get("byteLength").getAsInt()));
+                    ByteBuffer buffer = JGemsHelper.files().toByteBufferSized(binInput, bufferObj.get("byteLength").getAsInt());
+                    if (!buffer.isDirect()) {
+                        ByteBuffer nativeBuffer = MemoryUtil.memAlloc(buffer.remaining());
+                        nativeBuffer.put(buffer).flip();
+                        buffer = nativeBuffer;
+                    }
+                    buffersList.add(buffer);
                 } catch (IOException e) {
                     throw new JGemsIOException(e);
                 }

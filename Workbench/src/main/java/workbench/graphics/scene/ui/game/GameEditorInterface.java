@@ -4,9 +4,13 @@ import imgui.ImGui;
 import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import javagems3d.system.service.collections.Pair;
+import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -70,13 +74,18 @@ public class GameEditorInterface implements DearUIInterface {
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Game Project")) {
             //TODO
-            if (ImGui.menuItem("Run Game (WIP)")) {
+            if (ImGui.menuItem("Run Game")) {
                 //JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
                 //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN, "true")
                 //));
+                JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "false"),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath())
+                ));
             }
             ImGui.separator();
             if (ImGui.menuItem("Save")) {

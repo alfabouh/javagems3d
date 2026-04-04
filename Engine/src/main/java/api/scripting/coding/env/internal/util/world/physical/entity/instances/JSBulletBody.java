@@ -3,7 +3,7 @@ package api.scripting.coding.env.internal.util.world.physical.entity.instances;
 import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSCodingClass(binding = "JSBulletBody", description = "Physics body backed by Bullet, with full control over transform, velocity and forces.")
-public class JSBulletBody extends JSWorldObject {
+public class JSBulletBody extends JSWorldItem {
     @JSCodingField(description = "Underlying BulletBody (Java side)")
     private final BulletBody bulletBody;
 

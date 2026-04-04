@@ -6,7 +6,7 @@ import api.scripting.coding.env.def.JSHideFromDoc;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
 @JSCodingClass(binding = "JSOpenGLRenderer", description = "Wrapper for OpenGLRenderer. Provides access to window, world, and basic rendering operations.")
-public abstract class JSOpenGLRenderer {
+public class JSOpenGLRenderer {
     private final OpenGLRenderer renderer;
 
     @JSHideFromDoc

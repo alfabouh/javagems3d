@@ -1,8 +1,10 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IGluingRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.GluingRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -57,5 +59,10 @@ public abstract class GluingRenderNode extends IRenderNode.Template implements I
 
     public GluingRenderProcessor getSceneGluingRenderProcessor() {
         return this.gluingRenderProcessor;
+    }
+
+    @Override
+    public NodeID getNodeID() {
+        return JGemsOpenGLRenderer.GLUING_RENDER_PASS;
     }
 }

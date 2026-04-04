@@ -23,6 +23,10 @@ public class VirtualObjectsFolder<T extends VirtualObjectsFolder.ObjectWithName>
         this.getObjectsThere().clear();
     }
 
+    public VirtualObjectsFolder<T> getParent() {
+        return this.parent;
+    }
+
     public VirtualObjectsFolder<T> setParent(VirtualObjectsFolder<T> parent) {
         this.parent = parent;
         return this;

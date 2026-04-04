@@ -8,6 +8,7 @@ public abstract class JGemsConfig {
         public static boolean SHOW_CASCADES = false;
         public static float PATH_GEN_GRAPH_GAP = 1.0f;
         public static boolean FULL_BRIGHT;
+        public static boolean DISABLE_POINT_LIGHTS;
         public static boolean SHOW_DEBUG_LINES;
 
         static {

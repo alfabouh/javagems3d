@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingConstructor;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObject;
+import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItem;
 import api.scripting.coding.env.internal.util.world.physical.zones.instances.JSLiquid;
 import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
 import api.scripting.coding.env.internal.util.world.render.data.JSLiquidRenderData;
@@ -67,12 +67,12 @@ public class JSSceneWorld {
     }
 
     @JSCodingFunctionOrMethod(description = "Adds a world item to the scene with its render data.", paramNames = {"worldItem", "renderData"})
-    public void addWorldItem(@NotNull JSWorldObject worldItem, @NotNull JSEntityRenderData renderData) {
+    public void addWorldItem(@NotNull JSWorldItem worldItem, @NotNull JSEntityRenderData renderData) {
         this.sceneWorld.addWorldItem(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
     }
 
     @JSCodingFunctionOrMethod(description = "Attaches an existing camera to a scene entity.", paramNames = {"item", "camera"})
-    public boolean attachCameraOn(@NotNull JSWorldObject item, @NotNull JSAttachedCamera camera) {
+    public boolean attachCameraOn(@NotNull JSWorldItem item, @NotNull JSAttachedCamera camera) {
         return this.sceneWorld.attachCameraOn(item.getJavaWorldObject(), camera.getJavaAttachedCamera());
     }
 
@@ -92,7 +92,7 @@ public class JSSceneWorld {
     }
 
     @JSCodingFunctionOrMethod(description = "Adds a light attached to a specific world item.", paramNames = {"item", "light"})
-    public void addWorldItemLight(@NotNull JSWorldObject item, @NotNull JSLightI light) {
+    public void addWorldItemLight(@NotNull JSWorldItem item, @NotNull JSLightI light) {
         this.sceneWorld.addWorldItemLight(item.getJavaWorldObject(), (ILightAttachable) light.getJavaLight());
     }
 
@@ -127,7 +127,7 @@ public class JSSceneWorld {
     }
 
     @JSCodingFunctionOrMethod(description = "Returns the animated object associated with a world item.", paramNames = {"item"})
-    public JSAnimatedObjectI getAnimatedObject(@NotNull JSWorldObject item) {
+    public JSAnimatedObjectI getAnimatedObject(@NotNull JSWorldItem item) {
         IAnimated obj = this.sceneWorld.getAnimatedObject(item.getJavaWorldObject());
         return obj != null ? new JSSceneAnimatedObject(obj) : null;
     }

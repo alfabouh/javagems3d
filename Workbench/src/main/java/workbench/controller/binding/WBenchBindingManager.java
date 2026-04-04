@@ -17,6 +17,7 @@ public class WBenchBindingManager extends BindingManager {
     public final Key keyUp;
     public final Key keyShift;
     public final Key keyCtrl;
+    public final Key keyAlt;
     public final Key keyDelete;
     public final Key keyEsc;
     public final Key keyV;
@@ -29,6 +30,7 @@ public class WBenchBindingManager extends BindingManager {
         this.keyUp = new Key(GLFW.GLFW_KEY_SPACE);
         this.keyShift = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
         this.keyCtrl = new Key(GLFW.GLFW_KEY_LEFT_CONTROL);
+        this.keyAlt = new Key(GLFW.GLFW_KEY_LEFT_ALT);
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
         this.keyEsc = new Key(GLFW.GLFW_KEY_ESCAPE);
 
@@ -48,7 +50,8 @@ public class WBenchBindingManager extends BindingManager {
         this.addBinding(this.keyS, "Walk Backward");
         this.addBinding(this.keyUp, "Fly Up");
         this.addBinding(this.keyShift, "Fly Down");
-        this.addBinding(this.keyCtrl, "Special Interface Controlling");
+        this.addBinding(this.keyAlt, "Camera Speed Up");
+        this.addBinding(this.keyCtrl, "Special Interface Controlling | Camera Slow Down");
         this.addBinding(this.keyDelete, "Delete");
         this.addBinding(this.keyEsc, "Cancel");
     }

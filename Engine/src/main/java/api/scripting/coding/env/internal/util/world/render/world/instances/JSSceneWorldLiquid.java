@@ -21,6 +21,11 @@ public class JSSceneWorldLiquid implements JSSceneLiquid {
     @JSHideFromDoc
     private final SceneWorldLiquid liquidObj;
 
+    @JSHideFromDoc
+    public JSSceneWorldLiquid(@NotNull SceneWorldLiquid worldLiquid) {
+        this.liquidObj = worldLiquid;
+    }
+
     @JSCodingConstructor(description = "Create a JSSceneWorldLiquid instance", paramNames = {"liquid", "renderData"})
     public JSSceneWorldLiquid(@NotNull JSLiquid liquid, @NotNull JSLiquidRenderData renderData) {
         this.liquidObj = new SceneWorldLiquid(liquid.getJavaLiquid(), renderData.getJavaLiquidRenderData());

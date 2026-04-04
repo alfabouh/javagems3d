@@ -223,7 +223,11 @@ public final class WBenchMapProjectManager {
                             false,
                             objectsData.propObjects,
                             (path, name) -> this.getMapObjectTemplates().getProps().find(path, name),
-                            (tpl, t) -> new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer()),
+                            (tpl, t) -> {
+                                WBenchCommonObject wBenchCommonObject = new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer());
+                                wBenchCommonObject.getRenderAttributes().setRenderProperties(t.getRenderProperties().copy());
+                                return wBenchCommonObject;
+                            },
                             defaultPropsToCreate,
                             (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultIndirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
                     );
@@ -237,7 +241,11 @@ public final class WBenchMapProjectManager {
                             false,
                             objectsData.entityObjects,
                             (path, name) -> this.getMapObjectTemplates().getEntities().find(path, name),
-                            (tpl, t) -> new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer()),
+                            (tpl, t) -> {
+                                WBenchCommonObject wBenchCommonObject = new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer());
+                                wBenchCommonObject.getRenderAttributes().setRenderProperties(t.getRenderProperties().copy());
+                                return wBenchCommonObject;
+                            },
                             defaultEntitiesToCreate,
                             (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultIndirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
                     );
@@ -265,7 +273,11 @@ public final class WBenchMapProjectManager {
                             true,
                             objectsData.backgroundProps,
                             (path, name) -> this.getMapObjectTemplates().getProps().find(path, name),
-                            (tpl, t) -> new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer()),
+                            (tpl, t) -> {
+                                WBenchCommonObject wBenchCommonObject = new WBenchCommonObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer());
+                                wBenchCommonObject.getRenderAttributes().setRenderProperties(t.getRenderProperties());
+                                return wBenchCommonObject;
+                            },
                             defaultBackgroundPropsToCreate,
                             (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultIndirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
                     );

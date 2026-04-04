@@ -11,9 +11,24 @@ import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.coding.env.internal.map.events.mapping.*;
+import api.scripting.coding.env.internal.map.events.mapping.data.JSEntityData;
+import api.scripting.coding.env.internal.map.events.mapping.data.JSPropData;
+import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTranslateData;
+import api.scripting.coding.env.internal.util.mapping.row.JSRowMapObjectData;
+import api.scripting.coding.env.internal.util.math.JSVector3f;
+import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
+import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
+import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
+import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import api.system.JGemsAPI;
+import api.system.scripting.JavaToJsAPI;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
@@ -21,6 +36,7 @@ import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
@@ -72,15 +88,18 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
     private final JGemsPathSource pathToJG3DFile;
     private MapObjectsDataPack mapObjectsDataPack;
     private MapProjectData mapProjectData;
+    private final Set<IGameMap.SpawnPlayerData> spawnForPlayersData;
 
     public ExternalMapProcessor(JGemsPathSource pathToJG3DFile) {
         super();
         this.pathToJG3DFile = pathToJG3DFile;
+        this.spawnForPlayersData = new HashSet<>();
         this.readMap(pathToJG3DFile);
     }
 
@@ -175,7 +194,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         Map<Integer, List<PointLight>> pointLightIdMap = new HashMap<>();
         for (RowMapObjectData template : pointLights) {
-            Pair<PointLight, Integer> pair = this.onProcessPointLight(template, physicsWorld, sceneWorld);
+            EventBus.MapPointLightConvertEvent event = new EventBus.MapPointLightConvertEvent(sceneWorld, physicsWorld, template);
+            EventLauncher.pushEvent(event, new Pair<>(new JSMapPointLightConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
+            if (event.isCancelled()) {
+                continue;
+            }
+
+            Pair<PointLight, Integer> pair = event.getResult() != null ? event.getResult() : this.onProcessPointLight(template, physicsWorld, sceneWorld);
             if (pair != null) {
                 if (pair.second() >= 0) {
                     JGemsUtils.putObjectInMapOrUpdate(pointLightIdMap, pair.second(), new ArrayList<PointLight>() {{
@@ -184,40 +209,80 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                         ex.add(nw);
                         return ex;
                     }, pair.first());
-                    //JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPointLightEvent(pair.first(), pair.second());
                 }
             }
         }
-        this.processMapObjects(propObjects, resourcePropMap, (template, data) -> {
-            SceneProp sceneProp = this.onProcessProp(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
-            if (sceneProp != null) {
-                //JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedPropEvent(sceneProp, template.getId());
-            }
-        });
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
-            SceneProp prop = this.onProcessBackgroundProp(template, data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
-            if (prop != null) {
-                //JGemsAPI.getAPIScripting().getGameWorldJS().getBackgroundJS().onMapSpawnedBackgroundPropEvent(prop, template.getId());
+            EventBus.MapPropConvertEvent event = new EventBus.MapPropConvertEvent(true, sceneWorld, physicsWorld, template, data);
+            EventLauncher.pushEvent(event, new Pair<>(new JSMapPropConvertEvent(true, new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSPropData(data)), JavaToJsAPI.Target.Map));
+            if (event.isCancelled()) {
+                return;
             }
+
+            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessBackgroundProp(template, data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
+        });
+        this.processMapObjects(propObjects, resourcePropMap, (template, data) -> {
+            EventBus.MapPropConvertEvent event = new EventBus.MapPropConvertEvent(false, sceneWorld, physicsWorld, template, data);
+            EventLauncher.pushEvent(event, new Pair<>(new JSMapPropConvertEvent(false, new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSPropData(data)), JavaToJsAPI.Target.Map));
+            if (event.isCancelled()) {
+                return;
+            }
+
+            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessProp(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
         });
         this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> {
-            WorldItem worldItem = this.onProcessEntity(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
-            if (worldItem != null) {
-               // JGemsAPI.getAPIScripting().getGameWorldJS().onMapSpawnedWorldItemEvent(worldItem, template.getId());
+            EventBus.MapEntityConvertEvent event = new EventBus.MapEntityConvertEvent(sceneWorld, physicsWorld, template, data);
+            EventLauncher.pushEvent(event, new Pair<>(new JSMapEntityConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSEntityData(data)), JavaToJsAPI.Target.Map));
+            if (event.isCancelled()) {
+                return;
             }
+
+            WorldItem worldItem = event.getResult() != null ? event.getResult() : this.onProcessEntity(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
+        });
+        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> {
+            this.processDefaultMarkers(template);
+            EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(sceneWorld, physicsWorld, template, data);
+            EventLauncher.pushEvent(event, new Pair<>(new JSMapMarkerConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
+            if (event.isCancelled()) {
+                return;
+            }
+
+            this.onProcessMarker(template, data, physicsWorld, sceneWorld);
         });
         this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
     }
 
+    protected void processDefaultMarkers(RowMapObjectData template) {
+        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "water")) {
+            Vector3f pos = template.getPosition();
+            Vector3f scale = template.getScaling();
+            Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
+            JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+            Log.get().debug("Processed marker: water");
+        }
+
+        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "player_spawn")) {
+            Matrix4f rotMatrix = new Matrix4f().rotateXYZ(template.getRotation().x, template.getRotation().y, template.getRotation().z);
+            Vector3f forward = new Vector3f(0, 0, -1);
+            rotMatrix.transformDirection(forward);
+            Vector3f flatForward = new Vector3f(forward.x, 0, forward.z).normalize();
+            float angleY = (float) Math.atan2(-flatForward.x, -flatForward.z);
+
+            this.spawnForPlayersData.add(new IGameMap.SpawnPlayerData(template.getPosition(), new Vector3f(0.0f, angleY, 0.0f)));
+            Log.get().debug("Processed marker: player_spawn");
+        }
+    }
+
     protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
         if (skyData != null) {
-           final Map<String, ICubeMapProgram.CMTextures> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
-           if (skyBoxesSet.containsKey(skyData.getNameId())) {
-               ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(skyBoxesSet.get(skyData.getNameId())), new CubeMapTexture.Properties(true));
-               skyBox.setSky2DTexture(cubeMapProgram);
-           } else {
-               Log.get().error("Couldn't create cubeMap: " + skyData.getNameId());
-           }
+
+            final Map<String, ICubeMapProgram.CMTextures> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
+            if (skyBoxesSet.containsKey(skyData.getNameId())) {
+                ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(skyBoxesSet.get(skyData.getNameId())), new CubeMapTexture.Properties(true));
+                skyBox.setSky2DTexture(cubeMapProgram);
+            } else {
+                Log.get().error("Couldn't create cubeMap: " + skyData.getNameId());
+            }
         }
 
         if (sunData != null) {
@@ -247,12 +312,21 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
     @Override
     public final void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
+        EventBus.MapProcessingEvent pre = new EventBus.MapProcessingEvent(world, sceneWorld, this.getMapDataPack(), EventBus.Run.PRE);
+        EventLauncher.pushEvent(pre, new Pair<>(new JSMapProcessingEvent(new JSPhysicsWorld(world), new JSSceneWorld(sceneWorld), EventBus.Run.PRE), JavaToJsAPI.Target.Map));
+        if (pre.isCancelled()) {
+            return;
+        }
+
         final Set<RowMapObjectData> propObjects = this.getMapDataPack().getObjectsData().getPropObjects();
         final Set<RowMapObjectData> markerObjects = this.getMapDataPack().getObjectsData().getMarkerObjects();
         final Set<RowMapObjectData> entityObjects = this.getMapDataPack().getObjectsData().getEntityObjects();
         final Set<RowMapObjectData> pointLights = this.getMapDataPack().getObjectsData().getPointLights();
         final Set<RowMapObjectData> backgroundProps = this.getMapDataPack().getObjectsData().getBackgroundProps();
+
         this.onProcessing(backgroundProps, propObjects, markerObjects, entityObjects, pointLights, world, sceneWorld);
+
+        EventLauncher.pushEvent(new EventBus.MapProcessingEvent(world, sceneWorld, this.getMapDataPack(), EventBus.Run.POST), new Pair<>(new JSMapProcessingEvent(new JSPhysicsWorld(world), new JSSceneWorld(sceneWorld), EventBus.Run.POST), JavaToJsAPI.Target.Map));
     }
 
     @Override
@@ -261,23 +335,49 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     @Override
-    public final void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
+    public final void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background, IEnvironment environment) {
         final SunData sunData = this.getMapDataPack().getSunData();
         final SkyData skyData = this.getMapDataPack().getSkyData();
+
+        EventBus.MapSkySetupEvent event = new EventBus.MapSkySetupEvent((SceneWorld) background.getWorld(), skyBox, background, sunData, skyData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSMapSkySetupEvent(new JSSceneWorld((SceneWorld) background.getWorld()), new JSEnvironment((JGemsEnvironment) environment)), JavaToJsAPI.Target.Map));
+        if (event.isCancelled()) {
+            return;
+        }
+
         background.setViewScaling(skyData.backGroundScaling);
         this.onSetupSkyBox(sunData, skyData, skyBox, background);
     }
 
     @Override
-    public final void onSetupFog(IFogScene fogScene) {
+    public final void onSetupFog(IFogScene fogScene, IEnvironment environment) {
         final FogData fogData = this.getMapDataPack().getFogData();
+
+        EventBus.MapFogSetupEvent event = new EventBus.MapFogSetupEvent(fogScene, fogData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSMapFogSetupEvent(new JSSceneWorld((SceneWorld) environment.getWorld()), new JSEnvironment((JGemsEnvironment) environment)), JavaToJsAPI.Target.Map));
+        if (event.isCancelled()) {
+            return;
+        }
+
         this.onSetupFog(fogData, fogScene);
     }
 
     @Override
-    public final void onSetupShadows(IShadowScene shadowScene) {
+    public final void onSetupShadows(IShadowScene shadowScene, IEnvironment environment) {
         final ShadowsData shadowsData = this.getMapDataPack().getShadowsData();
+
+        EventBus.MapShadowsSetupEvent event = new EventBus.MapShadowsSetupEvent(shadowScene, shadowsData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSMapShadowsSetupEvent(new JSSceneWorld((SceneWorld) environment.getWorld()), new JSEnvironment((JGemsEnvironment) environment)), JavaToJsAPI.Target.Map));
+        if (event.isCancelled()) {
+            return;
+        }
+
         this.onSetupShadows(shadowsData, shadowScene);
+    }
+
+    @Override
+    public @Nullable Collection<IGameMap.SpawnPlayerData> getSpawnPlayersSet() {
+        return this.spawnForPlayersData;
     }
 
     @Override
@@ -303,11 +403,11 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     public static class Default extends ExternalMapProcessor {
-        protected Vector3f playerSpawnPoint;
-        protected Vector3f playerSpawnRotation;
+        private IGameMap.IPlayerConstructor playerConstructor;
 
-        public Default(JGemsPath pathToJG3DFile) {
+        public Default(JGemsPath pathToJG3DFile, @Nullable IGameMap.IPlayerConstructor playerConstructor) {
             super(new JGemsPathSource(pathToJG3DFile, ISource.Source.OUTSIDE_JAR));
+            this.playerConstructor = playerConstructor;
         }
 
         @Override
@@ -328,6 +428,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
             final PropRenderData propRenderData = new PropRenderData(propData.propRenderData(), buffer);
             propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
+
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, propRenderData);
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -339,7 +440,6 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     sceneWorldProp.addLightAttachment(pointLight);
                 }
             }
-
             return sceneWorldProp;
         }
 
@@ -371,23 +471,6 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-            if (template.checkGroupName("generic", MapObjectsIdentifiers.MARKER + "water")) {
-                Vector3f pos = template.getPosition();
-                Vector3f scale = template.getScaling();
-                Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
-                JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
-            }
-
-            if (template.checkGroupName("generic", MapObjectsIdentifiers.MARKER + "player_spawn")) {
-                Matrix4f rotMatrix = new Matrix4f().rotateXYZ(template.getRotation().x, template.getRotation().y, template.getRotation().z);
-                Vector3f forward = new Vector3f(0, 0, -1);
-                rotMatrix.transformDirection(forward);
-                Vector3f flatForward = new Vector3f(forward.x, 0, forward.z).normalize();
-                float angleY = (float) Math.atan2(-flatForward.x, -flatForward.z);
-
-                this.playerSpawnPoint = template.getPosition();
-                this.playerSpawnRotation = new Vector3f(0.0f, angleY, 0.0f);
-            }
         }
 
         @Override
@@ -399,16 +482,41 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         protected void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         }
 
-        @Override
-        public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor() {
-            if (this.playerSpawnPoint == null || this.playerSpawnRotation == null) {
-                return null;
-            }
-            return (world -> new Pair<>(this.createPlayer(world, this.playerSpawnPoint, this.playerSpawnRotation), JGemsResourceManager.globalRenderDataAssets.defaultPlayer));
+        public static IGameMap.IPlayerConstructor getDefaultPlayerConstructor() {
+            return ((world, dataSet) -> {
+                if (dataSet.isEmpty()) {
+                    return null;
+                }
+                IGameMap.SpawnPlayerData randData = dataSet.stream().findAny().orElse(null);
+                return new Pair<>(new JGemsKinematicPlayer(world, new Vector3f(randData.spawnPos()), new Vector3f(randData.spawnRot())), JGemsResourceManager.globalRenderDataAssets.defaultPlayer);
+            });
         }
 
-        protected IPlayer createPlayer(PhysicsWorld world, Vector3f pos, Vector3f rot) {
-            return new JGemsKinematicPlayer(world, new Vector3f(pos), new Vector3f(rot));
+        @Override
+        public IGameMap.IPlayerConstructor getPlayerConstructor(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+            if (this.playerConstructor == null) {
+                this.playerConstructor = ExternalMapProcessor.Default.getDefaultPlayerConstructor();
+            }
+            EventBus.PlayerConstructOnMapEvent event = new EventBus.PlayerConstructOnMapEvent(physicsWorld, this.getSpawnPlayersSet());
+            JSPlayerConstructOnMapEvent playerConstructOnMapEventJS = new JSPlayerConstructOnMapEvent(new JSPhysicsWorld(physicsWorld), this.getSpawnPlayersSet() == null ? new ArrayList<>() : this.getSpawnPlayersSet().stream().map(e -> new JSSpawnPlayerTranslateData(new JSVector3f(e.spawnPos()), new JSVector3f(e.spawnRot()))).collect(Collectors.toSet()));
+            EventLauncher.pushEvent(event, new Pair<>(playerConstructOnMapEventJS, JavaToJsAPI.Target.Map));
+            try {
+                IPlayer potentialPlayer = event.player == null ? playerConstructOnMapEventJS.getPlayer().getJavaPlayer() : event.player;
+                EntityRenderData potentialRenderData = event.renderData == null ? playerConstructOnMapEventJS.getRenderData().getJavaEntityRenderData() : event.renderData;
+                {
+                    if (potentialPlayer == null && event.isCancelled()) {
+                        return null;
+                    }
+                }
+                {
+                    if (potentialPlayer != null) {
+                        this.playerConstructor = (world, spawnPlayerData) -> new Pair<>(potentialPlayer, potentialRenderData);
+                    }
+                }
+            } catch (Exception e) {
+                Log.get().warn("Couldn't create any player. Default returned");
+            }
+            return this.playerConstructor;
         }
     }
 }

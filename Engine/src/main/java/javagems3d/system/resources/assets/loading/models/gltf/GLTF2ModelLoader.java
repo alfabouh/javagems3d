@@ -1,6 +1,8 @@
 package javagems3d.system.resources.assets.loading.models.gltf;
 
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.global.JGemsConfig;
@@ -39,11 +41,16 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.*;
 import java.util.function.Consumer;
@@ -451,7 +458,11 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             }
 
             if (diffuseTexture != null) {
-                diffuseMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, diffuseTexture.uri()), this.getPathToMainFile().getSource()), nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, imageProperties);
+                if (diffuseTexture.uri().startsWith("data:image")) {
+                    diffuseMap = this.readBinary(diffuseTexture, imageProperties, fullPath);
+                } else {
+                    diffuseMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, diffuseTexture.uri()), this.getPathToMainFile().getSource()), nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, imageProperties);
+                }
                // if (computeTransparentPixels != null) {
                //     textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, diffuseMap);
                // }
@@ -459,7 +470,11 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture emissionTexture = gltf2Material.getEmissionTexture();
             if (emissionTexture != null) {
-                emissionMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, emissionTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                if (emissionTexture.uri().startsWith("data:image")) {
+                    emissionMap = this.readBinary(emissionTexture, imageProperties, fullPath);
+                } else {
+                    emissionMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, emissionTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                }
                 if (emissionColorVec == null) {
                     emissionColor = new Color3Texture(new Vector3f(1.0f));
                 }
@@ -467,7 +482,11 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture metallicRoughnessTexture = gltf2Material.getMetallicRoughnessTexture();
             if (metallicRoughnessTexture != null) {
-                metallicRoughnessMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, metallicRoughnessTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                if (metallicRoughnessTexture.uri().startsWith("data:image")) {
+                    metallicRoughnessMap = this.readBinary(metallicRoughnessTexture, imageProperties, fullPath);
+                } else {
+                    metallicRoughnessMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, metallicRoughnessTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                }
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.5f;
             } else {
                 metallicFactor = gltf2Material.hasFlag(GLTF2Material.METALLIC_FACTOR) ? gltf2Material.getMetallicFactor() : 0.0f;
@@ -477,7 +496,11 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
             GLTF2ImageTexture normalsTexture = gltf2Material.getNormalTexture();
             if (normalsTexture != null) {
-                normalsMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, normalsTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                if (normalsTexture.uri().startsWith("data:image")) {
+                    normalsMap = this.readBinary(normalsTexture, imageProperties, fullPath);
+                } else {
+                    normalsMap = systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath, normalsTexture.uri()), this.getPathToMainFile().getSource()), null, imageProperties);
+                }
             }
         } catch (JGemsException e) {
             Log.get().exception(e);
@@ -498,6 +521,16 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         material.getTransparency().setOpacity(opacityConstant);
 
         return material;
+    }
+
+    private ITexture2DProgram readBinary(GLTF2ImageTexture imageTexture, ImageTexture.Properties textureProperties, String fullPath) {
+        String base64Data = imageTexture.uri().substring(imageTexture.uri().indexOf(",") + 1);
+        byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
+        try (InputStream stream = new ByteArrayInputStream(decodedBytes)) {
+            return systemResources.createTexture(ResourceManager.DEFAULT_TEXTURE(), fullPath + JGemsHelper.files().md5(imageTexture.uri()), stream, textureProperties);
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
     }
 
     public JGemsPathSource getPathToMainFile() {

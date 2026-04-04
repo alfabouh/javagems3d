@@ -1,6 +1,8 @@
 package workbench.graphics.scene.nodes;
 
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -37,6 +39,11 @@ public final class WBenchUIRenderNode implements IUIRenderNode {
     @Override
     public @NotNull OpenGLRenderer getOpenGLRenderer() {
         return this.openGLRenderer;
+    }
+
+    @Override
+    public NodeID getNodeID() {
+        return JGemsOpenGLRenderer.UI_RENDER_PASS;
     }
 
     @Override

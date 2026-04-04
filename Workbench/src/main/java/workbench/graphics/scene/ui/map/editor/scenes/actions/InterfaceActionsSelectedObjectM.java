@@ -424,7 +424,7 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.bulletText("Rendering");
             ImGui.popStyleColor();
             {
-                ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true);
+                ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
                 if (selectedObject.getRenderAttributes().getProperties() == null) {
                     selectedObject.getRenderAttributes().setRenderProperties(new WBenchRenderProperties());
                     Log.get().debug("Null renderProp. Created");
