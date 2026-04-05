@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ShaderObject {
-    public static final String VERSION = "#version 460 core\n\n";
+    public static final String MAIN_PREFIX = "#version 460 core\n\n";
     private final Map<String, Set<String>> structs;
     private final List<Uniform> uniforms;
     private final JGemsPathSource pathToShader;
@@ -200,7 +200,7 @@ public class ShaderObject {
     }
 
     private String fillShader(String shaderStream) {
-        String shader = ShaderObject.VERSION + shaderStream;
+        String shader = ShaderObject.MAIN_PREFIX + shaderStream;
         shader = this.processIncludes(shader);
         shader = this.processConstants(this.getShaderStaticConstants(), shader);
         shader = shader.replaceAll("/\\*[^*]*\\*+([^/*][^*]*\\*+)*/", "");

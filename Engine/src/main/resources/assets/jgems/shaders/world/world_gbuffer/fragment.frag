@@ -1,4 +1,6 @@
 #extension GL_ARB_bindless_texture : require
+precision highp float;
+precision highp int;
 
 in mat3 TBN;
 in vec2 uv_coordinates;
