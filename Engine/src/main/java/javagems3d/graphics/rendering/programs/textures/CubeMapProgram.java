@@ -27,10 +27,13 @@ public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
     public void createTexture(Vector2i size6x, @NotNull CubeMapProgram.Properties properties, FloatBuffer pixels) {
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
+        GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         for (int i = 0; i < 6; i++) {
             this.size[i] = size6x;
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.internalFormat(), size6x.x, size6x.y, 0, properties.textureFormat(), GL46.GL_FLOAT, (ByteBuffer) null);
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.internalFormat(), size6x.x, size6x.y, 0, properties.textureFormat(), properties.getTextureTypeByFormat(properties.internalFormat), (ByteBuffer) null);
         }
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, 0);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAX_LEVEL, 0);
         this.unBindTexture();
         this.createSampler(properties);
     }

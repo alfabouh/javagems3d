@@ -61,13 +61,13 @@ public class RenderTable implements ICopyable<RenderTable> {
     private final Map<Pipeline, Data> dataMap;
     private final Map<Pipeline, Pipeline> redirectionMap;
 
-    private RenderTable(@NotNull Map<Pipeline, Data> dataMap) {
+    private RenderTable(@NotNull Map<Pipeline, Data> dataMap, Map<Pipeline, Pipeline> redirectionMap) {
         this.dataMap = dataMap;
-        this.redirectionMap = new HashMap<>();
+        this.redirectionMap = redirectionMap;
     }
 
     protected RenderTable() {
-        this(new EnumMap<>(Pipeline.class));
+        this(new EnumMap<>(Pipeline.class), new HashMap<>());
     }
 
     public static RenderTable getIndirect() {
@@ -179,6 +179,8 @@ public class RenderTable implements ICopyable<RenderTable> {
         return this.redirectionMap;
     }
 
+
+
     public @Nullable Data getRenderingData(@NotNull Pipeline pipeline) {
         Pipeline redirected = this.getRedirection(pipeline);
         return this.dataMap.get(redirected);
@@ -194,7 +196,7 @@ public class RenderTable implements ICopyable<RenderTable> {
 
     @Override
     public RenderTable copy() {
-        return new RenderTable(new HashMap<>(this.getDataMap()));
+        return new RenderTable(new HashMap<>(this.getDataMap()), new HashMap<>(this.getRedirectionMap()));
     }
 
     public static class Data {

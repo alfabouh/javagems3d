@@ -68,7 +68,7 @@ public class InterfaceActionsSelectedObjectM {
             i |= this.getOperationMask(translationConstraints.rotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
         }
         if (scaling) {
-            i |= this.getOperationMask(translationConstraints.rotationConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+            i |= this.getOperationMask(translationConstraints.scalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
         }
         return i;
     }

@@ -20,7 +20,7 @@ public class TextureSimple2DProgram implements ITexture2DProgram {
         this.size = size;
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
-        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.textureFormat(), size.x, size.y, 0, properties.internalFormat(), GL46.GL_FLOAT, pixels);
+        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.textureFormat(), size.x, size.y, 0, properties.internalFormat(), properties.getTextureTypeByFormat(properties.internalFormat()), pixels);
         GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAG_FILTER, properties.filteringMag());
         GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MIN_FILTER, properties.filteringMin());
         GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_COMPARE_MODE, properties.compareMode());
