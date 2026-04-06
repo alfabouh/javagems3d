@@ -48,7 +48,6 @@ public class JGemsEnvironment implements IEnvironment {
     public void destroyEnvironment() {
         EventLauncher.pushEvent(new EventBus.DestroyRenderEnvironment(this), new Pair<>(new JSDestroyRenderEnvironmentEvent(new JSEnvironment(this)), JavaToJsAPI.Target.Game));
         this.getShadowScene().destroyResources();
-        this.clearPointLightsBuffer();
     }
 
     public void clearPointLightsBuffer() {

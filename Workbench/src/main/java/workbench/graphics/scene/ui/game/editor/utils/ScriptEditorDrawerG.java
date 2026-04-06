@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.game.editor.utils;
 
+import api.scripting.coding.APICodingContext;
 import api.scripting.coding.env.APICodeEnvironmentController;
 import api.system.JGemsAPI;
 import imgui.ImGui;
@@ -51,33 +52,34 @@ public class ScriptEditorDrawerG {
 
     private StringBuilder aiPromptBuilder;
 
-    public ScriptEditorDrawerG(APICodeEnvironmentController apiCodeEnvironmentController) {
+    public ScriptEditorDrawerG(APICodeEnvironmentController apiCodeEnvironmentController, boolean game) {
         this.apiCodeEnvironmentController = apiCodeEnvironmentController;
         this.textEditor = new TextEditor();
+        final APICodingContext apiCodingContext = (game ? JGemsAPI.getAPIScriptingCore().getGlobalGameContext() : JGemsAPI.getAPIScriptingCore().getLocalMapContext());
 
         int[] paletteS = this.textEditor.getDarkPalette();
         paletteS[TextEditorPaletteIndex.Default] = 0xffffffff;
         paletteS[TextEditorPaletteIndex.Identifier] = 0xffffffff;
         this.textEditor.setPalette(paletteS);
         this.textEditor.setColorizerEnable(true);
-        this.textEditor.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController(), true).getJsLang());
+        this.textEditor.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(apiCodingContext.getApiCodeEnvironmentController(), true).getJsLang());
 
         this.textEditorClassesDocs = new TextEditor();
         this.textEditorClassesDocs.setPalette(this.textEditorClassesDocs.getDarkPalette());
         this.textEditorClassesDocs.setColorizerEnable(true);
-        this.textEditorClassesDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController(), false).getJsLang());
+        this.textEditorClassesDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(apiCodingContext.getApiCodeEnvironmentController(), false).getJsLang());
         this.textEditorClassesDocs.setReadOnly(true);
 
         this.textEditorGlobalVarsDocs = new TextEditor();
         this.textEditorGlobalVarsDocs.setPalette(this.textEditorClassesDocs.getDarkPalette());
         this.textEditorGlobalVarsDocs.setColorizerEnable(true);
-        this.textEditorGlobalVarsDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController(), false).getJsLang());
+        this.textEditorGlobalVarsDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(apiCodingContext.getApiCodeEnvironmentController(), false).getJsLang());
         this.textEditorGlobalVarsDocs.setReadOnly(true);
 
         this.textEditorEntryPointDocs = new TextEditor();
         this.textEditorEntryPointDocs.setPalette(this.textEditorClassesDocs.getDarkPalette());
         this.textEditorEntryPointDocs.setColorizerEnable(true);
-        this.textEditorEntryPointDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController(), false).getJsLang());
+        this.textEditorEntryPointDocs.setLanguageDefinition(new ScriptEditorDrawerG.JSDefinition(apiCodingContext.getApiCodeEnvironmentController(), false).getJsLang());
         this.textEditorEntryPointDocs.setReadOnly(true);
 
         this.aiPromptDoc = new TextEditor();

@@ -5,6 +5,9 @@ import org.lwjgl.opengl.GL46;
 public interface ISample {
     interface IProperties {
         default int getTextureTypeByFormat(int format) {
+            if (true) { //TODO
+                return GL46.GL_FLOAT;
+            }
             return switch (format) {
                 case GL46.GL_RGBA32F, GL46.GL_RGB32F, GL46.GL_RG32F, GL46.GL_R32F -> GL46.GL_FLOAT;
                 case GL46.GL_RGBA16F, GL46.GL_RGB16F, GL46.GL_RG16F, GL46.GL_R16F -> GL46.GL_HALF_FLOAT;
