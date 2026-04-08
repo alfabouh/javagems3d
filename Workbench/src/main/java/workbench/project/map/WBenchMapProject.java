@@ -8,7 +8,7 @@ import javagems3d.system.external.mapping.data.MapProjectData;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 
 import java.io.File;
 
@@ -27,6 +27,6 @@ public class WBenchMapProject extends MapProjectData {
     }
 
     protected GameResourceAssetsFolder<GameResourceScriptAsset> readScriptsFolder(File rootFile) {
-        return WBenchGameResourcesManager.readScriptsFolderRecursive(rootFile, rootFile);
+        return WBenchProjectResourcesManager.readScriptsFolderRecursive(rootFile, rootFile);
     }
 }

@@ -75,8 +75,11 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Objects;
 
 //@SuppressWarnings("all")
 public final class JGemsHelper {
@@ -755,6 +758,32 @@ public final class JGemsHelper {
 
             byteBuffer.flip();
             return byteBuffer;
+        }
+
+        public void copyDirectory(File src, File dst) {
+            if (!src.exists()) {
+                return;
+            }
+            if (!dst.exists()) {
+                dst.mkdirs();
+            }
+
+            for (File file : Objects.requireNonNull(src.listFiles())) {
+                File target = new File(dst, file.getName());
+                if (file.isDirectory()) {
+                    copyDirectory(file, target);
+                } else {
+                    copyFile(file, target);
+                }
+            }
+        }
+
+        public void copyFile(File src, File dst) {
+            try {
+                java.nio.file.Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception e) {
+                throw new RuntimeException("Copy failed: " + src, e);
+            }
         }
 
         public String openFolderViewChooser(@Nullable String defaultStr) {

@@ -10,7 +10,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -94,7 +94,7 @@ public class ScenePreviewMarkerObjectG<T extends GameResourceMarkerObjectAsset> 
                 ImGui.unindent();
                 ImGui.endChild();
                 if (ImGui.button("Save")) {
-                    WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+                    WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
                 }
                 ImGui.endChild();
             }

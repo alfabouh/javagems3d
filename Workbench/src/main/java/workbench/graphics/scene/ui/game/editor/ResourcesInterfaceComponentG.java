@@ -31,7 +31,7 @@ import workbench.graphics.scene.ui.game.editor.instances.world.ObjectMarkerPrevi
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectPropPreview;
 import workbench.graphics.scene.ui.game.editor.utils.CreatableResourcesTreeDrawerG;
 import workbench.graphics.scene.ui.game.editor.utils.FolderResourcesTreeDrawerG;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import workbench.project.managing.instances.WBenchResourceMapAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
@@ -65,14 +65,14 @@ public class ResourcesInterfaceComponentG {
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
                 "Models",
                 (e) -> WBench.get().getGameProjectManager().refreshModelFiles(true),
-                (e) -> WBenchGameResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
+                (e) -> WBenchProjectResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 ModelAssetPreview::new);
 
         this.textureAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
                 "Textures",
                 (e) -> WBench.get().getGameProjectManager().refreshTextureFiles(true),
-                (e) -> WBenchGameResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
+                (e) -> WBenchProjectResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 TextureAssetPreview::new);
 
         this.propResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -89,13 +89,13 @@ public class ResourcesInterfaceComponentG {
                 },
                 ObjectPropPreview::new
         ).setAfterFolderCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setAfterFolderDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setAfterAssetCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setAfterAssetDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setOnContextOnItem((e) -> {
             final GameResourceModelAsset extractModelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(e.getModelAssetRelativePath());
             ImGui.beginDisabled(extractModelAsset == null);
@@ -106,7 +106,7 @@ public class ResourcesInterfaceComponentG {
             }
             ImGui.endDisabled();
         }).setAfterAssetMoved((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
             ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.PROP, new String[] {"propObjects", "backgroundProps"}, e);
         });
 
@@ -124,13 +124,13 @@ public class ResourcesInterfaceComponentG {
                 },
                 ObjectEntityPreview::new
         ).setAfterFolderCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setAfterFolderDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setAfterAssetCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setAfterAssetDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setOnContextOnItem((e) -> {
             final GameResourceModelAsset extractModelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(e.getModelAssetRelativePath());
             ImGui.beginDisabled(extractModelAsset == null);
@@ -141,7 +141,7 @@ public class ResourcesInterfaceComponentG {
             }
             ImGui.endDisabled();
         }).setAfterAssetMoved((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
             ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.ENTITY, new String[] {"entityObjects"}, e);
         });
 
@@ -159,13 +159,13 @@ public class ResourcesInterfaceComponentG {
                 },
                 ObjectMarkerPreview::new
         ).setAfterFolderCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
         }).setAfterFolderDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
         }).setAfterAssetCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
         }).setAfterAssetDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
         }).setOnContextOnItem((e) -> {
             final GameResourceModelAsset extractModelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(e.getModelAssetRelativePath());
             ImGui.beginDisabled(extractModelAsset == null);
@@ -176,7 +176,7 @@ public class ResourcesInterfaceComponentG {
             }
             ImGui.endDisabled();
         }).setAfterAssetMoved((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.MARKERS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
             ResourcesInterfaceComponentG.changeMapDatObjProperties(MapObjectsIdentifiers.MARKER, new String[] {"markerObjects"}, e);
         });
 
@@ -194,13 +194,13 @@ public class ResourcesInterfaceComponentG {
                 },
                 SkyBoxAssetPreview::new
         ).setAfterFolderCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.SKYBOXES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
         }).setAfterFolderDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.SKYBOXES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
         }).setAfterAssetCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.SKYBOXES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
         }).setAfterAssetDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.SKYBOXES);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
         });
 
         this.tagResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -217,13 +217,13 @@ public class ResourcesInterfaceComponentG {
                 },
                 ObjectTagPreview::new
         ).setAfterFolderCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
         }).setAfterFolderDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
         }).setAfterAssetCreated((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
         }).setAfterAssetDeleted((e) -> {
-            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
         });
 
         this.mapResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -258,7 +258,7 @@ public class ResourcesInterfaceComponentG {
         }).setOnRefreshButton((e) -> {
             WBench.get().getGameProjectManager().refreshMaps(true);
         }).setOnOpenFolderButton((e) -> {
-            WBenchGameResourcesManager.openMapsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
+            WBenchProjectResourcesManager.openMapsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
         });
 
         this.scriptResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
@@ -297,7 +297,7 @@ public class ResourcesInterfaceComponentG {
                 this.gameEditorInterface.getWindowInterfaceComponentG().getScenePreviewScriptG().setScriptPreviewObject(e);
             }
         }).setOnOpenFolderButton((e) -> {
-            WBenchGameResourcesManager.openScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
+            WBenchProjectResourcesManager.openScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath());
         });
     }
 

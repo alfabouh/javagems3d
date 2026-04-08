@@ -4,6 +4,7 @@ import api.application.JGemsApplication;
 import api.application.events.AppEventSubscriber;
 import api.application.events.SubscribeEvent;
 import api.application.resources.AppResources;
+import api.application.scripts.AppScriptContextContextRegistry;
 import api.application.workbench.manager.APIWBenchDataManager;
 import api.events.EventBus;
 import javagems3d.system.service.collections.Pair;
@@ -21,9 +22,11 @@ import java.util.TreeSet;
 
 public final class JGemsAPIManager {
     private final HashMap<Class<EventBus.IEvent>, TreeSet<PriorityMethod>> eventMap;
+    private final AppScriptContextContextRegistry appScriptContextRegistry;
 
     JGemsAPIManager() {
         this.eventMap = new HashMap<>();
+        this.appScriptContextRegistry = new AppScriptContextContextRegistry();
     }
 
     void pullDataFromApplication(JGemsAPIEditorResources apiEditorResources, JGemsAPIData appData, Pair<JGemsApplication, JGemsAppEntry> pair) {
@@ -35,6 +38,7 @@ public final class JGemsAPIManager {
 
         jGemsApplication.initEvents(appEventSubscriber);
         jGemsApplication.initResources(appResources);
+        jGemsApplication.initScripts(this.getAppScriptRegistry());
         this.initEvents(EventBus.class, appEventSubscriber.getClassesWithEvents());
 
         appData.setApplication(pair.first());
@@ -48,6 +52,7 @@ public final class JGemsAPIManager {
     public void pullDataForEditor(JGemsApplication jGemsApplication, JGemsAPIEditorResources apiEditorResources) {
         APIWBenchDataManager APIWBenchDataManager = new APIWBenchDataManager();
         jGemsApplication.setupEditorResources(APIWBenchDataManager);
+        jGemsApplication.initScripts(this.getAppScriptRegistry());
         apiEditorResources.setEditorResourcesManager(APIWBenchDataManager);
     }
 
@@ -119,6 +124,10 @@ public final class JGemsAPIManager {
                 }
             }
         }
+    }
+
+    public AppScriptContextContextRegistry getAppScriptRegistry() {
+        return this.appScriptContextRegistry;
     }
 
     private record PriorityMethod(Method method, int priority) {

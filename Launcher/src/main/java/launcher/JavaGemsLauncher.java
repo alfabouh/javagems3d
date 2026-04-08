@@ -5,6 +5,7 @@ import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import launcher.run.EngineRun;
 import launcher.run.WorkbenchRun;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class JavaGemsLauncher {
     public static void launchEngine(@NotNull JGemsLaunchArgsRegistry jGemsLaunchArgsRegistry) {
@@ -19,8 +20,11 @@ public abstract class JavaGemsLauncher {
         JGems3D.IsolatedProcessLauncher.EXEC(args);
     }
 
-    public static void launch(String[] args) {
+    public static void launch(String[] args, @Nullable Class<?> apiAppClass) {
         JGemsLaunchArgsRegistry.INSTANCE.read(args);
+        if (apiAppClass != null) {
+            JGemsLaunchArgsRegistry.INSTANCE.put(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH, apiAppClass.getCanonicalName());
+        }
         if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.WORKBENCH) == Boolean.TRUE) {
             JavaGemsLauncher.launchWorkbench(JGemsLaunchArgsRegistry.INSTANCE);
             return;

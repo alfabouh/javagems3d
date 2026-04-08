@@ -59,16 +59,19 @@ public final class JGems3D {
 
     private boolean shouldBeClosed;
 
+    private static boolean IDEA;
+
     public static JGems3D get() {
         return JGems3D.mainObject;
     }
 
-    private JGems3D() throws JGemsRuntimeException {
+    private JGems3D(@Nullable String apiAppClasspath) throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("JGemsLogger"));
             JGemsAPI.INIT_JGEMS();
-            JGemsAPI.get().launchAPI();
+            JGemsAPI.get().launchAPI(apiAppClasspath);
             JGems3D.checkFilesDirectory();
+            //JGems3D.IDEA = System.getenv().keySet().stream().anyMatch(k -> k.contains("IDEA"));
         } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);
         }
@@ -104,8 +107,8 @@ public final class JGems3D {
         }
         String externalGameDef = null;
         try {
-            JGems3D.mainObject = new JGems3D();
             JGems3D.LAUNCH_STATIC_ARGS_RESOLVE(argsRegistry);
+            JGems3D.mainObject = new JGems3D(argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH));
             externalGameDef = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF);
         } catch (JGemsRuntimeException e) {
             LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!", e);
@@ -314,6 +317,12 @@ public final class JGems3D {
         return this.getCore().engineState().isPaused();
     }
 
+    //TODO
+    public static boolean isIDEA() {
+        return false;
+        //return System.getenv().keySet().stream().anyMatch(k -> k.contains("IDEA"));
+    }
+
     public String toString() {
         return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " | appId = " + JGems3D.getAPIAppData().getId();
     }
@@ -346,15 +355,15 @@ public final class JGems3D {
     }
 
     public static abstract class DEFAULT_PATHS {
-        public static final String PARTICLES = "/assets/jgems/textures/particles/";
-        public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
-        public static final String TEXTURES = "/assets/jgems/textures/";
-        public static final String MODELS = "/assets/jgems/models/";
-        public static final String SHADERS = "/assets/jgems/shaders/";
-        public static final String SOUNDS = "/assets/jgems/sounds/";
-        public static final String MAPS = "/assets/jgems/maps/";
-        public static final String LANG = "/assets/jgems/lang/";
-        public static final String ICONS = "/assets/jgems/icons/";
+        public static final String PARTICLES = "/assets/textures/particles/";
+        public static final String CUBE_MAPS = "/assets/textures/cubemaps/";
+        public static final String TEXTURES = "/assets/textures/";
+        public static final String MODELS = "/assets/models/";
+        public static final String SHADERS = "/assets/shaders/";
+        public static final String SOUNDS = "/assets/sounds/";
+        public static final String MAPS = "/assets/maps/";
+        public static final String LANG = "/assets/lang/";
+        public static final String ICONS = "/assets/icons/";
     }
 
     public static class IsolatedProcessLauncher {
@@ -366,20 +375,14 @@ public final class JGems3D {
                         "java"
                 ).toString();
 
-                File location = new File(
-                        JGemsBootstrap.class
-                                .getProtectionDomain()
-                                .getCodeSource()
-                                .getLocation()
-                                .toURI()
-                );
+                File location = new File(JGemsBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
                 List<String> command = new ArrayList<>();
 
                 command.add(javaBin);
                 command.add("-Dfile.encoding=UTF-8");
                 command.add("-Xms512m");
-                command.add("-Xmx2048m");
+                command.add("-Xmx4G");
                 command.add("-XX:+UseG1GC");
 
                 if (location.isFile()) {

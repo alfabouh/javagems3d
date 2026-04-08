@@ -33,7 +33,7 @@ public class TexturesLoader implements ILoadingHelper {
 
     private ImageTexture checkCache(@NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
-            if (this.getResourceCache().checkObjectInCache(name)) {
+            if (this.getResourceCache().checkObjectInCache(name, ImageTexture.class)) {
                 Log.get().info("Texture " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }

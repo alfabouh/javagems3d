@@ -59,6 +59,10 @@ public final class JGemsLaunchArgsRegistry {
         }
     }
 
+    public void put(JGemsLaunchArgs arg, Object obj) {
+        this.argTypeObjectMap.put(arg, obj);
+    }
+
     public void printArgs() {
         Log.get().separator();
         Log.get().warn("Input args:");
@@ -85,6 +89,7 @@ public final class JGemsLaunchArgsRegistry {
             int i2 = Integer.parseInt(size[1]);
             return new Vector2i(i1, i2);
         }), null),
+        API_APP_CLASSPATH("api_app_classpath", (args -> args), null),
         MAP_TEST("map_test", (args -> args.equals("true")), false),
         TEST_MAP_ID("map_path", (args -> args), null),
         NO_FULL_SCREEN("no_full_screen", (args -> args.equals("true")), false),

@@ -28,7 +28,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
 
     @SuppressWarnings("unchecked")
     public T createShaderManager(ResourceCache resourceCache, JGemsPathSource shaderPath) {
-        if (resourceCache.checkObjectInCache(shaderPath)) {
+        if (resourceCache.checkObjectInCache(shaderPath, ShadersInitializer.class)) {
             Log.get().warn("Shader " + shaderPath + " already exists");
             return (T) resourceCache.getCachedObject(shaderPath);
         }

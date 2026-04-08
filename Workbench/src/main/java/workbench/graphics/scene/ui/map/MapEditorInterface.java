@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.map;
 
+import api.system.JGemsAPI;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
@@ -126,6 +127,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef()),
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getMapAbsolutePath(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).fullPath())
                 ));
             }

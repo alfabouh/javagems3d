@@ -18,6 +18,7 @@ import logger.Log;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.controller.binding.WBenchBindingManager;
@@ -54,11 +55,11 @@ public final class WBench {
 
     private static JGemsAPIEditorResources apiEditorResources;
 
-    private WBench() {
+    private WBench(@Nullable String apiAppClasspath) {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("WorkbenchLogger"));
             JGemsAPI.INIT_JGEMS();
-            WBench.apiEditorResources = JGemsAPI.get().launchAPIEditorData();
+            WBench.apiEditorResources = JGemsAPI.get().launchAPIEditorData(apiAppClasspath);
             WBench.checkFilesDirectory();
         } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);
@@ -105,7 +106,7 @@ public final class WBench {
         if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
             JGems3D.DEBUG_MODE = true;
         }
-        WBench.wBench = new WBench();
+        WBench.wBench = new WBench(argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH));
         WBench.get().start();
     }
 

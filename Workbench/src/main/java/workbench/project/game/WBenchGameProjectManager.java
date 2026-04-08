@@ -13,7 +13,7 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 import workbench.project.map.WBenchMapProjectManager;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
@@ -26,7 +26,7 @@ public class WBenchGameProjectManager {
 
     private WBenchGameProject currentGameProject;
     private final WBenchMapProjectManager wBenchMapProjectManager;
-    private WBenchGameResourcesManager wBenchGameResourcesManager;
+    private WBenchProjectResourcesManager wBenchProjectResourcesManager;
 
     public WBenchGameProjectManager() {
         this.currentGameProject = null;
@@ -113,13 +113,13 @@ public class WBenchGameProjectManager {
         }
     }
 
-    public void saveResourceObjectFiles(@NotNull WBenchGameResourcesManager.AssetsTarget assetsTarget) {
+    public void saveResourceObjectFiles(@NotNull WBenchProjectResourcesManager.AssetsTarget assetsTarget) {
         this.getGameResourcesManager().saveCreatableResourceObjects(assetsTarget, this.getGameProject().getProjectAbsolutePath());
     }
 
     private void initLocalGameResources() {
         LoadingInterfaceSwing.invoke();
-        this.wBenchGameResourcesManager = new WBenchGameResourcesManager(WBench.get().getResourceManager().getLocalGameEditorResources());
+        this.wBenchProjectResourcesManager = new WBenchProjectResourcesManager(WBench.get().getResourceManager().getLocalGameEditorResources());
         ((WBenchOpenGLRenderer) (WBench.get().getScreen().getScene().getSceneRenderer())).getDebugLinesDrawer().setup();
         WBench.get().getResourceManager().initLocalGameEditorResources();
         WBench.get().getResourceManager().loadLocalGameEditorResources();
@@ -127,7 +127,7 @@ public class WBenchGameProjectManager {
         this.refreshTextureFiles(false);
         this.refreshMaps(false);
         this.refreshScripts(false);
-        this.getGameResourcesManager().readCreatableResourceObjects(WBenchGameResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());
+        this.getGameResourcesManager().readCreatableResourceObjects(WBenchProjectResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());
         WBenchResourceManager.createLocalGameEditorShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
     }
@@ -188,8 +188,8 @@ public class WBenchGameProjectManager {
         }
     }
 
-    public WBenchGameResourcesManager getGameResourcesManager() {
-        return this.wBenchGameResourcesManager;
+    public WBenchProjectResourcesManager getGameResourcesManager() {
+        return this.wBenchProjectResourcesManager;
     }
 
     private void initWorkingSpace(DearUIInterface dearUIInterface) {
@@ -204,7 +204,7 @@ public class WBenchGameProjectManager {
     private void saveGameProjectFile() {
         JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
         jsonFileManaging.writeToFile(this.getGameProject(), Objects.requireNonNull(this.getGameProject()).getCurrentProjectFilePath().toFile(), null);
-        this.getGameResourcesManager().saveCreatableResourceObjects(WBenchGameResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());
+        this.getGameResourcesManager().saveCreatableResourceObjects(WBenchProjectResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());
     }
 
     private void setCurrentProject(JGemsPath path, WBenchGameProject currentGameProject) {

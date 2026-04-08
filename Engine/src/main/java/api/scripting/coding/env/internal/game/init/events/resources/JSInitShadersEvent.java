@@ -40,17 +40,17 @@ public class JSInitShadersEvent implements JSEventI {
 
     @JSCodingFunctionOrMethod(description = "Register built-in shadow shader library.", paramNames = {})
     public void registerDefaultShaderLibrary_SHADOWS() {
-        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
+        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
     }
 
     @JSCodingFunctionOrMethod(description = "Register built-in animation shader library.", paramNames = {})
     public void registerDefaultShaderLibrary_ANIMATIONS() {
-        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/animations", ISource.Source.INSIDE_JAR));
+        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/shaders/libs/animations", ISource.Source.INSIDE_JAR));
     }
 
     @JSCodingFunctionOrMethod(description = "Register built-in lighting shader library.", paramNames = {})
     public void registerShaderLibrary_LIGHTING() {
-        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/jgems/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
+        this.shadersInitializer.getShaderLibrariesManager().createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
     }
 
     @JSHideFromDoc

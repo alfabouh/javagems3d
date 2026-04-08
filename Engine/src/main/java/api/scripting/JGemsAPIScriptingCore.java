@@ -1,6 +1,7 @@
 package api.scripting;
 
 import api.scripting.coding.APICodingContext;
+import api.system.JGemsAPI;
 import api.system.scripting.JavaToJsFunctionsList;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class JGemsAPIScriptingCore implements Closeable {
     public static final String LAN = "js";
@@ -22,11 +25,19 @@ public final class JGemsAPIScriptingCore implements Closeable {
     }
 
     public void scanJavaCodeGame() {
-        this.getGlobalGameContext().getApiCodeEnvironmentController().scan("api.scripting.coding.env.internal.game", "api.scripting.coding.env.internal.util");
+        final Set<String> packs = new HashSet<>();
+        packs.add("api.scripting.coding.env.internal.game");
+        packs.add("api.scripting.coding.env.internal.util");
+        packs.addAll(JGemsAPI.getManager().getAppScriptRegistry().globalGameContextScripts);
+        this.getGlobalGameContext().getApiCodeEnvironmentController().scan(packs.toArray(new String[0]));
     }
 
     public void scanJavaCodeMap() {
-        this.getLocalMapContext().getApiCodeEnvironmentController().scan("api.scripting.coding.env.internal.map", "api.scripting.coding.env.internal.util");
+        final Set<String> packs = new HashSet<>();
+        packs.add("api.scripting.coding.env.internal.map");
+        packs.add("api.scripting.coding.env.internal.util");
+        packs.addAll(JGemsAPI.getManager().getAppScriptRegistry().globalGameContextScripts);
+        this.getLocalMapContext().getApiCodeEnvironmentController().scan(packs.toArray(new String[0]));
     }
 
     public void initGame(@NotNull JGemsPath absolutePathToSeekEntries) {

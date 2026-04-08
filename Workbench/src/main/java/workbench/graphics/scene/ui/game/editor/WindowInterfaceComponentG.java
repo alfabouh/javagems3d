@@ -46,7 +46,7 @@ public class WindowInterfaceComponentG {
         this.texturePreviewRenderFunctions = new TexturePreviewEditorWindow();
         this.modelPreviewRenderFunctions = new ModelPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
         this.skyBoxPreviewRenderFunctions = new SkyBoxPreviewEditorWindow(actionsInterfaceComponentG, openGLRenderer);
-        this.scenePreviewScriptG = new ScriptEditorDrawerG(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController());
+        this.scenePreviewScriptG = new ScriptEditorDrawerG(JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController(), true);
 
         this.reset();
     }

@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <buildName>jgems3d-core</buildName>
+        <launcherName>jgems3d-launcher</launcherName>
     </properties>
 
     <parent>
@@ -55,13 +56,11 @@
                 <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>create-bat</id>
-                        <phase>package</phase>
+                        <id>remove-dir</id>
+                        <phase>clean</phase>
                         <configuration>
                             <target>
                                 <delete dir="../output"/>
-                                <mkdir dir="../output"/>
-                                <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
                             </target>
                         </configuration>
                         <goals>
@@ -69,11 +68,22 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>remove-dir</id>
-                        <phase>clean</phase>
+                        <id>create-bat-and-api-dir</id>
+                        <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="../output"/>
+                                <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
+                                <echo file="../output/${buildName}-run.bat">
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${buildName}.jar;./core/${launcherName}.jar" launcher.bootstrap.Bootstrap workbench=false
+                                    pause
+                                </echo>
+                                <echo file="../output/${buildName}-run-debug.bat">
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${buildName}.jar;./core/${launcherName}.jar" launcher.bootstrap.Bootstrap workbench=false debug=true
+                                    pause
+                                </echo>
+                                <mkdir dir="../output/core/api"/>
                             </target>
                         </configuration>
                         <goals>
@@ -89,6 +99,7 @@
         <dependency>
             <groupId>com.github.gltexture</groupId>
             <artifactId>SysLogger</artifactId>
+            <version>0.2</version>
         </dependency>
     </dependencies>
 </project>

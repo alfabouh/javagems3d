@@ -14,7 +14,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ObjectTagPreview;
 import workbench.graphics.scene.ui.game.editor.utils.TagItemCreatingInstancesG;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 
 import java.util.*;
 
@@ -127,7 +127,7 @@ public class ScenePreviewTagG {
                         if (ImGui.button("+ Create")) {
                             tagsContainer.addTag(new Tag<>(new TagID(this.uniqueID.get(), this.description.get(), this.tip.get()), Objects.requireNonNull(tagItemClassResolver).create()));
                             this.reset();
-                            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+                            WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
                         }
                         ImGui.endDisabled();
                     }
@@ -176,7 +176,7 @@ public class ScenePreviewTagG {
                                 }
                                 {
                                     if (ImGui.button("Save")) {
-                                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+                                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
                                     }
                                 }
                                 ImGui.spacing();
@@ -197,7 +197,7 @@ public class ScenePreviewTagG {
                             ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
                             ImGui.indent();
                             if (ImGui.button("- Delete Tag")) {
-                                WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.TAGS);
+                                WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
                                 iterator.remove();
                             }
                             ImGui.unindent();

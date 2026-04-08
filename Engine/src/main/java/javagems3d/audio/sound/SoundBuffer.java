@@ -25,7 +25,7 @@ public class SoundBuffer implements ICached {
     }
 
     public static SoundBuffer createSoundBuffer(@NotNull JGemsPathSource soundPath, ResourceCache resourceCache, int soundFormat) {
-        if (resourceCache.checkObjectInCache(soundPath)) {
+        if (resourceCache.checkObjectInCache(soundPath, SoundBuffer.class)) {
             return (SoundBuffer) resourceCache.getCachedObject(soundPath);
         }
         SoundBuffer soundBuffer = new SoundBuffer(soundPath);

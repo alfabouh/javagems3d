@@ -88,7 +88,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     private MeshGroup createMeshGroup(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric fabric, boolean attachMeshBuffer, boolean keepNodesInMemory) {
         MeshGroup meshGroup = null;
         String grString = this.getStr(MeshGroup.POSTFIX);
-        if (this.getResourceCache().checkObjectInCache(grString)) {
+        if (this.getResourceCache().checkObjectInCache(grString, MeshGroup.class)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
@@ -111,7 +111,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
     private MeshBuffer createMeshBuffer(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric fabric, boolean keepNodesInMemory) {
         String bffString = this.getStr(MeshBuffer.POSTFIX);
         MeshBuffer meshBuffer = null;
-        if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
+        if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString, MeshBuffer.class)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {

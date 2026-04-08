@@ -93,7 +93,7 @@ public class Main {
 
 ### 3. Working with the API
 *The API of the engine does not have too many useful functions at the moment, but there are enough of them to implement the basic features*
-* Before you start working, it should be noted that the starter classes that represent your program must be located in the ***jgems_app*** directory
+* Before you start working, it should be noted that the starter classes that represent your program must be located in the ***A_default_app*** directory
   
 ![image](https://github.com/user-attachments/assets/61c5c650-85b8-4c0b-8f6f-a6e0da36316b)
 
@@ -158,12 +158,12 @@ public class TestTBoxApp implements JGemsTBoxApplication {
         Attribute<Vector3f> transformPosXYZ = new Attribute<>(AttributeTarget.POSITION_XYZ, AttributeID.POSITION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformRotXYZ = new Attribute<>(AttributeTarget.ROTATION_XYZ, AttributeID.ROTATION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformScaleXYZ = new Attribute<>(AttributeTarget.SCALING_XYZ, AttributeID.SCALING_XYZ, new Vector3f(1.0f));
-        tBoxEntitiesObjectData.add("cube", new TObjectData(new ModeledObjectData(new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), tBoxResourceManager.getShaderAssets().world_object, tBoxResourceManager.createModel(new JGemsPath("/assets/jgems/models/cube/cube.gltf")), TestTBoxApp.PHYSICS_OBJECT)));
+        tBoxEntitiesObjectData.add("cube", new TObjectData(new ModeledObjectData(new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), tBoxResourceManager.getShaderAssets().world_object, tBoxResourceManager.createModel(new JGemsPath("/assets/models/cube/cube.gltf")), TestTBoxApp.PHYSICS_OBJECT)));
     }
 
     @Override
     public void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData) {
-        tBoxEntitiesUserData.add("cube", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.gltf"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_earlyz"), new MeshRenderAttributes())));
+        tBoxEntitiesUserData.add("cube", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/models/cube/cube.gltf"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_earlyz"), new MeshRenderAttributes())));
     }
 }
 ```

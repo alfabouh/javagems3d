@@ -28,6 +28,7 @@ public final class WBenchResourceManager extends ResourceManager {
         super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL1), new Factory(ResourceManager.LOCAL2));
         WBenchResourceManager.globalShaderAssets = new WBenchGlobalShadersInitializer();
         WBenchResourceManager.localShaderAssets = new WBenchLocalShadersInitializer();
+        this.getLocalMapEditorResources().getResourceCache().setSharedCacheStorage(this.getLocalGameEditorResources().getResourceCache());
     }
 
     public static void setDefaultRenderTableValues() {

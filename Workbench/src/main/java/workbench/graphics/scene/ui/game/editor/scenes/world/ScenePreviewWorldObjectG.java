@@ -20,7 +20,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 import javagems3d.system.external.gaming.def.misc.GameResourceModelAsset;
 import javagems3d.system.external.gaming.def.misc.GameResourceObjectTagData;
 import javagems3d.system.external.gaming.def.world.GameResourceWorldObjectAsset;
@@ -88,9 +88,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 ImGui.endChild();
                 if (ImGui.button("Save")) {
                     if (worldObjectAsset instanceof GameResourcePropObjectAsset) {
-                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.PROPS);
+                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
                     } else {
-                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.ENTITIES);
+                        WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
                     }
                 }
                 ImGui.endChild();

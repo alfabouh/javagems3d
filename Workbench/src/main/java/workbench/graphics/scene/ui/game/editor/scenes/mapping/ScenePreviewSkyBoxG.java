@@ -9,7 +9,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
-import workbench.project.managing.WBenchGameResourcesManager;
+import workbench.project.managing.WBenchProjectResourcesManager;
 import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
 
 public class ScenePreviewSkyBoxG {
@@ -88,7 +88,7 @@ public class ScenePreviewSkyBoxG {
                 }
                 ImGui.spacing();
                 if (ImGui.button("Save")) {
-                    WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchGameResourcesManager.AssetsTarget.SKYBOXES);
+                    WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
                 }
                 ImGui.unindent();
                 ImGui.endChild();

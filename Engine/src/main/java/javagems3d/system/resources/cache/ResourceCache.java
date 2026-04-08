@@ -13,12 +13,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ResourceCache {
+    private ResourceCache sharedCacheStorage;
     private final String cacheName;
     private final Map<String, ICached> cache;
 
     public ResourceCache(String cacheName) {
         this.cacheName = cacheName;
         Log.get().info("Created cache: " + this);
+        this.sharedCacheStorage = null;
         this.cache = new LinkedHashMap<>();
     }
 
@@ -96,9 +98,12 @@ public class ResourceCache {
 
     public ICached getCachedObject(String key) {
         ICached cached = this.cache.get(key);
-        if (!this.checkObjectInCache(key)) {
+        if (!this.checkObjectInCache(key, null)) {
             Log.get().error("Object " + key + " doesn't exist in system cache " + this);
             return null;
+        }
+        if (this.getSharedCacheStorage() != null && cached == null) {
+            return this.getSharedCacheStorage().getCachedObject(key);
         }
         return cached;
     }
@@ -108,21 +113,39 @@ public class ResourceCache {
         return (T) this.getCachedObject(key);
     }
 
-    public boolean checkObjectInCache(JGemsPathSource key) {
-        return this.checkObjectInCache(key.getPath());
+    public boolean checkObjectInCache(JGemsPathSource key, Class<?> instanceOf) {
+        return this.checkObjectInCache(key.getPath(), instanceOf);
     }
 
-    public boolean checkObjectInCache(JGemsPath key) {
-        return this.checkObjectInCache(key.fullPath());
+    public boolean checkObjectInCache(JGemsPath key, Class<?> instanceOf) {
+        return this.checkObjectInCache(key.fullPath(), instanceOf);
+    }
+
+    public ResourceCache getSharedCacheStorage() {
+        return this.sharedCacheStorage;
+    }
+
+    public ResourceCache setSharedCacheStorage(ResourceCache sharedCacheStorage) {
+        this.sharedCacheStorage = sharedCacheStorage;
+        return this;
+    }
+
+    public String getCacheName() {
+        return this.cacheName;
     }
 
     @SuppressWarnings("all")
-    public boolean checkObjectInCache(String key) {
+    public boolean checkObjectInCache(String key, Class<?> instanceOf) {
         ICached cached = this.cache.get(key);
         if (cached == null) {
+            if (this.getSharedCacheStorage() != null) {
+                if (this.getSharedCacheStorage().checkObjectInCache(key, instanceOf)) {
+                    return true;
+                }
+            }
             return false;
         }
-        return true;
+        return instanceOf == null ? true : instanceOf.isAssignableFrom(cached.getClass());
     }
 
     @Override

@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Window implements IWindow {
-    public static final String DEFAULT_ICON = "/assets/jgems/icons/icon.png";
+    public static final String DEFAULT_ICON = "/assets/icons/icon.png";
     
     private final long window;
     private long currentMonitor;

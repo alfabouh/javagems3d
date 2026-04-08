@@ -70,9 +70,9 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/shadows"), ISource.Source.INSIDE_JAR));
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/animations"), ISource.Source.INSIDE_JAR));
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/jgems/shaders/libs/lighting"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/shadows"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/animations"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/lighting"), ISource.Source.INSIDE_JAR));
     }
 
     protected void initObjects(ResourceCache resourceCache) {

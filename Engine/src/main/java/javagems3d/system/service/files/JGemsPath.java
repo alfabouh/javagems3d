@@ -50,7 +50,7 @@ public record JGemsPath(String fullPath) implements Serializable {
         String trimmedPath = path.trim();
         String normalizedPath = trimmedPath.replace("\\", "/");
         if (!normalizedPath.startsWith("/")) {
-            normalizedPath = "/" + normalizedPath;
+            normalizedPath = (!normalizedPath.startsWith(".") ? "/" : "") + normalizedPath;
         }
         return normalizedPath;
     }

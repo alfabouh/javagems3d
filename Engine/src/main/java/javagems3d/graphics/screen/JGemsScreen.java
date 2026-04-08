@@ -340,7 +340,7 @@ public class JGemsScreen implements IScreen {
         private int counter;
 
         public LoadingScreen(String title) {
-            Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/jgems/gamefont.ttf"), ISource.Source.INSIDE_JAR));
+            Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/gamefont.ttf"), ISource.Source.INSIDE_JAR));
             this.guiFont = new JGemsGuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));

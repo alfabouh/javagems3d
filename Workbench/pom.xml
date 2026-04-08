@@ -5,6 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <buildName>jgems3d-workbench</buildName>
+        <coreName>jgems3d-core</coreName>
+        <launcherName>jgems3d-launcher</launcherName>
     </properties>
     <parent>
         <groupId>com.github.gltexture</groupId>
@@ -38,7 +40,14 @@
                             <target>
                                 <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
                                 <echo file="../output/${buildName}-run.bat">
-                                    java -jar ./core/${buildName}.jar
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${coreName}.jar;./core/${launcherName}.jar;./core/${buildName}.jar" launcher.bootstrap.Bootstrap workbench=true
+                                    pause
+                                </echo>
+                                <echo file="../output/${buildName}-run-debug.bat">
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${coreName}.jar;./core/${launcherName}.jar;./core/${buildName}.jar" launcher.bootstrap.Bootstrap workbench=true debug=true
+                                    pause
                                 </echo>
                             </target>
                         </configuration>

@@ -51,7 +51,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
     public ITexture2DProgram zippo2;
 
     public void load(SystemResources systemResources) {
-        Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/jgems/gamefont.ttf"), ISource.Source.INSIDE_JAR));
+        Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/gamefont.ttf"), ISource.Source.INSIDE_JAR));
 
         this.standardFont2 = new JGemsGuiFont(systemResources, gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
         this.standardFont = new JGemsGuiFont(systemResources, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);

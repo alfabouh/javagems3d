@@ -43,7 +43,7 @@ public class InterfaceResourcesObjectsM {
         this.props = new CreatableObjectsTreeDrawerM<>(mapEditorInterface, () -> WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), "Props");
         this.entities = new CreatableObjectsTreeDrawerM<>(mapEditorInterface, () -> WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), "Entities");
         this.markers = new CreatableObjectsTreeDrawerM<>(mapEditorInterface, () -> WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), "Markers");
-        this.scriptEditorDrawerG = new ScriptEditorDrawerG(JGemsAPI.getAPIScriptingCore().getLocalMapContext().getApiCodeEnvironmentController());
+        this.scriptEditorDrawerG = new ScriptEditorDrawerG(JGemsAPI.getAPIScriptingCore().getLocalMapContext().getApiCodeEnvironmentController(), false);
 
         this.scriptResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
                 "Map Scripting",

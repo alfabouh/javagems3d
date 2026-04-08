@@ -2,6 +2,7 @@ package api.application;
 
 import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
+import api.application.scripts.IAppScriptContextRegistry;
 import api.application.workbench.IWorkBenchSetup;
 import api.system.scripting.JavaToJsAPI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -22,6 +23,8 @@ public abstract class JGemsApplication implements IWorkBenchSetup {
 
     public void postInit(@NotNull JGemsCore engineSystem) {
     }
+
+    public abstract void initScripts(@NotNull IAppScriptContextRegistry appScriptContextRegistry);
 
     public abstract void initEvents(@NotNull IAppEventSubscriber appEventSubscriber);
 
