@@ -22,7 +22,7 @@
               <finalName>${buildName}</finalName>
               <transformers>
                 <transformer>
-                  <mainClass>javagems3d.JGems3DLauncher</mainClass>
+                  <mainClass>javagems3d.JGemsBootstrap</mainClass>
                 </transformer>
               </transformers>
             </configuration>

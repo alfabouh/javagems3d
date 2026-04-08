@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Workbench" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="launcher.bootstrap.Bootstrap" />
+    <module name="Launcher" />
+    <option name="PROGRAM_PARAMETERS" value="debug=true workbench=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

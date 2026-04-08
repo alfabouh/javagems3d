@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RunGame" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="launcher.bootstrap.Bootstrap" />
+    <module name="Launcher" />
+    <option name="PROGRAM_PARAMETERS" value="debug=true external_def=&quot;C:\Users\ded\Desktop\testProj\DEV1&quot;" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
