@@ -1,6 +1,7 @@
 package workbench.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -56,11 +57,12 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
 
     @Override
     public WBenchCommonObject.WBenchCommonObjectSnapshotData takeSnapshot() {
-        return new WBenchCommonObject.WBenchCommonObjectSnapshotData(this.getTagsContainer().copy(), this.getTranslationConstraints(), this.isVisible, this.isDead, new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
+        return new WBenchCommonObject.WBenchCommonObjectSnapshotData(this.getRenderAttributes().getProperties().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints(), this.isVisible, this.isDead, new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
     }
 
     @Override
     public void fixSnapshot(WBenchCommonObjectSnapshotData wBenchCommonObjectSnapshotData) {
+        this.getRenderAttributes().setRenderProperties(wBenchCommonObjectSnapshotData.renderProperties);
         this.setTagsContainer(wBenchCommonObjectSnapshotData.tagsContainer);
         this.setVisible(wBenchCommonObjectSnapshotData.isVisible);
         this.isDead = wBenchCommonObjectSnapshotData.isDead;
@@ -70,8 +72,8 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
     }
 
     public static class WBenchCommonObjectSnapshotData extends WBenchObject.WBenchObjectSnapshotData {
-        public WBenchCommonObjectSnapshotData(TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
-            super(tagsContainer, translationConstraints, isVisible, isDead, pos, rot, scale);
+        public WBenchCommonObjectSnapshotData(RenderProperties renderProperties, TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+            super(renderProperties, tagsContainer, translationConstraints, isVisible, isDead, pos, rot, scale);
         }
     }
 }

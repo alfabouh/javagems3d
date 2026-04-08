@@ -1,6 +1,7 @@
 package workbench.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -75,11 +76,12 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
 
     @Override
     public WBenchMarkerObject.WBenchMarkerObjectSnapshotData takeSnapshot() {
-        return new WBenchMarkerObjectSnapshotData(new Vector3f(this.color), this.transparent, this.getTagsContainer().copy(), this.getTranslationConstraints(), this.isVisible, this.isDead, new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
+        return new WBenchMarkerObjectSnapshotData(this.getRenderAttributes().getProperties().copy(), new Vector3f(this.color), this.transparent, this.getTagsContainer().copy(), this.getTranslationConstraints(), this.isVisible, this.isDead, new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
     }
 
     @Override
     public void fixSnapshot(WBenchMarkerObject.WBenchMarkerObjectSnapshotData wBenchMarkerObjectSnapshotData) {
+        this.getRenderAttributes().setRenderProperties(wBenchMarkerObjectSnapshotData.renderProperties);
         this.color.set(wBenchMarkerObjectSnapshotData.color);
         //this.transparent = wBenchMarkerObjectSnapshotData.transparent;
         this.setTagsContainer(wBenchMarkerObjectSnapshotData.tagsContainer);
@@ -94,8 +96,8 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
         public final Vector3f color;
         public final boolean transparent;
 
-        public WBenchMarkerObjectSnapshotData(Vector3f color, boolean transparent, TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
-            super(tagsContainer, translationConstraints, isVisible, isDead, pos, rot, scale);
+        public WBenchMarkerObjectSnapshotData(RenderProperties renderProperties, Vector3f color, boolean transparent, TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+            super(renderProperties, tagsContainer, translationConstraints, isVisible, isDead, pos, rot, scale);
             this.color = color;
             this.transparent = transparent;
         }

@@ -8,7 +8,7 @@ import java.util.Deque;
 import java.util.function.Supplier;
 
 public abstract class SnapshotsTrace {
-    private static final int LIMIT = 256;
+    private static final int LIMIT = 1024;
     private final Deque<SnapshotsContainer> undoStack = new ArrayDeque<>();
     private final Deque<SnapshotsContainer> redoStack = new ArrayDeque<>();
     private final Supplier<SnapshotsContainer> snapshotAllScenesSupplier;

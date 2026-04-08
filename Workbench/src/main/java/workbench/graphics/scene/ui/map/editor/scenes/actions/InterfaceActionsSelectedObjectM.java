@@ -430,7 +430,7 @@ public class InterfaceActionsSelectedObjectM {
                     Log.get().debug("Null renderProp. Created");
                 }
                 ImGui.indent();
-                ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties());
+                ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties(), true);
                 ImGui.unindent();
                 ImGui.endChild();
             }

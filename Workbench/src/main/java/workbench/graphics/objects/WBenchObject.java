@@ -2,6 +2,7 @@ package workbench.graphics.objects;
 
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.help.JGemsHelper;
@@ -136,7 +137,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         return this;
     }
 
-    public WBenchObject setId(int id) {
+    public WBenchObject<?> setId(int id) {
         this.id = id;
         return this;
     }
@@ -212,6 +213,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     public abstract static class WBenchObjectSnapshotData implements ISnapshotCompatible.SnapshotData {
         public final TagsContainer tagsContainer;
         public final TranslationConstraints translationConstraints;
+        public final RenderProperties renderProperties;
         public final boolean isVisible;
         public final boolean isDead;
 
@@ -219,7 +221,8 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         public final Vector3f rot;
         public final Vector3f scale;
 
-        public WBenchObjectSnapshotData(TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+        public WBenchObjectSnapshotData(RenderProperties renderProperties, TagsContainer tagsContainer, TranslationConstraints translationConstraints, boolean isVisible, boolean isDead, Vector3f pos, Vector3f rot, Vector3f scale) {
+            this.renderProperties = renderProperties;
             this.tagsContainer = tagsContainer;
             this.translationConstraints = translationConstraints;
             this.isVisible = isVisible;

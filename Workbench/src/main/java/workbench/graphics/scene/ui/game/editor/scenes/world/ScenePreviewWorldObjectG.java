@@ -8,6 +8,7 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
+import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 import javagems3d.system.external.gaming.def.world.IWBenchAssetWithTranslationConstraints;
 import javagems3d.system.external.mapping.tags.Tag;
@@ -17,6 +18,7 @@ import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import workbench.WBench;
+import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
@@ -77,7 +79,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                         Log.get().debug("Null renderProp. Created");
                     }
                     ImGui.indent();
-                    ScenePreviewWorldObjectG.renderPropertiesEdit(worldObjectAsset.getRenderProperties());
+                    ScenePreviewWorldObjectG.renderPropertiesEdit(worldObjectAsset.getRenderProperties(), false);
                     ImGui.unindent();
                     ImGui.endChild();
                 }
@@ -176,7 +178,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
         }
     }
 
-    public static void renderPropertiesEdit(RenderProperties renderProperties) {
+    public static void renderPropertiesEdit(RenderProperties renderProperties, boolean withSnapshots) {
         {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff982cff);
             ImGui.bulletText("Properties");
@@ -189,7 +191,14 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     ImGui.text(JGemsRenderProperties.KEY_RENDER_DISTANCE);
                     ImGui.sameLine();
                     ImGui.setNextItemWidth(80);
-                    ImGui.dragFloat("##" + JGemsRenderProperties.KEY_RENDER_DISTANCE, f1, 0.5f, -1.0f, 1024.0f);
+                    boolean f = ImGui.dragFloat("##" + JGemsRenderProperties.KEY_RENDER_DISTANCE, f1, 0.5f, -1.0f, 1024.0f);
+                    if (withSnapshots) {
+                        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_PROP_EDIT_RENDER_DIS", WBenchUITrackingHelper::INSTANCE)) {
+                            if (f) {
+                                uiTrackingHelper.saveSnapshot();
+                            }
+                        }
+                    }
                     renderProperties.setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, f1[0]);
                 }
                 if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_ALPHA_DISCARD)) {
@@ -197,7 +206,14 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     ImGui.text(JGemsRenderProperties.KEY_ALPHA_DISCARD);
                     ImGui.sameLine();
                     ImGui.setNextItemWidth(80);
-                    ImGui.dragFloat("##" + JGemsRenderProperties.KEY_ALPHA_DISCARD, f1, 0.0001f, 0.0f, 1.0f);
+                    boolean f = ImGui.dragFloat("##" + JGemsRenderProperties.KEY_ALPHA_DISCARD, f1, 0.0001f, 0.0f, 1.0f);
+                    if (withSnapshots) {
+                        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_PROP_EDIT_ALPHA_DIS", WBenchUITrackingHelper::INSTANCE)) {
+                            if (f) {
+                                uiTrackingHelper.saveSnapshot();
+                            }
+                        }
+                    }
                     renderProperties.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, f1[0]);
                 }
                 if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_SHADOW_CASTER)) {
@@ -205,6 +221,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     ImGui.text(JGemsRenderProperties.KEY_SHADOW_CASTER);
                     ImGui.sameLine();
                     if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_SHADOW_CASTER, res)) {
+                        if (withSnapshots) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                        }
                         renderProperties.setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !res);
                     }
                 }
@@ -213,6 +232,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                     ImGui.text(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION);
                     ImGui.sameLine();
                     if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, res)) {
+                        if (withSnapshots) {
+                            WBenchUITrackingHelper.instantlyTrackAndPush();
+                        }
                         renderProperties.setValueBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, !res);
                     }
                 }
