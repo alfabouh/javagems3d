@@ -380,6 +380,8 @@ public final class JGems3D {
                 List<String> command = new ArrayList<>();
 
                 command.add(javaBin);
+                command.add("-Dpolyglotimpl.DisableMultiReleaseCheck=true");
+                command.add("--enable-native-access=ALL-UNNAMED");
                 command.add("-Dfile.encoding=UTF-8");
                 command.add("-Xms512m");
                 command.add("-Xmx4G");
