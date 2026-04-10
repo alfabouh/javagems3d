@@ -140,7 +140,7 @@ public class SunLightShadow extends Shadow {
             Vector3f minExtents = new Vector3f(maxExtents).mul(-1.0f);
 
             Vector3f lightDir = (new Vector3f(sunPos.x, sunPos.y, sunPos.z).mul(-1.0f)).normalize();
-            Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
+            Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(radius));
             Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
 
             if (Math.abs(lightDir.y) > 0.99f) {
@@ -153,7 +153,8 @@ public class SunLightShadow extends Shadow {
             Cascade cascade = this.getCascades().get(i);
             cascade.setSplitDistance((nearClip + splitDist * clipRange) * -1.0f);
 
-            Matrix4f shadowMatrix = new Matrix4f(lightOrthoMatrix.mul(lightViewMatrix));
+            lightOrthoMatrix.mul(lightViewMatrix);
+            Matrix4f shadowMatrix = new Matrix4f(lightOrthoMatrix);
             Vector4f shadowOrigin = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
             shadowOrigin.mul(shadowMatrix, shadowOrigin);
             shadowOrigin.mul(this.getShadowMapResolution().x).div(2.0f);

@@ -32,7 +32,7 @@ public class WBenchDeferredRenderNode extends DeferredRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return WBenchResourceManager.localShaderAssets.PropertiesData;
+        return WBenchResourceManager.localShaderAssets.MainScenePropertiesData;
     }
 
     @Override

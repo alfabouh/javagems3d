@@ -113,7 +113,7 @@ void main()
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 
     if (showCascades) {
-        int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
+        int cascadeIndex = int(frag_pos.z < cascade_shadow_split_distance[0]) + int(frag_pos.z < cascade_shadow_split_distance[1]);
         switch (cascadeIndex) {
             case 0:
                 frag_color.rgb *= vec3(1.0f, 0.75f, 0.75f);

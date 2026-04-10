@@ -78,7 +78,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return WBenchResourceManager.localShaderAssets.PropertiesData;
+        return WBenchResourceManager.localShaderAssets.MainScenePropertiesData;
     }
 
     @Override

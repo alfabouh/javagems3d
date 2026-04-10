@@ -71,6 +71,6 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return JGemsResourceManager.globalShaderAssets.PropertiesData;
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
     }
 }

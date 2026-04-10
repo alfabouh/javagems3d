@@ -45,7 +45,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
     public ShaderStorageBufferObject MaterialsData;
-    public ShaderStorageBufferObject PropertiesData;
+    public ShaderStorageBufferObject MainScenePropertiesData;
+    public ShaderStorageBufferObject ShadowScenePropertiesData;
     public ShaderStorageBufferObject TimerData;
     public ShaderStorageBufferObject SunLightData;
     public ShaderStorageBufferObject PointLightsData;
@@ -89,8 +90,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.MaterialsData = new ShaderStorageBufferObject(3, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         ShaderStorageBufferProgram.createSSBOStorage(this.MaterialsData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.PropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_PROPERTIES);
-        ShaderStorageBufferProgram.createSSBOStorage(this.PropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+        this.MainScenePropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_PROPERTIES);
+        ShaderStorageBufferProgram.createSSBOStorage(this.MainScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.SunLightData = new ShaderStorageBufferObject(5, Float.BYTES * JGemsConfig.SYSTEM.SUN_LIGHT_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.SunLightData, GL46.GL_DYNAMIC_STORAGE_BIT);
@@ -101,8 +102,11 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
         ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+
+        this.ShadowScenePropertiesData = new ShaderStorageBufferObject(14, this.MainScenePropertiesData.getBufferSize());
+        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.gui_image = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"), ISource.Source.INSIDE_JAR));
         this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"), ISource.Source.INSIDE_JAR));

@@ -19,6 +19,6 @@ public class WBenchTransparencyRenderNode extends TransparencyRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return WBenchResourceManager.localShaderAssets.PropertiesData;
+        return WBenchResourceManager.localShaderAssets.MainScenePropertiesData;
     }
 }

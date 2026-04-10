@@ -33,7 +33,7 @@ public class JGemsDeferredRenderNode extends DeferredRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return JGemsResourceManager.globalShaderAssets.PropertiesData;
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
     }
 
     @Override

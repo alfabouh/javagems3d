@@ -42,7 +42,7 @@ public class JGemsShadowScene extends ShadowScene {
 
     @Override
     protected @NotNull ShaderStorageBufferObject getPropertiesSSBO() {
-        return JGemsResourceManager.globalShaderAssets.PropertiesData;
+        return JGemsResourceManager.globalShaderAssets.ShadowScenePropertiesData;
     }
 
     protected @NotNull Vector2i getShadowResolution() {

@@ -600,8 +600,8 @@ public final class JGemsHelper {
                 SunLightShadow.Cascade cascade = shadowScene.getSunLightShadow().getCascades().get(i);
                 if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i))) {
                     shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW, ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW, ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_SPLIT_DISTANCE, i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_PROJECTION_VIEW, i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                     shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POS_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
                     shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.NEG_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_NEGATIVE_EXPONENT));
                 }

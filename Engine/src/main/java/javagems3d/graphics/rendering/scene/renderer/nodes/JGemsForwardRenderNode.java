@@ -22,7 +22,7 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getPropertiesData() {
-        return JGemsResourceManager.globalShaderAssets.PropertiesData;
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
     }
 
     @Override

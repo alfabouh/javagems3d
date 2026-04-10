@@ -133,7 +133,7 @@ layout(std430, binding = 3) buffer MaterialsData {
     Material materials[256];
 };
 
-layout(std430, binding = 4) buffer RenderPropertiesData {
+layout(std430, binding = 14) buffer RenderPropertiesData {
     Properties properties[512];
 };
 
