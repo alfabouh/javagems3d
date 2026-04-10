@@ -38,8 +38,8 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
             Operator operator = sceneObjects.getKey();
             IntBuffer indexes = MemoryUtil.memAllocInt(GroupedIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
             IntBuffer materialIds = MemoryUtil.memAllocInt(GroupedIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
-            IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, this.isUseMaterialsSSBO() ? materialIds : null, renderBuffer, this.getIndirectMeshObjects());
-            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects());
+            IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, this.isUseMaterialsSSBO() ? materialIds : null, renderBuffer, sceneObjects.getValue());
+            this.fillSSBOWithInformation(indexes, materialIds, sceneObjects.getValue());
             this.render(operator, indirectCommandsProgram, renderBuffer, metaData);
             indirectCommandsProgram.destroyBuffer();
         }

@@ -51,7 +51,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager imgui;
     public JGemsShaderManager alpha_scanning;
 
-    public ShaderStorageBufferObject IndirectBufferData;
+    public ShaderStorageBufferObject MainSceneIndirectBufferData;
+    public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
     public ShaderStorageBufferObject MaterialsData;
     public ShaderStorageBufferObject PropertiesData;
@@ -62,6 +63,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public ShaderStorageBufferObject TextureScan;
     public ShaderStorageBufferObject ModelVertexesData;
     public ShaderStorageBufferObject AABBResult;
+
+    private static int ssboID;
 
     public GlobalShadersInitializer() {
     }
@@ -93,8 +96,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.TimerData = new ShaderStorageBufferObject(0, Float.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.TimerData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
-        ShaderStorageBufferProgram.createSSBOStorage(this.IndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+        this.MainSceneIndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        ShaderStorageBufferProgram.createSSBOStorage(this.MainSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.BindlessTexturesData = new ShaderStorageBufferObject(2, Long.BYTES * JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES);
         ShaderStorageBufferProgram.createSSBOStorage(this.BindlessTexturesData, GL46.GL_DYNAMIC_STORAGE_BIT);
@@ -117,6 +120,9 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.TextureScan = new ShaderStorageBufferObject(8, Integer.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.TextureScan, GL46.GL_DYNAMIC_STORAGE_BIT | GL46.GL_MAP_READ_BIT | GL46.GL_MAP_PERSISTENT_BIT | GL46.GL_MAP_COHERENT_BIT);
         ShaderStorageBufferProgram.mapBuffer(this.TextureScan, GL46.GL_MAP_READ_BIT | GL46.GL_MAP_PERSISTENT_BIT | GL46.GL_MAP_COHERENT_BIT);
+
+        this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.alpha_scanning = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/alpha_scanning"), ISource.Source.INSIDE_JAR));
         this.debug = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "debug"), ISource.Source.INSIDE_JAR));

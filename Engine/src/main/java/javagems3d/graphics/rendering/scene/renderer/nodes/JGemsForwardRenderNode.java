@@ -17,7 +17,7 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getIndirectBufferData() {
-        return JGemsResourceManager.globalShaderAssets.IndirectBufferData;
+        return JGemsResourceManager.globalShaderAssets.MainSceneIndirectBufferData;
     }
 
     @Override

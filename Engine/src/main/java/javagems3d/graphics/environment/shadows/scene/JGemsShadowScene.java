@@ -37,7 +37,7 @@ public class JGemsShadowScene extends ShadowScene {
 
     @Override
     protected @NotNull ShaderStorageBufferObject getIndirectSSBO() {
-        return JGemsResourceManager.globalShaderAssets.IndirectBufferData;
+        return JGemsResourceManager.globalShaderAssets.ShadowSceneIndirectBufferData;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
 
     @Override
     protected @NotNull ShaderStorageBufferObject getIndirectSSBO() {
-        return WBenchResourceManager.localShaderAssets.IndirectBufferData;
+        return WBenchResourceManager.localShaderAssets.ShadowSceneIndirectBufferData;
     }
 
     @Override

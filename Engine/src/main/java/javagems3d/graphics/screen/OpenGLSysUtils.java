@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.IntBuffer;
+
 public abstract class OpenGLSysUtils {
     public static String validateOGLFunctions() {
         StringBuilder validationResult = new StringBuilder();
@@ -29,7 +31,7 @@ public abstract class OpenGLSysUtils {
         GL46.glEnable(GL46.GL_DEBUG_OUTPUT_SYNCHRONOUS);
         GL46.glDebugMessageCallback((source, type, id, severity, length, message, param) -> {
             if (severity == GL46.GL_DEBUG_SEVERITY_NOTIFICATION) {
-                return;
+               return;
             }
             String msgS = MemoryUtil.memUTF8(message, length);
             String sourceS = "unknown";
@@ -115,6 +117,6 @@ public abstract class OpenGLSysUtils {
             }
             Log.get().error("[OpenGL]: " + msgS + " ::: \n" + sourceS + ", (type = " + typeS + "), severity: " + severityS);
         }, 0L);
-        //GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true); DOES NOT WORK!!
+        GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true);
     }
 }

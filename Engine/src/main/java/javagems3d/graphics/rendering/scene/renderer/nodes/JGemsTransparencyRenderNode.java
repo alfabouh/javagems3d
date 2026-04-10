@@ -66,7 +66,7 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getIndirectBufferData() {
-        return JGemsResourceManager.globalShaderAssets.IndirectBufferData;
+        return JGemsResourceManager.globalShaderAssets.MainSceneIndirectBufferData;
     }
 
     @Override

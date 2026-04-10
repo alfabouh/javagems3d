@@ -2,9 +2,7 @@ package workbench.graphics.scene.nodes;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.DeferredRenderNode;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -29,7 +27,7 @@ public class WBenchDeferredRenderNode extends DeferredRenderNode {
 
     @Override
     public @NotNull ShaderStorageBufferObject getIndirectBufferData() {
-        return WBenchResourceManager.localShaderAssets.IndirectBufferData;
+        return WBenchResourceManager.localShaderAssets.MainSceneIndirectBufferData;
     }
 
     @Override
