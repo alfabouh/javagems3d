@@ -75,6 +75,10 @@ public class JSONFileManaging {
         }
     }
 
+    public static JSONFileManaging create() {
+        return new JSONFileManaging();
+    }
+
     @SafeVarargs
     public static JSONFileManaging createSerializationRules(Pair<Class<?>, SerializationRules<?>>... pairs) {
         JSONFileManaging jsonFileManaging = new JSONFileManaging();

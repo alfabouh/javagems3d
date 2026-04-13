@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class JGemsGaming {
+    public static String TEMP_FILE = ".temp";
     public static String SYS_SCRIPTS_FOLDER = "game_scripts";
     public static String SYS_ASSETS_FOLDER = "game_assets";
     public static String SYS_MAPS_FOLDER = "game_maps";

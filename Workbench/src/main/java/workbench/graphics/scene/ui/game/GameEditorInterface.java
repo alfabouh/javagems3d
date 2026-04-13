@@ -11,6 +11,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
@@ -120,12 +121,23 @@ public class GameEditorInterface implements DearUIInterface {
             if (ImGui.menuItem("Compile")) {
                 String pathToSafe = JGemsHelper.files().openFolderViewChooser("");
                 if (pathToSafe != null && !pathToSafe.isEmpty()) {
+                    if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath).exists()) {
+                        LoggingManager.showWindowWarn("Core " + WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath + " doesn't exist");
+                        return;
+                    }
+                    if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath).exists()) {
+                        LoggingManager.showWindowWarn("Launcher " + WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath + " doesn't exist");
+                        return;
+                    } if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath).exists()) {
+                        LoggingManager.showWindowWarn("Workbench " + WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath + " doesn't exist");
+                        return;
+                    }
                     File f = new File(pathToSafe, WBench.get().getGameProjectManager().getGameProject().getGameTitle());
                     if (f.exists() || f.mkdir()) {
                         this.copyRuntime(f);
                         File gameFiles = new File(f, "game_dir");
                         if (gameFiles.exists() || gameFiles.mkdir()) {
-                            JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles);
+                            JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles, JGemsGaming.TEMP_FILE);
                         } else {
                             throw new JGemsIOException("Unable to create project folder " + gameFiles.getPath());
                         }
@@ -272,10 +284,10 @@ public class GameEditorInterface implements DearUIInterface {
     public void copyRuntime(File targetDir) {
         File runDir = this.getRunDir();
         new File(targetDir, "core").mkdir();
-        JGemsHelper.files().copyFile(new File(runDir, "jgems3d-core.jar"), new File(targetDir, "./core/jgems3d-core.jar"));
-        JGemsHelper.files().copyFile(new File(runDir, "jgems3d-launcher.jar"), new File(targetDir, "./core/jgems3d-launcher.jar"));
-        JGemsHelper.files().copyFile(new File(runDir, "jgems3d-workbench.jar"), new File(targetDir, "./core/jgems3d-workbench.jar"));
-        JGemsHelper.files().copyDirectory(new File(runDir, "api"), new File(targetDir, "./core/api"));
+        JGemsHelper.files().copyFile(new File(WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath), new File(targetDir, "./core/jgems3d-core.jar"));
+        JGemsHelper.files().copyFile(new File(WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath), new File(targetDir, "./core/jgems3d-launcher.jar"));
+        JGemsHelper.files().copyFile(new File(WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath), new File(targetDir, "./core/jgems3d-workbench.jar"));
+        JGemsHelper.files().copyDirectory(new File(runDir, "api"), new File(targetDir, "./core/api"), null);
     }
 
     public WindowInterfaceComponentG getWindowInterfaceComponentG() {

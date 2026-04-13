@@ -760,7 +760,7 @@ public final class JGemsHelper {
             return byteBuffer;
         }
 
-        public void copyDirectory(File src, File dst) {
+        public void copyDirectory(File src, File dst, @Nullable String fl_exception) {
             if (!src.exists()) {
                 return;
             }
@@ -771,9 +771,11 @@ public final class JGemsHelper {
             for (File file : Objects.requireNonNull(src.listFiles())) {
                 File target = new File(dst, file.getName());
                 if (file.isDirectory()) {
-                    copyDirectory(file, target);
+                    this.copyDirectory(file, target, fl_exception);
                 } else {
-                    copyFile(file, target);
+                    if (fl_exception == null || !file.getName().endsWith(fl_exception)) {
+                        this.copyFile(file, target);
+                    }
                 }
             }
         }

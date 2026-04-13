@@ -1,7 +1,13 @@
 package workbench.graphics.scene.ui.game.editor;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImInt;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
+import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewMapG;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewSkyBoxG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewModelG;
@@ -12,6 +18,7 @@ import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewMarkerOb
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
+import workbench.project.game.settings.GameProjectSettings;
 
 public class ActionsInterfaceComponentG {
     private final ScenePreviewMapG scenePreviewMapG;
@@ -36,7 +43,73 @@ public class ActionsInterfaceComponentG {
         this.scenePreviewScriptG = new ScenePreviewScriptG(resourcesInterfaceComponentG);
     }
 
+    private void projSettings() {
+        ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
+        if (ImGui.collapsingHeader("Editor Settings", ImGuiTreeNodeFlags.DefaultOpen)) {
+            {
+                ImGui.bullet();
+                if (ImGui.button("Save")) {
+                    WBench.get().getGameProjectManager().createOrSaveTempProjFile(WBench.get().getGameProjectManager().getGameProject());
+                }
+            }
+            ImGui.popStyleColor();
+            ImGui.indent();
+            if (ImGui.collapsingHeader("Compile")) {
+                ImGui.beginChild("##FogContent", ImGui.getColumnWidth(), 140, true, ImGuiWindowFlags.HorizontalScrollbar);
+                {
+                    ImGui.bulletText("Core .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath);
+                    if (ImGui.button("Browse ##1")) {
+                        WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath);
+                    }
+                    ImGui.separator();
+                }
+                {
+                    ImGui.bulletText("Launcher .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath);
+                    if (ImGui.button("Browse ##2")) {
+                        WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath);
+                    }
+                    ImGui.separator();
+                }
+                {
+                    ImGui.bulletText("Workbench .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath);
+                    if (ImGui.button("Browse ##3")) {
+                        WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath);
+                    }
+                }
+                ImGui.endChild();
+            }
+            if (ImGui.collapsingHeader("Map Editing")) {
+                ImGui.beginChild("##SkyContent", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
+                boolean autoSavePerSec = WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode == GameProjectSettings.MapProjectAutoSaveMode.TIMER;
+                ImGui.bulletText("AutoSave Mode");
+                if (ImGui.radioButton("On Timer", autoSavePerSec)) {
+                    WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode = GameProjectSettings.MapProjectAutoSaveMode.TIMER;
+                }
+                if (ImGui.radioButton("On Steps", !autoSavePerSec)) {
+                    WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode = GameProjectSettings.MapProjectAutoSaveMode.STEPS;
+                }
+                if (!autoSavePerSec) {
+                    ImInt step = new ImInt(WBench.get().getGameProjectManager().gameProjectSettings.saveEachStep);
+                    ImGui.setNextItemWidth(100);
+                    ImGui.inputInt("Steps to save", step, 1, 100);
+                    WBench.get().getGameProjectManager().gameProjectSettings.saveEachStep = step.get();
+                } else {
+                    ImInt sec = new ImInt((int) WBench.get().getGameProjectManager().gameProjectSettings.savePerSecond);
+                    ImGui.setNextItemWidth(100);
+                    ImGui.inputInt("Seconds to save", sec, 1, 360);
+                    WBench.get().getGameProjectManager().gameProjectSettings.savePerSecond = sec.get();
+                }
+                ImGui.endChild();
+            }
+
+            ImGui.unindent();
+        } else {
+            ImGui.popStyleColor();
+        }
+    }
+
     public void actionsContent() {
+        this.projSettings();
         this.scenePreviewMapG.render();
         this.scenePreviewScriptG.render();
         this.scenePreviewModelG.render();

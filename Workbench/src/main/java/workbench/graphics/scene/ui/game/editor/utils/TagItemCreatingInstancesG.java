@@ -67,11 +67,13 @@ public class TagItemCreatingInstancesG {
                 ImGui.inputText("Name", this.nameBuffer);
                 if (ImGui.button("Add")) {
                     boolean isFirst = this.infos.isEmpty();
-                    this.infos.add(new TagRadioBoolean.Info(this.nameBuffer.get(), isFirst));
-                    if (isFirst) {
-                        this.selectedIndex = 0;
+                    if (!this.nameBuffer.get().isEmpty()) {
+                        this.infos.add(new TagRadioBoolean.Info(this.nameBuffer.get(), isFirst));
+                        if (isFirst) {
+                            this.selectedIndex = 0;
+                        }
+                        this.nameBuffer.clear();
                     }
-                    this.nameBuffer.clear();
                 }
                 ImGui.unindent();
             }

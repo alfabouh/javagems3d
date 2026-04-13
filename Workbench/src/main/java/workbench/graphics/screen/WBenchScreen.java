@@ -27,6 +27,7 @@ import workbench.controller.WBenchControllerDispatcher;
 import workbench.global.WBenchConstants;
 import workbench.graphics.scene.WBenchScene;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.project.game.settings.GameProjectSettings;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchScreen implements IScreen {
@@ -36,6 +37,7 @@ public class WBenchScreen implements IScreen {
     private WBenchScene scene;
     private Window window;
     private float renderTicks;
+    public boolean triggerAutoSave;
 
     public WBenchScreen() {
         this.timerPool = new TimerPool();
@@ -202,10 +204,18 @@ public class WBenchScreen implements IScreen {
                 fps = 0;
             }
 
-            if (autoSaveTimer.resetTimerAfterReachedSeconds(60.0f)) {
-                if (WBench.get().getMapProjectManager().getCurrentMapProject() != null) {
-                    Log.get().trace("Autosave...");
-                    WBench.get().getMapProjectManager().saveMapProject(false);
+            if (WBench.get().getGameProjectManager().getGameProject() != null) {
+                if (WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode == GameProjectSettings.MapProjectAutoSaveMode.TIMER) {
+                    if (autoSaveTimer.resetTimerAfterReachedSeconds(WBench.get().getGameProjectManager().gameProjectSettings.savePerSecond)) {
+                        this.triggerAutoSave = true;
+                    }
+                }
+                if (this.triggerAutoSave) {
+                    if (WBench.get().getMapProjectManager().getCurrentMapProject() != null) {
+                        Log.get().trace("Autosave...");
+                        WBench.get().getMapProjectManager().saveMapProject(false);
+                    }
+                    this.triggerAutoSave = false;
                 }
             }
 

@@ -1,11 +1,14 @@
 package workbench.project.game;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
@@ -13,17 +16,21 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.project.game.settings.GameProjectSettings;
 import workbench.project.managing.WBenchProjectResourcesManager;
 import workbench.project.map.WBenchMapProjectManager;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class WBenchGameProjectManager {
     public static final String MAPS_PATH = JGemsGaming.SYS_MAPS_FOLDER;
+    public static final String TEMP_SETTINGS = "proj_sett" + JGemsGaming.TEMP_FILE;
 
+    public GameProjectSettings gameProjectSettings;
     private WBenchGameProject currentGameProject;
     private final WBenchMapProjectManager wBenchMapProjectManager;
     private WBenchProjectResourcesManager wBenchProjectResourcesManager;
@@ -42,6 +49,7 @@ public class WBenchGameProjectManager {
             this.saveGameProjectFile();
             Log.get().debug("Created WBenchGameProject: " + wBenchGameProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE + ")");
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
+            this.createOrSaveTempProjFile(wBenchGameProject);
             return true;
         } catch (JGemsIOException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't create object", e);
@@ -50,6 +58,31 @@ public class WBenchGameProjectManager {
             return false;
         } finally {
             LoadingInterfaceSwing.dispose();
+        }
+    }
+
+    public void createOrSaveTempProjFile(WBenchGameProject gameProject) {
+        File file = new File(gameProject.getProjectAbsolutePath().fullPath(), WBenchGameProjectManager.TEMP_SETTINGS);
+        if (!file.exists()) {
+            try {
+                String path = new File(WBench.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+                this.gameProjectSettings = new GameProjectSettings(path.replace("\\", "/"));
+            } catch (URISyntaxException e) {
+                throw new JGemsRuntimeException(e);
+            }
+        }
+        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        jsonFileManaging.writeToFile(this.gameProjectSettings, file, null);
+        Log.get().info("Saved temp settings project file");
+    }
+
+    public void readTempProjFile(WBenchGameProject gameProject) {
+        File file = new File(gameProject.getProjectAbsolutePath().fullPath(), WBenchGameProjectManager.TEMP_SETTINGS);
+        if (file.exists()) {
+            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+            this.gameProjectSettings = jsonFileManaging.readFromFile(file, new TypeToken<>() {}, null);
+        } else {
+            this.createOrSaveTempProjFile(gameProject);
         }
     }
 
@@ -155,7 +188,7 @@ public class WBenchGameProjectManager {
                 return false;
             }
             wBenchGameProject.checkVersion();
-
+            this.readTempProjFile(wBenchGameProject);
             this.createGameSystemFiles(path, wBenchGameProject.getGameTitle());
             Log.get().info("Opened WBenchGameProject: " + wBenchGameProject);
             Log.get().info(wBenchGameProject.getGameInfo());

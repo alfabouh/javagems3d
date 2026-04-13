@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.function.Supplier;
 
 public abstract class SnapshotsTrace {
+    private int stepCount;
     private static final int LIMIT = 1024;
     private final Deque<SnapshotsContainer> undoStack = new ArrayDeque<>();
     private final Deque<SnapshotsContainer> redoStack = new ArrayDeque<>();
@@ -26,6 +27,7 @@ public abstract class SnapshotsTrace {
         this.undoStack.push(snapshot);
         this.redoStack.clear();
         this.trim(this.undoStack);
+        this.stepCount++;
     }
 
     public void undo() {
@@ -37,6 +39,7 @@ public abstract class SnapshotsTrace {
         SnapshotsContainer snapshot = this.undoStack.pop();
         snapshot.fixAll();
         this.trim(this.redoStack);
+        this.stepCount++;
     }
 
     public void redo() {
@@ -48,12 +51,17 @@ public abstract class SnapshotsTrace {
         SnapshotsContainer snapshot = this.redoStack.pop();
         snapshot.fixAll();
         this.trim(this.undoStack);
+        this.stepCount++;
     }
 
     private void trim(Deque<?> stack) {
         if (stack.size() > LIMIT) {
             stack.removeLast();
         }
+    }
+
+    public int getStepCount() {
+        return this.stepCount;
     }
 
     public Deque<SnapshotsContainer> getUndoStack() {
