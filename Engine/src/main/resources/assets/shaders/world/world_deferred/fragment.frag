@@ -3,8 +3,6 @@ precision highp float;
 precision highp int;
 
 in vec2 uv_coordinates;
-in mat4 out_view_matrix;
-in mat4 out_inversed_view_matrix;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
@@ -28,6 +26,7 @@ uniform sampler2D gEmission;
 uniform sampler2D gMetallicRoughness;
 uniform sampler2D ssao_map;
 uniform bool showCascades;
+uniform mat4 view_matrix;
 
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
@@ -45,7 +44,7 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
         float p_brightness = p.brightness;
         vec3 params = getParams(p_brightness);
         float p_id = p.attachedShadowSceneId;
-        float shadow = p_id >= 0 ? calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz) : 1.;
+        float shadow = p_id >= 0 ? calculate_point_light_shadows(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
         point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
     }
 
@@ -85,13 +84,15 @@ void main()
     vec3 emission = texture(gEmission, uv_coordinates).rgb;
     vec2 metallic_roughness = texture(gMetallicRoughness, uv_coordinates).rg;
 
+    mat4 inversed_view = inverse(view_matrix);
+
     vec4 view_pos = vec4(frag_pos, 1.0);
-    vec4 world_position = out_inversed_view_matrix * view_pos;
+    vec4 world_position = inversed_view * view_pos;
     world_position /= world_position.w;
 
     if (useCubeMap) {
         vec4 model_normal_pos = vec4(normals, 1.0);
-        vec4 world_normal = out_inversed_view_matrix * model_normal_pos;
+        vec4 world_normal = inversed_view * model_normal_pos;
         world_normal /= world_normal.w;
         vec3 refracted_color = refract_cubemap(world_normal.xyz, 1.73, world_position);
         g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r * 0.5);
@@ -113,7 +114,7 @@ void main()
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 
     if (showCascades) {
-        int cascadeIndex = int(frag_pos.z < cascade_shadow_split_distance[0]) + int(frag_pos.z < cascade_shadow_split_distance[1]);
+        int cascadeIndex = int(frag_pos.z < cascade_shadow_split_distance_0) + int(frag_pos.z < cascade_shadow_split_distance_1);
         switch (cascadeIndex) {
             case 0:
                 frag_color.rgb *= vec3(1.0f, 0.75f, 0.75f);

@@ -10,6 +10,7 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
+import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
@@ -179,7 +180,7 @@ public class ItemsInterfaceComponentM {
             aabb.getAabbMax().sub(aabb.getAabbMin(), halfSize).mul(0.5f);
 
             Vector3f origin = new Vector3f(center);
-            List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjects(this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
+            List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjects(WBenchOpenGLRenderer.isRenderingBackgroundScene() ? this.getEditorInterface().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
 
             if (hits.isEmpty()) {
                 return;

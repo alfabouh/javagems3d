@@ -97,7 +97,7 @@ public class ShaderObject {
 
     private void loadUniforms(Map<String, Set<String>> structs, String shaderText) {
         String[] lines = shaderText.split("\n");
-        Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)(\\[\\s*\\d+\\s*])?\\s*;?\\s*");
+        Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)(?:_(\\d+))?(\\[\\s*\\d+\\s*])?\\s*;?\\s*");
 
         for (String line : lines) {
             line = line.trim();

@@ -596,21 +596,21 @@ public final class JGemsHelper {
         public void performShadowsInfo(IEnvironment environment, JGemsShaderManager shaderManager) {
             shaderManager.disableWarns();
             ShadowScene shadowScene = (ShadowScene) environment.getShadowScene();
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POS_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.NEG_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_NEGATIVE_EXPONENT));
             for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
                 SunLightShadow.Cascade cascade = shadowScene.getSunLightShadow().getCascades().get(i);
-                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i))) {
-                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP, i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_SPLIT_DISTANCE, i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_PROJECTION_VIEW, i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POS_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.NEG_EXP), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_NEGATIVE_EXPONENT));
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP.getS() + i))) {
+                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SUN_SHADOW_MAP.getS() + i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_SPLIT_DISTANCE.getS() + i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CASCADE_SHADOW_PROJECTION_VIEW.getS() + i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                 }
             }
             for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = shadowScene.getPointLightShadows().get(i);
                 shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
-                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP, i))) {
-                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP, i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP.getS() + i))) {
+                    shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP.getS() + i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
                 }
             }
             shaderManager.enableWarns();

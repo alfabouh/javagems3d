@@ -34,8 +34,8 @@ public enum DefaultUniformDefinitions {
     G_METALLIC_ROUGHNESS("gMetallicRoughness"),
     TEXTURE_SCALING("texture_scaling"),
     BACKGROUND_COLOR("background_color"),
-    CASCADE_SHADOW_PROJECTION_VIEW("cascade_shadow_projection_view"),
-    CASCADE_SHADOW_SPLIT_DISTANCE("cascade_shadow_split_distance"),
+    CASCADE_SHADOW_PROJECTION_VIEW("cascade_shadow_projection_view_"),
+    CASCADE_SHADOW_SPLIT_DISTANCE("cascade_shadow_split_distance_"),
     ANIMATIONS_MATRIX("animations_matrix"),
     DIFFUSE_COLOR("diffuse_color"),
     SSAO_BIAS("ssao_bias"),
@@ -76,8 +76,8 @@ public enum DefaultUniformDefinitions {
     NORMALS_MAP("normals_map"),
     METALLIC_ROUGHNESS_MAP("metallicRoughnessMap"),
     TEXTURING_CODE("texturing_code"),
-    SUN_SHADOW_MAP("sun_shadow_map"),
-    POINT_LIGHT_CUBE_MAP("point_light_cubemap");
+    SUN_SHADOW_MAP("sun_shadow_map_"),
+    POINT_LIGHT_CUBE_MAP("point_light_cubemap_");
 
     private final String s;
 
