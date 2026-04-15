@@ -55,11 +55,11 @@ public final class WBench {
 
     private static JGemsAPIEditorResources apiEditorResources;
 
-    private WBench(@Nullable String apiAppClasspath) {
+    private WBench(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("WorkbenchLogger"));
             JGemsAPI.INIT_JGEMS();
-            WBench.apiEditorResources = JGemsAPI.get().launchAPIEditorData(apiAppClasspath);
+            WBench.apiEditorResources = JGemsAPI.get().launchAPIEditorData(apiAppClasspath, launchArgs);
             WBench.checkFilesDirectory();
         } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);
@@ -103,10 +103,10 @@ public final class WBench {
         if (WBench.wBench != null) {
             throw new JGemsRuntimeException("Couldn't launch ToolBox more than 1 times");
         }
-        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
+        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG) == Boolean.TRUE) {
             JGems3D.DEBUG_MODE = true;
         }
-        WBench.wBench = new WBench(argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH));
+        WBench.wBench = new WBench(argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH), argsRegistry);
         WBench.get().start();
     }
 

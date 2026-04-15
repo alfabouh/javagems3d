@@ -16,6 +16,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.binding.DefaultBindings;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -29,7 +30,8 @@ public class AppDefault extends JGemsApplication {
     @JGemsAppInstance
     public static AppDefault appDefault;
 
-    public AppDefault() {
+    public AppDefault(JGemsLaunchArgsRegistry args) {
+        super(args);
         JGems3D.DEBUG_MODE = true;
     }
 

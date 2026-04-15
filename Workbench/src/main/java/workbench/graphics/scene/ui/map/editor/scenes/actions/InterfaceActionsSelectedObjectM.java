@@ -5,6 +5,7 @@ import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.external.mapping.tags.Tag;
@@ -20,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import workbench.WBench;
+import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
@@ -32,6 +35,7 @@ public class InterfaceActionsSelectedObjectM {
     private boolean lockObjectAngles;
     private final MapEditorInterface mapEditorInterface;
     private int currentOperation;
+    public static boolean scalingFlag;
 
     public InterfaceActionsSelectedObjectM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -88,6 +92,20 @@ public class InterfaceActionsSelectedObjectM {
             result |= zOp;
         }
         return result;
+    }
+
+    public boolean isLockObjectAngles() {
+        WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();
+        return wBenchBindingManager.keyAlt.isPressed() || this.lockObjectAngles;
+    }
+
+    public boolean isScaleTranslation() {
+        return this.mapEditorInterface.getSelectedObjectsManager().isScaleTranslator();
+    }
+
+    public boolean isOneDirScaling() {
+        WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();
+        return wBenchBindingManager.keyAlt.isPressed() || this.mapEditorInterface.getSelectedObjectsManager().isOneDirScaling();
     }
 
     private void processTranslations(String id, Collection<WBenchObject<?>> wBenchObjects, int operationFlag, boolean textInfoIfCannotBeTransformed) {
@@ -229,8 +247,8 @@ public class InterfaceActionsSelectedObjectM {
                 }
                 ImGui.endDisabled();
                 if (!many) {
-                    if (ImGui.checkbox("Desync Angles", this.lockObjectAngles)) {
-                        this.lockObjectAngles = !this.lockObjectAngles;
+                    if (ImGui.checkbox("Desync Angles", this.isLockObjectAngles())) {
+                        this.lockObjectAngles = !this.isLockObjectAngles();
                     }
                 }
             } else if (textInfoIfCannotBeTransformed) {
@@ -239,6 +257,7 @@ public class InterfaceActionsSelectedObjectM {
                 ImGui.popStyleColor();
             }
 
+            boolean scalingActive = false;
             if (showScaleX || showScaleY || showScaleZ) {
                 ImGui.bulletText("Scaling");
                 ImGui.beginDisabled(!showScaleX);
@@ -249,6 +268,9 @@ public class InterfaceActionsSelectedObjectM {
                             captScale = true;
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
+                        }
+                        if (ImGui.isItemActive()) {
+                            scalingActive = true;
                         }
                     }
                     ImGui.popStyleColor();
@@ -264,6 +286,9 @@ public class InterfaceActionsSelectedObjectM {
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
+                        if (ImGui.isItemActive()) {
+                            scalingActive = true;
+                        }
                     }
                     ImGui.popStyleColor();
                 }
@@ -278,13 +303,21 @@ public class InterfaceActionsSelectedObjectM {
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
+                        if (ImGui.isItemActive()) {
+                            scalingActive = true;
+                        }
                     }
                     ImGui.popStyleColor();
                 }
                 ImGui.endDisabled();
                 if (many) {
-                    if (ImGui.checkbox("Scale-Translation", this.mapEditorInterface.getSelectedObjectsManager().isScaleTranslator())) {
-                        this.mapEditorInterface.getSelectedObjectsManager().setScaleTranslator(!this.mapEditorInterface.getSelectedObjectsManager().isScaleTranslator());
+                    if (ImGui.checkbox("Scale-Translation", this.isScaleTranslation())) {
+                        this.mapEditorInterface.getSelectedObjectsManager().setScaleTranslator(!this.isScaleTranslation());
+                    }
+                }
+                if (!many || !this.isScaleTranslation()) {
+                    if (ImGui.checkbox("One-Dir Scaling", this.isOneDirScaling())) {
+                        this.mapEditorInterface.getSelectedObjectsManager().setOneDirScaling(!this.isOneDirScaling());
                     }
                 }
             } else if (textInfoIfCannotBeTransformed) {
@@ -297,6 +330,10 @@ public class InterfaceActionsSelectedObjectM {
             final Vector3f newRot = new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]);
             final Vector3f newScale = new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]);
 
+            if (!scalingActive) {
+                InterfaceActionsSelectedObjectM.scalingFlag = false;
+            }
+
             if (many) {
                 if (captTranslate) {
                     this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
@@ -305,7 +342,13 @@ public class InterfaceActionsSelectedObjectM {
                     this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(newRot);
                 }
                 if (captScale) {
-                    this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(newScale);
+                    Vector3f oldScale = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
+                    final Vector3f delta = new Vector3f(oldScale).sub(newScale);
+                    if (!InterfaceActionsSelectedObjectM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
+                        this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(delta.x > 0 || delta.y > 0 || delta.z > 0);
+                        InterfaceActionsSelectedObjectM.scalingFlag = true;
+                    }
+                    this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                 }
             } else {
                 if (captTranslate) {
@@ -325,7 +368,24 @@ public class InterfaceActionsSelectedObjectM {
                     }
                 }
                 if (captScale) {
-                    getFirst.setScaling(newScale);
+                    if (this.isOneDirScaling()) {
+                        Vector3f oldScale = new Vector3f(getFirst.getScaling());
+                        final Vector3f delta = new Vector3f(oldScale).sub(newScale);
+                        if (!InterfaceActionsSelectedObjectM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
+                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(delta.x > 0 || delta.y > 0 || delta.z > 0);
+                            InterfaceActionsSelectedObjectM.scalingFlag = true;
+                        }
+
+                        Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
+                        CullingAABB aabb = getFirst.getCullingData();
+                        Vector3f pivot = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().isScalingOneDirMaxPlane() ? aabb.getAabbMax() : aabb.getAabbMin());
+                        Vector3f oldPos = new Vector3f(getFirst.getPosition());
+                        Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
+                        if (newPosScaled.isFinite()) {
+                            getFirst.setPosition(newPosScaled);
+                        }
+                    }
+                    getFirst.setScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                 }
             }
         }
@@ -341,9 +401,9 @@ public class InterfaceActionsSelectedObjectM {
     }
 
     private void showTags(@NotNull WBenchObject<?> selectedObject) {
-        Set<Pair<Integer, SceneObject>> wolrdObjectsToViewInList = new TreeSet<>(Comparator.comparingInt(Pair::first));
+        Set<Pair<Integer, SceneObject>> worldObjectsToViewInList = new TreeSet<>(Comparator.comparingInt(Pair::first));
         for (Map.Entry<Integer, WBenchObject<?>> entry : this.mapEditorInterface.getOpenGLRenderer().getWorld().getIdMap().entrySet()) {
-            wolrdObjectsToViewInList.add(new Pair<>(entry.getKey(), entry.getValue()));
+            worldObjectsToViewInList.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
 
         final TagsContainer tagsContainer = selectedObject.getTagsContainer();
@@ -351,11 +411,12 @@ public class InterfaceActionsSelectedObjectM {
             for (Tag<? extends TagItem> tag : tagsContainer.getTagCollection()) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
                 if (ImGui.collapsingHeader(tag.getTagID().getId(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                    this.showItemDescription(tag.getTagID());
                     ImGui.popStyleColor();
                     //ImGui.beginChild("##InsideTag_" + tag.getTagID().getId(), ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
                     {
-                        tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), wolrdObjectsToViewInList, WBenchUITrackingHelper::INSTANCE);
-                        this.showItemDescription(tag.getTagID());
+                        tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), worldObjectsToViewInList, WBenchUITrackingHelper::INSTANCE);
+                       //this.showItemDescription(tag.getTagID());
                     }
                     //ImGui.endChild();
                 } else {
@@ -387,6 +448,8 @@ public class InterfaceActionsSelectedObjectM {
                         if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
                             WBenchUITrackingHelper.instantlyTrackAndPush();
                             this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), true, false, false));
+                            this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                            this.mapEditorInterface.getSelectedObjectsManager().reset();
                         }
                     }
 
@@ -394,6 +457,8 @@ public class InterfaceActionsSelectedObjectM {
                         if (ImGui.radioButton("Rotation", (this.getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
                             WBenchUITrackingHelper.instantlyTrackAndPush();
                             this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), false, true, false));
+                            this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                            this.mapEditorInterface.getSelectedObjectsManager().reset();
                         }
                     }
 
@@ -401,6 +466,8 @@ public class InterfaceActionsSelectedObjectM {
                         if (ImGui.radioButton("Scaling", (this.getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
                             WBenchUITrackingHelper.instantlyTrackAndPush();
                             this.setCurrentOperation(this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), false, false, true));
+                            this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                            this.mapEditorInterface.getSelectedObjectsManager().reset();
                         }
                     }
 
@@ -472,16 +539,22 @@ public class InterfaceActionsSelectedObjectM {
                 if (ImGui.radioButton("Translation", (this.getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
                     WBenchUITrackingHelper.instantlyTrackAndPush();
                     this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, true, false, false));
+                    this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                    this.mapEditorInterface.getSelectedObjectsManager().reset();
                 }
 
                 if (ImGui.radioButton("Rotation", (this.getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
                     WBenchUITrackingHelper.instantlyTrackAndPush();
                     this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, false, true, false));
+                    this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                    this.mapEditorInterface.getSelectedObjectsManager().reset();
                 }
 
                 if (ImGui.radioButton("Scaling", (this.getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
                     WBenchUITrackingHelper.instantlyTrackAndPush();
                     this.setCurrentOperation(this.chooseGuizmoOperation(translationConstraints, false, false, true));
+                    this.mapEditorInterface.getSelectedObjectsManager().setDefaultMetaMods();
+                    this.mapEditorInterface.getSelectedObjectsManager().reset();
                 }
 
                 this.processTranslations("##transl_mltobj", this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects(), this.getCurrentOperation(), false);

@@ -50,7 +50,7 @@ public class WBenchBindingManager extends BindingManager {
         this.addBinding(this.keyS, "Walk Backward");
         this.addBinding(this.keyUp, "Fly Up");
         this.addBinding(this.keyShift, "Fly Down");
-        this.addBinding(this.keyAlt, "Camera Speed Up");
+        this.addBinding(this.keyAlt, "Camera Speed Up | Additional Func");
         this.addBinding(this.keyCtrl, "Special Interface Controlling | Camera Slow Down");
         this.addBinding(this.keyDelete, "Delete");
         this.addBinding(this.keyEsc, "Cancel");

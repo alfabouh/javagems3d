@@ -34,6 +34,7 @@ import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
@@ -85,10 +86,16 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+        if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
+            GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
+        }
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
         this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
         this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+        if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
+            GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
+        }
         this.getOutGBuffer().unBindFBO();
 
         if (this.getOutSSAOBuffer() != null) {

@@ -158,6 +158,10 @@ public class DearUIGameInterface implements DearUIInterface {
                 JGemsConfig.DEBUG.FULL_BRIGHT = !JGemsConfig.DEBUG.FULL_BRIGHT;
             }
 
+            if (ImGui.checkbox("WireFrame Rendering", JGemsConfig.DEBUG.WIREFRAME_RENDERING)) {
+                JGemsConfig.DEBUG.WIREFRAME_RENDERING = !JGemsConfig.DEBUG.WIREFRAME_RENDERING;
+            }
+
             if (ImGui.checkbox("Show Debug Lines", JGemsConfig.DEBUG.SHOW_DEBUG_LINES)) {
                 JGemsConfig.DEBUG.SHOW_DEBUG_LINES = !JGemsConfig.DEBUG.SHOW_DEBUG_LINES;
             }

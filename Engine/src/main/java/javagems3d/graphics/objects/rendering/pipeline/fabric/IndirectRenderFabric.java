@@ -33,6 +33,12 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         this.stage = stage;
     }
 
+    //public void preRender(Pipeline pipeline, IRendered renderedItem) {
+    //}
+
+    //public void postRender(Pipeline pipeline, IRendered renderedItem) {
+    //}
+
     public abstract void onFillBufferWithMatrices(Pipeline pipeline, IRendered renderedItem, Matrix4f defaultMatrix, FloatBuffer matrices, ArbitraryArguments metaData);
     public abstract void onFillBufferWithProperties(Pipeline pipeline, IRendered renderedItem, RenderAttributes defaultAttributes, ByteBuffer properties, ArbitraryArguments metaData);
 

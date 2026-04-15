@@ -13,6 +13,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -49,8 +50,14 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
     public void onRender(FrameTicking frameTicking) {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
+            GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
+        }
         this.getBackgroundRenderProcessor().setRender(this.renderBackground());
         this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
+        if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
+            GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
+        }
         GL46.glDisable(GL46.GL_BLEND);
 
         this.getOutColorBuffer().bindFBO();

@@ -26,6 +26,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     private TagsContainer tagsContainer;
     private final TranslationConstraints translationConstraints;
     private boolean forceConstraints;
+    private boolean wireRendering;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
         super(objectId.nameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
@@ -116,16 +117,25 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     public abstract Vector3f textInMenuColor();
     public abstract int orderInList();
 
+    public boolean isWireRendering() {
+        return this.wireRendering;
+    }
+
+    public WBenchObject<E> setWireRendering(boolean wireRendering) {
+        this.wireRendering = wireRendering;
+        return this;
+    }
+
     public synchronized Vector3f getPosition() {
-        return this.getModel().getPose().getPosition();
+        return new Vector3f(this.getModel().getPose().getPosition());
     }
 
     public synchronized Vector3f getRotation() {
-        return this.getModel().getPose().getRotation();
+        return new Vector3f(this.getModel().getPose().getRotation());
     }
 
     public synchronized Vector3f getScaling() {
-        return this.getModel().getPose().getScaling();
+        return new Vector3f(this.getModel().getPose().getScaling());
     }
 
     public synchronized TagsContainer getTagsContainer() {

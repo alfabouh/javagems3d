@@ -10,6 +10,7 @@ public abstract class JGemsConfig {
         public static boolean FULL_BRIGHT;
         public static boolean DISABLE_POINT_LIGHTS;
         public static boolean SHOW_DEBUG_LINES;
+        public static boolean WIREFRAME_RENDERING;
 
         static {
             reset();

@@ -3,10 +3,12 @@ package api.system;
 import api.application.JGemsApplication;
 import api.events.EventBus;
 import api.scripting.JGemsAPIScriptingCore;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.exceptions.JGemsException;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -79,13 +81,13 @@ public final class JGemsAPI implements Closeable {
         JGemsAPI.getManager().pushEvent(event);
     }
 
-    public void launchAPI(@Nullable String apiAppClasspath) throws JGemsAPIException {
+    public void launchAPI(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) throws JGemsAPIException {
         try {
             JGemsAPI.appData = new JGemsAPIData();
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             JGemsAPI.apiScriptingCore = new JGemsAPIScriptingCore();
             JGemsAPI.ALLOW_EVENTS = true;
-            Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication(apiAppClasspath);
+            Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication(apiAppClasspath, launchArgs);
             Log.get().debug("Init API-App: id=" + pair.second().id());
             JGemsAPI.getManager().pullDataFromApplication(JGemsAPI.APIEditorResources(), JGemsAPI.APIAppData(), pair);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
@@ -96,12 +98,12 @@ public final class JGemsAPI implements Closeable {
         }
     }
 
-    public JGemsAPIEditorResources launchAPIEditorData(@Nullable String apiAppClasspath) throws JGemsAPIException {
+    public JGemsAPIEditorResources launchAPIEditorData(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) throws JGemsAPIException {
         try {
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             JGemsAPI.apiScriptingCore = new JGemsAPIScriptingCore();
             JGemsAPI.ALLOW_EVENTS = false;
-            Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication(apiAppClasspath);
+            Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication(apiAppClasspath, launchArgs);
             Log.get().debug("Init API-App(ONLY EDITOR DATA): id=" + pair.second().id());
             JGemsAPI.getManager().pullDataForEditor(pair.first(), JGemsAPI.APIEditorResources());
             JGemsAPI.apiScriptingCore.scanJavaCodeGame();
@@ -153,7 +155,7 @@ public final class JGemsAPI implements Closeable {
         }
     }
 
-    private Pair<JGemsApplication, JGemsAppEntry> createApplication(@Nullable String apiAppClasspath) throws JGemsException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Pair<JGemsApplication, JGemsAppEntry> createApplication(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) throws JGemsException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Class<?> clazz = null;
         JGemsAppEntry jGemsAppEntry = null;
         try {
@@ -176,9 +178,9 @@ public final class JGemsAPI implements Closeable {
             throw new JGemsAPIException("Couldn't open ANY API ENTRY!", e);
         }
         Log.get().info("Found JGems3D entry class: " + clazz.getName());
-        Constructor<?> constructor = clazz.getConstructor();
+        Constructor<?> constructor = clazz.getConstructor(JGemsLaunchArgsRegistry.class);
         constructor.setAccessible(true);
-        JGemsApplication application = (JGemsApplication) constructor.newInstance();
+        JGemsApplication application = (JGemsApplication) constructor.newInstance(launchArgs);
         constructor.setAccessible(false);
 
         Field[] f1 = clazz.getDeclaredFields();

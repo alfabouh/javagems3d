@@ -88,16 +88,16 @@ public class GameEditorInterface implements DearUIInterface {
             //TODO
             if (ImGui.menuItem("Run Game")) {
                 //JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
-                //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
-                //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
-                //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
-                //        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN, "true")
+                //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST, "true"),
+                //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
+                //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "true"),
+                //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_FULL_SCREEN, "true")
                 //));
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "false"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef())
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "false"),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef())
                 ));
             }
             ImGui.separator();

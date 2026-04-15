@@ -33,24 +33,27 @@ public final class Pose3D implements IPose {
         return this.position;
     }
 
-    public void setPosition(Vector3f position) {
+    public Pose3D setPosition(Vector3f position) {
         this.getPosition().set(position);
+        return this;
     }
 
     public Vector3f getRotation() {
         return this.rotation;
     }
 
-    public void setRotation(Vector3f rotation) {
+    public Pose3D setRotation(Vector3f rotation) {
         this.getRotation().set(rotation);
+        return this;
     }
 
     public Vector3f getScaling() {
         return this.scaling;
     }
 
-    public void setScaling(Vector3f scale) {
+    public Pose3D setScaling(Vector3f scale) {
         this.getScaling().set(scale);
+        return this;
     }
 
     @Override

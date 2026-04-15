@@ -38,7 +38,7 @@ public class ItemsInterfaceComponentM {
     @SuppressWarnings("all")
     public void itemsContent() {
         boolean cloneAll = false;
-        if (ProjectUIUtils.ctrlC()) {
+        if (ProjectUIUtils.ctrlG()) {
             cloneAll = true;
         }
         final List<WBenchObject<?>> sortedSet = new ArrayList<>(this.getEditorInterface().setOfSceneObjects());
@@ -58,7 +58,7 @@ public class ItemsInterfaceComponentM {
             Vector3f color = wBenchObject.textInMenuColor();
             ImGui.pushStyleColor(ImGuiCol.Text, color.x, color.y, color.z, 1.0f);
 
-            String fullText = "[" + wBenchObject.getListID() + "] " + wBenchObject.getObjectNameId().nameId();
+            String fullText = wBenchObject.getListID() + "::" + wBenchObject.getObjectNameId().nameId();
             String displayText = fullText;
             float textWidth = ImGui.calcTextSize(displayText).x;
             float maxWidth = Math.max(x, 0.0f);
@@ -96,6 +96,22 @@ public class ItemsInterfaceComponentM {
             }
             ImGui.popStyleColor();
             ImGui.sameLine();
+            //{
+            //    final boolean flagWr = wBenchObject.isWireRendering();
+            //    if (flagWr) {
+            //        ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
+            //    }
+            //    if (ImGui.button("W")) {
+            //        wBenchObject.setWireRendering(!wBenchObject.isWireRendering());
+            //    }
+            //    if (flagWr) {
+            //        ImGui.popStyleColor();
+            //    }
+            //}
+            if (ImGui.isItemHovered()) {
+                ImGui.setTooltip("Wire-Rendering. id: " + wBenchObject.getListID());
+            }
+            ImGui.sameLine();
             if (ImGui.button("X")) {
                 this.mapEditorInterface.getSelectedObjectsManager().deleteObject(true, wBenchObject);
             }
@@ -116,10 +132,64 @@ public class ItemsInterfaceComponentM {
         }
     }
 
+    public void popupSnapAABBContext(String id, boolean common) {
+        if (ImGui.beginPopup(id + "_snap_aabb")) {
+            if (ImGui.menuItem("Snap X+")) {
+            }
+            if (ImGui.menuItem("Snap X-")) {
+            }
+            if (ImGui.menuItem("Snap Z+")) {
+            }
+            if (ImGui.menuItem("Snap Z-")) {
+            }
+            if (ImGui.menuItem("Snap Y+")) {
+            }
+            if (ImGui.menuItem("Snap Y-")) {
+                for (SceneObject sceneObject : this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects()) {
+                    Vector3f hit = this.getEditorInterface().getSceneComponent().resolveMovementWithCollision(sceneObject, this.getEditorInterface().getWorld().getSceneObjects(), 20, new Vector3f(0.0f, -1.0f, 0.0f));
+                    if (hit != null) {
+                        System.out.println(hit.x + " " + hit.y + " " + hit.z);
+                    } else {
+                        System.out.println("NULL");
+                    }
+                }
+            }
+            ImGui.endPopup();
+        }
+    }
+
+    public void popupSnapAxisContext(String id, boolean common) {
+        if (ImGui.beginPopup(id + "_snap_axis")) {
+            final float rayDist = 12.0f;
+            if (ImGui.menuItem("Snap X+")) {
+                this.snapAxis(new Vector3f(rayDist, 0.0f, 0.0f));
+            }
+            if (ImGui.menuItem("Snap X-")) {
+                this.snapAxis(new Vector3f(-rayDist, 0.0f, 0.0f));
+            }
+            if (ImGui.menuItem("Snap Z+")) {
+                this.snapAxis(new Vector3f(0.0f, 0.0f, rayDist));
+            }
+            if (ImGui.menuItem("Snap Z-")) {
+                this.snapAxis(new Vector3f(0.0f, 0.0f, -rayDist));
+            }
+            if (ImGui.menuItem("Snap Y+")) {
+                this.snapAxis( new Vector3f(0.0f, rayDist, 0.0f));
+            }
+            if (ImGui.menuItem("Snap Y-")) {
+                this.snapAxis(new Vector3f(0.0f, -rayDist, 0.0f));
+            }
+            ImGui.endPopup();
+        }
+    }
+
     public void rightKeyContext(String id, boolean common) {
         if (this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().isEmpty()) {
             return;
         }
+
+        boolean flag1 = false;
+        boolean flag2 = false;
         if (common ? ImGui.beginPopupContextItem(id) : ImGui.beginPopup(id)) {
             if (ImGui.menuItem("Remove")) {
                 this.mapEditorInterface.getSelectedObjectsManager().deleteSelected();
@@ -134,27 +204,26 @@ public class ItemsInterfaceComponentM {
                 }
             }
             ImGui.separator();
-            final float rayDist = 8.0f;
-            if (ImGui.menuItem("Snap X+")) {
-                this.snap(new Vector3f(rayDist, 0.0f, 0.0f));
+            if (ImGui.menuItem("Snap [Axis-Triangle]")) {
+                flag1 = true;
             }
-            if (ImGui.menuItem("Snap X-")) {
-                this.snap(new Vector3f(-rayDist, 0.0f, 0.0f));
+            ImGui.beginDisabled(true);
+            if (ImGui.menuItem("[WIP] Snap [Edge-Triangle]")) {
+                flag2 = true;
             }
-            if (ImGui.menuItem("Snap Z+")) {
-                this.snap(new Vector3f(0.0f, 0.0f, rayDist));
-            }
-            if (ImGui.menuItem("Snap Z-")) {
-                this.snap(new Vector3f(0.0f, 0.0f, -rayDist));
-            }
-            if (ImGui.menuItem("Snap Y+")) {
-                this.snap( new Vector3f(0.0f, rayDist, 0.0f));
-            }
-            if (ImGui.menuItem("Snap Y-")) {
-                this.snap(new Vector3f(0.0f, -rayDist, 0.0f));
-            }
+            ImGui.endDisabled();
             ImGui.endPopup();
         }
+
+        if (flag1) {
+            ImGui.openPopup(id + "_snap_axis");
+        }
+        if (flag2) {
+            ImGui.openPopup(id + "_snap_aabb");
+        }
+
+        this.popupSnapAxisContext(id, common);
+        //this.popupSnapAABBContext(id, common);
     }
 
     public static void cloneAllSelected(MapEditorInterface mapEditorInterface) {
@@ -165,7 +234,7 @@ public class ItemsInterfaceComponentM {
         });
     }
 
-    private void snap(Vector3f direction) {
+    private void snapAxis(Vector3f direction) {
         WBenchUITrackingHelper.instantlyTrackAndPush();
         this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().forEach(wBenchObject -> {
             CullingAABB aabb = wBenchObject.getCullingData();
@@ -180,13 +249,13 @@ public class ItemsInterfaceComponentM {
             aabb.getAabbMax().sub(aabb.getAabbMin(), halfSize).mul(0.5f);
 
             Vector3f origin = new Vector3f(center);
-            List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjects(WBenchOpenGLRenderer.isRenderingBackgroundScene() ? this.getEditorInterface().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
+            List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjectsRayCenter(WBenchOpenGLRenderer.isRenderingBackgroundScene() ? this.getEditorInterface().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
 
             if (hits.isEmpty()) {
                 return;
             }
-
-            Vector3f hitPoint = new Vector3f(hits.get(0).second());
+            hits = hits.stream().filter(e -> !e.first().equals(wBenchObject)).toList();
+            Vector3f hitPoint = new Vector3f(hits.getFirst().second());
 
             if (direction.x > 0) {
                 hitPoint.sub(halfSize.x, 0, 0);

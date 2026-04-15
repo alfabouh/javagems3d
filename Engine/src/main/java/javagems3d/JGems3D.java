@@ -65,11 +65,11 @@ public final class JGems3D {
         return JGems3D.mainObject;
     }
 
-    private JGems3D(@Nullable String apiAppClasspath) throws JGemsRuntimeException {
+    private JGems3D(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("JGemsLogger"));
             JGemsAPI.INIT_JGEMS();
-            JGemsAPI.get().launchAPI(apiAppClasspath);
+            JGemsAPI.get().launchAPI(apiAppClasspath, launchArgs);
             JGems3D.checkFilesDirectory();
             //JGems3D.IDEA = System.getenv().keySet().stream().anyMatch(k -> k.contains("IDEA"));
         } catch (IOException | JGemsAPIException e) {
@@ -108,8 +108,8 @@ public final class JGems3D {
         String externalGameDef = null;
         try {
             JGems3D.LAUNCH_STATIC_ARGS_RESOLVE(argsRegistry);
-            JGems3D.mainObject = new JGems3D(argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH));
-            externalGameDef = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF);
+            JGems3D.mainObject = new JGems3D(argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH), argsRegistry);
+            externalGameDef = argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.EXTERNAL_GAME_DEF);
         } catch (JGemsRuntimeException e) {
             LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!", e);
             Log.get().exception(e);
@@ -119,19 +119,19 @@ public final class JGems3D {
     }
 
     public static void LAUNCH_STATIC_ARGS_RESOLVE(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
-        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
+        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG) == Boolean.TRUE) {
             JGems3D.DEBUG_MODE = true;
         }
-        Vector2i newWinSize = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.WIN_SIZE);
+        Vector2i newWinSize = argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.WIN_SIZE);
         if (newWinSize != null) {
             JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH = newWinSize.x;
             JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT = newWinSize.y;
         }
-        Boolean noSound = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND);
+        Boolean noSound = argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND);
         if (noSound != null) {
             JGemsConfig.SYSTEM.DISABLE_SOUNDS = noSound;
         }
-        Boolean noFullScreen = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN);
+        Boolean noFullScreen = argsRegistry.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_FULL_SCREEN);
         if (noFullScreen != null) {
             JGemsConfig.SYSTEM.DISABLE_FULLSCREEN_START_ADJUSTMENT = noFullScreen;
         }

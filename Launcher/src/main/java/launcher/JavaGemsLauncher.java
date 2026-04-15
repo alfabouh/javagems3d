@@ -23,9 +23,9 @@ public abstract class JavaGemsLauncher {
     public static void launch(String[] args, @Nullable Class<?> apiAppClass) {
         JGemsLaunchArgsRegistry.INSTANCE.read(args);
         if (apiAppClass != null) {
-            JGemsLaunchArgsRegistry.INSTANCE.put(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH, apiAppClass.getCanonicalName());
+            JGemsLaunchArgsRegistry.INSTANCE.putManually(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH.argument(), apiAppClass.getCanonicalName());
         }
-        if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.WORKBENCH) == Boolean.TRUE) {
+        if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.WORKBENCH) == Boolean.TRUE) {
             JavaGemsLauncher.launchWorkbench(JGemsLaunchArgsRegistry.INSTANCE);
             return;
         }

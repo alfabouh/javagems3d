@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
@@ -11,19 +12,23 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.I
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import workbench.WBench;
+import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
 
 import java.lang.Math;
 import java.lang.Runtime;
@@ -43,6 +48,7 @@ public class SceneInterfaceComponentM {
     private final float DRAG_THRESHOLD = 3.0f; // пиксели
     private float dragStartX;
     private float dragStartY;
+    public static boolean scalingFlag;
 
     public SceneInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -156,18 +162,31 @@ public class SceneInterfaceComponentM {
         WBench.get().getScreen().getWindow().setFocus(ImGui.isWindowFocused());
     }
 
+    public boolean isOneDirScaling() {
+        WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();
+        return wBenchBindingManager.keyAlt.isPressed() || this.mapEditorInterface.getSelectedObjectsManager().isOneDirScaling();
+    }
+
+    private static boolean reversedStick(Vector3f stick, ICamera camera) {
+        Vector3f axisWorld = new Vector3f(stick);
+        Vector3f camDir = JGemsHelper.math().calcLookVector(camera.getCamRotation());
+        float dot = axisWorld.dot(camDir);
+        return dot > 0.0f;
+    }
+
     private void renderForSingleObject(float[] view, float[] projection, WBenchObject<?> wBenchObject) {
         boolean UsedImGuizmo = ImGuizmo.isUsing();
         CullingAABB cullingAABB = wBenchObject.pickAABBDataFromMesh();
         if (cullingAABB != null) {
             WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
             Pose3D pose3D = new Pose3D();
-            pose3D.setPosition(wBenchObject.getModel().getPose().getPosition());
+            pose3D.setPosition(this.guizmoPrevTranlate.length() > 0.0f ? this.guizmoPrevTranlate : wBenchObject.getModel().getPose().getPosition());
             pose3D.setRotation(wBenchObject.getModel().getPose().getRotation());
             pose3D.setScaling(wBenchObject.getModel().getPose().getScaling());
             float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
             float[] deltaMatrix = new float[16];
             int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
+
             ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
 
             if (!this.wasGuizmoUsed && UsedImGuizmo) {
@@ -178,6 +197,7 @@ public class SceneInterfaceComponentM {
                 Vector3f rotation = new Vector3f();
                 Vector3f scaling = new Vector3f();
                 Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
+
                 newMatrix.getTranslation(position);
                 newMatrix.getScale(scaling);
                 newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
@@ -193,8 +213,37 @@ public class SceneInterfaceComponentM {
                     wBenchObject.setRotation(newRot);
                 }
                 if ((currentOperation & Operation.SCALE) != 0) {
+                    if (this.isOneDirScaling()) {
+                        Vector3f oldScale = new Vector3f(wBenchObject.getScaling());
+                        final Vector3f delta = new Vector3f(oldScale).sub(newScale);
+                        if (!SceneInterfaceComponentM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
+                            this.guizmoPrevTranlate.set(wBenchObject.getPosition());
+                            if (delta.x != 0) {
+                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(1.0f, 0.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                            } else if (delta.y != 0) {
+                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 1.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                            } else {
+                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 0.0f, 1.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                            }
+                            SceneInterfaceComponentM.scalingFlag = true;
+                        }
+
+                        Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
+                        CullingAABB aabb = wBenchObject.getCullingData();
+                        Vector3f pivot = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().isScalingOneDirMaxPlane() ? aabb.getAabbMax() : aabb.getAabbMin());
+                        Vector3f oldPos = new Vector3f(wBenchObject.getPosition());
+                        Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
+                        if (newPosScaled.isFinite()) {
+                            wBenchObject.setPosition(newPosScaled);
+                        }
+                    }
                     wBenchObject.setScaling(newScale);
+                } else {
+                    SceneInterfaceComponentM.scalingFlag = false;
                 }
+            } else {
+                SceneInterfaceComponentM.scalingFlag = false;
+                this.guizmoPrevTranlate.set(0.0f);
             }
         }
         this.wasGuizmoUsed = UsedImGuizmo;
@@ -215,7 +264,7 @@ public class SceneInterfaceComponentM {
         }
 
         Pose3D pose3D = new Pose3D();
-        pose3D.setPosition(this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition());
+        pose3D.setPosition(this.guizmoPrevTranlate.length() > 0.0f ? this.guizmoPrevTranlate : this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition());
         pose3D.setRotation(this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().negate());
         pose3D.setScaling(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
         float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
@@ -237,35 +286,54 @@ public class SceneInterfaceComponentM {
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
             }
             if ((currentOperation & Operation.ROTATE) != 0) {
-                Vector3f finRot = this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().add(newRot);
+                Vector3f deltaRot = this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().add(newRot);
                 {
-                    if (finRot.x < -Math.PI) {
-                        finRot.x = (float) Math.PI;
-                    } else if (finRot.x > Math.PI) {
-                        finRot.x = (float) -Math.PI;
+                    if (deltaRot.x < -Math.PI) {
+                        deltaRot.x = (float) Math.PI;
+                    } else if (deltaRot.x > Math.PI) {
+                        deltaRot.x = (float) -Math.PI;
                     }
                 }
                 {
-                    if (finRot.y < -Math.PI) {
-                        finRot.y = (float) Math.PI;
-                    } else if (finRot.y > Math.PI) {
-                        finRot.y = (float) -Math.PI;
+                    if (deltaRot.y < -Math.PI) {
+                        deltaRot.y = (float) Math.PI;
+                    } else if (deltaRot.y > Math.PI) {
+                        deltaRot.y = (float) -Math.PI;
                     }
                 }
                 {
-                    if (finRot.z < -Math.PI) {
-                        finRot.z = (float) Math.PI;
-                    } else if (finRot.z > Math.PI) {
-                        finRot.z = (float) -Math.PI;
+                    if (deltaRot.z < -Math.PI) {
+                        deltaRot.z = (float) Math.PI;
+                    } else if (deltaRot.z > Math.PI) {
+                        deltaRot.z = (float) -Math.PI;
                     }
                 }
-                this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(finRot);
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(deltaRot);
             }
             if ((currentOperation & Operation.SCALE) != 0) {
-                this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(newScale);
+                if (this.isOneDirScaling()) {
+                    Vector3f oldScale = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
+                    final Vector3f delta = new Vector3f(oldScale).sub(newScale);
+                    if (!SceneInterfaceComponentM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
+                        this.guizmoPrevTranlate.set(this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition());
+                        if (delta.x != 0) {
+                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(1.0f, 0.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                        } else if (delta.y != 0) {
+                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 1.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                        } else {
+                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 0.0f, 1.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
+                        }
+                        SceneInterfaceComponentM.scalingFlag = true;
+                    }
+                }
+                this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(new Vector3f(newScale));
+            } else {
+                SceneInterfaceComponentM.scalingFlag = false;
             }
 
         } else {
+            SceneInterfaceComponentM.scalingFlag = false;
+            this.guizmoPrevTranlate.set(0.0f);
             this.resetFrame();
         }
         this.wasGuizmoUsed = UsedImGuizmo;
@@ -292,11 +360,55 @@ public class SceneInterfaceComponentM {
         camRay.normalize();
 
         Vector3f origin = this.getEditorInterface().getOpenGLRenderer().getCamera().getCamPosition();
-        List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjects(this.getEditorInterface().getWorld().getEndFrameVisibleObjects(), origin, camRay);
-        return sceneObjects.isEmpty() ? null : (WBenchObject<?>) sceneObjects.get(0).first();
+        List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjectsRayCenter(this.getEditorInterface().getWorld().getEndFrameVisibleObjects(), origin, camRay);
+        return sceneObjects.isEmpty() ? null : (WBenchObject<?>) sceneObjects.getFirst().first();
     }
 
-    public List<Pair<SceneObject, Vector3f>> getIntersectedObjects(Collection<? extends SceneObject> objects, Vector3f origin, Vector3f ray) {
+    public @Nullable Vector3f resolveMovementWithCollision(SceneObject objectOriginal, Collection<? extends SceneObject> objects, int steps, Vector3f direction) {
+        final CullingAABB baseAABB = objectOriginal.pickAABBDataFromMesh();
+        if (baseAABB == null) {
+            return null;
+        }
+        Vector3f step = new Vector3f();
+        final float xExt = baseAABB.getAabbMax().x - baseAABB.getAabbMin().x;
+        final float yExt = baseAABB.getAabbMax().y - baseAABB.getAabbMin().y;
+        final float zExt = baseAABB.getAabbMax().z - baseAABB.getAabbMin().z;
+        if (direction.x != 0) {
+            step = new Vector3f(xExt * 0.5f * direction.x, 0.0f, 0.0f);
+        } else if (direction.y != 0) {
+            step = new Vector3f(0.0f, yExt * 0.5f * direction.y, 0.0f);
+        } else if (direction.z != 0) {
+            step = new Vector3f(0.0f, 0.0f, zExt * 0.5f * direction.z);
+        }
+        Vector3f currentOffset = new Vector3f();
+        for (int i = 0; i < steps; i++) {
+            Vector3f nextOffset = new Vector3f(currentOffset).add(step);
+            Vector3f minA = new Vector3f(baseAABB.getAabbMin()).add(nextOffset);
+            Vector3f maxA = new Vector3f(baseAABB.getAabbMax()).add(nextOffset);
+            for (SceneObject obj : objects) {
+                if (obj == objectOriginal) {
+                    continue;
+                }
+                CullingAABB other = obj.pickAABBDataFromMesh();
+                if (other == null) {
+                    continue;
+                }
+                if (!Intersectionf.testAabAab(minA, maxA, other.getAabbMin(), other.getAabbMax())) {
+                    continue;
+                }
+                Model3D modelA = new Model3D(objectOriginal.getModel(), objectOriginal.getModel().getPose().copy().setPosition(nextOffset));
+                Model3D modelB = obj.getModel();
+                Vector3f hit = this.findEdgeTriangleIntersect(modelA, modelB, Runtime.getRuntime().availableProcessors() - 1);
+                if (hit != null) {
+                    return currentOffset;
+                }
+            }
+            currentOffset.set(nextOffset);
+        }
+        return null;
+    }
+
+    public List<Pair<SceneObject, Vector3f>> getIntersectedObjectsRayCenter(Collection<? extends SceneObject> objects, Vector3f origin, Vector3f ray) {
         Set<SceneObject> intersectedAabbs = new HashSet<>();
         for (SceneObject sceneObject : objects) {
             CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
@@ -307,7 +419,6 @@ public class SceneInterfaceComponentM {
                 }
             }
         }
-
         List<Pair<SceneObject, Vector3f>> sceneObjects = new ArrayList<>();
         for (SceneObject object : intersectedAabbs) {
             if (object.getAnimationData() != null) {
@@ -324,9 +435,86 @@ public class SceneInterfaceComponentM {
                 }
             }
         }
-
         sceneObjects.sort(Comparator.comparingDouble(e -> e.second().distance(origin)));
         return sceneObjects;
+    }
+
+    public Vector3f findEdgeTriangleIntersect(Model3D modelA, Model3D modelB, int threads) {
+        Matrix4f matA = TransformUtils.getModelMatrix(modelA.getPose());
+        Matrix4f matB = TransformUtils.getModelMatrix(modelB.getPose());
+        List<? extends MeshNode3D<?>> nodesA = modelA.getMeshStructure().getAllNodes();
+        List<? extends MeshNode3D<?>> nodesB = modelB.getMeshStructure().getAllNodes();
+        int total = nodesA.size();
+        int effectiveThreads = Math.min(total, threads);
+        int chunk = total / effectiveThreads;
+        int rest = total % effectiveThreads;
+        ExecutorService executor = Executors.newFixedThreadPool(effectiveThreads);
+        List<Future<Vector3f>> futures = new ArrayList<>();
+        for (int t = 0; t < effectiveThreads; t++) {
+            int start = t * chunk;
+            int end = start + chunk + (t == effectiveThreads - 1 ? rest : 0);
+            futures.add(executor.submit(() -> {
+                Vector3f closest = null;
+                float bestDist = Float.MAX_VALUE;
+                Vector3f intersection = new Vector3f();
+                for (int i = start; i < end; i++) {
+                    MeshNode3D<?> nodeA = nodesA.get(i);
+                    List<Float> vA = nodeA.getMeshData().getVertexPositions();
+                    List<Integer> idxA = nodeA.getMeshData().getVertexIndexes();
+                    for (int j = 0; j < idxA.size(); j += 3) {
+                        int i0 = idxA.get(j) * 3;
+                        int i1 = idxA.get(j + 1) * 3;
+                        int i2 = idxA.get(j + 2) * 3;
+                        Vector3f v0 = new Vector3f(vA.get(i0), vA.get(i0 + 1), vA.get(i0 + 2)).mulPosition(matA);
+                        Vector3f v1 = new Vector3f(vA.get(i1), vA.get(i1 + 1), vA.get(i1 + 2)).mulPosition(matA);
+                        Vector3f v2 = new Vector3f(vA.get(i2), vA.get(i2 + 1), vA.get(i2 + 2)).mulPosition(matA);
+                        Vector3f[][] edges = {{v0, v1}, {v1, v2}, {v2, v0}};
+                        for (Vector3f[] edge : edges) {
+                            Vector3f p0 = edge[0];
+                            Vector3f p1 = edge[1];
+                            for (MeshNode3D<?> nodeB : nodesB) {
+                                List<Float> vB = nodeB.getMeshData().getVertexPositions();
+                                List<Integer> idxB = nodeB.getMeshData().getVertexIndexes();
+                                for (int k = 0; k < idxB.size(); k += 3) {
+                                    int j0 = idxB.get(k) * 3;
+                                    int j1 = idxB.get(k + 1) * 3;
+                                    int j2 = idxB.get(k + 2) * 3;
+                                    Vector3f t0 = new Vector3f(vB.get(j0), vB.get(j0 + 1), vB.get(j0 + 2)).mulPosition(matB);
+                                    Vector3f t1 = new Vector3f(vB.get(j1), vB.get(j1 + 1), vB.get(j1 + 2)).mulPosition(matB);
+                                    Vector3f t2 = new Vector3f(vB.get(j2), vB.get(j2 + 1), vB.get(j2 + 2)).mulPosition(matB);
+                                    if (Intersectionf.intersectLineSegmentTriangle(p0, p1, t0, t1, t2, 1e-5f, intersection)) {
+                                        float dist = p0.distance(intersection);
+                                        if (dist < bestDist) {
+                                            bestDist = dist;
+                                            closest = new Vector3f(intersection);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return closest;
+            }));
+        }
+        executor.shutdown();
+        Vector3f result = null;
+        float best = Float.MAX_VALUE;
+        try {
+            for (Future<Vector3f> f : futures) {
+                Vector3f r = f.get();
+                if (r != null) {
+                    float d = r.length();
+                    if (d < best) {
+                        best = d;
+                        result = r;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     public Vector3f findClosesPointRayIntersectMesh(Model3D model3D, Vector3f rayStart, Vector3f rayEnd, int threads) {

@@ -18,7 +18,7 @@ public final class AppScriptContextContextRegistry implements IAppScriptContextR
     }
 
     @Override
-    public void addGLocalMapContextScript(String packageWithScripts) {
+    public void addLocalMapContextScript(String packageWithScripts) {
         this.gLocalMapContextScripts.add(packageWithScripts);
     }
 }

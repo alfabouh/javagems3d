@@ -7,6 +7,7 @@ import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -123,12 +124,12 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         if (ImGui.beginMenu("Map Project")) {
             if (ImGui.menuItem("Run Map InGame")) {
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef()),
-                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getMapAbsolutePath(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).fullPath())
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef()),
+                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getMapAbsolutePath(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).fullPath())
                 ));
             }
             ImGui.separator();
@@ -149,6 +150,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             }
             ImGui.endMenu();
         }
+        JGemsConfig.DEBUG.WIREFRAME_RENDERING = GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING;
         JGemsConfig.DEBUG.FULL_BRIGHT = GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
             if (ImGui.checkbox("Fog", GlobalWBenchSceneRenderingVars.VIEW_FOG)) {
@@ -166,6 +168,10 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             if (ImGui.checkbox("Chess Terrain", GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
                 GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN = !GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
+            }
+            if (ImGui.checkbox("WireFrame Rendering", GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING)) {
+                WBenchUITrackingHelper.instantlyTrackAndPush();
+                GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING = !GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING;
             }
             if (ImGui.checkbox("HDR", GlobalWBenchSceneRenderingVars.VIEW_HDR)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
@@ -197,7 +203,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                 ImGui.text("Left Mouse Key - Select Object/Action");
                 ImGui.text("Right Mouse Key - Move Camera/Action");
                 ImGui.text("Ctrl+S - Save");
-                ImGui.text("Ctrl+C - Clone Selected Object");
+                ImGui.text("Ctrl+G - Clone Selected Object");
                 ImGui.text("Ctrl+Z - Undo");
                 ImGui.text("Ctrl+Y - Redo");
                 ImGui.treePop();
@@ -490,6 +496,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         private Vector3f savedCenter;
         private boolean rotateGroupAroundOwnCenter;
         private boolean scaleTranslator;
+        private boolean oneDirScaling;
+        private boolean scalingOneDirMaxPlane;
 
         public SelectedObjectsManager(Set<WBenchObject<?>> currentSelectedObjects) {
             this.currentSelectedObjects = currentSelectedObjects;
@@ -502,16 +510,43 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             this.prevGroupScaling = new Vector3f(1.0f);
             this.rotateGroupAroundOwnCenter = false;
             this.scaleTranslator = false;
+            this.oneDirScaling = false;
+            this.scalingOneDirMaxPlane = false;
+        }
+
+        public boolean isScalingOneDirMaxPlane() {
+            return this.scalingOneDirMaxPlane;
+        }
+
+        public SelectedObjectsManager setScalingOneDirMaxPlane(boolean scalingOneDirMaxPlane) {
+            this.scalingOneDirMaxPlane = scalingOneDirMaxPlane;
+            return this;
+        }
+
+        public boolean isOneDirScaling() {
+            return this.oneDirScaling;
         }
 
         public boolean isScaleTranslator() {
             return this.scaleTranslator;
         }
 
+        public void setDefaultMetaMods() {
+            this.setOneDirScaling(false);
+            this.setScaleTranslator(false);
+        }
+
         public SelectedObjectsManager setScaleTranslator(boolean scaleTranslator) {
             this.groupScaling.set(1.0f);
             this.prevGroupScaling.set(1.0f);
             this.scaleTranslator = scaleTranslator;
+            return this;
+        }
+
+        public SelectedObjectsManager setOneDirScaling(boolean oneDirScaling) {
+            this.groupScaling.set(1.0f);
+            this.prevGroupScaling.set(1.0f);
+            this.oneDirScaling = oneDirScaling;
             return this;
         }
 
@@ -526,7 +561,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
         public void reset() {
             this.groupPosition.set(this.center());
-            this.groupRotation.set(0.0f);
+            this.groupRotation.set(1.0f);
             this.groupScaling.set(1.0f);
             this.prevGroupPosition.set(this.groupPosition);
             this.prevGroupRotation.set(this.groupRotation);
@@ -599,9 +634,9 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                 return;
             }
 
-            Vector3f rotationOffset = new Vector3f(groupRotation).sub(prevGroupRotation);
-            Vector3f posOffset = new Vector3f(groupPosition).sub(prevGroupPosition);
-            Vector3f scaleOffset = new Vector3f(groupScaling).div(prevGroupScaling);
+            Vector3f rotationOffset = new Vector3f(this.groupRotation).sub(this.prevGroupRotation);
+            Vector3f posOffset = new Vector3f(this.groupPosition).sub(this.prevGroupPosition);
+            Vector3f scaleOffset = new Vector3f(this.groupScaling).div(this.prevGroupScaling);
             Quaternionf deltaRot = new Quaternionf().rotateXYZ(rotationOffset.x, rotationOffset.y, rotationOffset.z);
             Matrix4f groupMatrix = new Matrix4f().identity().translate(savedCenter).rotate(deltaRot).translate(-savedCenter.x, -savedCenter.y, -savedCenter.z);
             for (WBenchObject<?> obj : currentSelectedObjects) {
@@ -614,17 +649,31 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                         Vector3f newPos = scaleMatrix.transformPosition(pos, new Vector3f());
                         obj.setPosition(newPos);
                     } else {
-                        obj.setScaling(obj.getScaling().div(scaleOffset));
+                        Vector3f newScale = obj.getScaling().mul(scaleOffset);
+                        if (this.isOneDirScaling()) {
+                            Vector3f oldScale = new Vector3f(obj.getScaling());
+                            Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
+                            CullingAABB aabb = obj.getCullingData();
+                            Vector3f pivot = new Vector3f(this.scalingOneDirMaxPlane ? aabb.getAabbMax() : aabb.getAabbMin());
+                            Vector3f oldPos = new Vector3f(obj.getPosition());
+                            Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
+                            if (newPosScaled.isFinite()) {
+                                obj.setPosition(newPosScaled);
+                            }
+                        }
+                        obj.setScaling(newScale);
                     }
                 }
-                Matrix4f objMatrix = TransformUtils.getModelMatrix(obj.getModel().getPose());
-                groupMatrix.mul(objMatrix, objMatrix);
-                Vector3f newPos = objMatrix.getTranslation(new Vector3f());
-                Quaternionf newRotQ = objMatrix.getUnnormalizedRotation(new Quaternionf());
-                Vector3f newEuler = newRotQ.getEulerAnglesXYZ(new Vector3f()).negate();
-                obj.setPosition(newPos);
-                obj.setRotation(newEuler);
-                obj.setForceConstraints(false);
+                if (!this.isOneDirScaling()) {
+                    Matrix4f objMatrix = TransformUtils.getModelMatrix(obj.getModel().getPose());
+                    groupMatrix.mul(objMatrix, objMatrix);
+                    Vector3f newPos = objMatrix.getTranslation(new Vector3f());
+                    Quaternionf newRotQ = objMatrix.getUnnormalizedRotation(new Quaternionf());
+                    Vector3f newEuler = newRotQ.getEulerAnglesXYZ(new Vector3f()).negate();
+                    obj.setPosition(newPos);
+                    obj.setRotation(newEuler);
+                    obj.setForceConstraints(false);
+                }
             }
         }
 

@@ -43,7 +43,7 @@ import java.util.*;
 public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "1.0b-dev test 2";
+    public static final String ENG_VER = "1.0b-dev test 3";
 
     private final JGemsSoundManager jGemsSoundManager;
     private final JGemsScreen jGemsScreen;
@@ -170,8 +170,8 @@ public final class JGemsCore implements ICore {
     }
 
     public static boolean loadTestMap() {
-        if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST) == Boolean.TRUE) {
-            @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.TEST_MAP_ID);
+        if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST) == Boolean.TRUE) {
+            @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.TEST_MAP_ID);
             if (mapPath != null) {
                 try {
                     JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(new JGemsPath(mapPath), null));

@@ -8,30 +8,26 @@ import org.joml.Vector2i;
 import java.util.*;
 
 public final class JGemsLaunchArgsRegistry {
+    private final Map<String, LaunchArg> reverseArgMap;
+    private final Map<String, String> gotArgs;
     public static JGemsLaunchArgsRegistry INSTANCE = new JGemsLaunchArgsRegistry();
-    private static final Map<String, JGemsLaunchArgs> reverseArgMap = new HashMap<>();
-    private final Map<JGemsLaunchArgs, Object> argTypeObjectMap;
-
-    static {
-        for (JGemsLaunchArgs argType : JGemsLaunchArgs.values()) {
-            JGemsLaunchArgsRegistry.reverseArgMap.put(argType.getArgument(), argType);
-        }
-    }
+    public static DefaultLaunchArgs DEFAULT_ARGS = new DefaultLaunchArgs();
 
     private JGemsLaunchArgsRegistry() {
-        this.argTypeObjectMap = new HashMap<>();
+        this.gotArgs = new HashMap<>();
+        this.reverseArgMap = new HashMap<>();
     }
 
     public static void clear() {
-        JGemsLaunchArgsRegistry.INSTANCE.argTypeObjectMap.clear();
-        JGemsLaunchArgsRegistry.reverseArgMap.clear();
+        JGemsLaunchArgsRegistry.INSTANCE.gotArgs.clear();
+        JGemsLaunchArgsRegistry.INSTANCE.reverseArgMap.clear();
     }
 
     @SafeVarargs
-    public static String[] getArgumentFrom(@NotNull Pair<JGemsLaunchArgs, String>... a) {
+    public static String[] getArgumentFrom(@NotNull Pair<LaunchArg, String>... a) {
         String[] arg = new String[a.length];
         for (int i = 0; i < a.length; i++) {
-            arg[i] = a[i].first().getArgument() + "=" + a[i].second();
+            arg[i] = a[i].first().argument() + "=" + a[i].second();
         }
         return arg;
     }
@@ -40,18 +36,15 @@ public final class JGemsLaunchArgsRegistry {
         if (args == null) {
             return;
         }
-        this.argTypeObjectMap.clear();
+        this.gotArgs.clear();
         for (String s : args) {
             try {
                 if (s == null) {
                     continue;
                 }
                 String[] arg = s.split("=");
-                JGemsLaunchArgs argType = JGemsLaunchArgsRegistry.reverseArgMap.get(arg[0]);
-                if (argType != null) {
-                    this.argTypeObjectMap.put(argType, argType.getArgReaderFunction().read(arg[1]));
-                } else {
-                    Log.get().info("Unknown arg: " + arg[0]);
+                if (arg.length == 2) {
+                    this.gotArgs.put(arg[0], arg[1]);
                 }
             } catch (Exception e) {
                 Log.get().exception(e);
@@ -59,66 +52,85 @@ public final class JGemsLaunchArgsRegistry {
         }
     }
 
-    public void put(JGemsLaunchArgs arg, Object obj) {
-        this.argTypeObjectMap.put(arg, obj);
-    }
-
     public void printArgs() {
         Log.get().separator();
         Log.get().warn("Input args:");
-        this.argTypeObjectMap.forEach((k, v) -> {
-            Log.get().warn(k.getArgument() + "=" + v);
+        this.gotArgs.forEach((k, v) -> {
+            Log.get().warn(k + "=" + v);
         });
         Log.get().separator();
     }
 
     @SuppressWarnings("all")
-    public @Nullable <T> T getValue(@NotNull JGemsLaunchArgsRegistry.JGemsLaunchArgs argType) {
+    public @Nullable <T> T getValue(@NotNull LaunchArg input) {
         try {
-            return (T) this.argTypeObjectMap.getOrDefault(argType, argType.getDefaultValue());
+            String key = this.gotArgs.get(input.argument());
+            if (key != null) {
+                LaunchArg launchArg = this.reverseArgMap.get(input.argument());
+                if (launchArg != null) {
+                    return (T) launchArg.argReaderFunction().read(key);
+                } else {
+                    System.out.println("Unknown resolver: " + input.argument() + " / " + key);
+                }
+            }
+            return (T) input.defaultValue();
         } catch (Exception e) {
-            Log.get().exception(e);
+            System.err.println(e);
             return null;
         }
     }
 
-    public enum JGemsLaunchArgs {
-        WIN_SIZE("win_size", (arg -> {
+    public void putManually(String key, String value) {
+        this.gotArgs.put(key, value);
+    }
+
+    public static class DefaultLaunchArgs {
+        public DefaultLaunchArgs() {
+        }
+
+        public final LaunchArg WIN_SIZE = LaunchArg.create("win_size", (arg -> {
             String[] size = arg.split(";");
             int i1 = Integer.parseInt(size[0]);
             int i2 = Integer.parseInt(size[1]);
             return new Vector2i(i1, i2);
-        }), null),
-        API_APP_CLASSPATH("api_app_classpath", (args -> args), null),
-        MAP_TEST("map_test", (args -> args.equals("true")), false),
-        TEST_MAP_ID("map_path", (args -> args), null),
-        NO_FULL_SCREEN("no_full_screen", (args -> args.equals("true")), false),
-        WORKBENCH("workbench", (args -> args.equals("true")), false),
-        EXTERNAL_GAME_DEF("external_def", (args -> args), null),
-        NO_SOUND("no_sound", (args -> args.equals("true")), false),
-        DEBUG("debug", (args -> args.equals("true")), false);
+        }), null);
+        public final LaunchArg API_APP_CLASSPATH = LaunchArg.create("api_app_classpath", (args -> args), null);
+        public final LaunchArg MAP_TEST = LaunchArg.create("map_test", (args -> args.equals("true")), false);
+        public final LaunchArg TEST_MAP_ID = LaunchArg.create("map_path", (args -> args), null);
+        public final LaunchArg NO_FULL_SCREEN = LaunchArg.create("no_full_screen", (args -> args.equals("true")), false);
+        public final LaunchArg WORKBENCH = LaunchArg.create("workbench", (args -> args.equals("true")), false);
+        public final LaunchArg EXTERNAL_GAME_DEF = LaunchArg.create("external_def", (args -> args), null);
+        public final LaunchArg NO_SOUND = LaunchArg.create("no_sound", (args -> args.equals("true")), false);
+        public final LaunchArg DEBUG = LaunchArg.create("debug", (args -> args.equals("true")), false);
+    }
 
-        private final String argument;
-        private final ArgReaderFunction<?> argReaderFunction;
-        private final Object defaultValue;
+    public static class LaunchArg {
+        private final @NotNull String argument;
+        private final @NotNull ArgReaderFunction<?> argReaderFunction;
+        private final @Nullable Object defaultValue;
 
-        JGemsLaunchArgs(@NotNull String argument, @NotNull ArgReaderFunction<?> argReaderFunction, @Nullable Object defaultValue) {
+        private LaunchArg(@NotNull String argument, @NotNull ArgReaderFunction<?> argReaderFunction, @Nullable Object defaultValue) {
             this.argument = argument;
             this.argReaderFunction = argReaderFunction;
             this.defaultValue = defaultValue;
         }
 
-        public Object getDefaultValue() {
-            return this.defaultValue;
-        }
-
-        public String getArgument() {
+        public @NotNull String argument() {
             return this.argument;
         }
 
-        @SuppressWarnings("all")
-        <T> ArgReaderFunction<T> getArgReaderFunction() {
-            return (ArgReaderFunction<T>) this.argReaderFunction;
+        public @NotNull ArgReaderFunction<?> argReaderFunction() {
+            return this.argReaderFunction;
+        }
+
+        public @Nullable Object defaultValue() {
+            return this.defaultValue;
+        }
+
+        public static LaunchArg create(@NotNull String argument, @NotNull ArgReaderFunction<?> argReaderFunction, @Nullable Object defaultValue) {
+            LaunchArg launchArg = new LaunchArg(argument, argReaderFunction, defaultValue);
+            JGemsLaunchArgsRegistry.INSTANCE.reverseArgMap.put(argument, launchArg);
+            return launchArg;
         }
     }
 

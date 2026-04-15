@@ -56,7 +56,7 @@ public class JGemsShadowScene extends ShadowScene {
 
     @Override
     protected boolean shouldNotRenderShadows() {
-        return !JGemsConfig.SYSTEM.USE_SHADOWS || JGemsConfig.DEBUG.FULL_BRIGHT;
+        return !JGemsConfig.SYSTEM.USE_SHADOWS || JGemsConfig.DEBUG.FULL_BRIGHT || JGemsConfig.DEBUG.WIREFRAME_RENDERING;
     }
 
     protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
