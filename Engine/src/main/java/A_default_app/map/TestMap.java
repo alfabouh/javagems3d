@@ -35,8 +35,64 @@ public class TestMap extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath("/assets/models/sponza/sponza.gltf"), ISource.Source.INSIDE_JAR), false);
+        long stop = System.currentTimeMillis();
+        final JGemsPath trees                           = new JGemsPath("/assets/models/trees/trees.gltf");
+        final JGemsPath flatgrass                         = new JGemsPath("/assets/models/flatgrass/flatgrass.gltf");
+        final JGemsPath flatgrass_back           = new JGemsPath("/assets/models/flatgrass/flatgrass_back.gltf");
+        final JGemsPath Gate_2x4                         = new JGemsPath("/assets/models/castle1/Gate_2x4.gltf");
+        final JGemsPath Gate_2x4_Beveled             = new JGemsPath("/assets/models/castle1/Gate_2x4_Beveled.gltf");
+        final JGemsPath Gate_2x4_doorway             = new JGemsPath("/assets/models/castle1/Gate_2x4_doorway.gltf");
+        final JGemsPath Gate_Door                         = new JGemsPath("/assets/models/castle1/Gate_Door.gltf");
+        final JGemsPath Roof_Cone                         = new JGemsPath("/assets/models/castle1/Roof_Cone.gltf");
+        final JGemsPath Roof_Cube                         = new JGemsPath("/assets/models/castle1/Roof_Cube.gltf");
+        final JGemsPath Roof_rectangle             = new JGemsPath("/assets/models/castle1/Roof_rectangle.gltf");
+        final JGemsPath Scaffle                         = new JGemsPath("/assets/models/castle1/Gate_2x4.gltf");
+        final JGemsPath Scaffle_Ramp             = new JGemsPath("/assets/models/castle1/Scaffle_Ramp.gltf");
+        final JGemsPath Tower_Doorway             = new JGemsPath("/assets/models/castle1/Tower_Doorway.gltf");
+        final JGemsPath Tower_Mid                         = new JGemsPath("/assets/models/castle1/Tower_Mid.gltf");
+        final JGemsPath Tower_mid_hollow             = new JGemsPath("/assets/models/castle1/Tower_mid_hollow.gltf");
+        final JGemsPath Tower_mid_hollow_ruined             = new JGemsPath("/assets/models/castle1/Tower_mid_hollow_ruined.gltf");
+        final JGemsPath Tower_top_1                         = new JGemsPath("/assets/models/castle1/Tower_top_1.gltf");
+        final JGemsPath Wall_2x2                         = new JGemsPath("/assets/models/castle1/Roof_Cube.gltf");
+        final JGemsPath Wall_2x2_walkway             = new JGemsPath("/assets/models/castle1/Wall_2x2_walkway.gltf");
+        final JGemsPath Wall_2x4                         = new JGemsPath("/assets/models/castle1/Wall_2x4.gltf");
+        final JGemsPath Wall_2x4_ruined             = new JGemsPath("/assets/models/castle1/Wall_2x4_ruined.gltf");
+        final JGemsPath Wall_2x4_walkway             = new JGemsPath("/assets/models/castle1/Wall_2x4_walkway.gltf");
+        final JGemsPath Wall_2x4_walkway_beveled             = new JGemsPath("/assets/models/castle1/Wall_2x4_walkway_beveled.gltf");
+        final JGemsPath Wall_corner_walkwayh             = new JGemsPath("/assets/models/castle1/Wall_corner_walkwayh.gltf");
+        final JGemsPath Window_bars                        = new JGemsPath("/assets/models/castle1/Roof_Cube.gltf");
+        final JGemsPath Window_glass             = new JGemsPath("/assets/models/castle1/Window_glass.gltf");
+
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(trees                   , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(flatgrass               , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(flatgrass_back          , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Gate_2x4                , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Gate_2x4_Beveled        , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Gate_2x4_doorway        , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Gate_Door               , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Roof_Cone               , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Roof_Cube               , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Roof_rectangle          , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Scaffle                 , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Scaffle_Ramp            , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Tower_Doorway           , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Tower_Mid               , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Tower_mid_hollow        , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Tower_mid_hollow_ruined , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Tower_top_1             , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x2                , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x2_walkway        , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x4                , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x4_ruined         , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x4_walkway        , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_2x4_walkway_beveled, ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Wall_corner_walkwayh    , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Window_bars             , ISource.Source.INSIDE_JAR), false);
+        this.getLocalResources().createMeshBuffer(new JGemsPathSource(Window_glass            , ISource.Source.INSIDE_JAR), false);
+
+        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath("/assets/models/sponza/glTF/sponza.gltf"), ISource.Source.INSIDE_JAR), false);
         sceneWorld.addObject(new SceneWorldProp("sponza", sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
+        System.out.println(System.currentTimeMillis() - stop);
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
         JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));

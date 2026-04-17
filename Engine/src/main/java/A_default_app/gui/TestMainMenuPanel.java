@@ -1,5 +1,6 @@
 package A_default_app.gui;
 
+import A_default_app.map.TestMap;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
@@ -65,9 +66,9 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         this.renderContent(ui, window, frameDeltaTicks);
-        ui.buttonUI("AnimMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 210), new Vector2i(300, 60), 0x00ff00, 0.5f)
+        ui.buttonUI("TestMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 210), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGemsHelper.map().loadMap(new TestMapAnim());
+                    JGemsHelper.map().loadMap(new TestMap());
                     ui.setUiPanel(new DefaultGamePanel(null));
                 });
 
