@@ -1,6 +1,12 @@
 package api.system.scripting;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class JavaToJsFunctionsList {
+    public static final String ENTRY_ENDPOINT_FUNCTION = "JsEnd";
+    public static final String ENTRY_ENDPOINT_FUNCTION_DESC =
+            "Entry point of the script. Called once when the script is ended";
+
     public static final String ENTRY_POINT_FUNCTION = "JsInit";
     public static final String ENTRY_POINT_FUNCTION_DESC =
             "Entry point of the script. Called once when the script is initialized. " +

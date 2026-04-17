@@ -2,6 +2,7 @@ package api.scripting;
 
 import api.scripting.coding.APICodingContext;
 import api.system.JGemsAPI;
+import api.system.scripting.JavaToJsAPI;
 import api.system.scripting.JavaToJsFunctionsList;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -45,7 +46,7 @@ public final class JGemsAPIScriptingCore implements Closeable {
         this.getGlobalGameContext().init();
         this.getGlobalGameContext().entry(absolutePathToSeekEntries);
         this.scanJavaCodeGame();
-        this.getGlobalGameContext().callFunctionNoExc(JavaToJsFunctionsList.ENTRY_POINT_FUNCTION);
+        JavaToJsAPI.ScriptInit(JavaToJsAPI.Target.Game);
         Log.get().info("Init game scripting engine. Success.");
     }
 
@@ -54,7 +55,7 @@ public final class JGemsAPIScriptingCore implements Closeable {
         this.getLocalMapContext().init();
         this.getLocalMapContext().entry(absolutePathToSeekEntries);
         this.scanJavaCodeMap();
-        this.getLocalMapContext().callFunctionNoExc(JavaToJsFunctionsList.ENTRY_POINT_FUNCTION);
+        JavaToJsAPI.ScriptInit(JavaToJsAPI.Target.Map);
         Log.get().info("Init map scripting engine. Success.");
     }
 

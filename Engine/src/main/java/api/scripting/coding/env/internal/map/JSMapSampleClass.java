@@ -18,4 +18,8 @@ public class JSMapSampleClass {
     @JSCodingFunctionOrMethod(description = JavaToJsFunctionsList.SUBSCRIBE_EVENTS_FUNCTION_DESC, paramNames = {"jsMapRegistry"})
     public void JsSubscribeEvents(JSMapRegistry jsMapRegistry) {
     }
+
+    @JSCodingFunctionOrMethod(description = JavaToJsFunctionsList.ENTRY_ENDPOINT_FUNCTION_DESC)
+    public void JsEnd() {
+    }
 }

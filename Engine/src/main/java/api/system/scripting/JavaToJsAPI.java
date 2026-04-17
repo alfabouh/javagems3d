@@ -49,8 +49,12 @@ public class JavaToJsAPI {
 
     public static boolean DEBUG_MODE = false;
 
+    private static JSEventSubscriber pick(@NotNull Target target) {
+        return target.equals(Target.Game) ? JavaToJsAPI.gameEventSubscriber : JavaToJsAPI.mapEventSubscriber;
+    }
+
     public static void callEvent(@NotNull Target target, @NotNull JSEventI eventI, @NotNull Object... args) {
-        JavaToJsAPI.callFunction(target, JavaToJsAPI.gameEventSubscriber.getEventName(eventI), args);
+        JavaToJsAPI.callFunction(target, JavaToJsAPI.pick(target).getEventName(eventI), args);
     }
 
     public static @Nullable Value callFunction(@NotNull Target target, @NotNull String functionName, @NotNull Object... args) {
@@ -58,6 +62,32 @@ public class JavaToJsAPI {
             Log.get().debug("Call function " + target + " - " + functionName + " : " + Arrays.toString(args));
         }
         return Objects.requireNonNull(JavaToJsAPI.apiCodeContext(target)).callFunctionNoExc(functionName, args);
+    }
+
+    public static void ScriptEnd(@NotNull Target target) {
+        APICodingContext apiCodingContext = JavaToJsAPI.apiCodeContext(target);
+        if (apiCodingContext != null) {
+            apiCodingContext.callFunctionNoExc(JavaToJsFunctionsList.ENTRY_ENDPOINT_FUNCTION_DESC);
+        } else {
+            Log.get().error("API code context is null!");
+        }
+    }
+
+    public static void ScriptInit(@NotNull Target target) {
+        APICodingContext apiCodingContext = JavaToJsAPI.apiCodeContext(target);
+        if (apiCodingContext != null) {
+            apiCodingContext.callFunctionNoExc(JavaToJsFunctionsList.ENTRY_POINT_FUNCTION);
+        } else {
+            Log.get().error("API code context is null!");
+        }
+    }
+
+    public static void Js_MAP_initEvents() {
+        try {
+            JavaToJsAPI.callFunction(Target.Game, JavaToJsFunctionsList.SUBSCRIBE_EVENTS_FUNCTION, new JSGameRegistry(JavaToJsAPI.mapEventSubscriber));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     public static void Js_GAME_initEvents() {

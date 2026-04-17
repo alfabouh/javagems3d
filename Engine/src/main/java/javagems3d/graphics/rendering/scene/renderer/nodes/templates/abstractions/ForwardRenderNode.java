@@ -13,6 +13,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;

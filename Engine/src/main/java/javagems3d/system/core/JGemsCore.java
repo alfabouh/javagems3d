@@ -233,6 +233,7 @@ public final class JGemsCore implements ICore {
                 try {
                     JGems3D.freeSync();
                     this.exitMap();
+                    JavaToJsAPI.ScriptEnd(JavaToJsAPI.Target.Game);
                     if (!this.getPhysics().waitForFullTermination()) {
                         Log.get().error("Waited for physics termination too long...");
                     }

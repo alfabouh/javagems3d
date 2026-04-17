@@ -17,4 +17,8 @@ public class JSGameSampleClass {
     @JSCodingFunctionOrMethod(description = JavaToJsFunctionsList.SUBSCRIBE_EVENTS_FUNCTION_DESC, paramNames = {"jsGameRegistry"})
     public void JsSubscribeEvents(JSGameRegistry jsGameRegistry) {
     }
+
+    @JSCodingFunctionOrMethod(description = JavaToJsFunctionsList.ENTRY_ENDPOINT_FUNCTION_DESC)
+    public void JsEnd() {
+    }
 }
