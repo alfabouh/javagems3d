@@ -362,10 +362,6 @@ public final class JGemsHelper {
             JGemsHelper.this.getPhysicsWorld().killItems();
         }
 
-        public void bindPointLightShadow(int sceneId, PointLight pointLight) {
-            ((ShadowScene) this.getEnvironment().getShadowScene()).bindPointLightToShadowScene(sceneId, pointLight);
-        }
-
         public void addProp(SceneProp sceneProp) {
             JGemsHelper.this.getSceneWorld().addObject(sceneProp);
         }
@@ -639,7 +635,6 @@ public final class JGemsHelper {
             //EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent(JGems3D.get().getResourceManager()));
             JGems3D.get().getScreen().showGameLoadingScreen("System01");
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
-            JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
             JGems3D.get().getScreen().refreshSceneResources();
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();

@@ -7,6 +7,7 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
@@ -93,6 +94,7 @@ public class GameEditorInterface implements DearUIInterface {
                 //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "true"),
                 //        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_FULL_SCREEN, "true")
                 //));
+                WBench.get().getGameProjectManager().saveGameProject(true);
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "false"),
@@ -157,7 +159,7 @@ public class GameEditorInterface implements DearUIInterface {
         final boolean flagOut = ImGui.isWindowCollapsed();
         ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
         ImGui.setWindowPos(sceneWindowOffset, flagOut ? windowSize.y - YOffset : windowSize.y - consoleWindowSizeY);
-        ProjectUIUtils.consoleContent();
+        DearUIGameInterface.consoleContent();
         ImGui.end();
 
         ImGui.begin("Window", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.MenuBar);

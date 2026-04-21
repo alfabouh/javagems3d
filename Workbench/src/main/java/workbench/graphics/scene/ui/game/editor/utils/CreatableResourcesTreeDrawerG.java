@@ -2,6 +2,7 @@ package workbench.graphics.scene.ui.game.editor.utils;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiHoveredFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
@@ -235,15 +236,14 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                         this.setPreviewWrapperObject(null);
                     }
                 }
-                if (ImGui.beginPopupContextItem("ctx_item" + "##" + group.getName())) {
-                    {
-                        ImGui.pushStyleColor(ImGuiCol.Text, 0xffffafaf);
-                        if (ImGui.menuItem("* Select")) {
-                            this.setPreviewWrapperObject(this.getPreviewInstanceFactory().apply(asset));
-                        }
-                        ImGui.popStyleColor();
+                if (ImGui.isMouseClicked(1)) {
+                    if (ImGui.isItemHovered(ImGuiHoveredFlags.AllowWhenBlockedByPopup)) {
+                        this.setPreviewWrapperObject(this.getPreviewInstanceFactory().apply(asset));
                     }
-
+                }
+                if (ImGui.beginPopupContextItem("ctx_item" + "##" + group.getName())) {
+                    ImGui.text("Obj: " + asset.name());
+                    ImGui.spacing();
                     {
                         ImGui.pushStyleColor(ImGuiCol.Text, 0xff6868ff);
                         if (ImGui.menuItem("- Delete")) {

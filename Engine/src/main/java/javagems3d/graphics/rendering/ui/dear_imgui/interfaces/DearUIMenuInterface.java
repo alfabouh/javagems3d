@@ -18,17 +18,7 @@ public class DearUIMenuInterface implements DearUIInterface {
         ImGui.setNextWindowSize(logX, logY);
         ImGui.setNextWindowCollapsed(true, ImGuiCond.Once);
         ImGui.begin("Output", ImGuiWindowFlags.AlwaysVerticalScrollbar | ImGuiWindowFlags.NoResize);
-        String[] textLines = LoggingManager.consoleText().split("\n");
-        for (String s : textLines) {
-            if (s.isEmpty()) {
-                continue;
-            }
-            ImGui.textWrapped(s);
-        }
-        if (LoggingManager.markConsoleDirty) {
-            ImGui.setScrollHereY(1.0f);
-            LoggingManager.markConsoleDirty = false;
-        }
+        DearUIGameInterface.consoleContent();
         ImGui.end();
 
         ImGui.setNextWindowSize(JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);

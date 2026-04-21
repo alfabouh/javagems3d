@@ -15,8 +15,11 @@ import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagCheckBoolean;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -25,6 +28,7 @@ import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
@@ -40,9 +44,10 @@ import workbench.project.map.MapObjectTemplatesFolder;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializer {
-    private WBenchObjectTemplate createMapObjectTemplateFromGameSource(String prefix, String path, GameResourceWorldObjectAsset gameResourceWorldObjectAsset) {
+    private WBenchObjectTemplate createMapObjectTemplateFromGameSource(String prefix, String path, GameResourceWorldObjectAsset gameResourceWorldObjectAsset, @Nullable Consumer<TagsContainer> doSomeTags) {
         final boolean validProps = gameResourceWorldObjectAsset.getRenderProperties() != null;
         final WBenchObject.ID ID = new WBenchObject.ID(prefix + gameResourceWorldObjectAsset.getID(), path);
         final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceWorldObjectAsset.getModelAssetRelativePath());
@@ -52,6 +57,9 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
                 .setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER)) ? 1.0f : gameResourceWorldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD))
         );
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
+        if (doSomeTags != null) {
+            doSomeTags.accept(tagsContainer);
+        }
         final TranslationConstraints translationConstraints = gameResourceWorldObjectAsset.getAxisConstraints();
         return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(gameResourceWorldObjectAsset.getModelAssetRelativePath());
     }
@@ -65,12 +73,15 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, gameResourceMarkerObjectAsset.getColor(), gameResourceMarkerObjectAsset.isTransparent()).setModelDef(gameResourceMarkerObjectAsset.getModelAssetRelativePath());
     }
 
-    private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp) {
+    private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp, @Nullable Consumer<TagsContainer> doSomeTags) {
         final WBenchObjectData wBenchObjectData = apiResourceProp.getFabricWBench().create();
         final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
         final MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(wBenchObjectData.getPathToModel(), true);
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
+        if (doSomeTags != null) {
+            doSomeTags.accept(tagsContainer);
+        }
         final TranslationConstraints translationConstraints = wBenchObjectData.getTranslationConstraints();
         return new WBenchObjectTemplate(ID, meshGroup, renderAttributes, tagsContainer, translationConstraints).setModelDef(wBenchObjectData.getPathToModel().toString()).setModelDef(wBenchObjectData.getPathToModel() == null ? null : wBenchObjectData.getPathToModel().toString());
     }
@@ -122,13 +133,19 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final ApiResourceObjectsFolder<?, ?, ApiResourceMarker> apiMarkers = api.getMarkers();
 
         {
-            this.copyPlusConvertFolder(propAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.PROP, path, e));
-            this.copyPlusConvertFolder(entityAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.ENTITY, path, e));
+            this.copyPlusConvertFolder(propAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.PROP, path, e, null));
+            this.copyPlusConvertFolder(entityAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.ENTITY, path, e, tagsContainer -> {
+                final Tag<TagCheckBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagCheckBoolean(true));
+                tagsContainer.addTag(physical);
+            }));
             this.copyPlusConvertFolder(markerAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), (path, e) -> this.createMapMarkerTemplateFromGameSource(MapObjectsIdentifiers.MARKER, path, e));
         }
         {
-            this.copyPlusConvertFolder(apiProps, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e));
-            this.copyPlusConvertFolder(apiEntities, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e));
+            this.copyPlusConvertFolder(apiProps, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e, null));
+            this.copyPlusConvertFolder(apiEntities, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e, tagsContainer -> {
+                final Tag<TagCheckBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagCheckBoolean(true));
+                tagsContainer.addTag(physical);
+            }));
             this.copyPlusConvertFolder(apiMarkers, WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), (path, e) -> this.createMapObjectTemplateFromApiMarkerSource(systemResources, path, e));
         }
     }

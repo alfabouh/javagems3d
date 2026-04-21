@@ -60,7 +60,7 @@ public class TagVector extends TagItem {
         TagVector tagVector = (TagVector) tagItem;
         Vector4f vec = tagVector.getValues();
         float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};
-        String label = "##" + tagID.getDescription();
+        String label = "##" + tagID.getNormalName();
 
         boolean changed = false;
         switch (tagVector.getVectorMode()) {

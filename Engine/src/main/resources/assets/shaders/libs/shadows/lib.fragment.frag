@@ -28,7 +28,7 @@ vec2 warp(vec2 exponents, float depth) {
 }
 
 float variance(vec2 moments, float mean, float minVariance) {
-    if(mean <= moments.x) {
+    if (mean <= moments.x) {
         return 1.0f;
     } else {
         float variance = moments.y - (moments.x * moments.x);

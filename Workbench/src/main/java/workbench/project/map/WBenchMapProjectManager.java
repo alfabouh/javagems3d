@@ -7,6 +7,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.lights.SunLight;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.SceneObject;
@@ -20,6 +21,7 @@ import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -31,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import workbench.WBench;
+import workbench.graphics.environment.components.WBenchShadowScene;
 import workbench.graphics.environment.components.WBenchSkyBackground;
 import workbench.graphics.objects.*;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
@@ -42,11 +45,17 @@ import workbench.graphics.scene.ui.asnapshots.WBenchSnapshotsTrace;
 import workbench.graphics.scene.ui.asnapshots.instances.WBenchSnapshotsContainer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.project.game.WBenchGameProject;
+import workbench.project.game.WBenchGameProjectManager;
+import workbench.project.game.settings.GameProjectSettings;
+import workbench.project.map.settings.MapProjectSettings;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
+import workbench.settings.WBenchSettings;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,10 +64,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class WBenchMapProjectManager {
+    public static final String TEMP_SETTINGS = "map_ed_sett" + JGemsGaming.TEMP_FILE;
     private final MapObjectTemplatesManager mapObjectTemplates;
     private WBenchMapProject currentMapProject;
     private WBenchWorld world;
     private WBenchSnapshotsTrace snapshotsTrace;
+    public MapProjectSettings mapProjectSettings;
 
     public WBenchMapProjectManager() {
         this.mapObjectTemplates = new MapObjectTemplatesManager();
@@ -95,7 +106,8 @@ public final class WBenchMapProjectManager {
         try {
             WBenchMapProject wBenchMapProject = new WBenchMapProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION, name, absPath);
             //this.setCurrentProject(files, wBenchMapProject);
-            this.refresScriptFolder(absPath, name);
+            this.createOrSaveTempProjFile(wBenchMapProject);
+            this.refreshScriptFolder(absPath, name);
             this.saveMapProjectFile(wBenchMapProject);
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
 
@@ -170,6 +182,7 @@ public final class WBenchMapProjectManager {
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         MapObjectsDataPack mapObjectsDataPack;
         try {
+            this.readTempProjFile(this.getCurrentMapProject());
             mapObjectsDataPack = jsonFileManaging.readFromFile(file, new TypeToken<>() {
             }, null);
             final SkyData skyData = mapObjectsDataPack.getSkyData();
@@ -177,6 +190,7 @@ public final class WBenchMapProjectManager {
             final FogData fogData = mapObjectsDataPack.getFogData();
             final ObjectsData objectsData = mapObjectsDataPack.getObjectsData();
             final ShadowsData shadowsData = mapObjectsDataPack.getShadowsData();
+            final LightingData lightingData = mapObjectsDataPack.getLightingData();
 
             if (skyData != null && this.getMapObjectTemplates().getSkyBoxes().get(skyData.getNameId()) != null) {
                 ICubeMapProgram cubeMapProgram = this.getMapObjectTemplates().getSkyBoxes().get(skyData.getNameId()).getCubeMapProgram();
@@ -207,9 +221,21 @@ public final class WBenchMapProjectManager {
 
             if (shadowsData != null) {
                 world.getEnvironment().getShadowScene().getSunLightShadow().setCascadeSplits(shadowsData.splits);
+                world.getEnvironment().getShadowScene().getSunLightShadow().setEnabled(shadowsData.sunShadows);
+                world.getEnvironment().getShadowScene().sunShadowMapResolution = shadowsData.sunShadowRes;
+                world.getEnvironment().getShadowScene().pointLightShadowMapResolution = shadowsData.pointLightShadowRes;
                 Log.get().debug("Read ShadowsData");
             } else {
                 Log.get().error("Couldn't get ShadowsData");
+            }
+
+            if (lightingData != null) {
+                world.getEnvironment().getLightScene().setHdrGamma(lightingData.gamma);
+                world.getEnvironment().getLightScene().setHdrExposure(lightingData.exposure);
+                world.getEnvironment().getLightScene().setBloomEnabled(lightingData.bloomEffect);
+                Log.get().debug("Read LightingData");
+            } else {
+                Log.get().error("Couldn't get LightingData");
             }
 
             if (objectsData != null) {
@@ -324,7 +350,8 @@ public final class WBenchMapProjectManager {
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
         final FogScene fogScene = world.getEnvironment().getFogScene();
-        final IShadowScene shadowScene = world.getEnvironment().getShadowScene();
+        final WBenchShadowScene shadowScene = (WBenchShadowScene) world.getEnvironment().getShadowScene();
+        final ILightScene lightScene = world.getEnvironment().getLightScene();
 
         final Set<SceneObject> objectsCopy = new HashSet<>(world.getSceneObjects());
         final Set<SceneObject> backgroundCopy = new HashSet<>(world.getEnvironment().getSkyBox().getBackground().getSkySceneObjects());
@@ -340,11 +367,17 @@ public final class WBenchMapProjectManager {
         final SunData sunData = new SunData(world.getEnvironment().getSkyBox().isDrawSunOnSkyBox(), sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(skyBoxTemplate == null ? "" : skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
-        final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
+        final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits(), shadowScene.getSunLightShadow().isEnabled(), shadowScene.sunShadowMapResolution, shadowScene.pointLightShadowMapResolution);
+        final LightingData lightingData = new LightingData(lightScene.isBloomEnabled(), lightScene.getHdrExposure(), lightScene.getHdrGamma());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try {
+                {
+                    WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
+                    this.createOrSaveTempProjFile(this.getCurrentMapProject());
+                }
+
                 Map<String, Set<RowMapObjectData>> categoryMap = new HashMap<>();
                 categoryMap.put(MapObjectsIdentifiers.PROP, props);
                 categoryMap.put(MapObjectsIdentifiers.ENTITY, entities);
@@ -378,7 +411,7 @@ public final class WBenchMapProjectManager {
                 final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights, backgroundProps);
                 MapObjectsDataPack mapObjectsDataPack = new MapObjectsDataPack();
                 jsonFileManaging.setMatch(MapObjectsDataPack.class, mapObjectsDataPack.getSerializationRules());
-                mapObjectsDataPack.set(fogData, sunData, objectsData, skyData, shadowsData);
+                mapObjectsDataPack.set(Objects.requireNonNull(fogData), Objects.requireNonNull(sunData), Objects.requireNonNull(objectsData), Objects.requireNonNull(skyData), Objects.requireNonNull(shadowsData), Objects.requireNonNull(lightingData));
 
                 jsonFileManaging.writeToFile(mapObjectsDataPack, this.getCurrentMapProject().getPathToDataMapFile().toFile(), null);
                 this.saveMapProjectFile(this.currentMapProject);
@@ -398,8 +431,37 @@ public final class WBenchMapProjectManager {
         }
     }
 
+    public void createOrSaveTempProjFile(WBenchMapProject mapProject) {
+        File file = new File(mapProject.getMapAbsolutePath().fullPath(), WBenchMapProjectManager.TEMP_SETTINGS);
+        if (!file.exists()) {
+            this.mapProjectSettings = new MapProjectSettings();
+        }
+        {
+            this.mapProjectSettings.cameraX = this.getWorld().getCamera().getCamPosition().x;
+            this.mapProjectSettings.cameraY = this.getWorld().getCamera().getCamPosition().y;
+            this.mapProjectSettings.cameraZ = this.getWorld().getCamera().getCamPosition().z;
+
+            this.mapProjectSettings.cameraRotX = this.getWorld().getCamera().getCamRotation().x;
+            this.mapProjectSettings.cameraRotY = this.getWorld().getCamera().getCamRotation().y;
+            this.mapProjectSettings.cameraRotZ = this.getWorld().getCamera().getCamRotation().z;
+        }
+        JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+        jsonFileManaging.writeToFile(this.mapProjectSettings, file, null);
+        Log.get().info("Saved temp settings project file");
+    }
+
+    public void readTempProjFile(WBenchMapProject mapProject) {
+        File file = new File(mapProject.getMapAbsolutePath().fullPath(), WBenchMapProjectManager.TEMP_SETTINGS);
+        if (file.exists()) {
+            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
+            this.mapProjectSettings = jsonFileManaging.readFromFile(file, new TypeToken<>() {}, null);
+        } else {
+            this.createOrSaveTempProjFile(mapProject);
+        }
+    }
+
     @SuppressWarnings("all")
-    private void refresScriptFolder(JGemsPath path, String name) {
+    private void refreshScriptFolder(JGemsPath path, String name) {
         if (!path.toFile().exists()) {
             path.toFile().mkdirs();
         }
@@ -445,7 +507,7 @@ public final class WBenchMapProjectManager {
             }
             wBenchMapProject.checkVersion();
 
-            this.refresScriptFolder(path, wBenchMapProject.getMapName());
+            this.refreshScriptFolder(path, wBenchMapProject.getMapName());
             Log.get().info("Opened WBenchMapProject: " + wBenchMapProject);
             Log.get().info(wBenchMapProject.getMapDescription());
 
@@ -507,7 +569,10 @@ public final class WBenchMapProjectManager {
     }
 
     private void initWorkingSpace(DearUIInterface dearUIInterface) {
-        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(0.0f, 5.0f, 0.0f), new Vector3f()));
+        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(),
+                new Vector3f(this.mapProjectSettings.cameraX, this.mapProjectSettings.cameraY, this.mapProjectSettings.cameraZ),
+                new Vector3f(this.mapProjectSettings.cameraRotX, this.mapProjectSettings.cameraRotY, this.mapProjectSettings.cameraRotZ))
+        );
         WBench.get().openInterface(dearUIInterface);
     }
 
@@ -516,7 +581,6 @@ public final class WBenchMapProjectManager {
     }
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {
-        this.saveMapProject(true);
         world.setCamera(null);
         WBench.get().openInterface(dearUIInterface);
     }

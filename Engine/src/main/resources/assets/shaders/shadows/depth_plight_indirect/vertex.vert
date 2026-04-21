@@ -3,10 +3,11 @@ precision highp float;
 precision highp int;
 
 layout (location=0) in vec3 aPosition;
-layout (location=1) in vec2 aTexture;
+layout (location=1) in vec2 texture;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
+out vec4 frag_pos;
 out vec2 uv_coordinates;
 out flat uint matertial_id;
 out flat uint ent_id;
@@ -42,5 +43,6 @@ void main()
     perform_animation(position, tempNormal, tempTangent, tempBiTangent, aBoneIndexes, aBoneWeights, currAnimationOffset, currAnimationOffsetPrev, deltaFrame);
 
     gl_Position = projection_view_matrix * model * position;
-    uv_coordinates = aTexture;
+    frag_pos = (model * vec4(aPosition, 1.0f));
+    uv_coordinates = texture;
 }

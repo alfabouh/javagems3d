@@ -57,7 +57,10 @@ public class JSMapRegistry {
     public static final JSMapFogSetupEvent MAP_FOG_SETUP_EVENT = new JSMapFogSetupEvent();
 
     @JSCodingField(description = "Event triggered when shadows is set up in the scene.")
-    public static final JSMapFogSetupEvent MAP_SHADOW_SETUP_EVENT = new JSMapFogSetupEvent();
+    public static final JSMapShadowsSetupEvent MAP_SHADOW_SETUP_EVENT = new JSMapShadowsSetupEvent();
+
+    @JSCodingField(description = "Event triggered when lighting is set up in the scene.")
+    public static final JSMapLightingSetupEvent MAP_LIGHTING_SETUP_EVENT = new JSMapLightingSetupEvent();
 
     @JSCodingFunctionOrMethod(description = "Subscribe a script function to a specific engine event.", paramNames = {"eventToSubscribe", "jsFunctionName"})
     public void registerEvent(JSEventI eventToSubscribe, String jsFunctionName) {

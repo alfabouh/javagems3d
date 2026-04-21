@@ -88,7 +88,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 //ImGui.textWrapped("Size: " + vector2i.x + " x " + vector2i.y);
                 ImGui.unindent();
                 ImGui.endChild();
-                if (ImGui.button("Save")) {
+                if (ImGui.button("Save Object")) {
                     if (worldObjectAsset instanceof GameResourcePropObjectAsset) {
                         WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
                     } else {
@@ -125,7 +125,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                 //if (ImGui.button("View")) {
                 //}
                 //ImGui.sameLine();
-                ImGui.textWrapped(tag.getTagID().getId() + " (" + tag.getTagID().getDescription() + ")");
+                ImGui.textWrapped(tag.getTagID().getId() + " (" + tag.getTagID().getNormalName() + ")");
                 ImGui.popID();
             }
             ImGui.endChild();

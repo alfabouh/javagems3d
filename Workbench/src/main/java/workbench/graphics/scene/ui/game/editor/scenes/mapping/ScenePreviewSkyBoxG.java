@@ -12,6 +12,8 @@ import workbench.graphics.scene.ui.game.editor.utils.AssetsChooseCombo;
 import workbench.project.managing.WBenchProjectResourcesManager;
 import javagems3d.system.external.gaming.def.misc.GameResourceTextureAsset;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class ScenePreviewSkyBoxG {
     private boolean showHint;
     private final ResourcesInterfaceComponentG resourcesInterfaceComponentG;
@@ -40,54 +42,91 @@ public class ScenePreviewSkyBoxG {
                 ImGui.indent();
                 ImGui.bullet();
                 ImGui.text("Face Textures");
+                AtomicBoolean save = new AtomicBoolean(false);
                 final ICubeMapProgram.CMTextures cmTextures = skyBoxAssetPreview.getAsset().getCmTextures();
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureFRONTPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureFRONTPath().toString());
                     this.textureFRONT.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureFRONTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureFRONTPath(null));
+                            (e) -> {
+                                cmTextures.setTextureFRONTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureFRONTPath(null);
+                                save.set(true);
+                            });
                 }
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureBACKPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureBACKPath().toString());
                     this.textureBACK.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureBACKPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureBACKPath(null));
+                            (e) -> {
+                                cmTextures.setTextureBACKPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureBACKPath(null);
+                                save.set(true);
+                            });
                 }
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureUPPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureUPPath().toString());
                     this.textureUP.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureUPPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureUPPath(null));
+                            (e) -> {
+                                cmTextures.setTextureUPPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureUPPath(null);
+                                save.set(true);
+                            });
                 }
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureBOTTOMPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureBOTTOMPath().toString());
                     this.textureBOTTOM.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureBOTTOMPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureBOTTOMPath(null));
+                            (e) -> {
+                                cmTextures.setTextureBOTTOMPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureBOTTOMPath(null);
+                                save.set(true);
+                            });
                 }
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureLEFTPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureLEFTPath().toString());
                     this.textureLEFT.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureLEFTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureLEFTPath(null));
+                            (e) -> {
+                                cmTextures.setTextureLEFTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureLEFTPath(null);
+                                save.set(true);
+                            });
                 }
                 {
                     final GameResourceTextureAsset extractFace = cmTextures.getTextureRIGHTPath() == null ? null : WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(cmTextures.getTextureRIGHTPath().toString());
                     this.textureRIGHT.render(
                             () -> extractFace,
-                            (e) -> cmTextures.setTextureRIGHTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR)),
-                            (e) -> cmTextures.setTextureRIGHTPath(null));
+                            (e) -> {
+                                cmTextures.setTextureRIGHTPath(new JGemsPathSource(e.relativePath(), ISource.Source.OUTSIDE_JAR));
+                                save.set(true);
+                            },
+                            (e) -> {
+                                cmTextures.setTextureRIGHTPath(null);
+                                save.set(true);
+                            });
                 }
                 if (ImGui.checkbox("Show Hints", this.showHint)) {
                     this.showHint = !this.showHint;
                 }
                 ImGui.spacing();
-                if (ImGui.button("Save")) {
+                if (save.get()) {
                     WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.SKYBOXES);
                 }
                 ImGui.unindent();

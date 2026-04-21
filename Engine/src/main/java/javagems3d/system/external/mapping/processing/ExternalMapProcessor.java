@@ -20,7 +20,6 @@ import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTransl
 import api.scripting.coding.env.internal.util.mapping.row.JSRowMapObjectData;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
-import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderData;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import api.system.JGemsAPI;
@@ -31,15 +30,17 @@ import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
+import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
@@ -47,10 +48,7 @@ import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.MapProjectData;
-import javagems3d.system.external.mapping.data.items.FogData;
-import javagems3d.system.external.mapping.data.items.ShadowsData;
-import javagems3d.system.external.mapping.data.items.SkyData;
-import javagems3d.system.external.mapping.data.items.SunData;
+import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.processing.base.MapProcessor;
 import javagems3d.system.external.mapping.tags.TagID;
@@ -66,6 +64,7 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.external.mapping.tags.items.*;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
@@ -80,6 +79,7 @@ import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -158,16 +158,18 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     protected abstract void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
     protected @Nullable Pair<PointLight, Integer> onProcessPointLight(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        final Vector4f tagColor = Objects.requireNonNull(template.getTagsContainer().<TagColor>getTagItem(TagID.DEFAULT.COLOR3)).getColorVector();
-        final float brightness = Objects.requireNonNull(template.getTagsContainer().<TagFloat>getTagItem(TagID.DEFAULT.BRIGHTNESS)).getValue();
-        final int attachedTo = Objects.requireNonNull(template.getTagsContainer().<TagObjectsList>getTagItem(TagID.DEFAULT.OBJECT_LIST)).getValue();
-        final Vector3f offset = Objects.requireNonNull(template.getTagsContainer().<TagVector>getTagItem(TagID.DEFAULT.FLOAT3)).getValues().xyz(new Vector3f());
+        final Vector4f tagColor = Objects.requireNonNull(template.getTagsContainer().<TagColor>getTagUnSafeItem(TagID.DEFAULT.COLOR3)).getColorVector();
+        final float brightness = Objects.requireNonNull(template.getTagsContainer().<TagFloat>getTagUnSafeItem(TagID.DEFAULT.BRIGHTNESS)).getValue();
+        final int attachedTo = Objects.requireNonNull(template.getTagsContainer().<TagObjectsList>getTagUnSafeItem(TagID.DEFAULT.OBJECT_LIST)).getValue();
+        final Vector3f offset = Objects.requireNonNull(template.getTagsContainer().<TagVector>getTagUnSafeItem(TagID.DEFAULT.FLOAT3)).getValues().xyz(new Vector3f());
+        final boolean shadows = template.getTagsContainer().hasTag(TagID.DEFAULT.SHADOW_MAP) && Objects.requireNonNull(template.getTagsContainer().<TagCheckBoolean>getTagUnSafeItem(TagID.DEFAULT.SHADOW_MAP)).isFlag();
 
         PointLight pointLight = new PointLight();
         pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
         pointLight.setLightColor(tagColor.xyz(new Vector3f()));
         pointLight.setBrightness(brightness);
         pointLight.setOffset(offset);
+        pointLight.setEnableShadowMap(shadows);
         pointLight.on();
         sceneWorld.addLight(pointLight, null);
 
@@ -292,9 +294,21 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
     }
 
+    protected void onSetupLighting(LightingData lightingData, ILightScene lightScene) {
+        if (lightingData != null) {
+            lightScene.setHdrGamma(lightingData.gamma);
+            lightScene.setHdrExposure(lightingData.exposure);
+            lightScene.setBloomEnabled(lightingData.bloomEffect);
+        }
+    }
+
     protected void onSetupShadows(ShadowsData shadowsData, IShadowScene shadowScene) {
         if (shadowsData != null) {
             shadowScene.getSunLightShadow().setCascadeSplits(shadowsData.splits);
+            shadowScene.getSunLightShadow().setEnabled(shadowsData.sunShadows);
+            ((JGemsShadowScene) shadowScene).setSunShadowMapsBasicResolution(shadowsData.sunShadowRes);
+            ((JGemsShadowScene) shadowScene).setPointLightShadowMapsBasicResolution(shadowsData.pointLightShadowRes);
+            //shadowScene.recreateResources((JGemsOpenGLRenderer) JGems3D.get().getSceneRenderer());
         }
     }
 
@@ -376,6 +390,19 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     @Override
+    public final void onSetupLighting(ILightScene lightScene, IEnvironment environment) {
+        final LightingData lightingData = this.getMapDataPack().getLightingData();
+
+        EventBus.MapLightingSetupEvent event = new EventBus.MapLightingSetupEvent(lightScene, lightingData);
+        EventLauncher.pushEvent(event, new Pair<>(new JSMapLightingSetupEvent(new JSSceneWorld((SceneWorld) environment.getWorld()), new JSEnvironment((JGemsEnvironment) environment)), JavaToJsAPI.Target.Map));
+        if (event.isCancelled()) {
+            return;
+        }
+
+        this.onSetupLighting(lightingData, lightScene);
+    }
+
+    @Override
     public @Nullable Collection<IGameMap.SpawnPlayerData> getSpawnPlayersSet() {
         return this.spawnForPlayersData;
     }
@@ -445,10 +472,10 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
+            final TagCheckBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE, TagCheckBoolean.class);
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.pathToModel(), false);
             JGemsBody jGemsBody = null;
-            if (tagPhysics == null || tagPhysics.getValues()[0].isFlag()) {
+            if (tagPhysics == null || tagPhysics.isFlag()) {
                 jGemsBody = new JGemsStaticBody(MeshCollider.getStatic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
             } else {
                 jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);

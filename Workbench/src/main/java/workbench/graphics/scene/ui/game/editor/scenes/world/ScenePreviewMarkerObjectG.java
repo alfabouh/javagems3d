@@ -93,7 +93,7 @@ public class ScenePreviewMarkerObjectG<T extends GameResourceMarkerObjectAsset> 
                 //ImGui.textWrapped("Size: " + vector2i.x + " x " + vector2i.y);
                 ImGui.unindent();
                 ImGui.endChild();
-                if (ImGui.button("Save")) {
+                if (ImGui.button("Save Marker")) {
                     WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.MARKERS);
                 }
                 ImGui.endChild();

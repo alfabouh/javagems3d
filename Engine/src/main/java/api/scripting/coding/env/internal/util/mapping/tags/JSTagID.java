@@ -55,12 +55,12 @@ public class JSTagID {
 
     @JSCodingFunctionOrMethod(description = "Get description.")
     public String getDescription() {
-        return this.tagID.getDescription();
+        return this.tagID.getNormalName();
     }
 
     @JSCodingFunctionOrMethod(description = "Set description.", paramNames = {"description"})
     public JSTagID setDescription(String description) {
-        this.tagID.setDescription(description);
+        this.tagID.setNormalName(description);
         return this;
     }
 

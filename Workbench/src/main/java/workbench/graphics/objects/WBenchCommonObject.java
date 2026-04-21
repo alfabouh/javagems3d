@@ -1,15 +1,30 @@
 package workbench.graphics.objects;
 
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
+import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.AxisConstraints;
+import javagems3d.system.external.mapping.tags.base.ColorMode;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.base.VectorMode;
+import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+import workbench.graphics.fabrics.MarkerSimpleRenderFabric;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.resources.WBenchResourceManager;
 
 public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCommonObjectSnapshotData> {
     public WBenchCommonObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
@@ -19,6 +34,7 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
     public WBenchCommonObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer) {
         super(wBenchWorld, objectTemplate, tagsContainer);
     }
+
 
     @Override
     public WBenchCommonObject clone() {

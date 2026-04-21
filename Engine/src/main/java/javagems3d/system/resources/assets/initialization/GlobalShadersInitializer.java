@@ -47,16 +47,19 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager depth_sun;
     public JGemsShaderManager depth_sun_indirect;
     public JGemsShaderManager depth_plight;
+    public JGemsShaderManager depth_plight_indirect;
     public JGemsShaderManager debug;
     public JGemsShaderManager imgui;
     public JGemsShaderManager alpha_scanning;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
-    public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
+    //public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
+    //public ShaderStorageBufferObject ShadowScenePointLightIndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
     public ShaderStorageBufferObject MaterialsData;
     public ShaderStorageBufferObject MainScenePropertiesData;
-    public ShaderStorageBufferObject ShadowScenePropertiesData;
+    //public ShaderStorageBufferObject ShadowScenePropertiesData;
+    //public ShaderStorageBufferObject ShadowScenePointLightPropertiesData;
     public ShaderStorageBufferObject TimerData;
     public ShaderStorageBufferObject SunLightData;
     public ShaderStorageBufferObject PointLightsData;
@@ -122,11 +125,17 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         ShaderStorageBufferProgram.createSSBOStorage(this.TextureScan, GL46.GL_DYNAMIC_STORAGE_BIT | GL46.GL_MAP_READ_BIT | GL46.GL_MAP_PERSISTENT_BIT | GL46.GL_MAP_COHERENT_BIT);
         ShaderStorageBufferProgram.mapBuffer(this.TextureScan, GL46.GL_MAP_READ_BIT | GL46.GL_MAP_PERSISTENT_BIT | GL46.GL_MAP_COHERENT_BIT);
 
-        this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
-        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
-
-        this.ShadowScenePropertiesData = new ShaderStorageBufferObject(14, this.MainScenePropertiesData.getBufferSize());
-        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+        //this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePointLightIndirectBufferData = new ShaderStorageBufferObject(11, this.MainSceneIndirectBufferData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePointLightIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePropertiesData = new ShaderStorageBufferObject(14, this.MainScenePropertiesData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePointLightPropertiesData = new ShaderStorageBufferObject(15, this.MainScenePropertiesData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePointLightPropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.alpha_scanning = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/alpha_scanning"), ISource.Source.INSIDE_JAR));
         this.debug = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "debug"), ISource.Source.INSIDE_JAR));
@@ -160,6 +169,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"), ISource.Source.INSIDE_JAR));
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"), ISource.Source.INSIDE_JAR));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"), ISource.Source.INSIDE_JAR));
+        this.depth_plight_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight_indirect"), ISource.Source.INSIDE_JAR));
     }
 
     @Override

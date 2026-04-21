@@ -8,6 +8,7 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -119,11 +120,28 @@ public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements 
         return this.tags().get(id);
     }
 
-    public <T extends TagItem> T getTagItem(TagID id) {
+    @SuppressWarnings("all")
+    public @Nullable <T extends TagItem> T getTagUnSafeItem(TagID id) {
+        try {
+            if (!this.hasTag(id)) {
+                return null;
+            }
+            return (T) this.tags().get(id).getTagItemUnsafeCast();
+        } catch (ClassCastException e) {
+            Log.get().error("Couldn't get tag item from " + id + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    @SuppressWarnings("all")
+    public @Nullable <T extends TagItem> T getTagItem(TagID id, Class<T> toCheck) {
         if (!this.hasTag(id)) {
             return null;
         }
-        return this.tags().get(id).getTagItemUnsafeCast();
+        if (this.tags().get(id).getTagItem().getClass().isAssignableFrom(toCheck)) {
+            return (T) this.tags().get(id).getTagItemUnsafeCast();
+        }
+        return null;
     }
 
     public Collection<Tag<? extends TagItem>> getTagCollection() {

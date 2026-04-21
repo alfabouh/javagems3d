@@ -5,6 +5,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.JGemsEnvironment;
+import javagems3d.graphics.environment.lights.scene.LightScene;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.ITransparencyRenderNode;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
@@ -24,6 +25,7 @@ import logger.managers.LoggingManager;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,30 @@ import java.util.Set;
 public class DearUIGameInterface implements DearUIInterface {
     private boolean snapStop = false;
     private Set<Map.Entry<String, SpeedProfiler.Group>> snapShot = null;
+    private static boolean showAllConsoleLines = false;
+
+    public static void consoleContent() {
+        if (ImGui.checkbox("Show All Lines", DearUIGameInterface.showAllConsoleLines)) {
+            DearUIGameInterface.showAllConsoleLines = !DearUIGameInterface.showAllConsoleLines;
+            LoggingManager.markConsoleDirty = true;
+        }
+        String[] textLines = LoggingManager.consoleText().split("\n");
+        if (!DearUIGameInterface.showAllConsoleLines) {
+            textLines = Arrays.stream(textLines).skip(Math.max(textLines.length - 128, 0)).toArray(String[]::new);
+        }
+        ImGui.beginChild("##console_window", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 60, true);
+        for (String s : textLines) {
+            if (s.isEmpty()) {
+                continue;
+            }
+            ImGui.textWrapped(s);
+        }
+        if (LoggingManager.markConsoleDirty) {
+            ImGui.setScrollHereY(1.0f);
+            LoggingManager.markConsoleDirty = false;
+        }
+        ImGui.endChild();
+    }
 
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         ICamera camera = JGems3D.get().getScreen().getCamera();
@@ -45,17 +71,7 @@ public class DearUIGameInterface implements DearUIInterface {
         ImGui.setNextWindowSize(logX, logY);
         ImGui.setNextWindowCollapsed(true, ImGuiCond.Once);
         ImGui.begin("Output", ImGuiWindowFlags.AlwaysVerticalScrollbar | ImGuiWindowFlags.NoResize);
-        String[] textLines = LoggingManager.consoleText().split("\n");
-        for (String s : textLines) {
-            if (s.isEmpty()) {
-                continue;
-            }
-            ImGui.textWrapped(s);
-        }
-        if (LoggingManager.markConsoleDirty) {
-            ImGui.setScrollHereY(1.0f);
-            LoggingManager.markConsoleDirty = false;
-        }
+        DearUIGameInterface.consoleContent();
         ImGui.end();
 
         ImGui.setNextWindowSize(JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
@@ -105,12 +121,12 @@ public class DearUIGameInterface implements DearUIInterface {
                 JGemsConfig.SYSTEM.USE_HDR = !JGemsConfig.SYSTEM.USE_HDR;
             }
             if (ImGui.treeNode("HDR Settings")) {
-                float[] exposure = new float[]{JGemsConfig.SYSTEM.HDR_EXPOSURE};
+                float[] exposure = new float[]{JGemsHelper.get().getSceneWorld().getEnvironment().getLightScene().getHdrExposure()};
                 ImGui.sliderFloat("exposure", exposure, 0.0f, 5.0f);
-                JGemsConfig.SYSTEM.HDR_EXPOSURE = exposure[0];
-                float[] gamma = new float[]{JGemsConfig.SYSTEM.HDR_GAMMA};
+                ((LightScene) JGemsHelper.get().getSceneWorld().getEnvironment().getLightScene()).setHdrExposure(exposure[0]);
+                float[] gamma = new float[]{JGemsHelper.get().getSceneWorld().getEnvironment().getLightScene().getHdrGamma()};
                 ImGui.sliderFloat("gamma", gamma, 0.0f, 3.0f);
-                JGemsConfig.SYSTEM.HDR_GAMMA = gamma[0];
+                ((LightScene) JGemsHelper.get().getSceneWorld().getEnvironment().getLightScene()).setHdrGamma(gamma[0]);
                 ImGui.treePop();
             }
 

@@ -67,7 +67,7 @@ public class JavaToJsAPI {
     public static void ScriptEnd(@NotNull Target target) {
         APICodingContext apiCodingContext = JavaToJsAPI.apiCodeContext(target);
         if (apiCodingContext != null) {
-            apiCodingContext.callFunctionNoExc(JavaToJsFunctionsList.ENTRY_ENDPOINT_FUNCTION_DESC);
+            apiCodingContext.callFunctionNoExc(JavaToJsFunctionsList.ENTRY_ENDPOINT_FUNCTION);
         } else {
             Log.get().error("API code context is null!");
         }

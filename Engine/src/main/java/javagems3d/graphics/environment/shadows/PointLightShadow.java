@@ -1,6 +1,7 @@
 package javagems3d.graphics.environment.shadows;
 
 import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.system.global.JGemsConfig;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -25,20 +26,14 @@ public class PointLightShadow extends Shadow {
         this.pointLightCubeMap = new FBOCubeMapProgram();
     }
 
+
+
     public void configureMatrices() {
         this.shadowDirections = TransformUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPosition(), this.nearPlane(), this.farPlane());
     }
 
     public void setPointLight(PointLight pointLight) {
-        if (pointLight == null) {
-            if (this.getPointLight() != null) {
-                this.getPointLight().setAttachedShadowSceneId(-1);
-            }
-            this.pointLight = null;
-        } else {
-            this.pointLight = pointLight;
-            this.pointLight.setAttachedShadowSceneId(this.getId());
-        }
+        this.pointLight = pointLight;
     }
 
     @Override
@@ -56,7 +51,7 @@ public class PointLightShadow extends Shadow {
     }
 
     public float farPlane() {
-        return 25.0f;
+        return 64.0f;
     }
 
     public float nearPlane() {

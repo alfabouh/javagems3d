@@ -62,7 +62,7 @@ public class TagObjectsList extends TagItem {
         String[] items = labels.toArray(new String[0]);
 
         ImInt curr = new ImInt(currentIndex);
-        if (ImGui.combo("##" + tagID.getDescription(), curr, items, 6)) {
+        if (ImGui.combo("##" + tagID.getNormalName(), curr, items, 6)) {
             if (trackingHelper != null) {
                 trackingHelper.get().takeSnapshot();
             }

@@ -46,63 +46,74 @@ public class ActionsInterfaceComponentG {
     private void projSettings() {
         ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
         if (ImGui.collapsingHeader("Editor Settings", ImGuiTreeNodeFlags.DefaultOpen)) {
-            {
-                ImGui.bullet();
-                if (ImGui.button("Save")) {
-                    WBench.get().getGameProjectManager().createOrSaveTempProjFile(WBench.get().getGameProjectManager().getGameProject());
-                }
-            }
+            ImGui.beginChild("##editor_settings_window", ImGui.getColumnWidth(), 320, true);
+            boolean save = false;
             ImGui.popStyleColor();
-            ImGui.indent();
-            if (ImGui.collapsingHeader("Compile")) {
-                ImGui.beginChild("##FogContent", ImGui.getColumnWidth(), 140, true, ImGuiWindowFlags.HorizontalScrollbar);
+            //ImGui.indent();
+            if (ImGui.treeNodeEx("Compilation", ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.beginChild("##CompileEditCont", ImGui.getColumnWidth(), 200, true);
                 {
-                    ImGui.bulletText("Core .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath);
+                    ImGui.textWrapped("Core .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath);
                     if (ImGui.button("Browse ##1")) {
                         WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath);
+                        save = true;
                     }
                     ImGui.separator();
                 }
                 {
-                    ImGui.bulletText("Launcher .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath);
+                    ImGui.textWrapped("Launcher .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath);
                     if (ImGui.button("Browse ##2")) {
                         WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath);
+                        save = true;
                     }
                     ImGui.separator();
                 }
                 {
-                    ImGui.bulletText("Workbench .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath);
+                    ImGui.textWrapped("Workbench .jar: " + WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath);
                     if (ImGui.button("Browse ##3")) {
                         WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath = JGemsHelper.files().openFolderViewChooser(WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath);
+                        save = true;
                     }
                 }
                 ImGui.endChild();
+                ImGui.treePop();
             }
-            if (ImGui.collapsingHeader("Map Editing")) {
-                ImGui.beginChild("##SkyContent", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
+            if (ImGui.treeNodeEx("Map Edit Autosave", ImGuiTreeNodeFlags.DefaultOpen)) {
+                ImGui.beginChild("##MapEditCont", ImGui.getColumnWidth(), 100, true, ImGuiWindowFlags.HorizontalScrollbar);
                 boolean autoSavePerSec = WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode == GameProjectSettings.MapProjectAutoSaveMode.TIMER;
-                ImGui.bulletText("AutoSave Mode");
                 if (ImGui.radioButton("On Timer", autoSavePerSec)) {
                     WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode = GameProjectSettings.MapProjectAutoSaveMode.TIMER;
+                    save = true;
                 }
                 if (ImGui.radioButton("On Steps", !autoSavePerSec)) {
                     WBench.get().getGameProjectManager().gameProjectSettings.mapProjectAutoSaveMode = GameProjectSettings.MapProjectAutoSaveMode.STEPS;
+                    save = true;
                 }
                 if (!autoSavePerSec) {
                     ImInt step = new ImInt(WBench.get().getGameProjectManager().gameProjectSettings.saveEachStep);
                     ImGui.setNextItemWidth(100);
-                    ImGui.inputInt("Steps to save", step, 1, 100);
+                    if (ImGui.inputInt("Steps to save", step, 1, 100)) {
+                        save = true;
+                    }
                     WBench.get().getGameProjectManager().gameProjectSettings.saveEachStep = step.get();
                 } else {
                     ImInt sec = new ImInt((int) WBench.get().getGameProjectManager().gameProjectSettings.savePerSecond);
                     ImGui.setNextItemWidth(100);
-                    ImGui.inputInt("Seconds to save", sec, 1, 360);
+                    if (ImGui.inputInt("Seconds to save", sec, 1, 360)) {
+                        save = true;
+                    }
                     WBench.get().getGameProjectManager().gameProjectSettings.savePerSecond = sec.get();
                 }
                 ImGui.endChild();
+                ImGui.treePop();
             }
 
-            ImGui.unindent();
+            if (save) {
+                WBench.get().getGameProjectManager().createOrSaveTempProjFile(WBench.get().getGameProjectManager().getGameProject());
+            }
+
+            //ImGui.unindent();
+            ImGui.endChild();
         } else {
             ImGui.popStyleColor();
         }

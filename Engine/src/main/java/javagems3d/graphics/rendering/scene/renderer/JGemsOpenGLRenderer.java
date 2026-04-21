@@ -390,16 +390,27 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         return this.getWorld().getCamera();
     }
 
+    public void recreateEnvironment() {
+        this.getWorld().getEnvironment().destroyEnvironment();
+        this.getWorld().getEnvironment().createEnvironment(this);
+    }
+
+    @Override
+    public void recreateResources() {
+        super.recreateResources();
+        this.recreateEnvironment();
+    }
+
+    @Override
     public void createResources() {
         this.getDebugLinesDrawer().setup();
-        this.getWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
     }
 
+    @Override
     public void destroyResources() {
         this.getDebugLinesDrawer().clear();
-        this.getWorld().getEnvironment().destroyEnvironment();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneCulling().destroyResources();
     }

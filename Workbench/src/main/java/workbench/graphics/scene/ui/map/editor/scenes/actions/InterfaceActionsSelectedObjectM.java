@@ -108,8 +108,35 @@ public class InterfaceActionsSelectedObjectM {
         return wBenchBindingManager.keyAlt.isPressed() || this.mapEditorInterface.getSelectedObjectsManager().isOneDirScaling();
     }
 
+    private boolean rotationQuickButtons(String id, float[] arr) {
+        if (ImGui.button("+45##rotationQuickButtons_1" + id)) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            arr[0] += (float) (Math.PI / 4.0f);
+            return true;
+        }
+        ImGui.sameLine();
+        if (ImGui.button("-45##rotationQuickButtons_2" + id)) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            arr[0] -= (float) (Math.PI / 4.0f);
+            return true;
+        }
+        ImGui.sameLine();
+        if (ImGui.button("+90##rotationQuickButtons_3" + id)) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            arr[0] += (float) (Math.PI / 2.0f);
+            return true;
+        }
+        ImGui.sameLine();
+        if (ImGui.button("-90##rotationQuickButtons_4" + id)) {
+            WBenchUITrackingHelper.instantlyTrackAndPush();
+            arr[0] -= (float) (Math.PI / 2.0f);
+            return true;
+        }
+        return false;
+    }
+
     private void processTranslations(String id, Collection<WBenchObject<?>> wBenchObjects, int operationFlag, boolean textInfoIfCannotBeTransformed) {
-        ImGui.beginChild(id, ImGui.getColumnWidth(), textInfoIfCannotBeTransformed ? 280 : 140, true);
+        ImGui.beginChild(id, ImGui.getColumnWidth(), textInfoIfCannotBeTransformed ? 330 : 190, true);
         if (!wBenchObjects.isEmpty()) {
             final boolean many = wBenchObjects.size() > 1;
             WBenchObject<?> getFirst = wBenchObjects.stream().findFirst().get();
@@ -194,6 +221,7 @@ public class InterfaceActionsSelectedObjectM {
                 ImGui.popStyleColor();
             }
 
+            boolean forceDesyncAngles = false;
             if (showRotX || showRotY || showRotZ) {
                 ImGui.bulletText("Rotation");
                 ImGui.beginDisabled(!showRotX);
@@ -203,11 +231,17 @@ public class InterfaceActionsSelectedObjectM {
                         float[] rotDeg = new float[1];
                         rotDeg[0] = (float) Math.toDegrees(rotArrayX[0]);
                         if (ImGui.dragFloat("X##rotArrayX", rotDeg, 0.1f)) {
+                            if (ImGui.getIO().getWantTextInput()) {
+                                forceDesyncAngles = true;
+                            }
                             captRotate = true;
                             rotArrayX[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
+                    }
+                    if (this.rotationQuickButtons("X", rotArrayX)) {
+                        captRotate = true;
                     }
                     ImGui.popStyleColor();
                 }
@@ -220,11 +254,17 @@ public class InterfaceActionsSelectedObjectM {
                         float[] rotDeg = new float[1];
                         rotDeg[0] = (float) Math.toDegrees(rotArrayY[0]);
                         if (ImGui.dragFloat("Y##rotArrayY", rotDeg, 0.1f)) {
+                            if (ImGui.getIO().getWantTextInput()) {
+                                forceDesyncAngles = true;
+                            }
                             captRotate = true;
                             rotArrayY[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
+                    }
+                    if (this.rotationQuickButtons("Y", rotArrayY)) {
+                        captRotate = true;
                     }
                     ImGui.popStyleColor();
                 }
@@ -237,17 +277,23 @@ public class InterfaceActionsSelectedObjectM {
                         float[] rotDeg = new float[1];
                         rotDeg[0] = (float) Math.toDegrees(rotArrayZ[0]);
                         if (ImGui.dragFloat("Z##rotArrayZ", rotDeg, 0.1f)) {
+                            if (ImGui.getIO().getWantTextInput()) {
+                                forceDesyncAngles = true;
+                            }
                             captRotate = true;
                             rotArrayZ[0] = (float) Math.toRadians(rotDeg[0]);
                             if (uiTrackingHelper.saveSnapshot()) {
                             }
                         }
                     }
+                    if (this.rotationQuickButtons("Z", rotArrayZ)) {
+                        captRotate = true;
+                    }
                     ImGui.popStyleColor();
                 }
                 ImGui.endDisabled();
                 if (!many) {
-                    if (ImGui.checkbox("Desync Angles", this.isLockObjectAngles())) {
+                    if (ImGui.checkbox("Desync Angle-Rotation", this.isLockObjectAngles())) {
                         this.lockObjectAngles = !this.isLockObjectAngles();
                     }
                 }
@@ -355,7 +401,7 @@ public class InterfaceActionsSelectedObjectM {
                     getFirst.setPosition(newPos);
                 }
                 if (captRotate) {
-                    if (this.lockObjectAngles) {
+                    if (this.lockObjectAngles || forceDesyncAngles) {
                         getFirst.setRotation(newRot);
                     } else {
                         Vector3f angle = new Vector3f(getFirst.getRotation()).sub(newRot);
@@ -410,7 +456,7 @@ public class InterfaceActionsSelectedObjectM {
         if (!tagsContainer.isEmpty()) {
             for (Tag<? extends TagItem> tag : tagsContainer.getTagCollection()) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-                if (ImGui.collapsingHeader(tag.getTagID().getId(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                if (ImGui.collapsingHeader(tag.getTagID().getNormalName() == null ? tag.getTagID().getId() : tag.getTagID().getNormalName(), ImGuiTreeNodeFlags.DefaultOpen)) {
                     this.showItemDescription(tag.getTagID());
                     ImGui.popStyleColor();
                     //ImGui.beginChild("##InsideTag_" + tag.getTagID().getId(), ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);

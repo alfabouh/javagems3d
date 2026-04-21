@@ -17,24 +17,27 @@ public final class MapObjectsDataPack implements IJSONSerializable<MapObjectsDat
     private ObjectsData objectsData;
     private SkyData skyData;
     private ShadowsData shadowsData;
+    private LightingData lightingData;
 
     public MapObjectsDataPack() {
     }
 
-    public MapObjectsDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
+    public MapObjectsDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData,  LightingData lightingData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
         this.skyData = skyData;
         this.shadowsData = shadowsData;
+        this.lightingData = lightingData;
     }
 
-    public void set(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
+    public void set(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData, LightingData lightingData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
         this.skyData = skyData;
         this.shadowsData = shadowsData;
+        this.lightingData = lightingData;
     }
 
     public FogData getFogData() {
@@ -57,6 +60,10 @@ public final class MapObjectsDataPack implements IJSONSerializable<MapObjectsDat
         return shadowsData;
     }
 
+    public LightingData getLightingData() {
+        return this.lightingData;
+    }
+
     @Override
     public JSONFileManaging.@NotNull SerializationRules<MapObjectsDataPack> getSerializationRules() {
         return new JSONFileManaging.SerializationRules<MapObjectsDataPack>() {
@@ -70,6 +77,7 @@ public final class MapObjectsDataPack implements IJSONSerializable<MapObjectsDat
                     jsonObject.add("objectsData", context.serialize(toWrite.objectsData, ObjectsData.class));
                     jsonObject.add("skyData", context.serialize(toWrite.skyData, SkyData.class));
                     jsonObject.add("shadowsData", context.serialize(toWrite.shadowsData, ShadowsData.class));
+                    jsonObject.add("lightingData", context.serialize(toWrite.lightingData, LightingData.class));
 
                     return jsonObject;
                 } catch (Exception e) {
@@ -87,8 +95,9 @@ public final class MapObjectsDataPack implements IJSONSerializable<MapObjectsDat
                     ObjectsData objectsData = context.deserialize(jsonObject.get("objectsData"), ObjectsData.class);
                     SkyData skyData = context.deserialize(jsonObject.get("skyData"), SkyData.class);
                     ShadowsData shadowsData = context.deserialize(jsonObject.get("shadowsData"), ShadowsData.class);
+                    LightingData lightingData = context.deserialize(jsonObject.get("lightingData"), LightingData.class);
 
-                    return new MapObjectsDataPack(fogData, sunData, objectsData, skyData, shadowsData);
+                    return new MapObjectsDataPack(fogData, sunData, objectsData, skyData, shadowsData, lightingData);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

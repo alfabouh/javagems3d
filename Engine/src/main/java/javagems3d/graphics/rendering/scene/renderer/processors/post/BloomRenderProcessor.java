@@ -41,10 +41,11 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (!JGemsConfig.SYSTEM.USE_BLOOM || !this.isUseBloom()) {
+        if (!this.getWorld().getEnvironment().getLightScene().isBloomEnabled() || !JGemsConfig.SYSTEM.USE_BLOOM || !this.isUseBloom()) {
             this.getOutColor().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             this.getOutColor().unBindFBO();
+            return;
         }
         JGemsShaderManager blurShader = this.getBlurShader();
         FBOTexture2DProgram startFbo = this.getInColor();

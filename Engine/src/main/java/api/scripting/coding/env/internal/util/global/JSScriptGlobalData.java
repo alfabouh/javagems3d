@@ -191,11 +191,6 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
         JGemsHelper.world().killItems();
     }
 
-    @JSCodingFunctionOrMethod(description = "Bind point light shadow to scene.", paramNames = {"sceneId", "pointLight"})
-    public void bindPointLightShadow(int sceneId, JSPointLight pointLight) {
-        JGemsHelper.world().bindPointLightShadow(sceneId, pointLight.getJavaLight());
-    }
-
     @JSCodingFunctionOrMethod(description = "Add scene prop to world.", paramNames = {"sceneProp"})
     public void addProp(JSScenePropI sceneProp) {
         JGemsHelper.world().addProp(sceneProp.getJavaSceneProp());

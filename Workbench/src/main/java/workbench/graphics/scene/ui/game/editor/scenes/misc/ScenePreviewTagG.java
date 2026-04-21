@@ -160,9 +160,9 @@ public class ScenePreviewTagG {
                                     {
                                         ImGui.text("Description:");
                                         ImGui.sameLine();
-                                        this.edit_description.set(tagItem.getKey().getDescription());
+                                        this.edit_description.set(tagItem.getKey().getNormalName());
                                         if (ImGui.inputTextMultiline("##desc1", this.edit_description, ImGui.getColumnWidth(), 18)) {
-                                            tagItem.getKey().setDescription(this.edit_description.get());
+                                            tagItem.getKey().setNormalName(this.edit_description.get());
                                         }
                                     }
                                     {
@@ -175,7 +175,7 @@ public class ScenePreviewTagG {
                                     }
                                 }
                                 {
-                                    if (ImGui.button("Save")) {
+                                    if (ImGui.button("Save Metadata")) {
                                         WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
                                     }
                                 }

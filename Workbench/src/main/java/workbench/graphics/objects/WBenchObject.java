@@ -14,9 +14,10 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
-import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.project.map.settings.MapProjectSettings;
 
 import java.util.Objects;
 
@@ -106,7 +107,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
 
     @Override
     public AnimationData getAnimationData() {
-        return !GlobalWBenchSceneRenderingVars.ANIMATIONS ? null : super.getAnimationData();
+        return !WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS ? null : super.getAnimationData();
     }
 
     public abstract WBenchObject<E> clone();

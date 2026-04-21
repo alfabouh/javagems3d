@@ -108,7 +108,7 @@ public class InterfaceActionsEnvSkyM {
             if (!skyBoxes.isEmpty()) {
                 SkyBox skyBox = this.mapEditorInterface.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
                 ICubeMapProgram currentSky = skyBox.getTexture();
-                ImGui.treePush();
+                ImGui.bullet();
                 if (ImGui.selectable("None", currentSky == null, ImGuiSelectableFlags.AllowItemOverlap)) {
                     WBenchUITrackingHelper.instantlyTrackAndPush();
                     skyBox.setSky2DTexture(null);
@@ -116,6 +116,7 @@ public class InterfaceActionsEnvSkyM {
                 for (Map.Entry<String, MapObjectTemplatesManager.SkyBoxTemplate> cubeMapProgramPair : skyBoxes) {
                     boolean flag = currentSky == cubeMapProgramPair.getValue().getCubeMapProgram();
                     ImGui.pushID(cubeMapProgramPair.getKey());
+                    ImGui.bullet();
                     if (ImGui.selectable(cubeMapProgramPair.getKey(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
                         WBenchUITrackingHelper.instantlyTrackAndPush();
                         if (!flag) {
@@ -126,7 +127,6 @@ public class InterfaceActionsEnvSkyM {
                     }
                     ImGui.popID();
                 }
-                ImGui.treePop();
             } else {
                 ImGui.text("Empty");
             }

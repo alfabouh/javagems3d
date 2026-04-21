@@ -58,6 +58,7 @@ public class ScenePreviewMapG {
                 ImGui.spacing();
                 if (ImGui.button("Open")) {
                     final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
+                    WBench.get().getGameProjectManager().saveGameProject(true);
                     WBench.get().getMapProjectManager().openMapProject(pathToMap);
                     WBench.get().getGameProjectManager().refreshMaps(true);
                 }

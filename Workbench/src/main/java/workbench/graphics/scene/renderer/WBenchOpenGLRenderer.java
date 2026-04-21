@@ -213,11 +213,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         if (this.getCamera() instanceof ControlledCamera camera) {
             WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();
             if (wBenchBindingManager.keyCtrl.isPressed()) {
-                camera.setSpeed(5.0f);
+                camera.setSpeed(WBench.get().getSettings().getCamSpeed() * 0.35f);
             } else if (wBenchBindingManager.keyAlt.isPressed()) {
-                camera.setSpeed(20.0f);
+                camera.setSpeed(WBench.get().getSettings().getCamSpeed() * 2.5f);
             } else {
-                camera.setSpeed(10.0f);
+                camera.setSpeed(WBench.get().getSettings().getCamSpeed());
             }
         }
         Set<SceneObject> toRender = new HashSet<>(renderBackGround ? this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getWorld().getSceneObjects());

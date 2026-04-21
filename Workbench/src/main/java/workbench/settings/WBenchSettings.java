@@ -17,11 +17,13 @@ public class WBenchSettings implements Serializable {
     public static final long serialVersionUID = 143L;
 
     private final Deque<String> recentProjects;
+    private float camSens;
     private float camSpeed;
 
     public WBenchSettings() {
         this.recentProjects = new ArrayDeque<>();
-        this.camSpeed = JGemsConfig.SYSTEM.CAM_SENS;
+        this.camSens = JGemsConfig.SYSTEM.CAM_SENS;
+        this.camSpeed = JGemsConfig.SYSTEM.CAM_SPEED;
     }
 
     @SuppressWarnings("all")
@@ -55,13 +57,22 @@ public class WBenchSettings implements Serializable {
         }
     }
 
+    public float getCamSpeed() {
+        return this.camSpeed;
+    }
+
     public WBenchSettings setCamSpeed(float camSpeed) {
         this.camSpeed = camSpeed;
         return this;
     }
 
-    public float getCamSpeed() {
-        return this.camSpeed;
+    public WBenchSettings setCamSens(float camSens) {
+        this.camSens = camSens;
+        return this;
+    }
+
+    public float getCamSens() {
+        return this.camSens;
     }
 
     public Deque<String> getRecentProjects() {

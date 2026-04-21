@@ -11,6 +11,7 @@ import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -18,10 +19,7 @@ import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.ColorMode;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.external.mapping.tags.base.VectorMode;
-import javagems3d.system.external.mapping.tags.items.TagColor;
-import javagems3d.system.external.mapping.tags.items.TagFloat;
-import javagems3d.system.external.mapping.tags.items.TagObjectsList;
-import javagems3d.system.external.mapping.tags.items.TagVector;
+import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
@@ -63,6 +61,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld) {
         final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
         final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+        final Tag<TagCheckBoolean> enableShadowMap = Tag.create(TagID.DEFAULT.SHADOW_MAP, new TagCheckBoolean(false));
         final Tag<TagObjectsList> objectsListTag = Tag.create(new TagID(TagID.DEFAULT.OBJECT_LIST, "Attach To"), new TagObjectsList());
         final Tag<TagVector> offset = Tag.create(new TagID(TagID.DEFAULT.FLOAT3, "Offset"), new TagVector(VectorMode.VEC3F, new Vector4f(0.0f), -32.0f, 32.0f));
 
@@ -71,6 +70,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         tagsContainer.addTag(brightnessTag);
         tagsContainer.addTag(objectsListTag);
         tagsContainer.addTag(offset);
+        tagsContainer.addTag(enableShadowMap);
 
         return WBenchPointLightObject.create(MapObjectsIdentifiers.POINT_LIGHT + name, wBenchWorld, tagsContainer);
     }
@@ -99,6 +99,13 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         return this.getTagsContainer().getTag(TagID.DEFAULT.FLOAT3).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f());
     }
 
+    public boolean enablePointLight() {
+        if (!this.getTagsContainer().hasTag(TagID.DEFAULT.SHADOW_MAP)) {
+            return false;
+        }
+        return this.getTagsContainer().getTag(TagID.DEFAULT.SHADOW_MAP).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
@@ -106,6 +113,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
             this.pointLight.setLightColor(this.getColor());
             this.pointLight.setBrightness(this.getBrightness());
             this.pointLight.setOffset(this.getLightOffset());
+            this.pointLight.setEnableShadowMap(this.enablePointLight());
         }
         int attachedTo = this.getAttachedTo();
 

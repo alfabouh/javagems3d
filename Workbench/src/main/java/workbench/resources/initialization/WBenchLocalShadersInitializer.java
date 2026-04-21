@@ -35,6 +35,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public WBenchShaderManager depth_sun;
     public WBenchShaderManager depth_sun_indirect;
     public WBenchShaderManager depth_plight;
+    public WBenchShaderManager depth_plight_indirect;
     public WBenchShaderManager gui_image;
     public WBenchShaderManager preview;
     public WBenchShaderManager simple_flat;
@@ -42,11 +43,15 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public WBenchShaderManager hdr;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
-    public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
+    //public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
+    //public ShaderStorageBufferObject ShadowScenePointLightIndirectBufferData;
+
     public ShaderStorageBufferObject BindlessTexturesData;
     public ShaderStorageBufferObject MaterialsData;
     public ShaderStorageBufferObject MainScenePropertiesData;
-    public ShaderStorageBufferObject ShadowScenePropertiesData;
+    //public ShaderStorageBufferObject ShadowScenePropertiesData;
+    //public ShaderStorageBufferObject ShadowScenePointLightPropertiesData;
+
     public ShaderStorageBufferObject TimerData;
     public ShaderStorageBufferObject SunLightData;
     public ShaderStorageBufferObject PointLightsData;
@@ -102,11 +107,17 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
-        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
-
-        this.ShadowScenePropertiesData = new ShaderStorageBufferObject(14, this.MainScenePropertiesData.getBufferSize());
-        ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+        //this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePointLightIndirectBufferData = new ShaderStorageBufferObject(11, this.MainSceneIndirectBufferData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePointLightIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePropertiesData = new ShaderStorageBufferObject(14, this.MainScenePropertiesData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+//
+        //this.ShadowScenePointLightPropertiesData = new ShaderStorageBufferObject(15, this.MainScenePropertiesData.getBufferSize());
+        //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowScenePointLightPropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.gui_image = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"), ISource.Source.INSIDE_JAR));
         this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"), ISource.Source.INSIDE_JAR));
@@ -125,6 +136,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"), ISource.Source.INSIDE_JAR));
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"), ISource.Source.INSIDE_JAR));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"), ISource.Source.INSIDE_JAR));
+        this.depth_plight_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight_indirect"), ISource.Source.INSIDE_JAR));
         this.blur5 = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"), ISource.Source.INSIDE_JAR));
         this.hdr = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/hdr"), ISource.Source.INSIDE_JAR));
         this.simple_skybox_face = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_skybox_face"), ISource.Source.INSIDE_JAR));

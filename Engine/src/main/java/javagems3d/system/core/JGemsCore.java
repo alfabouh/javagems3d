@@ -43,7 +43,7 @@ import java.util.*;
 public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "1.0b-dev test 3";
+    public static final String ENG_VER = "1.0b-dev test 4";
 
     private final JGemsSoundManager jGemsSoundManager;
     private final JGemsScreen jGemsScreen;
@@ -84,7 +84,7 @@ public final class JGemsCore implements ICore {
     }
 
     private void createMappingObject() {
-        this.mapping = new JGemsMapping((SceneWorld) this.getScreen().getSceneWorld(), this.getPhysics().getPhysicsWorld(), this.getResourceManager());
+        this.mapping = new JGemsMapping(this.getScreen().getScene().getSceneRenderer(), (SceneWorld) this.getScreen().getSceneWorld(), this.getPhysics().getPhysicsWorld(), this.getResourceManager());
     }
 
     public void update() {
@@ -135,7 +135,11 @@ public final class JGemsCore implements ICore {
         if (!this.engineState().isEngineIsReady()) {
             throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
         }
-        this.getSoundManager().stopAllSounds();
+        if (this.getMapping().isMapValid()) {
+            this.exitMap();
+        } else {
+            this.getSoundManager().stopAllSounds();
+        }
         JGemsHelper.screen().getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
 
         this.getMapping().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());

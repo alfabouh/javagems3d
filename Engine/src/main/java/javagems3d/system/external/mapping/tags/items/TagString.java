@@ -28,7 +28,7 @@ public class TagString extends TagItem {
     public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagStringTAG_" + currentSelected, trackingHelper)) {
-                if (ImGui.inputText("##" + tagID.getDescription(), this.value)) {
+                if (ImGui.inputText("##" + tagID.getNormalName(), this.value)) {
                     uiTrackingHelper.saveSnapshot();
                     this.setText(value.get());
                 }

@@ -7,6 +7,7 @@ import com.jme3.math.Plane;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.*;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
@@ -26,10 +27,11 @@ public final class JGemsMapping {
     private final JGemsResourceManager jGemsResourceManager;
     private final SceneWorld sceneWorld;
     private final PhysicsWorld physicsWorld;
-
+    private final OpenGLRenderer openGLRenderer;
     private IGameMap currentLoadedMap;
 
-    public JGemsMapping(SceneWorld sceneWorld, PhysicsWorld physicsWorld, JGemsResourceManager jGemsResourceManager) {
+    public JGemsMapping(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld, PhysicsWorld physicsWorld, JGemsResourceManager jGemsResourceManager) {
+        this.openGLRenderer = openGLRenderer;
         this.jGemsResourceManager = jGemsResourceManager;
         this.sceneWorld = sceneWorld;
         this.physicsWorld = physicsWorld;
@@ -63,6 +65,8 @@ public final class JGemsMapping {
         this.getSceneWorld().getEnvironment().setEnvironmentDefaults();
         JavaToJsAPI.ScriptEnd(JavaToJsAPI.Target.Map);
         this.destroyWorlds();
+        final IEnvironment environment = this.getSceneWorld().getEnvironment();
+        environment.destroyEnvironment();
     }
     
     public void loadMap(@NotNull IMapProcessor processor, IMapActionCallback... callbacks) {
@@ -87,12 +91,15 @@ public final class JGemsMapping {
         processor.setGlobalResources(this.getResourceManager().getGlobalResources());
         processor.setLocalResources(this.getResourceManager().getLocalResources());
         processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground(), environment);
+        processor.onSetupShadows(environment.getShadowScene(), environment);
+        processor.onSetupLighting(environment.getLightScene(), environment);
         processor.onSetupFog(environment.getFogScene(), environment);
        //if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
        //    JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
        //}
         processor.preProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         processor.onProcessing(this.getPhysicsWorld(), this.getSceneWorld());
+        environment.createEnvironment(this.openGLRenderer);
 
         boolean flag = false;
         final IGameMap.IPlayerConstructor playerConstructor = processor.getPlayerConstructor(this.getPhysicsWorld(), this.getSceneWorld());

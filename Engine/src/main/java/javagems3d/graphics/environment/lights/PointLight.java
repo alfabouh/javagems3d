@@ -9,7 +9,7 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
 
 public class PointLight extends Light implements ILightAttachable {
-    private int attachedShadowSceneId = -1;
+    private boolean enableShadowMap;
     private float brightness;
     private IObjectWithLights lighted;
     private ActionOnDetach actionOnDetach;
@@ -46,12 +46,13 @@ public class PointLight extends Light implements ILightAttachable {
         this(abstractSceneEntity.getRenderPosition(), lightColor, offset);
     }
 
-    public int getAttachedShadowSceneId() {
-        return this.attachedShadowSceneId;
+    public boolean isEnableShadowMap() {
+        return this.enableShadowMap;
     }
 
-    public void setAttachedShadowSceneId(int attachedShadowSceneId) {
-        this.attachedShadowSceneId = attachedShadowSceneId;
+    public PointLight setEnableShadowMap(boolean enableShadowMap) {
+        this.enableShadowMap = enableShadowMap;
+        return this;
     }
 
     public float getBrightness() {

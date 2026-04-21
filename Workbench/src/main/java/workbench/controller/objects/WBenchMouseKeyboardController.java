@@ -35,6 +35,6 @@ public class WBenchMouseKeyboardController extends MouseKeyboardController {
 
     @Override
     public float getCamSensitivity() {
-        return WBench.get().getSettings().getCamSpeed();
+        return WBench.get().getSettings().getCamSens();
     }
 }

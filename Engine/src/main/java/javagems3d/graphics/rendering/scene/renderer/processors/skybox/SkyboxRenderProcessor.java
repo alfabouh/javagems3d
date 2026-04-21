@@ -66,6 +66,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         if (this.getBackgroundTexture() != null) {
             skyShaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SKYBOX_BACKGROUND), this.getBackgroundTexture());
         }
+
         skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COVERED_BY_FOG), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
         skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MAT_INVERTED), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX), viewMatrix);

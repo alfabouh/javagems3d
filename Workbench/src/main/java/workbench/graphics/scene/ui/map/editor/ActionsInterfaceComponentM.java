@@ -5,11 +5,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedTemplateM;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvFogM;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvShadowsM;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsEnvSkyM;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.*;
 
 public class ActionsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
@@ -18,6 +14,7 @@ public class ActionsInterfaceComponentM {
     private final InterfaceActionsEnvFogM interfaceActionsEnvFogM;
     private final InterfaceActionsEnvSkyM interfaceActionsEnvSkyM;
     private final InterfaceActionsEnvShadowsM interfaceActionsEnvShadowsM;
+    private final InterfaceActionsEnvLightingM interfaceActionsEnvLightingM;
 
     public ActionsInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -26,6 +23,7 @@ public class ActionsInterfaceComponentM {
         this.interfaceActionsEnvFogM = new InterfaceActionsEnvFogM(mapEditorInterface);
         this.interfaceActionsEnvSkyM = new InterfaceActionsEnvSkyM(mapEditorInterface);
         this.interfaceActionsEnvShadowsM = new InterfaceActionsEnvShadowsM(mapEditorInterface);
+        this.interfaceActionsEnvLightingM = new InterfaceActionsEnvLightingM(mapEditorInterface);
         this.clear();
     }
 
@@ -51,7 +49,7 @@ public class ActionsInterfaceComponentM {
     public void actionsContent() {
         {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
-            if (ImGui.collapsingHeader("Environment", ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Global Settings", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.popStyleColor();
                 ImGui.indent();
                 if (ImGui.collapsingHeader("Fog")) {
@@ -67,6 +65,11 @@ public class ActionsInterfaceComponentM {
                 if (ImGui.collapsingHeader("Shadows")) {
                     ImGui.beginChild("##ShadowsContent", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvShadowsM.render();
+                    ImGui.endChild();
+                }
+                if (ImGui.collapsingHeader("Lighting")) {
+                    ImGui.beginChild("##LightingContent", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    this.interfaceActionsEnvLightingM.render();
                     ImGui.endChild();
                 }
                 ImGui.unindent();

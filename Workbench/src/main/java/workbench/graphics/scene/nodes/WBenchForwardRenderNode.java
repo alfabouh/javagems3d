@@ -17,10 +17,11 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
+import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.project.map.settings.MapProjectSettings;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchForwardRenderNode extends ForwardRenderNode {
@@ -32,7 +33,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
     public void onRender(FrameTicking frameTicking) {
         super.onRender(frameTicking);
 
-        if (GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN) {
+        if (WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN) {
             final WBenchWorld wBenchWorld = (WBenchWorld) this.getWorld();
             this.getOutColorBuffer().bindFBO();
             GL46.glEnable(GL46.GL_BLEND);

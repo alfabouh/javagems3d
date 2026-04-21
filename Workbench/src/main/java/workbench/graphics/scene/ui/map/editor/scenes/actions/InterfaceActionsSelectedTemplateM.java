@@ -134,7 +134,7 @@ public class InterfaceActionsSelectedTemplateM {
                 this.renderPreviewItem(selected);
                 ImGui.image(this.mapEditorInterface.getScenePreview().getTextureIDByIndex(0), availableForImage, availableForImage, 0.0f, 1.0f, 1.0f, 0.0f);
                 float[] distance = new float[]{this.getPreviewDistance()};
-                if (ImGui.sliderFloat("Zoom", distance, 0.0f, 10.0f)) {
+                if (ImGui.sliderFloat("Zoom", distance, -10.0f, 10.0f)) {
                     this.setPreviewDistance(distance[0]);
                 }
             } else {

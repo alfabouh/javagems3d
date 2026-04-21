@@ -53,7 +53,7 @@ public class TagInt extends TagItem {
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagIntTAG_" + currentSelected, trackingHelper)) {
                 int[] value = new int[]{tagInt.getValue()};
-                if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
+                if (ImGui.dragInt("##" + tagID.getNormalName(), value, 1, tagInt.getMin(), tagInt.getMax())) {
                     uiTrackingHelper.saveSnapshot();
                     tagInt.setValue(JGemsHelper.math().clamp(value[0], tagInt.getMin(), tagInt.getMax()));
                 }

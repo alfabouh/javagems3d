@@ -26,8 +26,17 @@ import org.lwjgl.opengl.GL46;
 import java.util.function.Consumer;
 
 public class JGemsShadowScene extends ShadowScene {
+    private int sunShadowMapsBasicResolution;
+    private int pointLightShadowMapsBasicResolution;
+
     public JGemsShadowScene(IEnvironment environment) {
         super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
+    }
+
+    @Override
+    protected void preInit() {
+        this.sunShadowMapsBasicResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
+        this.pointLightShadowMapsBasicResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
     }
 
     public static float qualityMultiplier() {
@@ -36,17 +45,33 @@ public class JGemsShadowScene extends ShadowScene {
     }
 
     @Override
-    protected @NotNull ShaderStorageBufferObject getIndirectSSBO() {
-        return JGemsResourceManager.globalShaderAssets.ShadowSceneIndirectBufferData;
+    protected @NotNull ShaderStorageBufferObject getSunIndirectSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainSceneIndirectBufferData;
     }
 
     @Override
-    protected @NotNull ShaderStorageBufferObject getPropertiesSSBO() {
-        return JGemsResourceManager.globalShaderAssets.ShadowScenePropertiesData;
+    protected @NotNull ShaderStorageBufferObject getSunPropertiesSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
     }
 
-    protected @NotNull Vector2i getShadowResolution() {
-        return new Vector2i((int) (JGemsConfig.SYSTEM.MAX_SHADOW_RES * JGemsShadowScene.qualityMultiplier()));
+    @Override
+    protected @NotNull ShaderStorageBufferObject getPointLightIndirectSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainSceneIndirectBufferData;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getPointLightPropertiesSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
+    }
+
+    @Override
+    protected @NotNull Vector2i getSunShadowResolution() {
+        return new Vector2i((int) (this.sunShadowMapsBasicResolution * JGemsShadowScene.qualityMultiplier()));
+    }
+
+    @Override
+    protected @NotNull Vector2i getPointLightShadowResolution() {
+        return new Vector2i((int) (this.pointLightShadowMapsBasicResolution * JGemsShadowScene.qualityMultiplier()));
     }
 
     @Override
@@ -57,6 +82,24 @@ public class JGemsShadowScene extends ShadowScene {
     @Override
     protected boolean shouldNotRenderShadows() {
         return !JGemsConfig.SYSTEM.USE_SHADOWS || JGemsConfig.DEBUG.FULL_BRIGHT || JGemsConfig.DEBUG.WIREFRAME_RENDERING;
+    }
+
+    public int getSunShadowMapsBasicResolution() {
+        return this.sunShadowMapsBasicResolution;
+    }
+
+    public JGemsShadowScene setSunShadowMapsBasicResolution(int sunShadowMapsBasicResolution) {
+        this.sunShadowMapsBasicResolution = sunShadowMapsBasicResolution;
+        return this;
+    }
+
+    public int getPointLightShadowMapsBasicResolution() {
+        return this.pointLightShadowMapsBasicResolution;
+    }
+
+    public JGemsShadowScene setPointLightShadowMapsBasicResolution(int pointLightShadowMapsBasicResolution) {
+        this.pointLightShadowMapsBasicResolution = pointLightShadowMapsBasicResolution;
+        return this;
     }
 
     protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {

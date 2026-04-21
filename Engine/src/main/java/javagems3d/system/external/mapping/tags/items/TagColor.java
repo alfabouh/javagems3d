@@ -54,13 +54,13 @@ public class TagColor extends TagItem {
             if (trackingHelper != null && currentSelected != null) {
                 if (colorMode == ColorMode.COLOR3) {
                     float[] colorArray = new float[]{color.x, color.y, color.z};
-                    if (ImGui.colorEdit3("##" + tagID.getDescription(), colorArray)) {
+                    if (ImGui.colorEdit3("##" + tagID.getNormalName(), colorArray)) {
                         uiTrackingHelper.saveSnapshot();
                         tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], color.w));
                     }
                 } else {
                     float[] colorArray = new float[]{color.x, color.y, color.z, color.w};
-                    if (ImGui.colorEdit4("##" + tagID.getDescription(), colorArray)) {
+                    if (ImGui.colorEdit4("##" + tagID.getNormalName(), colorArray)) {
                         uiTrackingHelper.saveSnapshot();
                         tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], colorArray[3]));
                     }

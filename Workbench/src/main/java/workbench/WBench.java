@@ -136,7 +136,6 @@ public final class WBench {
             Log.get().separator();
             JGemsCore.printSystemInfo();
             WBench.get().getResourceManager().initGlobalResources();
-
             WBench.get().getScreen().createScreenAndContext();
             WBench.get().getScreen().createObjects(WBench.get().getScreen().getWindow());
             WBench.get().getScreen().runRenderThread();

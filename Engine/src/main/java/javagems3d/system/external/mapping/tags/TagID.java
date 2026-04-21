@@ -7,33 +7,33 @@ import java.util.Objects;
 
 public final class TagID {
     private final String id;
-    private String description;
+    private String normalName;
     private String toolTip;
 
-    public TagID(@NotNull String id, @NotNull String description, @Nullable String toolTip) {
+    public TagID(@NotNull String id, @NotNull String normalName, @Nullable String toolTip) {
         this.id = id;
-        this.description = description;
+        this.normalName = normalName;
         this.toolTip = toolTip;
     }
 
-    public TagID(@NotNull String id, @NotNull String description) {
-        this(id, description, null);
+    public TagID(@NotNull String id, @NotNull String normalName) {
+        this(id, normalName, null);
     }
 
     public TagID(@NotNull String id) {
         this(id, "", null);
     }
 
-    public TagID(@NotNull TagID id, @NotNull String description, @Nullable String toolTip) {
-        this(id.getId(), description, toolTip);
+    public TagID(@NotNull TagID id, @NotNull String normalName, @Nullable String toolTip) {
+        this(id.getId(), normalName, toolTip);
     }
 
-    public TagID(@NotNull TagID id, @NotNull String description) {
-        this(id.getId(), description, id.getToolTip());
+    public TagID(@NotNull TagID id, @NotNull String normalName) {
+        this(id.getId(), normalName, id.getToolTip());
     }
 
     public TagID(@NotNull TagID id) {
-        this(id.getId(), id.getDescription(), id.getToolTip());
+        this(id.getId(), id.getNormalName(), id.getToolTip());
     }
 
     @Override
@@ -47,8 +47,8 @@ public final class TagID {
         return Objects.equals(this.id, tagID.id);
     }
 
-    public TagID setDescription(String description) {
-        this.description = description;
+    public TagID setNormalName(String normalName) {
+        this.normalName = normalName;
         return this;
     }
 
@@ -70,12 +70,12 @@ public final class TagID {
         return this.id;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getNormalName() {
+        return this.normalName;
     }
 
     public static class DEFAULT {
-        public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics State", "Determines the physical condition of the object. \nStatic=stationary \nDynamic=gravity affected");
+        public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics State", "(Def. Tag) Determines the physical condition of the object. \nStatic=stationary \nDynamic=gravity affected");
         public static final TagID MARKER_STRING_ID = new TagID("marker_string_id", "String ID", "Object's id");
 
         public static final TagID POSITION_X = new TagID("position_x", "Translate X");
@@ -105,6 +105,7 @@ public final class TagID {
         public static final TagID COLOR3 = new TagID("color3", "Color RGB");
         public static final TagID COLOR4 = new TagID("color4", "Color RGBA");
 
+        public static final TagID SHADOW_MAP = new TagID("shadow_map_toggle1", "Shadow Map", "(Def. Tag) Toggles shadow map on this light source. Warn! Engine supports only 3 point light shadow map rendered at once.");
         public static final TagID BRIGHTNESS = new TagID("brightness", "Brightness");
         public static final TagID OBJECT_LIST = new TagID("obj_list_selected", "Select Object");
 

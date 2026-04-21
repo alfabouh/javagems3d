@@ -19,7 +19,6 @@ import javagems3d.system.service.synchronizing.SyncManager;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class LightScene implements ILightScene {
     private final IEnvironment environment;
@@ -28,10 +27,17 @@ public abstract class LightScene implements ILightScene {
     private final ShaderStorageBufferObject sunBuffer;
     private final ShaderStorageBufferObject pointLightsBuffer;
 
+    private boolean bloom;
+    private float exposure;
+    private float gamma;
+
     public LightScene(@NotNull ShaderStorageBufferObject sunBuffer, @NotNull ShaderStorageBufferObject pointLightsBuffer, IEnvironment environment) {
         this.environment = environment;
         this.sunBuffer = sunBuffer;
         this.pointLightsBuffer = pointLightsBuffer;
+        this.setBloomEnabled(true);
+        this.setHdrExposure(JGemsConfig.SYSTEM.HDR_EXPOSURE_DEFAULT);
+        this.setHdrGamma(JGemsConfig.SYSTEM.HDR_GAMMA_DEFAULT);
         this.initCollections();
     }
 
@@ -66,10 +72,10 @@ public abstract class LightScene implements ILightScene {
     }
 
     @Override
-    public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
+    public void updateBuffers(MemoryStack stack, HashMap<PointLight, Integer> lightIntegerHashMap, IWorld world, Matrix4f viewMatrix) {
         this.getPointLights().forEach(e -> e.onUpdateWithEvent(world));
         this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
-        this.updatePointLightsBuffer(this.getPointLightsBuffer(), stack, viewMatrix);
+        this.updatePointLightsBuffer(lightIntegerHashMap, this.getPointLightsBuffer(), stack, viewMatrix);
     }
 
     public void updateSunBuffer(ShaderStorageBufferObject sunBuffer, MemoryStack stack, Matrix4f viewMatrix) {
@@ -88,12 +94,12 @@ public abstract class LightScene implements ILightScene {
         ShaderStorageBufferProgram.updateSubDataSSBO(sunBuffer, 0L, buffer);
     }
 
-    public void updatePointLightsBuffer(ShaderStorageBufferObject pointLightsBuffer, MemoryStack stack, Matrix4f viewMatrix) {
+    public void updatePointLightsBuffer(HashMap<PointLight, Integer> pointLightIdsHashMap, ShaderStorageBufferObject pointLightsBuffer, MemoryStack stack, Matrix4f viewMatrix) {
         if (JGemsConfig.DEBUG.DISABLE_POINT_LIGHTS) {
             this.clearPointLightsBuffer(stack);
             return;
         }
-        List<PointLight> pointLights = this.getPointLights().stream().filter(PointLight::isActive).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1.0f)).toList();
+        final List<PointLight> pointLights = this.getPointLights().stream().filter(PointLight::isActive).sorted(Comparator.comparing(e -> e.getBrightness() * -1.0f)).toList();
         final int sizeMainBuffer = JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE * (4);
         ByteBuffer buffer = stack.malloc(sizeMainBuffer);
         ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
@@ -116,7 +122,7 @@ public abstract class LightScene implements ILightScene {
             buffer.putFloat(pointLight.getLightColor().z);
             buffer.putFloat(pointLight.getBrightness());
 
-            buffer.putInt(pointLight.getAttachedShadowSceneId());
+            buffer.putInt(pointLightIdsHashMap.getOrDefault(pointLight, -1));
             buffer.putInt(0); //_padding000;
             buffer.putInt(0); //_padding0000;
             buffer.putInt(0); //_padding0000;
@@ -163,6 +169,30 @@ public abstract class LightScene implements ILightScene {
 
         ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, 0L, buffer);
         ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, sizeMainBuffer, buffer2);
+    }
+
+    public boolean isBloomEnabled() {
+        return this.bloom;
+    }
+
+    public void setBloomEnabled(boolean bloom) {
+        this.bloom = bloom;
+    }
+
+    public float getHdrExposure() {
+        return this.exposure;
+    }
+
+    public void setHdrExposure(float exposure) {
+        this.exposure = exposure;
+    }
+
+    public float getHdrGamma() {
+        return this.gamma;
+    }
+
+    public void setHdrGamma(float gamma) {
+        this.gamma = gamma;
     }
 
     public boolean containsPointLight(PointLight pointLight) {

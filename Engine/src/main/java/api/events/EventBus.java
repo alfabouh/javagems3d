@@ -10,6 +10,7 @@ import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -34,10 +35,7 @@ import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.controller.base.IController;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
-import javagems3d.system.external.mapping.data.items.FogData;
-import javagems3d.system.external.mapping.data.items.ShadowsData;
-import javagems3d.system.external.mapping.data.items.SkyData;
-import javagems3d.system.external.mapping.data.items.SunData;
+import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.service.collections.Pair;
 
@@ -620,6 +618,24 @@ public abstract class EventBus {
 
         public IShadowScene getShadowScene() { return this.shadowScene; }
         public ShadowsData getShadowsData() { return this.shadowsData; }
+    }
+
+    public static class MapLightingSetupEvent extends Cancellable implements IEvent {
+        private final ILightScene lightScene;
+        private final LightingData shadowsData;
+
+        public MapLightingSetupEvent(ILightScene lightScene, LightingData shadowsData) {
+            this.lightScene = lightScene;
+            this.shadowsData = shadowsData;
+        }
+
+        public ILightScene getLightScene() {
+            return this.lightScene;
+        }
+
+        public LightingData getShadowsData() {
+            return this.shadowsData;
+        }
     }
 
     public static class MapProcessingEvent extends Cancellable implements IEvent {

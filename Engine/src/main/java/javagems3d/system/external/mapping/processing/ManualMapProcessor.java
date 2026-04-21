@@ -4,6 +4,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -74,6 +75,11 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void postProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
+        }
+
+        @Override
+        public void onSetupLighting(ILightScene lightScene, IEnvironment environment) {
+
         }
 
         @Override

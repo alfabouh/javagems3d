@@ -6,7 +6,6 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.mapping.tags.instances.JSTag;
 import api.scripting.coding.env.internal.util.mapping.tags.properties.JSTagItem;
-import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.items.TagItem;
@@ -75,7 +74,7 @@ public class JSTagsContainer {
 
     @JSCodingFunctionOrMethod(description = "Get tag item.", paramNames = {"tagID"})
     public JSTagItem getTagItem(JSTagID tagID) {
-        TagItem item = this.container.getTagItem(tagID.getJavaTagID());
+        TagItem item = this.container.getTagUnSafeItem(tagID.getJavaTagID());
         if (item == null) return null;
         return new JSTagItem(item);
     }

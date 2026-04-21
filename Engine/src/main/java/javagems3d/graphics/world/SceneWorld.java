@@ -17,6 +17,7 @@ import api.system.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
+import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
@@ -112,6 +113,7 @@ public final class SceneWorld implements IRenderWorld {
             this.getParticlesEmitter().destroy(this);
         }
 
+        this.getEnvironment().destroyEnvironment();
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
 

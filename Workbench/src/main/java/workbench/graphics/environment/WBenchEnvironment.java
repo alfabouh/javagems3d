@@ -2,10 +2,12 @@ package workbench.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import workbench.graphics.environment.components.WBenchFogScene;
 import workbench.graphics.environment.components.WBenchLightScene;
@@ -13,6 +15,8 @@ import workbench.graphics.environment.components.WBenchShadowScene;
 import workbench.graphics.environment.components.WBenchSkyBox;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
+
+import java.util.HashMap;
 
 public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBenchEnvironment.WBenchEnvironmentSnapshotData> {
     private final WBenchShadowScene shadowScene;
@@ -43,16 +47,17 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
 
     @Override
     public void updateEnvironment(ICamera camera) {
+        final HashMap<PointLight, Integer> lightIdxHashMap = this.getShadowScene().getSortedPointLightMapReadyToBind(camera.getCamPosition(), this.getLightScene().getPointLights());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.updateLightsUBO(this.getWorld(), stack);
+            this.updateLightsUBO(this.getWorld(), lightIdxHashMap, stack);
             this.getFogScene().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), stack);
         }
     }
 
-    protected void updateLightsUBO(IWorld world, MemoryStack stack) {
-        this.getLightScene().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+    protected void updateLightsUBO(IWorld world, HashMap<PointLight, Integer> lightIdxHashMap, MemoryStack stack) {
+        this.getLightScene().updateBuffers(stack, lightIdxHashMap, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
     @Override

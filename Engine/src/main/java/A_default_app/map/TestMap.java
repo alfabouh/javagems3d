@@ -2,6 +2,7 @@ package A_default_app.map;
 
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -104,6 +105,11 @@ public class TestMap extends ManualMapProcessor {
     @Override
     public void postProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
         JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), new Vector3f(), new Vector3f());
+    }
+
+    @Override
+    public void onSetupLighting(ILightScene lightScene, IEnvironment environment) {
+
     }
 
     @Override

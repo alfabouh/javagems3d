@@ -3,12 +3,13 @@ package workbench.graphics.environment.components;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import org.joml.Vector3f;
-import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
+import workbench.WBench;
+import workbench.project.map.settings.MapProjectSettings;
 
 public class WBenchFogScene extends JGemsFogScene implements ISnapshotCompatible<WBenchFogScene.WBenchFogSceneSnapshotData> {
     @Override
     public float getFogDensity() {
-        return GlobalWBenchSceneRenderingVars.VIEW_FOG ? super.getFogDensity() : 0.0f;
+        return WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG ? super.getFogDensity() : 0.0f;
     }
 
     @Override

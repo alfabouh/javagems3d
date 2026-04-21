@@ -2,6 +2,7 @@ package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiHoveredFlags;
 import imgui.flag.ImGuiSelectableFlags;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.objects.SceneObject;
@@ -80,8 +81,16 @@ public class ItemsInterfaceComponentM {
                         this.getEditorInterface().getSelectedObjectsManager().setCurrentSelectedObject(true, wBenchObject);
                         this.getEditorInterface().getActionsContent().resetObjectPreview();
                     } else {
-                        this.getEditorInterface().getSelectedObjectsManager().setCurrentSelectedObject(true, null);
+                        this.getEditorInterface().getSelectedObjectsManager().setCurrentSelectedObject(true, wBenchObject);
                     }
+                }
+            }
+            if (ImGui.isItemHovered(ImGuiHoveredFlags.AllowWhenBlockedByPopup) && ImGui.isMouseClicked(1)) {
+                if (!flag) {
+                    if (!ProjectUIUtils.ctrl()) {
+                        this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().clear();
+                    }
+                    this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().add(wBenchObject);
                 }
             }
             if (this.getEditorInterface().getSelectedObjectsManager().getCurrentSelectedObjects().contains(wBenchObject)) {
@@ -90,7 +99,6 @@ public class ItemsInterfaceComponentM {
                 }
                 this.scrollToSelection = false;
             }
-            this.rightKeyContext(displayText, true);
             if (ImGui.isItemHovered() && !displayText.equals(fullText)) {
                 ImGui.setTooltip(fullText);
             }
@@ -108,9 +116,9 @@ public class ItemsInterfaceComponentM {
             //        ImGui.popStyleColor();
             //    }
             //}
-            if (ImGui.isItemHovered()) {
-                ImGui.setTooltip("Wire-Rendering. id: " + wBenchObject.getListID());
-            }
+          //  if (ImGui.isItemHovered()) {
+          //      ImGui.setTooltip("Wire-Rendering. id: " + wBenchObject.getListID());
+          //  }
             ImGui.sameLine();
             if (ImGui.button("X")) {
                 this.mapEditorInterface.getSelectedObjectsManager().deleteObject(true, wBenchObject);
@@ -120,7 +128,7 @@ public class ItemsInterfaceComponentM {
             }
             ImGui.sameLine();
             if (ImGui.button("C")) {
-                cloneAll = true;
+                ItemsInterfaceComponentM.cloneSelected(this.getEditorInterface(), wBenchObject);
             }
             if (ImGui.isItemHovered()) {
                 ImGui.setTooltip("Clone. id: " + wBenchObject.getListID());
@@ -191,6 +199,8 @@ public class ItemsInterfaceComponentM {
         boolean flag1 = false;
         boolean flag2 = false;
         if (common ? ImGui.beginPopupContextItem(id) : ImGui.beginPopup(id)) {
+            ImGui.bulletText("Selected (" + this.mapEditorInterface.getSelectedObjectsManager().getCurrentSelectedObjects().size() + ")");
+            ImGui.spacing();
             if (ImGui.menuItem("Remove")) {
                 this.mapEditorInterface.getSelectedObjectsManager().deleteSelected();
             }
@@ -292,7 +302,7 @@ public class ItemsInterfaceComponentM {
 
         if (cullingAABB != null) {
             Vector3f posToCopy = cloneObj.getPosition();
-            posToCopy.y += (cullingAABB.getAabbMax().y - cullingAABB.getAabbMin().y) * cloneObj.getScaling().y+ 0.5f;
+            //posToCopy.y += (cullingAABB.getAabbMax().y - cullingAABB.getAabbMin().y) * cloneObj.getScaling().y+ 0.5f;
             cloneObj.setPosition(posToCopy);
             mapEditorInterface.addObjectInWorld(cloneObj);
             mapEditorInterface.getSelectedObjectsManager().addObjectInSelection(false, cloneObj);

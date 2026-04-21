@@ -17,6 +17,7 @@ import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
@@ -97,6 +98,7 @@ public abstract class IndirectObjectsRenderer {
             ShaderStorageBufferProgram.updateSubDataSSBO(this.getPropertiesSSBO(), 0L, properties);
             MemoryUtil.memFree(properties);
         }
+        GL46.glMemoryBarrier(GL46.GL_SHADER_STORAGE_BARRIER_BIT | GL46.GL_COMMAND_BARRIER_BIT);
     }
 
     protected void passBuffersInSSBO(ShaderStorageBufferObject shaderStorageBufferObject, Buffer... buffers) {

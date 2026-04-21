@@ -53,7 +53,7 @@ public class TagFloat extends TagItem {
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagFloatTAG_" + currentSelected, trackingHelper)) {
                 float[] value = new float[]{tagFloat.getValue()};
-                if (ImGui.dragFloat("##" + tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
+                if (ImGui.dragFloat("##" + tagID.getNormalName(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
                     uiTrackingHelper.saveSnapshot();
                     tagFloat.setValue(JGemsHelper.math().clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
                 }

@@ -74,10 +74,6 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
         this.getFxaaRenderProcessor().createResources();
     }
 
-    public abstract @NotNull JGemsShaderManager getBlurringShader();
-    public abstract @NotNull JGemsShaderManager getHDRShader();
-    public abstract @NotNull JGemsShaderManager getFXAAShader();
-
     @Override
     public void destroyResources() {
         if (this.getOutColorBuffer() != null) {
@@ -88,6 +84,10 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
         this.getHdrRenderProcessor().destroyResources();
         this.getFxaaRenderProcessor().destroyResources();
     }
+
+    public abstract @NotNull JGemsShaderManager getBlurringShader();
+    public abstract @NotNull JGemsShaderManager getHDRShader();
+    public abstract @NotNull JGemsShaderManager getFXAAShader();
 
     public FXAARenderProcessor getFxaaRenderProcessor() {
         return this.fxaaRenderProcessor;

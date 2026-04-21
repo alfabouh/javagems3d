@@ -40,8 +40,8 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         JGemsShaderManager hdr = this.getHdrShader();
         hdr.beginShading();
-        hdr.performUniform(new UniformString(DefaultUniformDefinitions.EXPOSURE), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_EXPOSURE));
-        hdr.performUniform(new UniformString(DefaultUniformDefinitions.GAMMA), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_GAMMA));
+        hdr.performUniform(new UniformString(DefaultUniformDefinitions.EXPOSURE), UniformFunctions.FLOAT(this.getWorld().getEnvironment().getLightScene().getHdrExposure()));
+        hdr.performUniform(new UniformString(DefaultUniformDefinitions.GAMMA), UniformFunctions.FLOAT(this.getWorld().getEnvironment().getLightScene().getHdrGamma()));
         hdr.performUniform(new UniformString(DefaultUniformDefinitions.USE_HDR), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_HDR && this.isUseHDR()));
         hdr.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getInColor().getTextureByIndex(0));
         hdr.performUniformTexture(new UniformString(DefaultUniformDefinitions.BLOOM_MAP), this.getInBloomColor().getTextureByIndex(0));

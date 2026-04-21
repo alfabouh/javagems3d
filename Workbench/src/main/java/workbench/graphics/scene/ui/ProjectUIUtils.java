@@ -4,6 +4,8 @@ import imgui.ImGui;
 import logger.managers.LoggingManager;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Arrays;
+
 public abstract class ProjectUIUtils {
     public static boolean ctrlSPress() {
         return ImGui.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && ImGui.isKeyPressed(GLFW.GLFW_KEY_S);
@@ -39,19 +41,5 @@ public abstract class ProjectUIUtils {
 
     public static boolean ctrl() {
         return ImGui.getIO().getKeyCtrl();
-    }
-
-    public static void consoleContent() {
-        String[] textLines = LoggingManager.consoleText().split("\n");
-        for (String s : textLines) {
-            if (s.isEmpty()) {
-                continue;
-            }
-            ImGui.textWrapped(s);
-        }
-        if (LoggingManager.markConsoleDirty) {
-            ImGui.setScrollHereY(1.0f);
-            LoggingManager.markConsoleDirty = false;
-        }
     }
 }

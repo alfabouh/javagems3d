@@ -8,6 +8,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -31,9 +32,9 @@ import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.editor.*;
-import workbench.graphics.scene.ui.map.editor.utils.GlobalWBenchSceneRenderingVars;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.graphics.screen.WBenchScreen;
+import workbench.project.map.settings.MapProjectSettings;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,6 +124,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Map Project")) {
             if (ImGui.menuItem("Run Map InGame")) {
+                WBench.get().getMapProjectManager().saveMapProject(true);
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
@@ -150,49 +152,54 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             }
             ImGui.endMenu();
         }
-        JGemsConfig.DEBUG.WIREFRAME_RENDERING = GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING;
-        JGemsConfig.DEBUG.FULL_BRIGHT = GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
+        JGemsConfig.DEBUG.WIREFRAME_RENDERING = WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING;
+        JGemsConfig.DEBUG.FULL_BRIGHT = WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
-            if (ImGui.checkbox("Fog", GlobalWBenchSceneRenderingVars.VIEW_FOG)) {
+            if (ImGui.checkbox("Fog", WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.VIEW_FOG = !GlobalWBenchSceneRenderingVars.VIEW_FOG;
+                WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG = !WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG;
             }
-            if (ImGui.checkbox("Full Bright", GlobalWBenchSceneRenderingVars.FULL_BRIGHT)) {
+            if (ImGui.checkbox("Full Bright", WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.FULL_BRIGHT = !GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
+                WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT = !WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT;
             }
-            if (ImGui.checkbox("Shadows", GlobalWBenchSceneRenderingVars.VIEW_SHADOWS)) {
+            if (ImGui.checkbox("Shadows", WBench.get().getMapProjectManager().mapProjectSettings.VIEW_SHADOWS)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.VIEW_SHADOWS = !GlobalWBenchSceneRenderingVars.VIEW_SHADOWS;
+                WBench.get().getMapProjectManager().mapProjectSettings.VIEW_SHADOWS = !WBench.get().getMapProjectManager().mapProjectSettings.VIEW_SHADOWS;
             }
-            if (ImGui.checkbox("Chess Terrain", GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN)) {
+            if (ImGui.checkbox("Chess Terrain", WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN = !GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
+                WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN = !WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN;
             }
-            if (ImGui.checkbox("WireFrame Rendering", GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING)) {
+            if (ImGui.checkbox("WireFrame Rendering", WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING = !GlobalWBenchSceneRenderingVars.WIREFRAME_RENDERING;
+                WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING = !WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING;
             }
-            if (ImGui.checkbox("HDR", GlobalWBenchSceneRenderingVars.VIEW_HDR)) {
+            if (ImGui.checkbox("HDR", WBench.get().getMapProjectManager().mapProjectSettings.VIEW_HDR)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.VIEW_HDR = !GlobalWBenchSceneRenderingVars.VIEW_HDR;
+                WBench.get().getMapProjectManager().mapProjectSettings.VIEW_HDR = !WBench.get().getMapProjectManager().mapProjectSettings.VIEW_HDR;
             }
-            if (ImGui.checkbox("Animations", GlobalWBenchSceneRenderingVars.ANIMATIONS)) {
+            if (ImGui.checkbox("Animations", WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
-                GlobalWBenchSceneRenderingVars.ANIMATIONS = !GlobalWBenchSceneRenderingVars.ANIMATIONS;
+                WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS = !WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS;
             }
             ImGui.endMenu();
         }
         if (ImGui.beginMenu("Controls")) {
             WBenchBindingManager wBenchBindingManager = WBench.get().getBindingManager();
-            float camSpeedRaw = WBench.get().getSettings().getCamSpeed();
+            float camSpeedRaw = WBench.get().getSettings().getCamSens();
             float min = 0.0001f;
             float max = 0.0025f;
-            float[] camSpeedPercent = new float[] { (camSpeedRaw / max) * 100.0f };
+            float[] camSensPercent = new float[] { (camSpeedRaw / max) * 100.0f };
+            float[] camSpeed = new float[] { WBench.get().getSettings().getCamSpeed() };
 
-            if (ImGui.sliderFloat("Camera Sensitivity", camSpeedPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
-                float newCamSpeed = JGemsHelper.math().clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
-                WBench.get().getSettings().setCamSpeed(newCamSpeed);
+            if (ImGui.sliderFloat("Camera Sensitivity", camSensPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
+                float newCamSens = JGemsHelper.math().clamp((camSensPercent[0] / 100.0f) * max, min, max);
+                WBench.get().getSettings().setCamSens(newCamSens);
+            }
+
+            if (ImGui.dragFloat("Camera Speed", camSpeed, 0.1f, 0.1f, 30.0f)) {
+                WBench.get().getSettings().setCamSpeed(camSpeed[0]);
             }
 
             if (ImGui.treeNode("Keys")) {
@@ -279,6 +286,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             ImGui.beginChild("##ItemsChild", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 54, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.getItemsComponent().itemsContent();
             ImGui.endChild();
+            this.getItemsComponent().rightKeyContext("context_obj_from_menu", true);
         }
         ImGui.end();
 
@@ -324,7 +332,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
         ImGui.setWindowPos(sceneWindowOffset, windowSize.y - consoleWindowSizeY);
-        ProjectUIUtils.consoleContent();
+        DearUIGameInterface.consoleContent();
         ImGui.end();
 
         ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
@@ -451,12 +459,13 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         this.selectedObjectsManager.fixSnapshot(mapEditorInterfaceSnapshotData.selectedObjectsManageSnapshot);
         {
             JGemsConfig.DEBUG.SHOW_CASCADES = mapEditorInterfaceSnapshotData.globalVars.SHOW_CASCADES;
-            GlobalWBenchSceneRenderingVars.VIEW_FOG = mapEditorInterfaceSnapshotData.globalVars.VIEW_FOG;
-            GlobalWBenchSceneRenderingVars.FULL_BRIGHT = mapEditorInterfaceSnapshotData.globalVars.FULL_BRIGHT;
-            GlobalWBenchSceneRenderingVars.VIEW_SHADOWS = mapEditorInterfaceSnapshotData.globalVars.VIEW_SHADOWS;
-            GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN = mapEditorInterfaceSnapshotData.globalVars.VIEW_CHESS_TERRAIN;
-            GlobalWBenchSceneRenderingVars.VIEW_HDR = mapEditorInterfaceSnapshotData.globalVars.VIEW_HDR;
-            GlobalWBenchSceneRenderingVars.ANIMATIONS = mapEditorInterfaceSnapshotData.globalVars.ANIMATIONS;
+            WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG = mapEditorInterfaceSnapshotData.globalVars.VIEW_FOG;
+            WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT = mapEditorInterfaceSnapshotData.globalVars.FULL_BRIGHT;
+            WBench.get().getMapProjectManager().mapProjectSettings.VIEW_SHADOWS = mapEditorInterfaceSnapshotData.globalVars.VIEW_SHADOWS;
+            WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN = mapEditorInterfaceSnapshotData.globalVars.VIEW_CHESS_TERRAIN;
+            WBench.get().getMapProjectManager().mapProjectSettings.VIEW_HDR = mapEditorInterfaceSnapshotData.globalVars.VIEW_HDR;
+            WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS = mapEditorInterfaceSnapshotData.globalVars.ANIMATIONS;
+            WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING = mapEditorInterfaceSnapshotData.globalVars.WIREFRAME_RENDERING;
         }
         this.getItemsComponent().scrollToSelection();
     }
@@ -476,12 +485,13 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
         public static class GlobalVars {
             public final boolean SHOW_CASCADES = JGemsConfig.DEBUG.SHOW_CASCADES;
-            public final boolean VIEW_FOG = GlobalWBenchSceneRenderingVars.VIEW_FOG;
-            public final boolean FULL_BRIGHT = GlobalWBenchSceneRenderingVars.FULL_BRIGHT;
-            public final boolean VIEW_SHADOWS = GlobalWBenchSceneRenderingVars.VIEW_SHADOWS;
-            public final boolean VIEW_CHESS_TERRAIN = GlobalWBenchSceneRenderingVars.VIEW_CHESS_TERRAIN;
-            public final boolean VIEW_HDR = GlobalWBenchSceneRenderingVars.VIEW_HDR;
-            public final boolean ANIMATIONS = GlobalWBenchSceneRenderingVars.ANIMATIONS;
+            public final boolean VIEW_FOG = WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG;
+            public final boolean FULL_BRIGHT = WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT;
+            public final boolean VIEW_SHADOWS = WBench.get().getMapProjectManager().mapProjectSettings.VIEW_SHADOWS;
+            public final boolean VIEW_CHESS_TERRAIN = WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN;
+            public final boolean VIEW_HDR = WBench.get().getMapProjectManager().mapProjectSettings.VIEW_HDR;
+            public final boolean ANIMATIONS = WBench.get().getMapProjectManager().mapProjectSettings.ANIMATIONS;
+            public final boolean WIREFRAME_RENDERING = WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING;
         }
     }
 
