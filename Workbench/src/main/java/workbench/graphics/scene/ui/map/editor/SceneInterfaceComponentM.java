@@ -237,13 +237,13 @@ public class SceneInterfaceComponentM {
                         }
                     }
 
-                    Vector3f rotVec = wBenchObject.getModel().getPose().getRotation();
-                    Matrix4f R = new Matrix4f().identity().rotateXYZ(rotVec.x, rotVec.y, rotVec.z);
-                    Matrix4f R_inv = new Matrix4f(R).invert();
-                    Matrix4f S = new Matrix4f().identity().scale(newScale);
-                    Matrix4f finalMat = new Matrix4f(R).mul(S).mul(R_inv);
-                    Vector3f resultScale = finalMat.getScale(new Vector3f());
-                    wBenchObject.setScaling(resultScale);
+                    //Vector3f rotVec = wBenchObject.getModel().getPose().getRotation();
+                    //Matrix4f R = new Matrix4f().identity().rotateXYZ(rotVec.x, rotVec.y, rotVec.z);
+                    //Matrix4f R_inv = new Matrix4f(R).invert();
+                    //Matrix4f S = new Matrix4f().identity().scale(newScale);
+                    //Matrix4f finalMat = new Matrix4f(R).mul(S).mul(R_inv);
+                    //Vector3f resultScale = finalMat.getScale(new Vector3f());
+                    wBenchObject.setScaling(newScale);
                 } else {
                     SceneInterfaceComponentM.scalingFlag = false;
                 }
