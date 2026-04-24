@@ -56,7 +56,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         this.getPhysicsRigidBody().setCollideWithGroups(CollisionType.UNIVERSAL.getMask() & ~i);
     }
 
-    public JGemsBody setCanBeDestroyed(boolean flag) {
+    public JGemsBody setCanBeDeleted(boolean flag) {
         this.canBeDestroyed = flag;
         return this;
     }
@@ -105,9 +105,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         this.getPhysicsRigidBody().setContactDamping(0.0f);
         this.getPhysicsRigidBody().setUserObject(this);
         this.setCollisionFilter(CollisionType.UNIVERSAL);
-
         this.postInit(dynamicsSystem, this.getPhysicsRigidBody());
-
         DynamicsUtils.transformRigidBody(this.getPhysicsRigidBody(), this.startPosition, this.startRotation, this.startScaling);
     }
 
@@ -236,6 +234,11 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         public void setPhysicsScale(com.jme3.math.Vector3f newScale) {
             super.setPhysicsScale(new com.jme3.math.Vector3f(Math.max(newScale.x, 0.0f), Math.max(newScale.y, 0.0f), Math.max(newScale.z, 0.0f)));
             this.reCalcMass();
+        }
+
+        @Override
+        public void setMass(float mass) {
+            super.setMass(mass);
         }
 
         public void reCalcMass() {

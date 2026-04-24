@@ -140,7 +140,7 @@ public class JSPhysicalEntity extends JSWorldItem {
 
     @JSCodingFunctionOrMethod(description = "Set destroyable flag", paramNames = {"flag"})
     public void setCanBeDestroyed(boolean flag) {
-        this.body.setCanBeDestroyed(flag);
+        this.body.setCanBeDeleted(flag);
     }
 
     @JSCodingFunctionOrMethod(description = "Get object id")

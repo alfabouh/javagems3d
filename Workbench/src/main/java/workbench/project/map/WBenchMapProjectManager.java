@@ -368,7 +368,7 @@ public final class WBenchMapProjectManager {
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(skyBoxTemplate == null ? "" : skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
         final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits(), shadowScene.getSunLightShadow().isEnabled(), shadowScene.sunShadowMapResolution, shadowScene.pointLightShadowMapResolution);
-        final LightingData lightingData = new LightingData(lightScene.isBloomEnabled(), lightScene.getHdrExposure(), lightScene.getHdrGamma());
+        final LightingData lightingData = new LightingData(lightScene.isBloomEnabled(), lightScene.getHdrExposure(), lightScene.getHdrGamma(), lightScene.getSsaoRange(),  lightScene.getSsaoBias(), lightScene.getSsaoRadius());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {

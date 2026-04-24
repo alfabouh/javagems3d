@@ -19,17 +19,16 @@ import java.util.stream.IntStream;
 public class MeshCollisionData {
     public static final Map<@NotNull MeshStructure3D<?>, MeshCollisionData> GLOBAL_CACHE = new HashMap<>();
 
-    private final CollisionShape staticCollision;
-    private final CollisionShape dynamicCollision;
-    private final List<CollisionShape> animationAABBShapes;
+    private final List<IndexedMesh> indexedMeshList;
+    private final Pair<float[], int[]> dataPair;
+    private final Fabric fabric;
+    private final MeshStructure3D<?> meshStructure;
 
     public MeshCollisionData(@NotNull MeshStructure3D<?> meshStructure, @NotNull Fabric fabric) {
-        List<IndexedMesh> indexedMeshList = new ArrayList<>();
-        Pair<float[], int[]> pair = this.pickData(meshStructure, indexedMeshList);
-
-        this.animationAABBShapes = fabric.createShapedForAnimatedObject(meshStructure, pair.first(), pair.second(), indexedMeshList);
-        this.staticCollision = fabric.createStaticShape(meshStructure, pair.first(), pair.second(), indexedMeshList);
-        this.dynamicCollision = fabric.createDynamicShape(meshStructure, pair.first(), pair.second(), indexedMeshList);
+        this.indexedMeshList = new ArrayList<>();
+        this.dataPair = this.pickData(meshStructure, indexedMeshList);
+        this.meshStructure = meshStructure;
+        this.fabric = fabric;
     }
 
     /*
@@ -140,15 +139,15 @@ public class MeshCollisionData {
     //}
 
     public List<CollisionShape> getAnimationAABBShapes() {
-        return this.animationAABBShapes;
+        return this.fabric.createShapedForAnimatedObject(this.meshStructure, this.dataPair.first(), this.dataPair.second(), this.indexedMeshList);
     }
 
     public CollisionShape getStaticCollision() {
-        return this.staticCollision;
+        return this.fabric.createStaticShape(this.meshStructure, this.dataPair.first(), this.dataPair.second(), this.indexedMeshList);
     }
 
     public CollisionShape getDynamicCollision() {
-        return this.dynamicCollision;
+        return this.fabric.createDynamicShape(this.meshStructure, this.dataPair.first(), this.dataPair.second(), this.indexedMeshList);
     }
 
     public static class DefaultFabric implements Fabric {
@@ -159,11 +158,11 @@ public class MeshCollisionData {
 
         @Override
         public CollisionShape createDynamicShape(MeshStructure3D<?> meshStructure, float[] positions, int[] indexes, List<IndexedMesh> indexedMeshList) {
-            if (positions.length / 3 <= 128) {
+            if (positions.length / 3 <= 512) {
                 return new HullCollisionShape(positions);
             } else {
                 final CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                return this.createCompoundShape(cullingAABB);
+                return this.createSimpleShape(cullingAABB);
             }
         }
 
@@ -172,20 +171,23 @@ public class MeshCollisionData {
             List<CollisionShape> collisionShapes = new ArrayList<>();
             for (Animation animation : meshStructure.getAnimationsList()) {
                 CullingAABB cullingAABB = meshStructure.getMeshAABBDataForAnimation(animation).getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                collisionShapes.add(this.createCompoundShape(cullingAABB));
+                collisionShapes.add(this.createSimpleShape(cullingAABB));
             }
             return collisionShapes;
         }
 
-        protected CompoundCollisionShape createCompoundShape(CullingAABB cullingAABB) {
-            float xExtent = cullingAABB.getAabbMax().x - cullingAABB.getAabbMin().x;
-            float yExtent = cullingAABB.getAabbMax().y - cullingAABB.getAabbMin().y;
-            float zExtent = cullingAABB.getAabbMax().z - cullingAABB.getAabbMin().z;
-
-            final CompoundCollisionShape compoundCollisionShape = new CompoundCollisionShape();
-            CollisionShape collisionShape = new BoxCollisionShape(2f);
-            compoundCollisionShape.addChildShape(collisionShape, new com.jme3.math.Vector3f(0.0f, yExtent / 2.0f, 0.0f));
-            return compoundCollisionShape;
+        protected CollisionShape createSimpleShape(CullingAABB cullingAABB) {
+            Vector3f min = cullingAABB.getAabbMin();
+            Vector3f max = cullingAABB.getAabbMax();
+            float xExtent = (max.x - min.x) * 0.5f;
+            float yExtent = (max.y - min.y) * 0.5f;
+            float zExtent = (max.z - min.z) * 0.5f;
+            Vector3f center = new Vector3f((max.x + min.x) * 0.5f, (max.y + min.y) * 0.5f, (max.z + min.z) * 0.5f);
+            CompoundCollisionShape compound = new CompoundCollisionShape();
+            BoxCollisionShape box = new BoxCollisionShape(xExtent, yExtent, zExtent);
+            compound.addChildShape(box, DynamicsUtils.convertV3F_JME(center));
+            compound.translate(DynamicsUtils.convertV3F_JME(center));
+            return new BoxCollisionShape(xExtent, yExtent, zExtent);
         }
     }
 

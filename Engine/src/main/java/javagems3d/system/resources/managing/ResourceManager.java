@@ -1,7 +1,6 @@
 package javagems3d.system.resources.managing;
 
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -36,7 +35,6 @@ import java.nio.LongBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
     private static ITexture2DProgram DEFAULT_TEXTURE = null;
@@ -227,10 +225,11 @@ public abstract class ResourceManager {
     }
 
     public static void initDefaults() {
+        final int grid = 16;
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(16 * 3);
-            for (int y = 0; y < 4; y++) {
-                for (int x = 0; x < 4; x++) {
+            FloatBuffer buffer = stack.mallocFloat((grid * grid) * 3);
+            for (int y = 0; y < grid; y++) {
+                for (int x = 0; x < grid; x++) {
                     boolean isPink = ((x ^ y) & 1) == 0;
                     buffer.put((isPink ? 1.0f : 0.0f));
                     buffer.put(0.0f);
@@ -240,7 +239,7 @@ public abstract class ResourceManager {
             buffer.flip();
             ResourceManager.DEFAULT_TEXTURE = new Texture2DProgram(true);
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
-            texture2DProgram.createTexture(new Vector2i(4, 4), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
+            texture2DProgram.createTexture(new Vector2i(grid, grid), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }
         ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
         ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
@@ -249,8 +248,8 @@ public abstract class ResourceManager {
 
     public static void CREATE_PHYS_FOR_DEFAULT_MODELS() {
         if (DynamicsSystem.VALID) {
-            JGemsUtils.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHBUFFER, null);
-            JGemsUtils.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHGROUP, null);
+            JGemsHelper.JGemsResources.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHBUFFER, null);
+            JGemsHelper.JGemsResources.createMeshCollisionData(ResourceManager.DEFAULT_CUBE_MESHGROUP, null);
         }
     }
 

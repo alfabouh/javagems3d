@@ -8,7 +8,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.HashMap;
 
-public interface ILightScene extends IHasHDR {
+public interface ILightScene extends IHasHDR, IHasSSAO {
     void updateBuffers(MemoryStack stack, HashMap<PointLight, Integer> lightIntegerHashMap, IWorld world, Matrix4f viewMatrix);
     void addLight(Light light);
     void removeLight(Light light);

@@ -20,9 +20,12 @@ import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefiniti
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.args.ArbitraryArguments;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
 import org.lwjgl.opengl.GL46;
+
+import java.util.function.Consumer;
 
 public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
     public DefaultDirectShadowRenderFabric() {
@@ -34,6 +37,10 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         if (renderedItem instanceof IModeled modeled) {
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
+                Consumer<JGemsShaderManager> functionToHandleUniforms = metaData.getterFunc().getObject(0);
+                if (functionToHandleUniforms != null) {
+                    functionToHandleUniforms.accept(shaderManager);
+                }
                 shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
                 this.renderModelForShadow(modeled, shaderManager, model);
             }

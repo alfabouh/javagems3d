@@ -38,7 +38,7 @@ public class TagCheckBoolean extends TagItem {
     public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
         TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
         boolean value = tagCheckBoolean.isFlag();
-        if (ImGui.checkbox("Flag ##" + tagID.getId(), value)) {
+        if (ImGui.checkbox("True/False ##" + tagID.getId(), value)) {
             if (trackingHelper != null) {
                 trackingHelper.get().takeSnapshot();
             }

@@ -33,6 +33,10 @@ public class EntityRenderData {
         this(EntityRenderData.DEFAULT_OBJECT_CONSTRUCTOR, renderAttributes, meshStructure);
     }
 
+    public EntityRenderData(@NotNull EntityRenderData entityRenderData, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
+        this(entityRenderData.getSceneObjectConstructor(), renderAttributes, meshStructure);
+    }
+
     public EntityRenderData(@NotNull ISceneEntityConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
         this.sceneObjectConstructor = sceneObjectConstructor;
         this.entityModelConstructor = null;

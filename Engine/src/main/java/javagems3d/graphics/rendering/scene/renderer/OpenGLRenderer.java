@@ -57,7 +57,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
         return this.window;
     }
 
-    public static Map<JGemsShaderManager, List<SceneObject>> groupObjectsFromShaders(Collection<SceneObject> collection, Pipeline pipeline) {
+    public static Map<JGemsShaderManager, List<SceneObject>> groupObjectsByShaders(Collection<SceneObject> collection, Pipeline pipeline) {
         return collection.stream().filter(Objects::nonNull).filter(e -> e.getRenderTable().validate(pipeline)).collect(Collectors.groupingBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline)).getShaderManager()));
     }
 

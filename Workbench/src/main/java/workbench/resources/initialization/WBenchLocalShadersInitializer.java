@@ -9,6 +9,7 @@ import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -41,6 +42,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public WBenchShaderManager simple_flat;
     public WBenchShaderManager blur5;
     public WBenchShaderManager hdr;
+    public WBenchShaderManager world_ssao;
+    public JGemsShaderManager blur_ssao;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
     //public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
@@ -121,6 +124,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
         this.gui_image = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"), ISource.Source.INSIDE_JAR));
         this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"), ISource.Source.INSIDE_JAR));
+        this.blur_ssao = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur_ssao"), ISource.Source.INSIDE_JAR));
         this.skybox = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/skybox"), ISource.Source.INSIDE_JAR));
         this.background = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background"), ISource.Source.INSIDE_JAR));
         this.background_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"), ISource.Source.INSIDE_JAR));
@@ -142,6 +146,7 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.simple_skybox_face = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_skybox_face"), ISource.Source.INSIDE_JAR));
         this.preview = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/preview"), ISource.Source.INSIDE_JAR));
         this.simple_flat = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_flat"), ISource.Source.INSIDE_JAR));
+        this.world_ssao = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/screen_ssao"), ISource.Source.INSIDE_JAR));
     }
 
     @Override

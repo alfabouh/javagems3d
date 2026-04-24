@@ -3,6 +3,7 @@ package javagems3d.graphics.objects.entities;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -80,7 +81,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        this.setCullingData(this.pickAABBDataFromMesh());
+        final CullingAABB calcAABB = this.pickAABBDataFromMesh();
+        this.setCullingData(calcAABB);
+        if (calcAABB != null && this.hasModel()) {
+            //this.getModel().getPose().setCenterOffset((this.getRenderAttributes() != null && this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_NORMALIZE_MODEL_CENTER)) ? calcAABB.getCenter() : new Vector3f());
+        }
         if (this.getWorldItem().isDead()) {
             this.setDead();
         }

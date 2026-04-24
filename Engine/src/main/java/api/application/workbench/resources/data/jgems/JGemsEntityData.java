@@ -8,8 +8,7 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record JGemsEntityData(JGemsPathSource pathToModel,
-                              EntityRenderData entityRenderData) implements IJGemsObjectData {
+public record JGemsEntityData(JGemsPathSource pathToModel, EntityRenderData entityRenderData) implements IJGemsObjectData {
     public JGemsEntityData(@Nullable JGemsPathSource pathToModel, @NotNull EntityRenderData entityRenderData) {
         this.entityRenderData = entityRenderData;
         this.pathToModel = pathToModel;

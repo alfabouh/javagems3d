@@ -30,7 +30,7 @@ public class ScenePreviewMarkerObjectG<T extends GameResourceMarkerObjectAsset> 
      */
 
     public ScenePreviewMarkerObjectG(String tab, Supplier<T> getter, ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
-        this.gameResourceModelAssetsChooseCombo = new AssetsChooseCombo<>("Select Model", () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder());
+        this.gameResourceModelAssetsChooseCombo = new AssetsChooseCombo<>("Model", () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder());
         this.resourcesInterfaceComponentG = resourcesInterfaceComponentG;
         this.getter = getter;
         this.tab = tab;

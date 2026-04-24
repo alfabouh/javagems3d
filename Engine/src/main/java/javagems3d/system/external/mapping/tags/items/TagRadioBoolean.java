@@ -9,17 +9,25 @@ import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 
 import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class TagRadioBoolean extends TagItem {
     public static final String TYPE_STRING = "TagRadioBoolean";
-
     private final Info[] values;
+    private transient Map<String, Info> infoMap;
 
     public TagRadioBoolean(Info... values) {
         super(TagRadioBoolean.TYPE_STRING);
         this.values = values;
+        this.infoMap = new HashMap<>();
+        for (var value : values) {
+            this.infoMap.put(value.name, value);
+        }
+    }
+
+    public Map<String, Info> getInfoMap() {
+        return this.infoMap;
     }
 
     public Info[] getValues() {

@@ -2,8 +2,10 @@ package javagems3d.graphics.objects.entities;
 
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
@@ -65,7 +67,11 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        this.setCullingData(this.pickAABBDataFromMesh());
+        final CullingAABB calcAABB = this.pickAABBDataFromMesh();
+        this.setCullingData(calcAABB);
+        if (calcAABB != null && this.hasModel()) {
+            //this.getModel().getPose().setCenterOffset((this.getRenderAttributes() != null && this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_NORMALIZE_MODEL_CENTER)) ? calcAABB.getCenter() : new Vector3f());
+        }
     }
 
     @Override

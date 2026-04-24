@@ -89,7 +89,7 @@ public class WindowInterfaceComponentG {
         this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling = 0.0f;
     }
 
-    private Triple<Matrix4f, Matrix4f, Matrix4f> prepareMatricesForModelPreview(float inDistScaling) {
+    private Triple<Matrix4f, Matrix4f, Matrix4f> prepareMatricesForModelPreview(CullingAABB cullingAABB, float inDistScaling) {
         final Pose3D pose = new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f));
         final Vector2f inputRot = WBench.get().getControllerDispatcher().getCurrentController().getNormalizedRotationInput();
         if (this.actionsInterfaceComponentG.getScenePreviewModelG().isFlipModel()) {
@@ -147,7 +147,7 @@ public class WindowInterfaceComponentG {
             this.actionsInterfaceComponentG.getScenePreviewModelG().modelPreviewScaling = -((diagonalOffset) - 0.1f);
         }
         final float outScaling = this.actionsInterfaceComponentG.getScenePreviewModelG().getModelPreviewScaling() + diagonalOffset;
-        final Triple<Matrix4f, Matrix4f, Matrix4f> preparedMatrices = this.prepareMatricesForModelPreview(outScaling);
+        final Triple<Matrix4f, Matrix4f, Matrix4f> preparedMatrices = this.prepareMatricesForModelPreview(cullingAABB, outScaling);
         this.modelPreviewRenderFunctions.render(preparedMatrices.first(), preparedMatrices.second(), preparedMatrices.third(), cullingAABB, modelAssetPreview, this.modelScenePreview);
         this.renderFBO(this.modelScenePreview);
     }

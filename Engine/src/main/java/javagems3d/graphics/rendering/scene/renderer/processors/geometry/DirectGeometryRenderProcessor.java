@@ -46,7 +46,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
         this.getRejected().clear();
 
         Pipeline pipeline = this.getPipeline();
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = OpenGLRenderer.groupObjectsFromShaders(this.getSceneObjects(), pipeline);
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = OpenGLRenderer.groupObjectsByShaders(this.getSceneObjects(), pipeline);
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();

@@ -1,9 +1,8 @@
 package javagems3d.system.resources.assets.loading.models.gltf;
 
-import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
@@ -26,6 +25,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -42,15 +42,10 @@ import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.*;
 import java.util.function.Consumer;
@@ -98,9 +93,9 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while processing the model");
         }
-        JGemsUtils.createMeshAABBData(meshGroup);
+        JGemsHelper.JGemsResources.createMeshAABBData(meshGroup);
         if (DynamicsSystem.VALID) {
-            JGemsUtils.createMeshCollisionData(meshGroup, fabric);
+            JGemsHelper.JGemsResources.createMeshCollisionData(meshGroup, fabric);
         }
         if (!keepNodesInMemory) {
             meshGroup.clearNodesData();
@@ -121,9 +116,9 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while processing the model");
         }
-        JGemsUtils.createMeshAABBData(meshBuffer);
+        JGemsHelper.JGemsResources.createMeshAABBData(meshBuffer);
         if (DynamicsSystem.VALID) {
-            JGemsUtils.createMeshCollisionData(meshBuffer, fabric);
+            JGemsHelper.JGemsResources.createMeshCollisionData(meshBuffer, fabric);
         }
         return meshBuffer;
     }
@@ -134,7 +129,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
         try {
             List<Animation> animations = this.readAnimations(scene);
-            List<Material> materials = readMaterials(scene, systemResources);
+            List<Material> materials = this.readMaterials(scene, systemResources);
             systemResources.processMessage("Building Mesh Group...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
             this.processNodes(scene.nodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), buffer != null ? node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node) : null);
 
@@ -156,7 +151,6 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             Log.get().exception(e);
             return null;
         }
-
         return group;
     }
 

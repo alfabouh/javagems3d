@@ -37,7 +37,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
     private final Supplier<T> getter;
 
     public ScenePreviewWorldObjectG(String tab, Supplier<T> getter, ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
-        this.gameResourceModelAssetsChooseCombo = new AssetsChooseCombo<>("Select Model", () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder());
+        this.gameResourceModelAssetsChooseCombo = new AssetsChooseCombo<>("Model", () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder());
         this.resourcesInterfaceComponentG = resourcesInterfaceComponentG;
         this.getter = getter;
         this.tab = tab;
@@ -186,58 +186,33 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
             if (renderProperties.propertiesMap == null || renderProperties.propertiesMap.isEmpty()) {
                 ImGui.text("<Error: Empty>!");
             } else {
-                if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_RENDER_DISTANCE)) {
-                    float[] f1 = new float[]{(float) renderProperties.getFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE)};
-                    ImGui.text(JGemsRenderProperties.KEY_RENDER_DISTANCE);
-                    ImGui.sameLine();
-                    ImGui.setNextItemWidth(80);
-                    boolean f = ImGui.dragFloat("##" + JGemsRenderProperties.KEY_RENDER_DISTANCE, f1, 0.5f, -1.0f, 1024.0f);
-                    if (withSnapshots) {
-                        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_PROP_EDIT_RENDER_DIS", WBenchUITrackingHelper::INSTANCE)) {
-                            if (f) {
-                                uiTrackingHelper.saveSnapshot();
+                renderProperties.propertiesMap.forEach((k, v) -> {
+                    if (v instanceof Double f) {
+                        float[] f1 = new float[]{f.floatValue()};
+                        ImGui.text(k);
+                        ImGui.sameLine();
+                        ImGui.setNextItemWidth(80);
+                        boolean flag = ImGui.dragFloat("##" + k, f1, 0.01f, -1.0f, 1024.0f);
+                        if (withSnapshots) {
+                            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_" + k, WBenchUITrackingHelper::INSTANCE)) {
+                                if (flag) {
+                                    uiTrackingHelper.saveSnapshot();
+                                }
                             }
                         }
-                    }
-                    renderProperties.setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, f1[0]);
-                }
-                if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_ALPHA_DISCARD)) {
-                    float[] f1 = new float[]{(float) renderProperties.getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD)};
-                    ImGui.text(JGemsRenderProperties.KEY_ALPHA_DISCARD);
-                    ImGui.sameLine();
-                    ImGui.setNextItemWidth(80);
-                    boolean f = ImGui.dragFloat("##" + JGemsRenderProperties.KEY_ALPHA_DISCARD, f1, 0.0001f, 0.0f, 1.0f);
-                    if (withSnapshots) {
-                        try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_PROP_EDIT_ALPHA_DIS", WBenchUITrackingHelper::INSTANCE)) {
-                            if (f) {
-                                uiTrackingHelper.saveSnapshot();
+                        renderProperties.setValueFloat(k, f1[0]);
+                    } else if (v instanceof Boolean b) {
+                        boolean res = b;
+                        ImGui.text(k);
+                        ImGui.sameLine();
+                        if (ImGui.checkbox("##" + k, res)) {
+                            if (withSnapshots) {
+                                WBenchUITrackingHelper.instantlyTrackAndPush();
                             }
+                            renderProperties.setValueBool(k, !res);
                         }
                     }
-                    renderProperties.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, f1[0]);
-                }
-                if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_SHADOW_CASTER)) {
-                    boolean res = renderProperties.getBool(JGemsRenderProperties.KEY_SHADOW_CASTER);
-                    ImGui.text(JGemsRenderProperties.KEY_SHADOW_CASTER);
-                    ImGui.sameLine();
-                    if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_SHADOW_CASTER, res)) {
-                        if (withSnapshots) {
-                            WBenchUITrackingHelper.instantlyTrackAndPush();
-                        }
-                        renderProperties.setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !res);
-                    }
-                }
-                if (renderProperties.propertiesMap.containsKey(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION)) {
-                    boolean res = renderProperties.getBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION);
-                    ImGui.text(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION);
-                    ImGui.sameLine();
-                    if (ImGui.checkbox("##" + JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, res)) {
-                        if (withSnapshots) {
-                            WBenchUITrackingHelper.instantlyTrackAndPush();
-                        }
-                        renderProperties.setValueBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, !res);
-                    }
-                }
+                });
             }
         }
         {

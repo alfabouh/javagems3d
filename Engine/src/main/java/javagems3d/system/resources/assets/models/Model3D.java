@@ -8,6 +8,7 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 public class Model3D extends Model<Pose3D, MeshStructure3D<? extends IMesh>> {
     public Model3D(@NotNull Pose3D pose, @Nullable MeshStructure3D<? extends IMesh> meshStructure) {

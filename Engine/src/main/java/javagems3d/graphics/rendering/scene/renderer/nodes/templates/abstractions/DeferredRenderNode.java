@@ -171,7 +171,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
         this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SCENE, this.getOpenGLRenderer());
         if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
-            this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader());
+            this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader(), this.getSsaoBlurring());
         }
         this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), getDeferredRendererShader());
 
@@ -188,6 +188,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
     public abstract @NotNull ShaderStorageBufferObject getIndirectBufferData();
     public abstract @NotNull ShaderStorageBufferObject getPropertiesData();
     public abstract @Nullable JGemsShaderManager getSsaoShader();
+    public abstract @NotNull JGemsShaderManager getSsaoBlurring();
     public abstract @NotNull JGemsShaderManager getDeferredRendererShader();
 
     @Override

@@ -95,7 +95,7 @@ public class TestMap extends ManualMapProcessor {
         sceneWorld.addObject(new SceneWorldProp("sponza", sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
         System.out.println(System.currentTimeMillis() - stop);
 
-        JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
+        JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDeleted(false);
         JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
         worldModeledBrush.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));

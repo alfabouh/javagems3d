@@ -3,7 +3,7 @@ package javagems3d.graphics.rendering.programs.indirect.commands;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
-import javagems3d.help.JGemsUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
             }
             int id = i++;
             idMap.put(sceneObject, id);
-            JGemsUtils.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
+            JGemsHelper.Files.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
                 add(sceneObject);
             }}, (ex, nw) ->
             {

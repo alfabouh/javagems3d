@@ -48,9 +48,12 @@ public class InterfaceActionsEnvShadowsM {
     public void render() {
         WBenchEnvironment environment = this.mapEditorInterface.getWorld().getEnvironment();
         if (ImGui.collapsingHeader("PointLight Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
+            ImGui.beginChild("##ShadowsContent1", ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.shadowResCombo(false);
+            ImGui.endChild();
         }
         if (ImGui.collapsingHeader("Sun Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
+            ImGui.beginChild("##ShadowsContent2", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.shadowResCombo(true);
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_shadowSplits", WBenchUITrackingHelper::INSTANCE)) {
                 float[] shadowSplits = new float[]{environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
@@ -79,6 +82,7 @@ public class InterfaceActionsEnvShadowsM {
                 ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 5.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.treePop();
             }
+            ImGui.endChild();
         }
         //if (ImGui.collapsingHeader("PointLight Shadows")) {
         //    if (ImGui.treeNodeEx("Idx 1 (Shadow Map)")) {

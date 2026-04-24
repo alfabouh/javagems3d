@@ -84,7 +84,7 @@ public class InterfaceActionsSelectedTemplateM {
         dist = Math.min(dist, diagonal);
         diagonal -= dist;
         final Pose3D pose3D = new Pose3D(new Vector3f(0.0f, -diagonal * 0.25f, 0.0f));
-
+        
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
         shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), TransformUtils.getModelMatrix(pose3D));

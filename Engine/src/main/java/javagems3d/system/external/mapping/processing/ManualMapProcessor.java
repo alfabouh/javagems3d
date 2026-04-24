@@ -15,13 +15,11 @@ import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.base.MapProcessor;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
-import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -30,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.Collection;
-import java.util.List;
 
 public abstract class ManualMapProcessor extends MapProcessor {
     public ManualMapProcessor() {
@@ -53,7 +50,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
             MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), ISource.Source.INSIDE_JAR), false);
 
-            JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
+            JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDeleted(false);
             JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
             worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 

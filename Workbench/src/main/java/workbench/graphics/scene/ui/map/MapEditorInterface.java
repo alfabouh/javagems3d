@@ -286,7 +286,9 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             ImGui.beginChild("##ItemsChild", ImGui.getColumnWidth(), ImGui.getWindowHeight() - 54, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.getItemsComponent().itemsContent();
             ImGui.endChild();
-            this.getItemsComponent().rightKeyContext("context_obj_from_menu", true);
+            if (!MapEditorInterface.isCursorInsideScene) {
+                this.getItemsComponent().rightKeyContext("context_obj_from_menu", true);
+            }
         }
         ImGui.end();
 

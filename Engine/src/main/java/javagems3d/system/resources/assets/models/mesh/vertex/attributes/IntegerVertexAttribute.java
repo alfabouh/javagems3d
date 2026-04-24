@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.vertex.attributes;
 
-import javagems3d.help.JGemsUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -18,7 +18,7 @@ public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
     @Override
     public void pushGLBuffer() {
         this.intBuffer = MemoryUtil.memAllocInt(this.getValues().size());
-        this.intBuffer.put(JGemsUtils.convertIntsArray(this.getValues())).flip();
+        this.intBuffer.put(JGemsHelper.Math.convertIntsArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (IntBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
         MemoryUtil.memFree(this.intBuffer);
     }

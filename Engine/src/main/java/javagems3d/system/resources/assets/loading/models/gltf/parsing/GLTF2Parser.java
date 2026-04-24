@@ -98,8 +98,9 @@ public abstract class GLTF2Parser {
             }
         }
 
-        final List<GLTF2Node> nodes = GLTF2Parser.readNodes(rootObject, nodesArray, buffersList);
-        List<GLTF2Skin> skins = GLTF2Parser.readSkin(nodes, buffersList, rootObject);
+        Vector3f modelOffsetCenter = new Vector3f();
+        final List<GLTF2Node> nodes = GLTF2Parser.readNodes(rootObject, nodesArray, buffersList, modelOffsetCenter);
+        List<GLTF2Skin> skins = GLTF2Parser.readSkin(nodes, buffersList, rootObject, modelOffsetCenter);
         List<GLTF2Animations> animations = GLTF2Parser.readAnimations(buffersList, rootObject);
 
         if ((skins == null && animations != null) || (skins != null && animations == null)) {
@@ -113,10 +114,12 @@ public abstract class GLTF2Parser {
         return new GLTF2RawData(new GLTF2Asset(generator, version), gltf2Scene);
     }
 
-    private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList) {
+    private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList, Vector3f modelCenterOffset) {
         final List<GLTF2Node> nodes = new ArrayList<>();
         final Map<Integer, List<Integer>> tempChildrenMap = new HashMap<>();
 
+        Vector3f min = new Vector3f(Float.MAX_VALUE);
+        Vector3f max = new Vector3f(-Float.MAX_VALUE);
         for (int i = 0; i < nodesArray.size(); i++) {
             JsonObject node = nodesArray.get(i).getAsJsonObject();
             final String nodeName = node.has("name") ? node.get("name").getAsString() : (GLTF2Parser.DEFAULT_IDENTIFIER + "_" + i);
@@ -128,7 +131,45 @@ public abstract class GLTF2Parser {
             GLTF2Mesh gltf2Mesh = meshIndex != -1 ? GLTF2Parser.readMesh(buffersList, rootObject, meshIndex) : null;
             GLTF2Node gltf2Node = new GLTF2Node(nodeName, gltf2Mesh);
 
-            gltf2Node.setLocalTransform(localTransform);
+            /*
+            // NORMALIZE
+            {
+                List<Float> positions = gltf2Mesh.objects();
+                Vector3f min = new Vector3f(Float.MAX_VALUE);
+                Vector3f max = new Vector3f(-Float.MAX_VALUE);
+                for (int i = 0; i < positions.size(); i += 3) {
+                    float x = positions.get(i);
+                    float y = positions.get(i + 1);
+                    float z = positions.get(i + 2);
+                    if (x < min.x) {
+                        min.x = x;
+                    }
+                    if (y < min.y) {
+                        min.y = y;
+                    }
+                    if (z < min.z) {
+                        min.z = z;
+                    }
+                    if (x > max.x) {
+                        max.x = x;
+                    }
+                    if (y > max.y) {
+                        max.y = y;
+                    }
+                    if (z > max.z) {
+                        max.z = z;
+                    }
+                }
+                Vector3f center = new Vector3f((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, (min.z + max.z) * 0.5f);
+                for (int i = 0; i < positions.size(); i += 3) {
+                    positions.set(i, positions.get(i) - center.x);
+                    positions.set(i + 1, positions.get(i + 1) - center.y);
+                    positions.set(i + 2, positions.get(i + 2) - center.z);
+                }
+            }
+             */
+
+            gltf2Node.setLocalTransform(new Matrix4f(localTransform));
             gltf2Node.setSkin(skin);
             nodes.add(gltf2Node);
 
@@ -169,6 +210,24 @@ public abstract class GLTF2Parser {
                         positions.set(i, pos.x);
                         positions.set(i + 1, pos.y);
                         positions.set(i + 2, pos.z);
+                        if (pos.x < min.x) {
+                            min.x = pos.x;
+                        }
+                        if (pos.y < min.y) {
+                            min.y = pos.y;
+                        }
+                        if (pos.z < min.z) {
+                            min.z = pos.z;
+                        }
+                        if (pos.x > max.x) {
+                            max.x = pos.x;
+                        }
+                        if (pos.y > max.y) {
+                            max.y = pos.y;
+                        }
+                        if (pos.z > max.z) {
+                            max.z = pos.z;
+                        }
                     }
 
                     Matrix3f normalMatrix = new Matrix3f();
@@ -201,10 +260,25 @@ public abstract class GLTF2Parser {
             }
         }
 
+        modelCenterOffset.set(new Vector3f((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, (min.z + max.z) * 0.5f));
+
+        for (GLTF2Node gltf2Node : nodes) {
+            if (gltf2Node.getMesh() != null) {
+                for (GLTF2Primitive primitive : gltf2Node.getMesh().getPrimitives()) {
+                    List<Float> positions = primitive.getPOSITION().objects();
+                    for (int i = 0; i < positions.size(); i += 3) {
+                        positions.set(i, positions.get(i) - modelCenterOffset.x);
+                        positions.set(i + 1, positions.get(i + 1) - modelCenterOffset.y);
+                        positions.set(i + 2, positions.get(i + 2) - modelCenterOffset.z);
+                    }
+                }
+            }
+        }
+
         return nodes;
     }
 
-    private static List<GLTF2Skin> readSkin(List<GLTF2Node> nodes, List<ByteBuffer> buffersList, JsonObject rootObject) {
+    private static List<GLTF2Skin> readSkin(List<GLTF2Node> nodes, List<ByteBuffer> buffersList, JsonObject rootObject, Vector3f modelCenterOffset) {
         if (!rootObject.has("skins")) {
             return null;
         }
@@ -263,7 +337,9 @@ public abstract class GLTF2Parser {
 
             for (int jointId : jointIndices) {
                 GLTF2Node node = nodes.get(jointId);
-                gltf2Skin.getInverseBindingMatrices().add(node.computeMeshTransform().invert());
+                final Matrix4f ibm = node.computeMeshTransform().invert();
+                Matrix4f translate = new Matrix4f().translate(modelCenterOffset);
+                gltf2Skin.getInverseBindingMatrices().add(ibm.mul(translate));
             }
 
             skinList.add(gltf2Skin);

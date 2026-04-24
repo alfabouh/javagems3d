@@ -27,7 +27,7 @@ public final class GLTF2Node {
     }
 
     public Matrix4f computeAnimationTransform(@Nullable Matrix4f inverseBindMatrix) {
-        Matrix4f world = new Matrix4f();
+        Matrix4f world = new Matrix4f().identity();
         GLTF2Node current = this;
         while (current != null) {
             Matrix4f local = (current.localAnimationTransform != null) ? current.localAnimationTransform : new Matrix4f().identity();

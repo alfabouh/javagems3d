@@ -43,7 +43,7 @@ import java.util.*;
 public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "1.0b-dev test 4";
+    public static final String ENG_VER = "1.0b-dev build 5";
 
     private final JGemsSoundManager jGemsSoundManager;
     private final JGemsScreen jGemsScreen;

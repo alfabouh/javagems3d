@@ -35,21 +35,10 @@ public class JSBoxAABB {
         return new JSVector3f(this.cullingAABB.getAabbMin());
     }
 
-    @JSCodingFunctionOrMethod(description = "Set minimum corner of the AABB", paramNames = {"aabbMin"})
-    public void setAabbMin(JSVector3f aabbMin) {
-        this.cullingAABB.setAabbMin(aabbMin.getJavaVector3f());
-    }
-
     @JSCodingFunctionOrMethod(description = "Get maximum corner of the AABB")
     public JSVector3f getAabbMax() {
         return new JSVector3f(this.cullingAABB.getAabbMax());
     }
-
-    @JSCodingFunctionOrMethod(description = "Set maximum corner of the AABB", paramNames = {"aabbMax"})
-    public void setAabbMax(JSVector3f aabbMax) {
-        this.cullingAABB.setAabbMax(aabbMax.getJavaVector3f());
-    }
-
     @JSCodingFunctionOrMethod(description = "Get underlying Java CullingAABB object (unsafe)")
     @JSHideFromDoc
     public CullingAABB getJavaCullingAABB() {

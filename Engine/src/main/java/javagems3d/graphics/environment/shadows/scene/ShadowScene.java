@@ -193,7 +193,7 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = OpenGLRenderer.groupObjectsFromShaders(filteredObjectsSet, pipeline);
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = OpenGLRenderer.groupObjectsByShaders(filteredObjectsSet, pipeline);
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();

@@ -29,15 +29,27 @@ import java.nio.FloatBuffer;
 public class SSAORenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram gBuffer;
     private final JGemsShaderManager ssaoComputing;
+    private final JGemsShaderManager ssaoBlurring;
 
     private ITexture2DProgram ssaoNoiseTexture;
     private ITexture2DProgram ssaoKernelTexture;
     private ITexture2DProgram ssaoBufferTexture;
 
-    public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull JGemsShaderManager ssaoComputing) {
+    private int quality;
+    private float ssaoRange;
+    private float ssaoBias;
+    private float ssaoRadius;
+
+    public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull JGemsShaderManager ssaoComputing, @NotNull JGemsShaderManager ssaoBlurring) {
         super(openGLRenderer);
         this.gBuffer = gBuffer;
         this.ssaoComputing = ssaoComputing;
+        this.ssaoBlurring = ssaoBlurring;
+        this.quality = 3;
+
+        this.ssaoRange = JGemsConfig.SYSTEM.SSAO_RANGE;
+        this.ssaoBias =  JGemsConfig.SYSTEM.SSAO_BIAS;
+        this.ssaoRadius = JGemsConfig.SYSTEM.SSAO_RADIUS;
     }
 
     @Override
@@ -86,9 +98,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager ssaoComputeShader = this.getSsaoComputing();
         ssaoComputeShader.beginComputing();
 
-        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_BIAS), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_BIAS));
-        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RADIUS), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RADIUS));
-        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RANGE), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.SSAO_RANGE));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_BIAS), UniformFunctions.FLOAT(this.getSsaoBias()));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RADIUS), UniformFunctions.FLOAT(this.getSsaoRadius()));
+        ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.SSAO_RANGE), UniformFunctions.FLOAT(this.getSsaoRange()));
 
         ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.NOISE_SCALE), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfig.SYSTEM.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
@@ -102,7 +114,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         ssaoComputeShader.dispatchComputeShader(groupCountX, groupCountY, 1, GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         ssaoComputeShader.endComputing();
 
-        JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
+        JGemsShaderManager ssaoBlur = this.getSsaoBlurring();
         ssaoBlur.beginShading();
         ssaoBlur.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getSsaoBufferTexture());
         ssaoBlur.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
@@ -161,21 +173,52 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     }
 
     protected Vector3i getSSAOParams(Vector2i windowSize) {
-        switch (JGems3D.get().getGameSettings().ssao.getValue()) {
-            case 1: {
-                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 3);
-            }
-            case 2: {
-                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 4);
-            }
-            case 3: {
-                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 6);
-            }
-            case 0:
-            default: {
-                return null;
-            }
-        }
+        return switch (this.quality) {
+            case 1 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 3);
+            case 2 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 4);
+            case 3 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 6);
+            default -> null;
+        };
+    }
+
+    public float getSsaoRange() {
+        return this.ssaoRange;
+    }
+
+    public SSAORenderProcessor setSsaoRange(float ssaoRange) {
+        this.ssaoRange = ssaoRange;
+        return this;
+    }
+
+    public float getSsaoBias() {
+        return this.ssaoBias;
+    }
+
+    public SSAORenderProcessor setSsaoBias(float ssaoBias) {
+        this.ssaoBias = ssaoBias;
+        return this;
+    }
+
+    public float getSsaoRadius() {
+        return this.ssaoRadius;
+    }
+
+    public SSAORenderProcessor setSsaoRadius(float ssaoRadius) {
+        this.ssaoRadius = ssaoRadius;
+        return this;
+    }
+
+    public int getQuality() {
+        return this.quality;
+    }
+
+    public SSAORenderProcessor setQuality(int quality) {
+        this.quality = quality;
+        return this;
+    }
+
+    public JGemsShaderManager getSsaoBlurring() {
+        return this.ssaoBlurring;
     }
 
     public JGemsShaderManager getSsaoComputing() {

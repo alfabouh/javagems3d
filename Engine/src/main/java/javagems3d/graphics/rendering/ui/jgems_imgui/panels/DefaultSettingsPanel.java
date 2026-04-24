@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;

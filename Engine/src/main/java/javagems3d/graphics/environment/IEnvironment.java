@@ -28,6 +28,10 @@ public interface IEnvironment {
         this.getLightScene().setHdrExposure(JGemsConfig.SYSTEM.HDR_EXPOSURE_DEFAULT);
         this.getLightScene().setHdrGamma(JGemsConfig.SYSTEM.HDR_GAMMA_DEFAULT);
 
+        this.getLightScene().setSsaoRange(JGemsConfig.SYSTEM.SSAO_RANGE);
+        this.getLightScene().setSsaoBias(JGemsConfig.SYSTEM.SSAO_BIAS);
+        this.getLightScene().setSsaoRadius(JGemsConfig.SYSTEM.SSAO_RADIUS);
+
         this.getFogScene().setFogColor(new Vector3f(0.85f));
         this.getFogScene().setFogDensity(0.0f);
     }

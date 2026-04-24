@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
@@ -36,7 +37,11 @@ public class DefaultPausePanel extends AbstractPanelUI {
 
         ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGemsHelper.map().exitMap();
+                    if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST) == Boolean.TRUE) {
+                        JGems3D.close(null);
+                    } else {
+                        JGemsHelper.map().exitMap();
+                    }
                 });
     }
 

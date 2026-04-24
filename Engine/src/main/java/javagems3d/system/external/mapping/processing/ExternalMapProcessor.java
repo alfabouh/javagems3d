@@ -37,13 +37,13 @@ import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
@@ -64,8 +64,8 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.external.mapping.tags.items.*;
-import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -79,7 +79,6 @@ import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -205,7 +204,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             Pair<PointLight, Integer> pair = event.getResult() != null ? event.getResult() : this.onProcessPointLight(template, physicsWorld, sceneWorld);
             if (pair != null) {
                 if (pair.second() >= 0) {
-                    JGemsUtils.putObjectInMapOrUpdate(pointLightIdMap, pair.second(), new ArrayList<PointLight>() {{
+                    JGemsHelper.Files.putObjectInMapOrUpdate(pointLightIdMap, pair.second(), new ArrayList<PointLight>() {{
                         add(pair.first());
                     }}, (ex, nw) -> {
                         ex.add(nw);
@@ -439,8 +438,17 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
-            final PropRenderData propRenderData = new PropRenderData(propData.propRenderData(), buffer);
+            final TagRadioBoolean tagDirectIndirect = template.getTagsContainer().getTagItem(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, TagRadioBoolean.class);
+            MeshStructure3D<?> meshStructure3D = null;
+            PropRenderData propRenderData = null;
+            if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
+                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false);
+                propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getDirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
+            } else {
+                meshStructure3D = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
+                propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getIndirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
+            }
+
             propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, propRenderData);
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
@@ -452,10 +460,18 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
-            final PropRenderData propRenderData = new PropRenderData(propData.propRenderData(), buffer);
-            propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
+            final TagRadioBoolean tagDirectIndirect = template.getTagsContainer().getTagItem(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, TagRadioBoolean.class);
+            MeshStructure3D<?> meshStructure3D = null;
+            PropRenderData propRenderData = null;
+            if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
+                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false);
+                propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getDirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
+            } else {
+                meshStructure3D = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
+                propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getIndirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
+            }
 
+            propRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : propRenderData.getObjectRenderAttributes().getProperties());
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, propRenderData);
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -472,20 +488,29 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            final TagCheckBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE, TagCheckBoolean.class);
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.pathToModel(), false);
-            JGemsBody jGemsBody = null;
-            if (tagPhysics == null || tagPhysics.isFlag()) {
-                jGemsBody = new JGemsStaticBody(MeshCollider.getStatic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
+            final TagRadioBoolean tagStaticBody = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE, TagRadioBoolean.class);
+            final TagRadioBoolean tagDirectIndirect = template.getTagsContainer().getTagItem(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, TagRadioBoolean.class);
+            MeshStructure3D<?> meshStructure3D = null;
+            EntityRenderData entityRenderData = null;
+            if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
+                meshStructure3D = this.getLocalResources().createMeshGroup(entityData.pathToModel(), false);
+                entityRenderData = new EntityRenderData(entityData.entityRenderData(), new RenderAttributes(RenderTable.getDirect(), entityData.entityRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
             } else {
-                jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
+                meshStructure3D = this.getLocalResources().createMeshBuffer(entityData.pathToModel(), false);
+                entityRenderData = new EntityRenderData(entityData.entityRenderData(), new RenderAttributes(RenderTable.getIndirect(), entityData.entityRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
             }
-            final EntityRenderData entityRenderData = new EntityRenderData(entityData.entityRenderData(), buffer);
+
             entityRenderData.getObjectRenderAttributes().setRenderProperties(template.getRenderProperties() != null ? template.getRenderProperties() : entityRenderData.getObjectRenderAttributes().getProperties());
+            JGemsBody jGemsBody = null;
+            if (tagStaticBody == null || (tagStaticBody.getInfoMap().get("Static") != null && tagStaticBody.getInfoMap().get("Static").isFlag())) {
+                jGemsBody = new JGemsStaticBody(MeshCollider.getStatic(meshStructure3D), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDeleted(false);
+            } else {
+                jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(meshStructure3D), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDeleted(false);
+            }
             JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
-            jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
+            jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
 
             if (pointLightsToAttach != null) {
                 for (PointLight pointLight : pointLightsToAttach) {

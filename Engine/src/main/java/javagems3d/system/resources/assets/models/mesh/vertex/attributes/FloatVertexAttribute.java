@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.vertex.attributes;
 
-import javagems3d.help.JGemsUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -18,7 +18,7 @@ public final class FloatVertexAttribute extends VertexAttribute<Float> {
     @Override
     public void pushGLBuffer() {
         this.floatBuffer = MemoryUtil.memAllocFloat(this.getValues().size());
-        this.floatBuffer.put(JGemsUtils.convertFloatsArray(this.getValues())).flip();
+        this.floatBuffer.put(JGemsHelper.Math.convertFloatsArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (FloatBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
         MemoryUtil.memFree(this.floatBuffer);
     }

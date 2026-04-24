@@ -63,12 +63,12 @@ public class ActionsInterfaceComponentM {
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("Shadows")) {
-                    ImGui.beginChild("##ShadowsContent", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##ShadowsContent0", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvShadowsM.render();
                     ImGui.endChild();
                 }
-                if (ImGui.collapsingHeader("Lighting")) {
-                    ImGui.beginChild("##LightingContent", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                if (ImGui.collapsingHeader("Lighting##Light1")) {
+                    ImGui.beginChild("##LightingContent0", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvLightingM.render();
                     ImGui.endChild();
                 }

@@ -51,7 +51,7 @@ public final class JGems3D {
     public static boolean DEBUG_MODE = false;
     public static boolean FIRST_LAUNCH = false;
     public static long rngSeed;
-    public static Random random;
+    public static Random random = new Random(JGems3D.rngSeed);
     private static JGems3D mainObject;
 
     private JGemsCore core;
@@ -78,7 +78,6 @@ public final class JGems3D {
         this.os = SysOSValidation.getCurrentOS();
 
         JGems3D.rngSeed = JGems3D.systemTime();
-        JGems3D.random = new Random(JGems3D.rngSeed);
 
         this.jGemsSettings = new JGemsSettings(new File(JGems3D.getGameFilesFolder().toFile(), "jgems_settings.txt"));
         this.shouldBeClosed = false;
@@ -386,6 +385,7 @@ public final class JGems3D {
                 command.add("-Xms512m");
                 command.add("-Xmx4G");
                 command.add("-XX:+UseG1GC");
+                command.add("-Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
 
                 if (location.isFile()) {
                     command.add("-jar");
@@ -419,7 +419,7 @@ public final class JGems3D {
                 if (!closed && buffer.hasRemaining()) {
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
-                    System.out.print(new String(bytes));
+                    //System.out.print(new String(bytes));
                 }
             }
 

@@ -20,14 +20,17 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultDirectShadowRenderFabric;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.external.mapping.IGameMap;
@@ -46,10 +49,16 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.models.helper.MeshAABBHelper;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -67,7 +76,9 @@ import javagems3d.system.settings.JGemsSettings;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -78,8 +89,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 //@SuppressWarnings("all")
 public final class JGemsHelper {
@@ -545,7 +559,7 @@ public final class JGemsHelper {
                 }
             }
 
-            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD), UniformFunctions.FLOAT(1.0f));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD), UniformFunctions.FLOAT(discardAlphaLevel));
             shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), diffuseColor);
             shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_COLOR), emissionColor);
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.METALLIC_FACTOR), UniformFunctions.FLOAT(metallicFactor));
@@ -614,6 +628,65 @@ public final class JGemsHelper {
     }
 
     public final class JGemsResources {
+        @SuppressWarnings("all")
+        public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
+            int optimalThreads = Runtime.getRuntime().availableProcessors();
+            if (meshStructure != null) {
+                meshStructure.setMeshAABBData(new MeshBoundingBoxData(MeshAABBHelper.createMultiThread(meshStructure, optimalThreads)));
+                if (meshStructure.isAnimatedStructure()) {
+                    for (java.util.Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure, optimalThreads).entrySet()) {
+                        meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshBoundingBoxData(aabbEntry.getValue()));
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        @SuppressWarnings("all")
+        public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric fabric) {
+            if (meshStructure != null) {
+                final MeshCollisionData meshCollisionData = new MeshCollisionData(meshStructure, fabric == null ? new MeshCollisionData.DefaultFabric() : fabric);
+                if (MeshCollisionData.GLOBAL_CACHE.containsKey(meshStructure)) {
+                    meshStructure.setMeshCollisionData(MeshCollisionData.GLOBAL_CACHE.get(meshStructure));
+                } else {
+                    meshStructure.setMeshCollisionData(meshCollisionData);
+                    MeshCollisionData.GLOBAL_CACHE.put(meshStructure, meshCollisionData);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh) {
+            List<Integer> integers = mesh.getVertexIndexes();
+            List<Float> floats = mesh.getVertexPositions();
+            List<Vector3f> vertexes = new ArrayList<>();
+
+            for (int i = 0; i < integers.size(); i++) {
+                int i1 = mesh.getVertexIndexes().get(i) * 3;
+                Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f);
+                vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
+            }
+
+            return vertexes;
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh, Pose3D pose) {
+            List<Integer> integers = mesh.getVertexIndexes();
+            List<Float> floats = mesh.getVertexPositions();
+            List<Vector3f> vertexes = new ArrayList<>();
+            Matrix4f modelMat = TransformUtils.getModelMatrix(pose);
+
+            for (int i = 0; i < integers.size(); i++) {
+                int i1 = mesh.getVertexIndexes().get(i) * 3;
+                Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
+                vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
+            }
+
+            return vertexes;
+        }
+
         public SystemResources getLocalGameResources() {
             return this.getResourceManager().getLocalResources();
         }
@@ -642,6 +715,74 @@ public final class JGemsHelper {
     }
 
     public static final class Math {
+        public static Matrix4f getMatrixFromArray(float[] arr) {
+            return new Matrix4f(arr[0], arr[1], arr[2], arr[3],
+                    arr[4], arr[5], arr[6], arr[7],
+                    arr[8], arr[9], arr[10], arr[11],
+                    arr[12], arr[13], arr[14], arr[15]);
+        }
+
+        public static Matrix4f getMatrixFromArray(List<Float> arr) {
+            return new Matrix4f(arr.get(0), arr.get(1), arr.get(2), arr.get(3),
+                    arr.get(4), arr.get(5), arr.get(6), arr.get(7),
+                    arr.get(8), arr.get(9), arr.get(10), arr.get(11),
+                    arr.get(12), arr.get(13), arr.get(14), arr.get(15));
+        }
+
+        public static List<Integer> convertIntsList(int[] arr) {
+            List<Integer> list = new ArrayList<>(arr.length);
+            for (int f : arr) {
+                list.add(f);
+            }
+            return list;
+        }
+
+        public static List<Float> convertFloatsList(float[] arr) {
+            List<Float> list = new ArrayList<>(arr.length);
+            for (float f : arr) {
+                list.add(f);
+            }
+            return list;
+        }
+
+        public static int[] convertIntsArray(List<Integer> list) {
+            if (list == null || list.isEmpty()) {
+                return new int[] {};
+            }
+            return list.stream().mapToInt( v -> v).toArray();
+        }
+
+        public static double[] convertDoublesArray(List<Double> list) {
+            if (list == null || list.isEmpty()) {
+                return new double[] {};
+            }
+            return list.stream().mapToDouble( v -> v).toArray();
+        }
+
+        public static float[] convertFloatsArray(List<Float> list) {
+            if (list == null || list.isEmpty()) {
+                return new float[] {};
+            }
+            float[] a = new float[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                a[i] = list.get(i);
+            }
+            return a;
+        }
+
+        public static float[] convertFloats3Array(List<Vector3f> list) {
+            if (list == null || list.isEmpty()) {
+                return new float[] {};
+            }
+            float[] a = new float[list.size() * 3];
+            for (int i = 0; i < list.size(); i += 3) {
+                a[i] = list.get(i).x;
+                a[i + 1] = list.get(i).y;
+                a[i + 2] = list.get(i).z;
+            }
+            return a;
+        }
+
         public float interpolate(float a, float b, float f) {
             return a + f * (b - a);
         }
@@ -681,6 +822,24 @@ public final class JGemsHelper {
     }
 
     public static final class Files {
+        public int countChar(String s, char c) {
+            return (int) s.chars().filter(ch -> ch == c).count();
+        }
+
+        public String getTextWithLines(String text) {
+            String[] lines = text.split("\n");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                stringBuilder.append("/* (").append(i + 1).append(") */ ").append(line).append("\n");
+            }
+            return stringBuilder.toString();
+        }
+
+        public static <K, V, U> void putObjectInMapOrUpdate(java.util.Map<K, V> map, K key, V defaultValue, BiFunction<V, U, V> updateFunction, U updateValue) {
+            map.merge(key, defaultValue, (existingValue, newValue) -> updateFunction.apply(existingValue, updateValue));
+        }
+
         public String md5(String str) {
             try {
                 MessageDigest md = MessageDigest.getInstance("MD5");

@@ -31,6 +31,10 @@ public abstract class LightScene implements ILightScene {
     private float exposure;
     private float gamma;
 
+    private float ssaoRange;
+    private float ssaoBias;
+    private float ssaoRadius;
+
     public LightScene(@NotNull ShaderStorageBufferObject sunBuffer, @NotNull ShaderStorageBufferObject pointLightsBuffer, IEnvironment environment) {
         this.environment = environment;
         this.sunBuffer = sunBuffer;
@@ -169,6 +173,30 @@ public abstract class LightScene implements ILightScene {
 
         ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, 0L, buffer);
         ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, sizeMainBuffer, buffer2);
+    }
+
+    public float getSsaoRange() {
+        return this.ssaoRange;
+    }
+
+    public void setSsaoRange(float ssaoRange) {
+        this.ssaoRange = ssaoRange;
+    }
+
+    public float getSsaoBias() {
+        return this.ssaoBias;
+    }
+
+    public void setSsaoBias(float ssaoBias) {
+        this.ssaoBias = ssaoBias;
+    }
+
+    public float getSsaoRadius() {
+        return this.ssaoRadius;
+    }
+
+    public void setSsaoRadius(float ssaoRadius) {
+        this.ssaoRadius = ssaoRadius;
     }
 
     public boolean isBloomEnabled() {

@@ -35,6 +35,10 @@ public class PropRenderData {
         this(PropRenderData.DEFAULT_OBJECT_CONSTRUCTOR, renderAttributes, meshStructure);
     }
 
+    public PropRenderData(@NotNull PropRenderData propRenderData, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
+        this(PropRenderData.defaultObjectConstructor(), renderAttributes, meshStructure);
+    }
+
     public PropRenderData(@NotNull IScenePropConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
         this.sceneObjectConstructor = sceneObjectConstructor;
         this.propModelConstructor = null;

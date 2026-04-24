@@ -13,7 +13,6 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.I
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -28,7 +27,6 @@ import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
-import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
 
 import java.lang.Math;
 import java.lang.Runtime;
@@ -196,15 +194,16 @@ public class SceneInterfaceComponentM {
                 Vector3f position = new Vector3f();
                 Vector3f rotation = new Vector3f();
                 Vector3f scaling = new Vector3f();
-                Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
+                Matrix4f modelMatrixEdited = JGemsHelper.Math.getMatrixFromArray(modelMatrix);
+                Matrix4f deltaMatrix2 = JGemsHelper.Math.getMatrixFromArray(deltaMatrix);
 
-                newMatrix.getTranslation(position);
-                newMatrix.getScale(scaling);
-                newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
+                modelMatrixEdited.getTranslation(position);
+                modelMatrixEdited.getScale(scaling);
+                modelMatrixEdited.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
 
                 final Vector3f newPos = position;
                 final Vector3f newRot = rotation.negate();
-                final Vector3f newScale = scaling;
+                final Vector3f newScale = wBenchObject.getScaling().add(deltaMatrix2.getScale(new Vector3f()).sub(new Vector3f(1.0f)));
 
                 if ((currentOperation & Operation.TRANSLATE) != 0) {
                     wBenchObject.setPosition(newPos);
@@ -237,7 +236,14 @@ public class SceneInterfaceComponentM {
                             wBenchObject.setPosition(newPosScaled);
                         }
                     }
-                    wBenchObject.setScaling(newScale);
+
+                    Vector3f rotVec = wBenchObject.getModel().getPose().getRotation();
+                    Matrix4f R = new Matrix4f().identity().rotateXYZ(rotVec.x, rotVec.y, rotVec.z);
+                    Matrix4f R_inv = new Matrix4f(R).invert();
+                    Matrix4f S = new Matrix4f().identity().scale(newScale);
+                    Matrix4f finalMat = new Matrix4f(R).mul(S).mul(R_inv);
+                    Vector3f resultScale = finalMat.getScale(new Vector3f());
+                    wBenchObject.setScaling(resultScale);
                 } else {
                     SceneInterfaceComponentM.scalingFlag = false;
                 }
@@ -276,8 +282,8 @@ public class SceneInterfaceComponentM {
                 //this.getEditorInterface().getSelectedObjectsManager().beginGroupTransform();
                 WBenchUITrackingHelper.instantlyTrackAndPush();
             }
-            Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
-            Matrix4f deltaMatrix2 = JGemsUtils.getMatrixFromArray(deltaMatrix);
+            Matrix4f newMatrix = JGemsHelper.Math.getMatrixFromArray(modelMatrix);
+            Matrix4f deltaMatrix2 = JGemsHelper.Math.getMatrixFromArray(deltaMatrix);
             final Vector3f newPos = newMatrix.getTranslation(new Vector3f());
             final Vector3f newRot = deltaMatrix2.getEulerAnglesXYZ(new Vector3f());
             final Vector3f newScale = newMatrix.getScale(new Vector3f());

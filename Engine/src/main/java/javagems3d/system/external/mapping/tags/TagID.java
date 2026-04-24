@@ -75,8 +75,12 @@ public final class TagID {
     }
 
     public static class DEFAULT {
-        public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics State", "(Def. Tag) Determines the physical condition of the object. \nStatic=stationary \nDynamic=gravity affected");
-        public static final TagID MARKER_STRING_ID = new TagID("marker_string_id", "String ID", "Object's id");
+        public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics Type", "Determines the physical condition of the object.");
+        public static final TagID DIRECT_INDIRECT_RENDERING = new TagID("dir_indir_render", "Rendering Type", "Determines the rendering algorithm of the object. " +
+                "\nDirect is simple algorithm (one object=one CPU->GPU call, less memory usage, less performance, if scene has a lot of objects) " +
+                "\nIndirect is complex algorithm (all objects=one CPU-GPU call, much more memory usage, more performance with lots of objects)");
+
+        public static final TagID MARKER_STRING_ID = new TagID("marker_string_id", "User String ID", "Object's id");
 
         public static final TagID POSITION_X = new TagID("position_x", "Translate X");
         public static final TagID POSITION_Y = new TagID("position_y", "Translate Y");
