@@ -56,7 +56,7 @@ public abstract class JGemsConfig {
         public static int INDIRECT_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
         public static int INDIRECT_RENDERING_PROPERTIES_PACK_SIZE = 1;
 
-        public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);
+        public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 64);
 
         public static int INDIRECT_SSBO_SIZE_MUL = 1;
 

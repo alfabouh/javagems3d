@@ -38,15 +38,15 @@ public class SceneInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
     private final AtomicBoolean isThreadInProcess;
     private boolean wasGuizmoUsed;
-    private final Vector3f guizmoPrevTranlate;
-    private final Vector3f guizmoPrevRotate;
-    private final Vector3f guizmoPrevScale;
+    public final Vector3f guizmoPrevTranlate;
+    public final Vector3f guizmoPrevRotate;
+    public final Vector3f guizmoPrevScale;
     private boolean rightMouseDown = false;
     private boolean rightMouseDragged = false;
     private final float DRAG_THRESHOLD = 3.0f; // пиксели
     private float dragStartX;
     private float dragStartY;
-    public static boolean scalingFlag;
+    public static Vector4i scalingFlags = new Vector4i();
 
     public SceneInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -165,11 +165,68 @@ public class SceneInterfaceComponentM {
         return wBenchBindingManager.keyAlt.isPressed() || this.mapEditorInterface.getSelectedObjectsManager().isOneDirScaling();
     }
 
-    private static boolean reversedStick(Vector3f stick, ICamera camera) {
-        Vector3f axisWorld = new Vector3f(stick);
-        Vector3f camDir = JGemsHelper.math().calcLookVector(camera.getCamRotation());
-        float dot = axisWorld.dot(camDir);
-        return dot > 0.0f;
+    public static void oneDirScaling(@Nullable Vector3f prevGuizmoTranslate, Vector4i scalingFlags, Vector3f centPos, WBenchObject<?> wBenchObject, Vector3f scaleTo, Vector3f oldScale) {
+        Vector3f scaleRatio = new Vector3f(scaleTo).div(oldScale);
+
+        boolean aX = scaleRatio.x != 1f;
+        boolean aY = scaleRatio.y != 1f;
+        boolean aZ = scaleRatio.z != 1f;
+
+        if (scalingFlags.w == 0 && (aX || aY || aZ)) {
+            if (aX) {
+                scalingFlags.x = scaleRatio.x < 1.0f ? -1 : 1;
+            } else {
+                scalingFlags.x = 0;
+            }
+            if (aY) {
+                scalingFlags.y = scaleRatio.y < 1.0f ? -1 : 1;
+            } else {
+                scalingFlags.y = 0;
+            }
+            if (aZ) {
+                scalingFlags.z = scaleRatio.z < 1.0f ? -1 : 1;
+            } else {
+                scalingFlags.z = 0;
+            }
+            if (prevGuizmoTranslate != null) {
+                prevGuizmoTranslate.set(centPos);
+            }
+            scalingFlags.w = 1;
+        }
+
+        CullingAABB aabb = wBenchObject.getModel().getMeshStructure().getMeshAABBData().getNormalizedAABB(new Pose3D().setPosition(wBenchObject.getPosition()).setScaling(wBenchObject.getScaling()));
+        Vector3f sideBorder = new Vector3f();
+
+        float sideX = wBenchObject.getPosition().x;
+        float sideY = wBenchObject.getPosition().y;
+        float sideZ = wBenchObject.getPosition().z;
+
+        if (scalingFlags.x != 0) {
+            sideX = scalingFlags.x == -1 ? aabb.getAabbMax().x : aabb.getAabbMin().x;
+        }
+        if (scalingFlags.y != 0) {
+            sideY = scalingFlags.y == -1 ? aabb.getAabbMax().y : aabb.getAabbMin().y;
+        }
+        if (scalingFlags.z != 0) {
+            sideZ = scalingFlags.z == -1 ? aabb.getAabbMax().z : aabb.getAabbMin().z;
+        }
+
+        sideBorder.set(sideX, sideY, sideZ);
+
+        Vector3f deltaPosScale = new Vector3f(wBenchObject.getPosition())
+                .sub(sideBorder)
+                .mul(scaleRatio)
+                .add(sideBorder)
+                .sub(wBenchObject.getPosition())
+                .rotateZ(-wBenchObject.getRotation().z)
+                .rotateY(-wBenchObject.getRotation().y)
+                .rotateX(-wBenchObject.getRotation().x);
+
+        if (deltaPosScale.isFinite()) {
+            wBenchObject.setPosition(new Vector3f(wBenchObject.getPosition()).add(deltaPosScale));
+        }
+
+        wBenchObject.setScaling(scaleTo);
     }
 
     private void renderForSingleObject(float[] view, float[] projection, WBenchObject<?> wBenchObject) {
@@ -185,7 +242,11 @@ public class SceneInterfaceComponentM {
             float[] deltaMatrix = new float[16];
             int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
 
-            ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
+            final boolean isTranslate = (currentOperation & Operation.TRANSLATE) != 0;
+            final boolean isRotate = (currentOperation & Operation.ROTATE) != 0;
+            final boolean isScale = (currentOperation & Operation.SCALE) != 0;
+
+            ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, isScale ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
 
             if (!this.wasGuizmoUsed && UsedImGuizmo) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
@@ -195,7 +256,6 @@ public class SceneInterfaceComponentM {
                 Vector3f rotation = new Vector3f();
                 Vector3f scaling = new Vector3f();
                 Matrix4f modelMatrixEdited = JGemsHelper.Math.getMatrixFromArray(modelMatrix);
-                Matrix4f deltaMatrix2 = JGemsHelper.Math.getMatrixFromArray(deltaMatrix);
 
                 modelMatrixEdited.getTranslation(position);
                 modelMatrixEdited.getScale(scaling);
@@ -203,52 +263,25 @@ public class SceneInterfaceComponentM {
 
                 final Vector3f newPos = position;
                 final Vector3f newRot = rotation.negate();
-                final Vector3f newScale = wBenchObject.getScaling().add(deltaMatrix2.getScale(new Vector3f()).sub(new Vector3f(1.0f)));
+                final Vector3f newScale = scaling;
 
-                if ((currentOperation & Operation.TRANSLATE) != 0) {
+                if (isTranslate) {
                     wBenchObject.setPosition(newPos);
                 }
-                if ((currentOperation & Operation.ROTATE) != 0) {
+                if (isRotate) {
                     wBenchObject.setRotation(newRot);
                 }
-                if ((currentOperation & Operation.SCALE) != 0) {
+                if (isScale) {
                     if (this.isOneDirScaling()) {
-                        Vector3f oldScale = new Vector3f(wBenchObject.getScaling());
-                        final Vector3f delta = new Vector3f(oldScale).sub(newScale);
-                        if (!SceneInterfaceComponentM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
-                            this.guizmoPrevTranlate.set(wBenchObject.getPosition());
-                            if (delta.x != 0) {
-                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(1.0f, 0.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                            } else if (delta.y != 0) {
-                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 1.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                            } else {
-                                this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 0.0f, 1.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                            }
-                            SceneInterfaceComponentM.scalingFlag = true;
-                        }
-
-                        Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
-                        CullingAABB aabb = wBenchObject.getCullingData();
-                        Vector3f pivot = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().isScalingOneDirMaxPlane() ? aabb.getAabbMax() : aabb.getAabbMin());
-                        Vector3f oldPos = new Vector3f(wBenchObject.getPosition());
-                        Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
-                        if (newPosScaled.isFinite()) {
-                            wBenchObject.setPosition(newPosScaled);
-                        }
+                        SceneInterfaceComponentM.oneDirScaling(this.guizmoPrevTranlate, SceneInterfaceComponentM.scalingFlags, wBenchObject.getPosition(), wBenchObject, newScale, wBenchObject.getScaling());
+                    } else {
+                        wBenchObject.setScaling(scaling);
                     }
-
-                    //Vector3f rotVec = wBenchObject.getModel().getPose().getRotation();
-                    //Matrix4f R = new Matrix4f().identity().rotateXYZ(rotVec.x, rotVec.y, rotVec.z);
-                    //Matrix4f R_inv = new Matrix4f(R).invert();
-                    //Matrix4f S = new Matrix4f().identity().scale(newScale);
-                    //Matrix4f finalMat = new Matrix4f(R).mul(S).mul(R_inv);
-                    //Vector3f resultScale = finalMat.getScale(new Vector3f());
-                    wBenchObject.setScaling(newScale);
                 } else {
-                    SceneInterfaceComponentM.scalingFlag = false;
+                    SceneInterfaceComponentM.scalingFlags.w = 0;
                 }
             } else {
-                SceneInterfaceComponentM.scalingFlag = false;
+                SceneInterfaceComponentM.scalingFlags.w = 0;
                 this.guizmoPrevTranlate.set(0.0f);
             }
         }
@@ -276,7 +309,12 @@ public class SceneInterfaceComponentM {
         float[] modelMatrix = TransformUtils.getModelMatrix(pose3D).get(new float[16]);
         float[] deltaMatrix = new float[16];
         int currentOperation = this.getEditorInterface().getActionsContent().getInterfaceActionsSelectedObjectM().getCurrentOperation();
-        ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
+
+        final boolean isTranslate = (currentOperation & Operation.TRANSLATE) != 0;
+        final boolean isRotate = (currentOperation & Operation.ROTATE) != 0;
+        final boolean isScale = (currentOperation & Operation.SCALE) != 0;
+
+        ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, isScale ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
         if (UsedImGuizmo && ImGui.isItemHovered()) {
             if (!this.wasGuizmoUsed) {
                 //this.getEditorInterface().getSelectedObjectsManager().beginGroupTransform();
@@ -288,10 +326,10 @@ public class SceneInterfaceComponentM {
             final Vector3f newRot = deltaMatrix2.getEulerAnglesXYZ(new Vector3f());
             final Vector3f newScale = newMatrix.getScale(new Vector3f());
 
-            if ((currentOperation & Operation.TRANSLATE) != 0) {
+            if (isTranslate) {
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupPosition(newPos);
             }
-            if ((currentOperation & Operation.ROTATE) != 0) {
+            if (isRotate) {
                 Vector3f deltaRot = this.mapEditorInterface.getSelectedObjectsManager().getGroupRotation().add(newRot);
                 {
                     if (deltaRot.x < -Math.PI) {
@@ -316,29 +354,13 @@ public class SceneInterfaceComponentM {
                 }
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupRotation(deltaRot);
             }
-            if ((currentOperation & Operation.SCALE) != 0) {
-                if (this.isOneDirScaling()) {
-                    Vector3f oldScale = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
-                    final Vector3f delta = new Vector3f(oldScale).sub(newScale);
-                    if (!SceneInterfaceComponentM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
-                        this.guizmoPrevTranlate.set(this.mapEditorInterface.getSelectedObjectsManager().getGroupPosition());
-                        if (delta.x != 0) {
-                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(1.0f, 0.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                        } else if (delta.y != 0) {
-                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 1.0f, 0.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                        } else {
-                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(SceneInterfaceComponentM.reversedStick(new Vector3f(0.0f, 0.0f, 1.0f), this.mapEditorInterface.getOpenGLRenderer().getCamera()));
-                        }
-                        SceneInterfaceComponentM.scalingFlag = true;
-                    }
-                }
+            if (isScale) {
                 this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(new Vector3f(newScale));
             } else {
-                SceneInterfaceComponentM.scalingFlag = false;
+                MapEditorInterface.SelectedObjectsManager.scalingFlags.w = 0;
             }
-
         } else {
-            SceneInterfaceComponentM.scalingFlag = false;
+            MapEditorInterface.SelectedObjectsManager.scalingFlags.w = 0;
             this.guizmoPrevTranlate.set(0.0f);
             this.resetFrame();
         }

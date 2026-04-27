@@ -233,6 +233,9 @@ public final class WBenchMapProjectManager {
                 world.getEnvironment().getLightScene().setHdrGamma(lightingData.gamma);
                 world.getEnvironment().getLightScene().setHdrExposure(lightingData.exposure);
                 world.getEnvironment().getLightScene().setBloomEnabled(lightingData.bloomEffect);
+                world.getEnvironment().getLightScene().setSsaoRange(lightingData.ssaoRange);
+                world.getEnvironment().getLightScene().setSsaoBias(lightingData.ssaoBias);
+                world.getEnvironment().getLightScene().setSsaoRadius(lightingData.ssaoRadius);
                 Log.get().debug("Read LightingData");
             } else {
                 Log.get().error("Couldn't get LightingData");
@@ -569,11 +572,12 @@ public final class WBenchMapProjectManager {
     }
 
     private void initWorkingSpace(DearUIInterface dearUIInterface) {
-        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(),
-                new Vector3f(this.mapProjectSettings.cameraX, this.mapProjectSettings.cameraY, this.mapProjectSettings.cameraZ),
-                new Vector3f(this.mapProjectSettings.cameraRotX, this.mapProjectSettings.cameraRotY, this.mapProjectSettings.cameraRotZ))
-        );
         WBench.get().openInterface(dearUIInterface);
+        if (this.mapProjectSettings != null) {
+            this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(this.mapProjectSettings.cameraX, this.mapProjectSettings.cameraY, this.mapProjectSettings.cameraZ), new Vector3f(this.mapProjectSettings.cameraRotX, this.mapProjectSettings.cameraRotY, this.mapProjectSettings.cameraRotZ)));
+        } else {
+            this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
+        }
     }
 
     public MapObjectTemplatesManager getMapObjectTemplates() {
@@ -582,6 +586,7 @@ public final class WBenchMapProjectManager {
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {
         world.setCamera(null);
+        WBench.get().getSoundManager().stopAllSounds();
         WBench.get().openInterface(dearUIInterface);
     }
 

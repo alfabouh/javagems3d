@@ -36,6 +36,7 @@ public class JGemsGaming {
     public static String SYS_MAPS_FOLDER = "game_maps";
     public static String MODEL_ASSETS_FOLDER = "models";
     public static String TEXTURE_ASSETS_FOLDER = "textures";
+    public static String SOUND_ASSETS_FOLDER = "sounds";
     public static String OBJECT_ASSETS_FOLDER = "objects";
     public static String SCRIPTS_FOLDER = "scripts";
     public static String ENVIRONMENT_ASSETS_FOLDER = "environment";
@@ -57,6 +58,10 @@ public class JGemsGaming {
 
     public static JGemsPath getModelsFolder(JGemsPath absPath) {
         return new JGemsPath(absPath, SYS_ASSETS_FOLDER, MODEL_ASSETS_FOLDER);
+    }
+
+    public static JGemsPath getSoundsFolder(JGemsPath absPath) {
+        return new JGemsPath(absPath, SYS_ASSETS_FOLDER, SOUND_ASSETS_FOLDER);
     }
 
     public static JGemsPath getTexturesFolder(JGemsPath absPath) {

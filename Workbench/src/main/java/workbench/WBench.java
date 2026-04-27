@@ -4,6 +4,7 @@ import api.system.JGemsAPI;
 import api.system.JGemsAPIEditorResources;
 import com.google.gson.JsonSyntaxException;
 import javagems3d.JGems3D;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.core.JGemsCore;
@@ -52,6 +53,7 @@ public final class WBench {
     private final WBenchResourceManager resourceManager;
     private WBenchSettings settings;
     private final WBenchGameProjectManager wBenchGameProject;
+    private final JGemsSoundManager jGemsSoundManager;
 
     private static JGemsAPIEditorResources apiEditorResources;
 
@@ -75,6 +77,7 @@ public final class WBench {
             Log.get().exception(e);
         }
 
+        this.jGemsSoundManager = new JGemsSoundManager();
         this.resourceManager = new WBenchResourceManager();
         this.screen = new WBenchScreen();
         this.wBenchGameProject = new WBenchGameProjectManager();
@@ -135,6 +138,7 @@ public final class WBench {
             Log.get().info(WBench.get().toString());
             Log.get().separator();
             JGemsCore.printSystemInfo();
+            WBench.get().getSoundManager().createSystem();
             WBench.get().getResourceManager().initGlobalResources();
             WBench.get().getScreen().createScreenAndContext();
             WBench.get().getScreen().createObjects(WBench.get().getScreen().getWindow());
@@ -149,6 +153,7 @@ public final class WBench {
                 Log.get().exception(e);
             }
             JGemsLaunchArgsRegistry.clear();
+            WBench.get().getSoundManager().destroy();
             WBench.get().getMapProjectManager().closeMapProject(false);
             WBench.get().getResourceManager().destroy();
             LoadingInterfaceSwing.dispose();
@@ -169,6 +174,10 @@ public final class WBench {
 
     public WBenchSettings getSettings() {
         return this.settings;
+    }
+
+    public JGemsSoundManager getSoundManager() {
+        return this.jGemsSoundManager;
     }
 
     public @NotNull WBenchMapProjectManager getMapProjectManager() {

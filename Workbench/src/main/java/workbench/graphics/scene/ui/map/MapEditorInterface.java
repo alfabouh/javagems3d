@@ -32,6 +32,7 @@ import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.map.editor.*;
+import workbench.graphics.scene.ui.map.editor.scenes.actions.InterfaceActionsSelectedObjectM;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.map.settings.MapProjectSettings;
@@ -497,7 +498,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         }
     }
 
-    public static class SelectedObjectsManager implements ISnapshotCompatible<SelectedObjectsManager.SelectedObjectsManageSnapshot> {
+    public class SelectedObjectsManager implements ISnapshotCompatible<SelectedObjectsManager.SelectedObjectsManageSnapshot> {
         private final Set<WBenchObject<?>> currentSelectedObjects;
         private final Vector3f prevGroupPosition;
         private final Vector3f prevGroupRotation;
@@ -509,7 +510,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         private boolean rotateGroupAroundOwnCenter;
         private boolean scaleTranslator;
         private boolean oneDirScaling;
-        private boolean scalingOneDirMaxPlane;
+        public static Vector4i scalingFlags = new Vector4i();
 
         public SelectedObjectsManager(Set<WBenchObject<?>> currentSelectedObjects) {
             this.currentSelectedObjects = currentSelectedObjects;
@@ -523,16 +524,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             this.rotateGroupAroundOwnCenter = false;
             this.scaleTranslator = false;
             this.oneDirScaling = false;
-            this.scalingOneDirMaxPlane = false;
-        }
-
-        public boolean isScalingOneDirMaxPlane() {
-            return this.scalingOneDirMaxPlane;
-        }
-
-        public SelectedObjectsManager setScalingOneDirMaxPlane(boolean scalingOneDirMaxPlane) {
-            this.scalingOneDirMaxPlane = scalingOneDirMaxPlane;
-            return this;
         }
 
         public boolean isOneDirScaling() {
@@ -663,17 +654,10 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                     } else {
                         Vector3f newScale = obj.getScaling().mul(scaleOffset);
                         if (this.isOneDirScaling()) {
-                            Vector3f oldScale = new Vector3f(obj.getScaling());
-                            Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
-                            CullingAABB aabb = obj.getCullingData();
-                            Vector3f pivot = new Vector3f(this.scalingOneDirMaxPlane ? aabb.getAabbMax() : aabb.getAabbMin());
-                            Vector3f oldPos = new Vector3f(obj.getPosition());
-                            Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
-                            if (newPosScaled.isFinite()) {
-                                obj.setPosition(newPosScaled);
-                            }
+                            SceneInterfaceComponentM.oneDirScaling(MapEditorInterface.this.sceneComponent.guizmoPrevTranlate, SelectedObjectsManager.scalingFlags, this.getGroupPosition(), obj, newScale, obj.getScaling());
+                        } else {
+                            obj.setScaling(newScale);
                         }
-                        obj.setScaling(newScale);
                     }
                 }
                 if (!this.isOneDirScaling()) {

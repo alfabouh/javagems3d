@@ -11,6 +11,7 @@ import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewMapG;
 import workbench.graphics.scene.ui.game.editor.scenes.mapping.ScenePreviewSkyBoxG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewModelG;
+import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewSoundG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTagG;
 import workbench.graphics.scene.ui.game.editor.scenes.misc.ScenePreviewTextureG;
 import workbench.graphics.scene.ui.game.editor.scenes.scripting.ScenePreviewScriptG;
@@ -27,6 +28,7 @@ public class ActionsInterfaceComponentG {
     private final ScenePreviewWorldObjectG<GameResourceEntityObjectAsset> scenePreviewEntityObjectG;
     private final ScenePreviewMarkerObjectG<GameResourceMarkerObjectAsset> scenePreviewMarkerObjectG;
     private final ScenePreviewTextureG scenePreviewTextureG;
+    private final ScenePreviewSoundG scenePreviewSoundG;
     private final ScenePreviewTagG scenePreviewTagG;
     private final ScenePreviewSkyBoxG scenePreviewSkyBoxG;
     private final ScenePreviewScriptG scenePreviewScriptG;
@@ -38,6 +40,7 @@ public class ActionsInterfaceComponentG {
         this.scenePreviewEntityObjectG = new ScenePreviewWorldObjectG<>("Entity", () -> resourcesInterfaceComponentG.getEntityResourceTreeDrawer().getCurrentSelectedAsset(), resourcesInterfaceComponentG);
         this.scenePreviewMarkerObjectG = new ScenePreviewMarkerObjectG<>("Marker", () -> resourcesInterfaceComponentG.getMarkerResourceTreeDrawer().getCurrentSelectedAsset(), resourcesInterfaceComponentG);
         this.scenePreviewTextureG = new ScenePreviewTextureG(resourcesInterfaceComponentG);
+        this.scenePreviewSoundG = new ScenePreviewSoundG(resourcesInterfaceComponentG);
         this.scenePreviewTagG = new ScenePreviewTagG(resourcesInterfaceComponentG);
         this.scenePreviewSkyBoxG = new ScenePreviewSkyBoxG(resourcesInterfaceComponentG);
         this.scenePreviewScriptG = new ScenePreviewScriptG(resourcesInterfaceComponentG);
@@ -130,7 +133,12 @@ public class ActionsInterfaceComponentG {
         this.scenePreviewMarkerObjectG.render();
         this.scenePreviewTextureG.render();
         this.scenePreviewSkyBoxG.render();
+        this.scenePreviewSoundG.render();
         ImGui.dummy(0.0f, 20.0f);
+    }
+
+    public ScenePreviewSoundG getScenePreviewSoundG() {
+        return this.scenePreviewSoundG;
     }
 
     public ScenePreviewScriptG getScenePreviewScriptG() {

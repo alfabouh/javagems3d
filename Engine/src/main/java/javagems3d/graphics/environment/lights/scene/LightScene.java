@@ -42,6 +42,9 @@ public abstract class LightScene implements ILightScene {
         this.setBloomEnabled(true);
         this.setHdrExposure(JGemsConfig.SYSTEM.HDR_EXPOSURE_DEFAULT);
         this.setHdrGamma(JGemsConfig.SYSTEM.HDR_GAMMA_DEFAULT);
+        this.setSsaoRange(JGemsConfig.SYSTEM.SSAO_RANGE);
+        this.setSsaoBias(JGemsConfig.SYSTEM.SSAO_BIAS);
+        this.setSsaoRadius(JGemsConfig.SYSTEM.SSAO_RADIUS);
         this.initCollections();
     }
 

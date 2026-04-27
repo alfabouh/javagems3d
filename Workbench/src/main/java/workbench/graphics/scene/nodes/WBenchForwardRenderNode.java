@@ -33,7 +33,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
     public void onRender(FrameTicking frameTicking) {
         super.onRender(frameTicking);
 
-        if (WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN) {
+        if (WBench.get().getMapProjectManager().mapProjectSettings.VIEW_CHESS_TERRAIN || WBenchOpenGLRenderer.isRenderingBackgroundScene()) {
             final WBenchWorld wBenchWorld = (WBenchWorld) this.getWorld();
             this.getOutColorBuffer().bindFBO();
             GL46.glEnable(GL46.GL_BLEND);
@@ -51,7 +51,6 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
             }
             JGemsHelper.render().renderModel3D(WBenchOpenGLRenderer.flatTerrain, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             WBenchResourceManager.localShaderAssets.simple_flat.endShading();
-            this.getOutColorBuffer().unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);
             this.getOutColorBuffer().unBindFBO();
         }

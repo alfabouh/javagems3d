@@ -298,6 +298,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             lightScene.setHdrGamma(lightingData.gamma);
             lightScene.setHdrExposure(lightingData.exposure);
             lightScene.setBloomEnabled(lightingData.bloomEffect);
+            lightScene.setSsaoRange(lightingData.ssaoRange);
+            lightScene.setSsaoBias(lightingData.ssaoBias);
+            lightScene.setSsaoRadius(lightingData.ssaoRadius);
         }
     }
 

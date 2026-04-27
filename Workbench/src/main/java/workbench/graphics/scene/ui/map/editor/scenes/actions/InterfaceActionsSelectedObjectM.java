@@ -21,12 +21,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4i;
 import workbench.WBench;
 import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
+import workbench.graphics.scene.ui.map.editor.SceneInterfaceComponentM;
 
 import java.util.*;
 import java.util.function.Function;
@@ -35,7 +37,7 @@ public class InterfaceActionsSelectedObjectM {
     private boolean lockObjectAngles;
     private final MapEditorInterface mapEditorInterface;
     private int currentOperation;
-    public static boolean scalingFlag;
+    public static Vector4i scalingFlags = new Vector4i();
 
     public InterfaceActionsSelectedObjectM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
@@ -136,7 +138,8 @@ public class InterfaceActionsSelectedObjectM {
     }
 
     private void processTranslations(String id, Collection<WBenchObject<?>> wBenchObjects, int operationFlag, boolean textInfoIfCannotBeTransformed) {
-        ImGui.beginChild(id, ImGui.getColumnWidth(), textInfoIfCannotBeTransformed ? 330 : 190, true);
+        boolean wideBorder = (operationFlag & Operation.ROTATE) != 0;
+        ImGui.beginChild(id, ImGui.getColumnWidth(), textInfoIfCannotBeTransformed ? 330 : (wideBorder ? 190 : 140), true);
         if (!wBenchObjects.isEmpty()) {
             final boolean many = wBenchObjects.size() > 1;
             WBenchObject<?> getFirst = wBenchObjects.stream().findFirst().get();
@@ -377,7 +380,7 @@ public class InterfaceActionsSelectedObjectM {
             final Vector3f newScale = new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]);
 
             if (!scalingActive) {
-                InterfaceActionsSelectedObjectM.scalingFlag = false;
+                InterfaceActionsSelectedObjectM.scalingFlags.w = 0;
             }
 
             if (many) {
@@ -390,10 +393,6 @@ public class InterfaceActionsSelectedObjectM {
                 if (captScale) {
                     Vector3f oldScale = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().getGroupScaling());
                     final Vector3f delta = new Vector3f(oldScale).sub(newScale);
-                    if (!InterfaceActionsSelectedObjectM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
-                        this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(delta.x > 0 || delta.y > 0 || delta.z > 0);
-                        InterfaceActionsSelectedObjectM.scalingFlag = true;
-                    }
                     this.mapEditorInterface.getSelectedObjectsManager().setGroupScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                 }
             } else {
@@ -415,23 +414,10 @@ public class InterfaceActionsSelectedObjectM {
                 }
                 if (captScale) {
                     if (this.isOneDirScaling()) {
-                        Vector3f oldScale = new Vector3f(getFirst.getScaling());
-                        final Vector3f delta = new Vector3f(oldScale).sub(newScale);
-                        if (!InterfaceActionsSelectedObjectM.scalingFlag && (delta.x != 0 || delta.y != 0 || delta.z != 0)) {
-                            this.mapEditorInterface.getSelectedObjectsManager().setScalingOneDirMaxPlane(delta.x > 0 || delta.y > 0 || delta.z > 0);
-                            InterfaceActionsSelectedObjectM.scalingFlag = true;
-                        }
-
-                        Vector3f scaleRatio = new Vector3f(newScale).div(oldScale);
-                        CullingAABB aabb = getFirst.getCullingData();
-                        Vector3f pivot = new Vector3f(this.mapEditorInterface.getSelectedObjectsManager().isScalingOneDirMaxPlane() ? aabb.getAabbMax() : aabb.getAabbMin());
-                        Vector3f oldPos = new Vector3f(getFirst.getPosition());
-                        Vector3f newPosScaled = new Vector3f(oldPos).sub(pivot).mul(scaleRatio).add(pivot);
-                        if (newPosScaled.isFinite()) {
-                            getFirst.setPosition(newPosScaled);
-                        }
+                        SceneInterfaceComponentM.oneDirScaling(null, InterfaceActionsSelectedObjectM.scalingFlags, getFirst.getPosition(), getFirst, newScale, getFirst.getScaling());
+                    } else {
+                        getFirst.setScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                     }
-                    getFirst.setScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                 }
             }
         }
@@ -462,6 +448,7 @@ public class InterfaceActionsSelectedObjectM {
                     //ImGui.beginChild("##InsideTag_" + tag.getTagID().getId(), ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
                     {
                         tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), worldObjectsToViewInList, WBenchUITrackingHelper::INSTANCE);
+                        ImGui.separator();
                        //this.showItemDescription(tag.getTagID());
                     }
                     //ImGui.endChild();
@@ -479,7 +466,7 @@ public class InterfaceActionsSelectedObjectM {
     private void forSelectedObject(WBenchObject<?> selectedObject, boolean manyObjects) {
         if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().nameId(), manyObjects ? ImGuiTreeNodeFlags.DefaultOpen : 0)) {
             ImGui.pushID(this.getClass().getSimpleName() + "_" + selectedObject.getListID());
-            ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), 400, true, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), 500, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Transformation");
             ImGui.popStyleColor();
@@ -530,7 +517,9 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.popStyleColor();
             {
                 ImGui.indent();
+                ImGui.beginChild("##ObjTags", ImGui.getColumnWidth(), 220, true, ImGuiWindowFlags.HorizontalScrollbar);
                 this.showTags(selectedObject);
+                ImGui.endChild();
                 ImGui.unindent();
             }
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);

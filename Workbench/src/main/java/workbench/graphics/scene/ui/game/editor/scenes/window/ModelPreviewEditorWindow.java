@@ -48,7 +48,7 @@ public class ModelPreviewEditorWindow {
         WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
         WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
         WBenchResourceManager.localShaderAssets.simple_flat.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), view);
-        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+        WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.375f)));
         WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_CENTER_RECT), UniformFunctions.FLOAT(-1.0f));
         JGemsHelper.render().renderModel3D(WBenchOpenGLRenderer.flatTerrain, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         WBenchResourceManager.localShaderAssets.simple_flat.endShading();

@@ -102,6 +102,7 @@ public class WBenchGameProjectManager {
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {
         this.saveGameProject(true);
+        WBench.get().getSoundManager().stopAllSounds();
         this.destroyLocalGameResources();
         WBench.get().openInterface(dearUIInterface);
     }
@@ -146,6 +147,16 @@ public class WBenchGameProjectManager {
         }
     }
 
+    public void refreshSoundFiles(boolean showLoadingScreen) {
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.invoke();
+        }
+        this.getGameResourcesManager().refreshSounds(this.getGameProject().getProjectAbsolutePath());
+        if (showLoadingScreen) {
+            LoadingInterfaceSwing.dispose();
+        }
+    }
+
     public void saveResourceObjectFiles(@NotNull WBenchProjectResourcesManager.AssetsTarget assetsTarget) {
         this.getGameResourcesManager().saveCreatableResourceObjects(assetsTarget, this.getGameProject().getProjectAbsolutePath());
     }
@@ -158,6 +169,7 @@ public class WBenchGameProjectManager {
         WBench.get().getResourceManager().loadLocalGameEditorResources();
         this.refreshModelFiles(false);
         this.refreshTextureFiles(false);
+        this.refreshSoundFiles(false);
         this.refreshMaps(false);
         this.refreshScripts(false);
         this.getGameResourcesManager().readCreatableResourceObjects(WBenchProjectResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());

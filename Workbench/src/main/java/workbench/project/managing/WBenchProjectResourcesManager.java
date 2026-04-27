@@ -2,6 +2,8 @@ package workbench.project.managing;
 
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
+import javagems3d.audio.sound.SoundBuffer;
+import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.gaming.def.misc.*;
@@ -19,6 +21,7 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.openal.AL10;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
@@ -39,6 +42,7 @@ public class WBenchProjectResourcesManager {
     private final SystemResources systemResources;
     private GameResourceAssetsFolder<GameResourceModelAsset> modelAssetsFolder;
     private GameResourceAssetsFolder<GameResourceTextureAsset> textureAssetsFolder;
+    private GameResourceAssetsFolder<GameResourceSoundAsset> soundAssetsFolder;
     private GameResourceAssetsFolder<WBenchResourceMapAsset> mapAssetsFolder;
     private GameResourceAssetsFolder<GameResourceScriptAsset> scriptAssetsFolder;
     private GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder;
@@ -49,6 +53,7 @@ public class WBenchProjectResourcesManager {
 
     private final Map<String, GameResourceModelAsset> modelsKeysCache;
     private final Map<String, GameResourceTextureAsset> texturesKeysCache;
+    private final Map<String, GameResourceSoundAsset> soundKeysCache;
 
     public enum AssetsTarget {
         ALL,
@@ -63,6 +68,7 @@ public class WBenchProjectResourcesManager {
     public WBenchProjectResourcesManager(SystemResources systemResources) {
         this.systemResources = systemResources;
         this.modelsKeysCache = new HashMap<>();
+        this.soundKeysCache = new HashMap<>();
         this.texturesKeysCache = new HashMap<>();
     }
 
@@ -72,6 +78,20 @@ public class WBenchProjectResourcesManager {
 
     public @Nullable GameResourceTextureAsset extractFromCacheTexture(String relativePath) {
         return this.texturesKeysCache.get(relativePath);
+    }
+
+    public @Nullable GameResourceSoundAsset extractFromCacheSound(String relativePath) {
+        return this.soundKeysCache.get(relativePath);
+    }
+
+    public static void openSoundsFolder(JGemsPath pathToGameFolder) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Desktop.getDesktop().open(JGemsGaming.getSoundsFolder(pathToGameFolder).toFile());
+            } catch (Exception e) {
+                Log.get().exception(e);
+            }
+        });
     }
 
     public static void openTexturesFolder(JGemsPath pathToGameFolder) {
@@ -119,7 +139,7 @@ public class WBenchProjectResourcesManager {
         File dir2 = new File(file, JGemsGaming.SYS_MAPS_FOLDER);
         File dir3 = new File(file, JGemsGaming.SYS_SCRIPTS_FOLDER);
         {
-            for (String s : new String[]{JGemsGaming.MODEL_ASSETS_FOLDER, JGemsGaming.TEXTURE_ASSETS_FOLDER, JGemsGaming.OBJECT_ASSETS_FOLDER}) {
+            for (String s : new String[]{JGemsGaming.MODEL_ASSETS_FOLDER, JGemsGaming.TEXTURE_ASSETS_FOLDER, JGemsGaming.OBJECT_ASSETS_FOLDER, JGemsGaming.SOUND_ASSETS_FOLDER}) {
                 File inFile = new File(dir1, s);
                 if (!inFile.exists()) {
                     if (inFile.mkdirs()) {
@@ -143,6 +163,17 @@ public class WBenchProjectResourcesManager {
             }
         }
         return new File[]{dir1, dir2, dir3};
+    }
+
+    public void refreshSounds(JGemsPath pathToGameFolder) {
+        {
+            this.soundKeysCache.values().forEach(e -> {
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getSoundsFolder(pathToGameFolder), e.relativePath()));
+            });
+            this.soundKeysCache.clear();
+        }
+        this.createSystemFolders(pathToGameFolder.toFile());
+        this.soundAssetsFolder = this.readSoundsFolder(JGemsGaming.getSoundsFolder(pathToGameFolder));
     }
 
     public void refreshTextures(JGemsPath pathToGameFolder) {
@@ -295,6 +326,33 @@ public class WBenchProjectResourcesManager {
         return assetsFolder;
     }
 
+    protected GameResourceAssetsFolder<GameResourceSoundAsset> readSoundsFolder(JGemsPath folder) {
+        return this.readSoundsFolder(folder.toFile());
+    }
+
+    protected GameResourceAssetsFolder<GameResourceSoundAsset> readSoundsFolder(File rootFile) {
+        return this.readSoundsFolderRecursive(rootFile, rootFile);
+    }
+
+    protected GameResourceAssetsFolder<GameResourceSoundAsset> readSoundsFolderRecursive(File rootFolder, File relativeFolder) {
+        GameResourceAssetsFolder<GameResourceSoundAsset> assetsFolder = new GameResourceAssetsFolder<>(relativeFolder.getName());
+        File[] files = relativeFolder.listFiles();
+        if (files == null) {
+            return assetsFolder;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                assetsFolder.putFolderThere(this.readSoundsFolderRecursive(rootFolder, file));
+            } else if (this.isSoundFile(file)) {
+                GameResourceSoundAsset asset = this.loadSoundAsset(rootFolder, file);
+                if (asset != null) {
+                    assetsFolder.putObjectThere(asset);
+                }
+            }
+        }
+        return assetsFolder;
+    }
+
     protected GameResourceAssetsFolder<GameResourceModelAsset> readModelsFolder(JGemsPath pathToGameFolder) {
         return this.readModelsFolder(pathToGameFolder.toFile());
     }
@@ -423,6 +481,19 @@ public class WBenchProjectResourcesManager {
         }
     }
 
+    private GameResourceSoundAsset loadSoundAsset(File rootFolder, File fullPath) {
+        try {
+            SoundBuffer soundBuffer = this.systemResources.createSoundBuffer(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
+            final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length()).replace("\\", "/");
+            final GameResourceSoundAsset soundAsset = new GameResourceSoundAsset(fullPath.getName(), relativePath, soundBuffer);
+            this.soundKeysCache.put(relativePath, soundAsset);
+            return soundAsset;
+        } catch (Exception e) {
+            Log.get().exception(e);
+            return null;
+        }
+    }
+
     private GameResourceTextureAsset loadTextureAsset(File rootFolder, File fullPath) {
         try {
             ITexture2DProgram texture2DProgram = this.systemResources.createTexture(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
@@ -451,6 +522,11 @@ public class WBenchProjectResourcesManager {
         return name.endsWith(".gltf");
     }
 
+    protected boolean isSoundFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".ogg");
+    }
+
     public GameResourceAssetsFolder<GameResourceSkyboxAsset> getSkyBoxesAssetsFolder() {
         return this.skyBoxesAssetsFolder;
     }
@@ -477,6 +553,10 @@ public class WBenchProjectResourcesManager {
 
     public GameResourceAssetsFolder<GameResourcePropObjectAsset> getPropAssetsFolder() {
         return this.propAssetsFolder;
+    }
+
+    public GameResourceAssetsFolder<GameResourceSoundAsset> getSoundAssetsFolder() {
+        return this.soundAssetsFolder;
     }
 
     public GameResourceAssetsFolder<GameResourceModelAsset> getModelAssetsFolder() {

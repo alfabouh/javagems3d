@@ -61,7 +61,7 @@ public class InterfaceActionsEnvLightingM {
             }
             ImGui.popStyleColor();
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
-            if (ImGui.checkbox("Enable SSAO Testing", WBenchDeferredRenderNode.enabledTest)) {
+            if (ImGui.checkbox("SSAO (For Testing)", WBenchDeferredRenderNode.enabledTest)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
                 WBenchDeferredRenderNode.enabledTest = !WBenchDeferredRenderNode.enabledTest;
             }

@@ -58,17 +58,17 @@ public class ActionsInterfaceComponentM {
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("SkyBox")) {
-                    ImGui.beginChild("##SkyContent", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##SkyContent", ImGui.getColumnWidth(), 280, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvSkyM.render();
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("Shadows")) {
-                    ImGui.beginChild("##ShadowsContent0", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##ShadowsContent0", ImGui.getColumnWidth(), 320, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvShadowsM.render();
                     ImGui.endChild();
                 }
                 if (ImGui.collapsingHeader("Lighting##Light1")) {
-                    ImGui.beginChild("##LightingContent0", ImGui.getColumnWidth(), 200, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##LightingContent0", ImGui.getColumnWidth(), 360, true, ImGuiWindowFlags.HorizontalScrollbar);
                     this.interfaceActionsEnvLightingM.render();
                     ImGui.endChild();
                 }

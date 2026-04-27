@@ -24,6 +24,7 @@ import workbench.graphics.scene.ui.game.editor.instances.mapping.MapProjectPrevi
 import workbench.graphics.scene.ui.game.editor.instances.mapping.SkyBoxAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ModelAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.ObjectTagPreview;
+import workbench.graphics.scene.ui.game.editor.instances.misc.SoundAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.scripting.ScriptAssetPreview;
 import workbench.graphics.scene.ui.game.editor.instances.world.ObjectEntityPreview;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ResourcesInterfaceComponentG {
     private final GameEditorInterface gameEditorInterface;
     private final FolderResourcesTreeDrawerG<GameResourceModelAsset, ModelAssetPreview> modelAssetsTreeDrawer;
+    private final FolderResourcesTreeDrawerG<GameResourceSoundAsset, SoundAssetPreview> soundAssetsTreeDrawer;
     private final FolderResourcesTreeDrawerG<GameResourceTextureAsset, TextureAssetPreview> textureAssetsTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourcePropObjectAsset, ObjectPropPreview> propResourceTreeDrawer;
     private final CreatableResourcesTreeDrawerG<GameResourceEntityObjectAsset, ObjectEntityPreview> entityResourceTreeDrawer;
@@ -63,7 +65,7 @@ public class ResourcesInterfaceComponentG {
 
         this.modelAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
                 () -> WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
-                "Models",
+                "Models (GLTF)",
                 (e) -> WBench.get().getGameProjectManager().refreshModelFiles(true),
                 (e) -> WBenchProjectResourcesManager.openModelsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 ModelAssetPreview::new);
@@ -74,6 +76,15 @@ public class ResourcesInterfaceComponentG {
                 (e) -> WBench.get().getGameProjectManager().refreshTextureFiles(true),
                 (e) -> WBenchProjectResourcesManager.openTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
                 TextureAssetPreview::new);
+
+        this.soundAssetsTreeDrawer = new FolderResourcesTreeDrawerG<>(
+                () -> WBench.get().getGameProjectManager().getGameResourcesManager().getSoundAssetsFolder(),
+                "Sounds (OGG)",
+                (e) -> WBench.get().getGameProjectManager().refreshSoundFiles(true),
+                (e) -> WBenchProjectResourcesManager.openSoundsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()),
+                SoundAssetPreview::new).setOnSelectedObject((o) -> {
+                    gameEditorInterface.getActionsInterfaceComponentG().getScenePreviewSoundG().reset();
+        });
 
         this.propResourceTreeDrawer = new CreatableResourcesTreeDrawerG<>(
                 "Props",
@@ -340,6 +351,10 @@ public class ResourcesInterfaceComponentG {
         return this.scriptResourceTreeDrawer;
     }
 
+    public FolderResourcesTreeDrawerG<GameResourceSoundAsset, SoundAssetPreview> getSoundAssetsTreeDrawer() {
+        return this.soundAssetsTreeDrawer;
+    }
+
     private static void changeMapDatObjProperties(String prefix, String[] rootNames, CreatableResourcesTreeDrawerG.AssetMovedData<? extends IAsset> e) {
         final List<JGemsPath> getAllMapDataFiles = new ArrayList<>();
         WBench.get().getGameProjectManager().getGameResourcesManager().getAllMapsDataPaths(getAllMapDataFiles, WBench.get().getGameProjectManager().getGameResourcesManager().getMapAssetsFolder());
@@ -392,6 +407,7 @@ public class ResourcesInterfaceComponentG {
             ImGui.indent();
             this.getModelAssetsTreeDrawer().render();
             this.getTextureAssetsTreeDrawer().render();
+            this.getSoundAssetsTreeDrawer().render();
             ImGui.unindent();
         }
         if (ImGui.collapsingHeader("Game", ImGuiTreeNodeFlags.DefaultOpen)) {

@@ -22,6 +22,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
     private final Supplier<VirtualObjectsFolder<E>> gameResourceAssetsFolder;
     private final Function<E, T> previewInstanceFactory;
     private final @Nullable Consumer<Void> onRefreshButton;
+    private Consumer<T> onSelectedObject;
 
     public FolderResourcesTreeDrawerG(@NotNull Supplier<VirtualObjectsFolder<E>> gameResourceAssetsFolder, @NotNull String tab, @Nullable Consumer<Void> onRefreshButton, @NotNull Consumer<Void> openFolderAction, @NotNull Function<E, T> previewInstanceFactory) {
         this.tab = tab;
@@ -29,6 +30,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         this.gameResourceAssetsFolder = gameResourceAssetsFolder;
         this.previewInstanceFactory = previewInstanceFactory;
         this.onRefreshButton = onRefreshButton;
+        this.onSelectedObject = null;
     }
 
     private void tree(VirtualObjectsFolder<E> folder, boolean root) {
@@ -84,6 +86,15 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
         }
     }
 
+    public Consumer<T> getOnSelectedObject() {
+        return this.onSelectedObject;
+    }
+
+    public FolderResourcesTreeDrawerG<E, T> setOnSelectedObject(Consumer<T> onSelectedObject) {
+        this.onSelectedObject = onSelectedObject;
+        return this;
+    }
+
     public Function<E, T> getPreviewInstanceFactory() {
         return this.previewInstanceFactory;
     }
@@ -102,6 +113,9 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
 
     public void setPreviewWrapperObject(T previewWrapperObject) {
         this.previewWrapperObject = previewWrapperObject;
+        if (this.getOnSelectedObject() != null) {
+            this.getOnSelectedObject().accept(previewWrapperObject);
+        }
     }
 
     public Consumer<Void> getOpenFolderAction() {

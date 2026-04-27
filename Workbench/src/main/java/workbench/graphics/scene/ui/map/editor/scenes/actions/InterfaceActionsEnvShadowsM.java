@@ -28,7 +28,7 @@ public class InterfaceActionsEnvShadowsM {
         final String[] resolutions = {"256", "512", "1024", "2048", "4096"};
         ImGui.setNextItemWidth(80);
         final int currentResolution = sun ? shadowScene.sunShadowMapResolution : shadowScene.pointLightShadowMapResolution;
-        if (ImGui.beginCombo("ShadowMap Resolution##" + (sun ? "sun" : "pl"), String.valueOf(currentResolution))) {
+        if (ImGui.beginCombo("Resolution##" + (sun ? "sun" : "pl"), String.valueOf(currentResolution))) {
             for (String resolution : resolutions) {
                 int parsed = Integer.parseInt(resolution);
                 if (ImGui.selectable(resolution, currentResolution == parsed)) {
@@ -53,7 +53,7 @@ public class InterfaceActionsEnvShadowsM {
             ImGui.endChild();
         }
         if (ImGui.collapsingHeader("Sun Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.beginChild("##ShadowsContent2", ImGui.getColumnWidth(), 260, true, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.beginChild("##ShadowsContent2", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.shadowResCombo(true);
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_shadowSplits", WBenchUITrackingHelper::INSTANCE)) {
                 float[] shadowSplits = new float[]{environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};

@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.files.VirtualObjectsFolder;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
@@ -44,7 +45,8 @@ public record CreatableObjectsTreeDrawerM<T extends WBenchObjectTemplate>(MapEdi
 
     public void render() {
         if (ImGui.collapsingHeader(this.tab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.beginChild("##MResChild_" + this.tab, ImGui.getColumnWidth(), ImGui.getWindowHeight() * 0.3f, true, ImGuiWindowFlags.HorizontalScrollbar);
+            final float dynHeight = JGemsHelper.math().clamp(this.folderSupplier.get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 26.0f, 160.0f, ImGui.getWindowHeight() * 0.5f);
+            ImGui.beginChild("##MResChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.tree(this.folderSupplier.get(), true);
             ImGui.endChild();
         }
