@@ -3,6 +3,7 @@ package javagems3d.system.external.mapping.tags.items;
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
@@ -35,7 +36,7 @@ public class TagCheckBoolean extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
         boolean value = tagCheckBoolean.isFlag();
         if (ImGui.checkbox("True/False ##" + tagID.getId(), value)) {

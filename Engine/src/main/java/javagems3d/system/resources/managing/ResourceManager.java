@@ -183,7 +183,11 @@ public abstract class ResourceManager {
         }
 
         floatBuffer.flip();
-        texture2DProgram.createTexture(new Vector2i(size), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+        if (totalMatrices == 0) {
+            texture2DProgram.createTexture(new Vector2i(1), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+        } else {
+            texture2DProgram.createTexture(new Vector2i(size), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+        }
 
         MemoryUtil.memFree(floatBuffer);
         return texture2DProgram;

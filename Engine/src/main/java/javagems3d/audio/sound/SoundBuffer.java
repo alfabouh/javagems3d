@@ -51,7 +51,7 @@ public class SoundBuffer implements ICached {
     }
 
     private boolean readOgg(InputStream inputStream, int soundFormat) throws UnsupportedAudioFileException, IOException {
-        Ogg ogg = (Ogg) Ogg.create(inputStream);
+        Ogg ogg = (Ogg) Ogg.create(inputStream, soundFormat == AL10.AL_FORMAT_MONO16);
         //Wave wave = (Wave) Wave.create(inputStream);
         if (ogg != null) {
             AL10.alBufferData(this.buffer, soundFormat, ogg.getPcm(), ogg.getSampleRate());

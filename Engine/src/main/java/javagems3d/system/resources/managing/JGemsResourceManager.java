@@ -2,11 +2,10 @@ package javagems3d.system.resources.managing;
 
 import api.scripting.coding.env.internal.util.resources.init.JSDefaultGameResources;
 import api.system.JGemsAPI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.*;
-import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -109,7 +108,6 @@ public final class JGemsResourceManager extends ResourceManager {
     }
 
     private record Factory(String id) implements ResourceManager.Factory {
-
         @Override
             public SystemResources createObject(String id) {
                 return new JGemsSystemResources(new ResourceCache(id));

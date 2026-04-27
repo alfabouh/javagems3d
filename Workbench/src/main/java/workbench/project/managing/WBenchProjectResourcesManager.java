@@ -483,7 +483,7 @@ public class WBenchProjectResourcesManager {
 
     private GameResourceSoundAsset loadSoundAsset(File rootFolder, File fullPath) {
         try {
-            SoundBuffer soundBuffer = this.systemResources.createSoundBuffer(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
+            SoundBuffer soundBuffer = this.systemResources.createSoundBuffer(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
             final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length()).replace("\\", "/");
             final GameResourceSoundAsset soundAsset = new GameResourceSoundAsset(fullPath.getName(), relativePath, soundBuffer);
             this.soundKeysCache.put(relativePath, soundAsset);

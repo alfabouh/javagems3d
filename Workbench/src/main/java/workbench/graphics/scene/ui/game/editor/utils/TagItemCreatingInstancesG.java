@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import javagems3d.system.external.mapping.tags.base.ColorMode;
+import javagems3d.system.external.mapping.tags.base.ResourceType;
 import javagems3d.system.external.mapping.tags.base.VectorMode;
 import javagems3d.system.external.mapping.tags.items.*;
 import org.jetbrains.annotations.NotNull;
@@ -183,6 +184,23 @@ public class TagItemCreatingInstancesG {
             return new TagString(this.value);
         }
     };
+
+    public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagGameResourcesList>> gameResourcesListTagItemResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<TagGameResourcesList>() {
+                private final String[] resourceTypes = Arrays.stream(ResourceType.values()).map(Enum::name).toArray(String[]::new);
+                private final ImInt selectedType = new ImInt(0);
+                @Override
+                public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
+                    ImGui.indent();
+                    ImGui.text("Resource Type");
+                    ImGui.combo("##resource_type", this.selectedType, this.resourceTypes, this.resourceTypes.length);
+                    ImGui.unindent();
+                }
+                @Override
+                public @NotNull TagGameResourcesList create() {
+                    ResourceType resourceType = ResourceType.values()[this.selectedType.get()];
+                    return new TagGameResourcesList("", resourceType);
+                }
+            };
 
     public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagObjectsList>> objectListTagItemResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<TagObjectsList>() {
         @Override

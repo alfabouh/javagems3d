@@ -113,10 +113,10 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
                     if (this.getAfterAssetCreated() != null) {
                         this.getAfterAssetCreated().accept(new Pair<>(group1, t));
                     }
-                    Log.get().debug(this.tab + ": New Asset (folder) = " + group1.getHierarchy() + " (asset) = " + this.popupCreateObjectContext.getInputStrings().get(0));
+                    Log.get().debug(this.tab + ": New Asset (folder) = " + group1.getHierarchy() + " (asset) = " + this.popupCreateObjectContext.getInputStrings().getFirst());
+                    ImGui.closeCurrentPopup();
+                    this.popupCreateObjectContext.reset();
                 }
-                this.popupCreateObjectContext.reset();
-                ImGui.closeCurrentPopup();
             }
             ImGui.sameLine();
             if (ImGui.button("Cancel")) {
@@ -138,7 +138,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
         if (ImGui.beginPopup("popupGroupCreation_" + this.tab)) {
             ImGui.text("Folder Name:");
             ImGui.inputText("##objectsGroup_" + this.tab, this.popupCreateGroupContext.inputStrings.get(0));
-            String group = this.popupCreateGroupContext.inputStrings.get(0).get();
+            String group = this.popupCreateGroupContext.inputStrings.getFirst().get();
             ImGui.beginDisabled(group.isEmpty());
             if (ImGui.button("Create")) {
                 this.popupCreateGroupContext.setErrorText(null);

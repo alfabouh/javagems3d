@@ -54,6 +54,7 @@ public class AssetsChooseCombo<T extends VirtualObjectsFolder.ObjectWithName> {
         allAssets.sort(Comparator.comparingInt(e -> JGemsHelper.files().countChar(e.first(), '/')));
         String[] listForCombo = allAssets.stream().map(Pair::first).toList().toArray(new String[]{});
         ImInt selectInt = new ImInt(0);
+        ImGui.setNextItemWidth(160);
         if (ImGui.combo("Select " + this.tab, selectInt, listForCombo)) {
             T getAsset = allAssets.get(selectInt.get()).second();
             if (getAsset != null) {
@@ -63,15 +64,17 @@ public class AssetsChooseCombo<T extends VirtualObjectsFolder.ObjectWithName> {
             }
         }
 
+        ImGui.setNextItemWidth(160);
         if (ImGui.inputText("Find " + this.tab, this.finder)) {
-            ImGui.openPopup("##asset_finder");
+            ImGui.openPopup("##asset_finder" + this.tab);
         }
+        ImGui.spacing();
 
-        if (!ImGui.isItemActive() && !ImGui.isPopupOpen("##asset_finder")) {
+        if (!ImGui.isItemActive() && !ImGui.isPopupOpen("##asset_finder" + this.tab)) {
             this.finder.clear();
         }
 
-        if (ImGui.beginPopup("##asset_finder", ImGuiWindowFlags.NoFocusOnAppearing)) {
+        if (ImGui.beginPopup("##asset_finder" + this.tab, ImGuiWindowFlags.NoFocusOnAppearing)) {
             List<Pair<String, T>> filtered = new ArrayList<>(allAssets);
             filtered = filtered.stream().filter(e -> e.first().toLowerCase().contains("/") && e.first().toLowerCase().contains(this.finder.get())).toList();
             if (filtered.isEmpty()) {

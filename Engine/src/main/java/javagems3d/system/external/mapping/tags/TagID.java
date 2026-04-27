@@ -82,6 +82,11 @@ public final class TagID {
 
         public static final TagID MARKER_STRING_ID = new TagID("marker_string_id", "User String ID", "Object's id");
 
+        public static final TagID SOUND_VOLUME = new TagID("sound_volume", "Sound Volume", "Controls the playback volume of the sound");
+        public static final TagID SOUND_PITCH = new TagID("sound_pitch", "Sound Pitch", "Controls the playback pitch of the sound");
+        public static final TagID SOUND_DISTANCE = new TagID("sound_distance", "Sound Distance", "Maximum distance for 3D sound attenuation. If value < 0, sound is played as mono (non-positional)");
+        public static final TagID SOUND_PATH = new TagID("sound_path", "Sound Resource", "Path to the sound resource inside game resources");
+
         public static final TagID POSITION_X = new TagID("position_x", "Translate X");
         public static final TagID POSITION_Y = new TagID("position_y", "Translate Y");
         public static final TagID POSITION_Z = new TagID("position_z", "Translate Z");

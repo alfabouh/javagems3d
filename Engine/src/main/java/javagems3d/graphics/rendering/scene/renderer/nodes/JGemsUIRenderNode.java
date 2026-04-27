@@ -8,7 +8,7 @@ import api.scripting.coding.env.internal.util.controlling.JSController;
 import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
 import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
 import api.scripting.coding.env.internal.util.ui.JSUIDrawer;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;

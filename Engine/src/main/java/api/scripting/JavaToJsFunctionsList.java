@@ -1,6 +1,4 @@
-package api.system.scripting;
-
-import org.jetbrains.annotations.NotNull;
+package api.scripting;
 
 public abstract class JavaToJsFunctionsList {
     public static final String ENTRY_ENDPOINT_FUNCTION = "JsEnd";

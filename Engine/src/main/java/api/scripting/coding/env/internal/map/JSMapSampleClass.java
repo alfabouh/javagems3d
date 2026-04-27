@@ -3,9 +3,8 @@ package api.scripting.coding.env.internal.map;
 import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSEntryPointSampleClass;
-import api.scripting.coding.env.internal.game.init.JSGameRegistry;
 import api.scripting.coding.env.internal.map.events.JSMapRegistry;
-import api.system.scripting.JavaToJsFunctionsList;
+import api.scripting.JavaToJsFunctionsList;
 
 @JSEntryPointSampleClass
 @JSCodingClass(binding = "entrypoint", description = "entrypoint")

@@ -3,6 +3,7 @@ package javagems3d.system.external.mapping.tags.items;
 import imgui.ImGui;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.objects.SceneObject;
@@ -48,12 +49,12 @@ public class TagFloat extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagFloat tagFloat = (TagFloat) tagItem;
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagFloatTAG_" + currentSelected, trackingHelper)) {
                 float[] value = new float[]{tagFloat.getValue()};
-                if (ImGui.dragFloat("##" + tagID.getNormalName(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
+                if (ImGui.dragFloat("##" + tagID.getNormalName(), value, 0.01f, tagFloat.getMin(), tagFloat.getMax())) {
                     uiTrackingHelper.saveSnapshot();
                     tagFloat.setValue(JGemsHelper.math().clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
                 }

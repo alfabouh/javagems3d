@@ -13,6 +13,9 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
+import javagems3d.system.external.mapping.tags.base.ResourceType;
+import javagems3d.system.external.mapping.tags.items.TagFloat;
+import javagems3d.system.external.mapping.tags.items.TagGameResourcesList;
 import javagems3d.system.external.mapping.tags.items.TagRadioBoolean;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.service.files.JGemsPath;
@@ -71,6 +74,21 @@ public interface IAPIWBenchDataManager {
         this.addResourceProp("generic_prop", "cube", () -> new WBenchObjectData(cube), () -> new JGemsPropData(cube));
         this.addResourceEntity("generic_entity", "cube", () -> new WBenchObjectData(cube).addTag(TAG_PHYSICS), () -> new JGemsEntityData(cube));
         this.addResourceMarker("generic_marker", "player_spawn", () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false));
+        {
+            this.addResourceMarker("generic_marker", "ambient_sound", () -> {{
+                final TagFloat volume = new TagFloat(0.5f, 0.0f, 128.0f);
+                final TagFloat pitch = new TagFloat(1.0f, 0.0f, 3.0f);
+                final TagFloat distance = new TagFloat(16.0f, -1.0f, 128.0f);
+                final TagGameResourcesList soundResource = new TagGameResourcesList("", ResourceType.SOUND);
+                final Tag<TagFloat> tag_volume = new Tag<>(TagID.DEFAULT.SOUND_VOLUME, volume);
+                final Tag<TagFloat> tag_pitch = new Tag<>(TagID.DEFAULT.SOUND_PITCH, pitch);
+                final Tag<TagFloat> tag_distance = new Tag<>(TagID.DEFAULT.SOUND_DISTANCE, distance);
+                final Tag<TagGameResourcesList> tag_sound = new Tag<>(TagID.DEFAULT.SOUND_PATH, soundResource);
+                final WBenchMarkerData wBenchMarkerData = new WBenchMarkerData(DefaultMarker.POINT, new Vector3f(3.0f, 0.0f, 0.0f), false);
+                wBenchMarkerData.addTags(tag_volume, tag_pitch, tag_distance, tag_sound);
+                return wBenchMarkerData;
+            }});
+        }
         this.addResourceMarker("generic_marker", "water", () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true));
         this.addResourceSkyCubeMap("SkyDay1", TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES);
     }

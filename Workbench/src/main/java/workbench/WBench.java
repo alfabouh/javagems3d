@@ -153,9 +153,9 @@ public final class WBench {
                 Log.get().exception(e);
             }
             JGemsLaunchArgsRegistry.clear();
-            WBench.get().getSoundManager().destroy();
             WBench.get().getMapProjectManager().closeMapProject(false);
             WBench.get().getResourceManager().destroy();
+            WBench.get().getSoundManager().destroy();
             LoadingInterfaceSwing.dispose();
             JGemsAPI.get().close();
             Log.get().info("Cleared resources");

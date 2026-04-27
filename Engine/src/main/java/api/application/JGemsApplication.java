@@ -4,7 +4,7 @@ import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
 import api.application.scripts.IAppScriptContextRegistry;
 import api.application.workbench.IWorkBenchSetup;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;

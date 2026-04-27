@@ -45,6 +45,7 @@ public class ScenePreviewTagG {
         final TagItemCreatingInstancesG.TagItemClassResolver<TagColor> colorTagItemClassResolver = TagItemCreatingInstancesG.colorTagItemResolver.get();
         final TagItemCreatingInstancesG.TagItemClassResolver<TagVector> vectorTagItemClassResolver = TagItemCreatingInstancesG.vectorTagItemResolver.get();
         final TagItemCreatingInstancesG.TagItemClassResolver<TagObjectsList> objectListTagItemClassResolver = TagItemCreatingInstancesG.objectListTagItemResolver.get();
+        final TagItemCreatingInstancesG.TagItemClassResolver<TagGameResourcesList> gameResourcesListTagItemClassResolver = TagItemCreatingInstancesG.gameResourcesListTagItemResolver.get();
 
         {
             map.put("None", null);
@@ -56,6 +57,7 @@ public class ScenePreviewTagG {
             map.put("Color", colorTagItemClassResolver);
             map.put("Vector", vectorTagItemClassResolver);
             map.put("Scene Objects List", objectListTagItemClassResolver);
+            map.put("Game Resources List", gameResourcesListTagItemClassResolver);
         }
         return map;
     }

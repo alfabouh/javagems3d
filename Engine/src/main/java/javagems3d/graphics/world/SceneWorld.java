@@ -13,11 +13,10 @@ import api.scripting.coding.env.internal.util.world.render.data.JSLiquidRenderDa
 import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamera;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldLiquid;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
-import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.graphics.objects.IObjectWithLights;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;

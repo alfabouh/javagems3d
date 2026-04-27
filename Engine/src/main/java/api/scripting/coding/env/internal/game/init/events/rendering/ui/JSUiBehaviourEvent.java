@@ -7,7 +7,7 @@ import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.world.render.screen.JSWindow;
 import api.scripting.coding.env.internal.util.ui.JSUIDrawer;
 import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import logger.Log;
 
 @JSCodingClass(binding = "JSUiBehaviourEvent", description = "Event used to register UI panel behaviours such as draw, lifecycle and window events.")

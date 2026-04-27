@@ -4,6 +4,7 @@ import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.VectorMode;
@@ -56,7 +57,7 @@ public class TagVector extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagVector tagVector = (TagVector) tagItem;
         Vector4f vec = tagVector.getValues();
         float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};

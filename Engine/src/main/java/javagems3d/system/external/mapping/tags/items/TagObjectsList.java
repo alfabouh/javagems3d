@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
@@ -42,7 +43,7 @@ public class TagObjectsList extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagObjectsList tagList = (TagObjectsList) tagItem;
 
         List<Pair<Integer, SceneObject>> objectList = new ArrayList<>(sceneObjectsIDSet);

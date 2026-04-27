@@ -8,6 +8,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -24,6 +25,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4i;
 import workbench.WBench;
 import workbench.controller.binding.WBenchBindingManager;
+import workbench.graphics.objects.WBenchMarkerObject;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
 import workbench.graphics.scene.ui.game.editor.scenes.world.ScenePreviewWorldObjectG;
@@ -447,9 +449,13 @@ public class InterfaceActionsSelectedObjectM {
                     ImGui.popStyleColor();
                     //ImGui.beginChild("##InsideTag_" + tag.getTagID().getId(), ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
                     {
-                        tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), worldObjectsToViewInList, WBenchUITrackingHelper::INSTANCE);
+                        tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), worldObjectsToViewInList, WBenchUITrackingHelper::INSTANCE,
+                                new GameResourcesSet(
+                                        WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
+                                        WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
+                                        WBench.get().getGameProjectManager().getGameResourcesManager().getSoundAssetsFolder()));
                         ImGui.separator();
-                       //this.showItemDescription(tag.getTagID());
+                        //this.showItemDescription(tag.getTagID());
                     }
                     //ImGui.endChild();
                 } else {
@@ -522,19 +528,21 @@ public class InterfaceActionsSelectedObjectM {
                 ImGui.endChild();
                 ImGui.unindent();
             }
-            ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
-            ImGui.bulletText("Rendering");
-            ImGui.popStyleColor();
-            {
-                ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
-                if (selectedObject.getRenderAttributes().getProperties() == null) {
-                    selectedObject.getRenderAttributes().setRenderProperties(new WBenchRenderProperties());
-                    Log.get().debug("Null renderProp. Created");
+            if (!(selectedObject instanceof WBenchMarkerObject)) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
+                ImGui.bulletText("Rendering");
+                ImGui.popStyleColor();
+                {
+                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    if (selectedObject.getRenderAttributes().getProperties() == null) {
+                        selectedObject.getRenderAttributes().setRenderProperties(new WBenchRenderProperties());
+                        Log.get().debug("Null renderProp. Created");
+                    }
+                    ImGui.indent();
+                    ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties(), true);
+                    ImGui.unindent();
+                    ImGui.endChild();
                 }
-                ImGui.indent();
-                ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties(), true);
-                ImGui.unindent();
-                ImGui.endChild();
             }
             ImGui.endChild();
             ImGui.popID();

@@ -3,6 +3,7 @@ package javagems3d.system.external.mapping.tags.items;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
@@ -29,6 +30,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagItem.putTypeToken(TagString.TYPE_STRING, new TypeToken<TagString>() {});
         TagItem.putTypeToken(TagObjectsList.TYPE_STRING, new TypeToken<TagObjectsList>() {});
         TagItem.putTypeToken(TagVector.TYPE_STRING, new TypeToken<TagVector>() {});
+        TagItem.putTypeToken(TagGameResourcesList.TYPE_STRING, new TypeToken<TagGameResourcesList>() {});
     }
 
     public static void putTypeToken(String typeString, TypeToken<? extends TagItem> token) {
@@ -49,7 +51,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagsContainer.addLazyItemSerializationRule(this);
     }
 
-    public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper);
+    public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet);
 
     public @Nullable JSONFileManaging.SerializationRules<? extends TagItem> getSerializationRule() {
         return null;

@@ -9,12 +9,10 @@ import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingFloat;
 import api.scripting.coding.env.internal.util.settings.instances.JSSettingSlotI;
 import api.scripting.coding.env.internal.util.ui.instances.*;
-import api.system.scripting.JavaToJsAPI;
-import javagems3d.JGems3D;
+import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
-import javagems3d.system.global.JGemsConfig;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 

@@ -3,6 +3,7 @@ package javagems3d.system.external.mapping.tags.items;
 import imgui.ImGui;
 import imgui.type.ImString;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public class TagString extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagStringTAG_" + currentSelected, trackingHelper)) {
                 if (ImGui.inputText("##" + tagID.getNormalName(), this.value)) {

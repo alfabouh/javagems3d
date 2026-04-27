@@ -112,37 +112,37 @@ public final class JGemsSoundManager {
         ALC.destroy();
     }
 
-    public GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff) {
+    public GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance) {
         if (!this.isSystemCreated()) {
             return null;
         }
-        return GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, null);
+        return GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, null);
     }
 
     public GameSound playLocalSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume) {
         if (!this.isSystemCreated()) {
             return null;
         }
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, 1.0f, null);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, 1.0f, 1.0f, null);
         gameSound.playSound();
         return gameSound;
     }
 
-    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, Vector3f position) {
+    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, Vector3f position) {
         if (!this.isSystemCreated()) {
             return null;
         }
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, null);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, null);
         gameSound.setPosition(position);
         gameSound.playSound();
         return gameSound;
     }
 
-    public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, WorldItem worldItem) {
+    public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, WorldItem worldItem) {
         if (!this.isSystemCreated()) {
             return null;
         }
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, worldItem);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, worldItem);
         gameSound.playSound();
         return gameSound;
     }

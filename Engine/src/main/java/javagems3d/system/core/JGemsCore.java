@@ -5,7 +5,7 @@ import api.scripting.coding.env.internal.util.lang.JSLocalization;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.settings.JSPerfTestResult;
 import api.system.JGemsAPI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.help.JGemsHelper;
@@ -289,6 +289,10 @@ public final class JGemsCore implements ICore {
 
     private JGemsMapping getMapping() {
         return this.mapping;
+    }
+
+    public JGemsGaming getGaming() {
+        return this.gaming;
     }
 
     private Set<Exception> getExceptionsBuffer() {

@@ -2,6 +2,7 @@ package workbench.graphics.scene.ui.game.editor.scenes.mapping;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -38,7 +39,7 @@ public class ScenePreviewSkyBoxG {
         SkyBoxAssetPreview skyBoxAssetPreview = this.resourcesInterfaceComponentG.getSkyBoxResourceTreeDrawer().getPreviewWrapperObject();
         if (skyBoxAssetPreview != null) {
             if (ImGui.collapsingHeader("SkyBox: " + skyBoxAssetPreview.getAsset().name(), ImGuiTreeNodeFlags.DefaultOpen)) {
-                ImGui.beginChild("##skybox_preview", ImGui.getColumnWidth(), 280, true);
+                ImGui.beginChild("##skybox_preview", ImGui.getColumnWidth(), 340, true, ImGuiWindowFlags.HorizontalScrollbar);
                 ImGui.indent();
                 ImGui.bullet();
                 ImGui.text("Face Textures");

@@ -23,9 +23,11 @@ import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import api.system.JGemsAPI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
+import javagems3d.audio.sound.SoundBuffer;
+import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
@@ -51,6 +53,7 @@ import javagems3d.system.external.mapping.data.MapProjectData;
 import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.processing.base.MapProcessor;
+import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.physics.colliders.MeshCollider;
@@ -66,7 +69,6 @@ import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
@@ -81,6 +83,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.openal.AL10;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -271,6 +274,34 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
             this.spawnForPlayersData.add(new IGameMap.SpawnPlayerData(template.getPosition(), new Vector3f(0.0f, angleY, 0.0f)));
             Log.get().debug("Processed marker: player_spawn");
+        }
+
+        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "ambient_sound")) {
+            final TagFloat tag_volume = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_VOLUME, TagFloat.class);
+            final TagFloat tag_pitch = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_PITCH, TagFloat.class);
+            final TagFloat tag_distance = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_DISTANCE, TagFloat.class);
+            final TagGameResourcesList tag_path = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_PATH, TagGameResourcesList.class);
+
+            if (tag_volume != null && tag_pitch != null && tag_distance != null && tag_path != null) {
+                if (tag_distance.getValue() < 0.0f) {
+                    final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
+                    if (soundBuffer != null) {
+                        JGems3D.get().getSoundManager().playLocalSound(soundBuffer, SoundType.BACKGROUND_LOOP_SOUND, tag_pitch.getValue(), tag_volume.getValue());
+                    } else {
+                        Log.get().error("SoundBuffer is null");
+                    }
+                } else {
+                    final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
+                    if (soundBuffer != null) {
+                        JGems3D.get().getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, tag_pitch.getValue(), tag_volume.getValue(), 1.0f, tag_distance.getValue(), template.getPosition());
+                    } else {
+                        Log.get().error("SoundBuffer is null");
+                    }
+                }
+            } else {
+                Log.get().error("Failed to load ambient_sound");
+            }
+            Log.get().debug("Processed marker: ambient_sound");
         }
     }
 

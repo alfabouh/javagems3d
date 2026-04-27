@@ -1,6 +1,6 @@
 package javagems3d.graphics.screen;
 
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;

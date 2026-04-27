@@ -8,7 +8,7 @@ import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
 import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldLiquid;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;

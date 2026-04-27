@@ -1,4 +1,4 @@
-package api.system.scripting;
+package api.scripting;
 
 import api.scripting.coding.APICodingContext;
 import api.scripting.coding.env.internal.game.init.JSGameRegistry;

@@ -1,6 +1,6 @@
 package javagems3d.system.external.mapping;
 
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;

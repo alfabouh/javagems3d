@@ -2,6 +2,7 @@ package javagems3d.system.external.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.objects.SceneObject;
@@ -49,7 +50,7 @@ public class TagRadioBoolean extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
         TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
         for (int i = 0; i < infos.length; i++) {

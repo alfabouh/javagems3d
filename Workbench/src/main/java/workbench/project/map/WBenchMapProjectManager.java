@@ -440,13 +440,15 @@ public final class WBenchMapProjectManager {
             this.mapProjectSettings = new MapProjectSettings();
         }
         {
-            this.mapProjectSettings.cameraX = this.getWorld().getCamera().getCamPosition().x;
-            this.mapProjectSettings.cameraY = this.getWorld().getCamera().getCamPosition().y;
-            this.mapProjectSettings.cameraZ = this.getWorld().getCamera().getCamPosition().z;
+            if (this.getWorld().getCamera() != null) {
+                this.mapProjectSettings.cameraX = this.getWorld().getCamera().getCamPosition().x;
+                this.mapProjectSettings.cameraY = this.getWorld().getCamera().getCamPosition().y;
+                this.mapProjectSettings.cameraZ = this.getWorld().getCamera().getCamPosition().z;
 
-            this.mapProjectSettings.cameraRotX = this.getWorld().getCamera().getCamRotation().x;
-            this.mapProjectSettings.cameraRotY = this.getWorld().getCamera().getCamRotation().y;
-            this.mapProjectSettings.cameraRotZ = this.getWorld().getCamera().getCamRotation().z;
+                this.mapProjectSettings.cameraRotX = this.getWorld().getCamera().getCamRotation().x;
+                this.mapProjectSettings.cameraRotY = this.getWorld().getCamera().getCamRotation().y;
+                this.mapProjectSettings.cameraRotZ = this.getWorld().getCamera().getCamRotation().z;
+            }
         }
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
         jsonFileManaging.writeToFile(this.mapProjectSettings, file, null);

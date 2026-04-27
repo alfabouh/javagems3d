@@ -87,7 +87,7 @@ public class RenderTable implements ICopyable<RenderTable> {
             this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND);
         } else {
             this.setMatch(Pipeline.SCENE, RenderTable.DEFAULT_SCENE_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC);
-            this.setMatch(Pipeline.BACKGROUND, RenderTable.DEFAULT_BACKGROUND_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
+            this.setMatch(Pipeline.BACKGROUND, RenderTable.DEFAULT_BACKGROUND_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC);
             this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
             this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
             this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC);

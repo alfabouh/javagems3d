@@ -9,7 +9,7 @@ import api.scripting.coding.env.internal.util.events.JSEventRun;
 import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
 import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamera;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.PointLight;

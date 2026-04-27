@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.events.JSEventI;
 import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.ui.JSUIPanelWrapper;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.system.service.collections.Pair;
 
 @JSCodingClass(binding = "JSRegisterUiEvent", description = "Event for registering UI panels in the game, including main menu and custom panels.")

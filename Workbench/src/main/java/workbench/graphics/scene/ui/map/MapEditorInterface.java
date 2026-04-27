@@ -16,6 +16,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import javagems3d.system.external.mapping.tags.items.TagFloat;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.JGemsPath;
@@ -129,7 +130,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.DEBUG, "true"),
-                        new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "true"),
+                       // new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.NO_SOUND, "true"),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.EXTERNAL_GAME_DEF, WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().fullPath()),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.API_APP_CLASSPATH, JGemsAPI.getExternalClassApiDef()),
                         new Pair<>(JGemsLaunchArgsRegistry.DEFAULT_ARGS.TEST_MAP_ID, new JGemsPath(WBench.get().getMapProjectManager().getCurrentMapProject().getMapAbsolutePath(), WBench.get().getMapProjectManager().getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE).fullPath())

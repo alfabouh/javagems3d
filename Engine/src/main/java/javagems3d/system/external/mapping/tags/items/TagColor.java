@@ -2,6 +2,7 @@ package javagems3d.system.external.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.base.ColorMode;
 import javagems3d.graphics.objects.SceneObject;
@@ -46,7 +47,7 @@ public class TagColor extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(@NotNull TagsContainer tagsContainer, @Nullable SceneObject currentSelected, @NotNull TagItem tagItem, @NotNull TagID tagID, @Nullable Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper) {
+    public void ImGuiRendering(@NotNull TagsContainer tagsContainer, @Nullable SceneObject currentSelected, @NotNull TagItem tagItem, @NotNull TagID tagID, @Nullable Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagColor tagColor = (TagColor) tagItem;
         Vector4f color = tagColor.getColorVector();
         ColorMode colorMode = tagColor.getColorMode();

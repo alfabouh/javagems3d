@@ -159,7 +159,7 @@ public class JGemsGaming {
             throw new JGemsIOException("Couldn't load file! ", e);
         }
         this.convertSkyBoxes(apiDataManager, skyBoxesAsset, e -> {
-            apiDataManager.addResourceSkyCubeMap(e.second().name(), new ICubeMapProgram.CMTextures(JGemsGaming.getTexturesFolder(absolutePathToFiles), e.second().getCmTextures()));
+            apiDataManager.addResourceSkyCubeMap(e.first().getHierarchy() + "/" + e.second().name(), new ICubeMapProgram.CMTextures(JGemsGaming.getTexturesFolder(absolutePathToFiles), e.second().getCmTextures()));
         });
     }
 

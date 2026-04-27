@@ -13,7 +13,6 @@ import api.scripting.coding.env.internal.util.lang.JSLocalization;
 import api.scripting.coding.env.internal.util.management.JSPath;
 import api.scripting.coding.env.internal.util.mapping.player.JSPlayerCreatorFunction;
 import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTranslateData;
-import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerWorldData;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.misc.JSPair;
 import api.scripting.coding.env.internal.util.resources.cache.JSSystemResources;
@@ -28,7 +27,6 @@ import api.scripting.coding.env.internal.util.world.render.data.JSEntityRenderDa
 import api.scripting.coding.env.internal.util.world.render.data.JSLiquidRenderData;
 import api.scripting.coding.env.internal.util.world.render.lighting.JSLightAttachableI;
 import api.scripting.coding.env.internal.util.world.render.lighting.JSLightI;
-import api.scripting.coding.env.internal.util.world.render.lighting.JSPointLight;
 import api.scripting.coding.env.internal.util.world.render.screen.JSScreen;
 import api.scripting.coding.env.internal.util.settings.JSGameSettings;
 import api.scripting.coding.env.internal.util.world.render.screen.JSWindow;
@@ -41,14 +39,10 @@ import api.scripting.coding.env.internal.util.world.render.world.instances.inter
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSScenePropI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.help.JGemsHelper;
-import javagems3d.physics.entities.kinematic.player.IPlayer;
-import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
@@ -56,13 +50,7 @@ import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JSCodingClass(

@@ -18,8 +18,9 @@ public class GameSound {
     private float volume;
     private float pitch;
     private float rollOff;
+    private float distance;
 
-    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, WorldItem attachedTo) {
+    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, WorldItem attachedTo) {
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
         this.attachedTo = attachedTo;
@@ -27,22 +28,23 @@ public class GameSound {
 
         this.setVolume(volume);
         this.setPitch(pitch);
+        this.setDistance(distance);
         this.setRollOff(rollOff);
         this.setupSound();
     }
 
-    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
+    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, float distance, WorldItem attachedTo) {
         if (soundBuffer == null) {
             return null;
         }
-        return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, attachedTo);
+        return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, distance, attachedTo);
     }
 
-    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff) {
+    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, float distance) {
         if (soundBuffer == null) {
             return null;
         }
-        return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, null);
+        return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, distance, null);
     }
 
     private void setupSound() {
@@ -52,7 +54,6 @@ public class GameSound {
         AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, this.getSoundType().getSoundData().isLocatedInWorld() ? AL10.AL_FALSE : AL10.AL_TRUE);
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
-        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(this.getVolume(), 0.0f) * 2.0f, 1.0f));
         JGemsSoundManager.checkALonErrors();
 
         if (this.getAttachedTo() != null) {
@@ -70,6 +71,7 @@ public class GameSound {
     }
 
     private void updateParams() {
+        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, this.getDistance());
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
         AL10.alSourcef(this.source, AL10.AL_GAIN, this.getVolume());
         AL10.alSourcef(this.source, AL10.AL_PITCH, this.getPitch());
@@ -103,6 +105,14 @@ public class GameSound {
 
     public void setVelocity(Vector3f vector3f) {
         AL10.alSource3f(this.source, AL10.AL_VELOCITY, vector3f.x, vector3f.y, vector3f.z);
+    }
+
+    public float getDistance() {
+        return Math.max(this.distance, 0.0f);
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 
     public float getRollOff() {

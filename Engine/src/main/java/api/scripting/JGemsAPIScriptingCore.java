@@ -2,8 +2,6 @@ package api.scripting;
 
 import api.scripting.coding.APICodingContext;
 import api.system.JGemsAPI;
-import api.system.scripting.JavaToJsAPI;
-import api.system.scripting.JavaToJsFunctionsList;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;

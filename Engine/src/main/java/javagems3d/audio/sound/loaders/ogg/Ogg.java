@@ -21,10 +21,10 @@ public class Ogg implements ISoundCodec {
     private final int sampleRate;
     private int format;
 
-    private Ogg(InputStream stream) {
+    private Ogg(InputStream stream, boolean forceMono) {
         try (STBVorbisInfo info = STBVorbisInfo.malloc()) {
             try {
-                this.pcm = this.readOGG(stream, info);
+                this.pcm = this.readOGG(stream, info, forceMono);
                 this.sampleRate = info.sample_rate();
             } catch (IOException e) {
                 throw new JGemsIOException(e);
@@ -32,8 +32,8 @@ public class Ogg implements ISoundCodec {
         }
     }
 
-    public static ISoundCodec create(InputStream is) {
-        return is == null ? null : new Ogg(is);
+    public static ISoundCodec create(InputStream is, boolean forceMono) {
+        return is == null ? null : new Ogg(is, forceMono);
     }
 
     public int getSampleRate() {
@@ -48,32 +48,49 @@ public class Ogg implements ISoundCodec {
         return this.format;
     }
 
-    private ShortBuffer readOGG(InputStream stream, STBVorbisInfo info) throws IOException {
+    private ShortBuffer readOGG(InputStream stream, STBVorbisInfo info, boolean forceMono) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             byte[] buffer = stream.readAllBytes();
             ByteBuffer byteBuffer = BufferUtils.createByteBuffer(buffer.length);
             byteBuffer.put(buffer);
             byteBuffer.flip();
-
             IntBuffer error = stack.mallocInt(1);
             long decoder = STBVorbis.stb_vorbis_open_memory(byteBuffer, error, null);
             if (decoder == MemoryUtil.NULL) {
                 throw new JGemsRuntimeException("Failed to open Ogg sound. Error code: " + error.get(0));
             }
-
             STBVorbis.stb_vorbis_get_info(decoder, info);
             int channels = info.channels();
-
-            this.format = channels == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
-
             int samples = STBVorbis.stb_vorbis_stream_length_in_samples(decoder);
-            ShortBuffer res = MemoryUtil.memAllocShort(samples * channels);
-
-            res.limit(STBVorbis.stb_vorbis_get_samples_short_interleaved(decoder, channels, res) * channels);
+            ShortBuffer decodedBuffer = MemoryUtil.memAllocShort(samples * channels);
+            int actualSamples = STBVorbis.stb_vorbis_get_samples_short_interleaved(decoder, channels, decodedBuffer);
+            decodedBuffer.limit(actualSamples * channels);
             STBVorbis.stb_vorbis_close(decoder);
-
-            return res;
+            if (forceMono && channels == 2) {
+                this.format = AL10.AL_FORMAT_MONO16;
+                ShortBuffer monoBuffer = this.stereoToMono(decodedBuffer);
+                MemoryUtil.memFree(decodedBuffer);
+                return monoBuffer;
+            }
+            this.format = channels == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
+            return decodedBuffer;
         }
+    }
+
+    private ShortBuffer stereoToMono(ShortBuffer stereoBuffer) {
+        int monoSamples = stereoBuffer.limit() / 2;
+        ShortBuffer monoBuffer = MemoryUtil.memAllocShort(monoSamples);
+
+        for (int i = 0; i < monoSamples; i++) {
+            short left = stereoBuffer.get(i * 2);
+            short right = stereoBuffer.get(i * 2 + 1);
+
+            int mixed = (left + right) / 2;
+            monoBuffer.put(i, (short) mixed);
+        }
+
+        monoBuffer.limit(monoSamples);
+        return monoBuffer;
     }
 
     public void dispose() {

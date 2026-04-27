@@ -46,6 +46,9 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
 
     @Override
     public void addResourceSkyCubeMap(@NotNull String name, @NotNull ICubeMapProgram.CMTextures textures) {
+        if (!name.startsWith("/")) {
+            name = "/" + name;
+        }
         this.getSkyBoxesMap().put(name, textures);
     }
 

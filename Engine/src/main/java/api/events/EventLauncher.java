@@ -1,10 +1,9 @@
 package api.events;
 
 
-import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderUIEvent;
 import api.scripting.coding.env.internal.util.events.JSEventI;
 import api.system.JGemsAPI;
-import api.system.scripting.JavaToJsAPI;
+import api.scripting.JavaToJsAPI;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
