@@ -79,7 +79,7 @@ public class FolderResourcesTreeDrawerG<E extends IAsset, T extends IPreviewWrap
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            final float dynHeight = JGemsHelper.math().clamp(this.getGameResourceAssetsFolder().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 20.0f, 140.0f, ImGui.getWindowHeight() * 0.5f);
+            final float dynHeight = JGemsHelper.math().clamp(this.getGameResourceAssetsFolder().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 28.0f + 10.0f, 140.0f, ImGui.getWindowHeight() * 0.5f);
             ImGui.beginChild("##ResChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.insides();
             ImGui.endChild();

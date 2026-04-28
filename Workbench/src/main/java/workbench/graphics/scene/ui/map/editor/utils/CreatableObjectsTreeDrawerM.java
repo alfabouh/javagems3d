@@ -45,7 +45,7 @@ public record CreatableObjectsTreeDrawerM<T extends WBenchObjectTemplate>(MapEdi
 
     public void render() {
         if (ImGui.collapsingHeader(this.tab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            final float dynHeight = JGemsHelper.math().clamp(this.folderSupplier.get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 26.0f, 160.0f, ImGui.getWindowHeight() * 0.5f);
+            final float dynHeight = JGemsHelper.math().clamp(this.folderSupplier.get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 30.0f, 160.0f, ImGui.getWindowHeight() * 0.5f) + 10.0f;
             ImGui.beginChild("##MResChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             this.tree(this.folderSupplier.get(), true);
             ImGui.endChild();

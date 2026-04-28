@@ -17,7 +17,7 @@ public final class MapProjectSettings {
 
     public MapProjectSettings() {
         this.cameraX = 0.0f;
-        this.cameraY = 0.0f;
+        this.cameraY = 5.0f;
         this.cameraZ = 0.0f;
         this.cameraRotX = 0.0f;
         this.cameraRotY = 0.0f;

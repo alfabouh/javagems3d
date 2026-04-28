@@ -308,7 +308,7 @@ public class CreatableResourcesTreeDrawerG<T extends IAsset, E extends IPreviewW
 
     public void render() {
         if (ImGui.collapsingHeader(this.getTab(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            final float dynHeight = JGemsHelper.math().clamp(this.getGroupSupplier().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 26.0f, 160.0f, ImGui.getWindowHeight() * 0.5f);
+            final float dynHeight = JGemsHelper.math().clamp(this.getGroupSupplier().get().totalObjectsAndFoldersThere((int) (ImGui.getWindowHeight() / 10.0f)) * 30.0f, 160.0f, ImGui.getWindowHeight() * 0.5f) + 10.0f;
             ImGui.beginChild("##ObjChild_" + this.tab, ImGui.getColumnWidth(), dynHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushID("##IDC" + this.tab);
             this.popUpObject("button", null);

@@ -67,7 +67,7 @@ public final class JGems3D {
 
     public static void GC() {
         System.gc();
-        Log.get().debug("GC Forced");
+        Log.get().debug("GC Clean Call");
     }
     
     private JGems3D(@Nullable String apiAppClasspath, @NotNull JGemsLaunchArgsRegistry launchArgs) throws JGemsRuntimeException {
