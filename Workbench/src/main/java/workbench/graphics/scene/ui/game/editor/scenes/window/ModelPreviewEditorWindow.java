@@ -84,7 +84,7 @@ public class ModelPreviewEditorWindow {
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
         shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
         shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), view);
-        JGemsHelper.render().performAnimationsInfo(WBench.get().getResourceManager(), shaderManager, modelAsset);
+        JGemsHelper.render().performAnimationsInfo(shaderManager, modelAsset);
         for (MeshNode3D<RenderMesh> meshNode3D : modelAsset.getAsset().meshGroup().getAllNodes()) {
             ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
             ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();

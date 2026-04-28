@@ -563,6 +563,7 @@ public final class WBenchMapProjectManager {
         WBench.get().getResourceManager().loadLocalMapEditorResources();
         this.getWorld().onWorldStart();
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), wBenchMapProject);
+        JGems3D.GC();
     }
 
     private void destroyLocalResources(WBenchMapProject wBenchMapProject) {
@@ -578,7 +579,7 @@ public final class WBenchMapProjectManager {
         if (this.mapProjectSettings != null) {
             this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(this.mapProjectSettings.cameraX, this.mapProjectSettings.cameraY, this.mapProjectSettings.cameraZ), new Vector3f(this.mapProjectSettings.cameraRotX, this.mapProjectSettings.cameraRotY, this.mapProjectSettings.cameraRotZ)));
         } else {
-            this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
+            this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(0f, 5f, 0f), new Vector3f()));
         }
     }
 

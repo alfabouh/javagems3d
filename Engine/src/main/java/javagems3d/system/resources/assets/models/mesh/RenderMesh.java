@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.models.mesh;
 
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.VertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -102,42 +103,53 @@ public class RenderMesh implements IMesh, AutoCloseable {
             throw new JGemsRuntimeException("Tried to bake model, that is already had been baked");
         }
         this.totalVertices = this.getVertexIndexes().size();
-        IntBuffer inxBuffer =  MemoryUtil.memAllocInt(this.totalVertices);
-        for (int i : this.getVertexIndexes()) {
-            inxBuffer.put(i);
+        IntBuffer inxBuffer = MemoryUtil.memAllocInt(this.totalVertices);
+        try {
+            for (int i : this.getVertexIndexes()) {
+                inxBuffer.put(i);
+            }
+            inxBuffer.flip();
+
+            this.vao = GL46.glGenVertexArrays();
+            this.vertexIndexesIBO = GL46.glGenBuffers();
+
+            GL46.glBindVertexArray(this.getVao());
+            GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
+            GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL46.GL_STATIC_DRAW);
+
+            for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
+                int vbo = GL46.glGenBuffers();
+                this.vboMap.put(vertexAttribute.getIndex(), vbo);
+                GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vbo);
+                vertexAttribute.pushGLBuffer();
+                GL46.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getLengthInMemory(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
+            }
+
+            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+            GL46.glBindVertexArray(0);
+        } finally {
+            MemoryUtil.memFree(inxBuffer);
         }
-        inxBuffer.flip();
-
-        this.vao = GL46.glGenVertexArrays();
-        this.vertexIndexesIBO = GL46.glGenBuffers();
-
-        GL46.glBindVertexArray(this.getVao());
-        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
-        GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL46.GL_STATIC_DRAW);
-        MemoryUtil.memFree(inxBuffer);
-
-        for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
-            int vbo = GL46.glGenBuffers();
-            this.vboMap.put(vertexAttribute.getIndex(), vbo);
-            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vbo);
-            vertexAttribute.pushGLBuffer();
-            GL46.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getLengthInMemory(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
-        }
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
-        GL46.glBindVertexArray(0);
         this.baked = true;
     }
 
-    public void clearData() {
-        this.setSkeletonData(null);
-        this.getVertexIndexes().clear();
-        this.vertexAttributesMap.values().forEach(VertexAttribute::clearData);
+    public void clearData(boolean keepTrianglesInMemory) {
+        if (keepTrianglesInMemory) {
+            for (Map.Entry<Integer, VertexAttribute<?>> entry : this.vertexAttributesMap.entrySet()) {
+                if (DefaultAttributePointers.ATTR_POSITIONS.getPointer() != entry.getKey()) {
+                    entry.getValue().clearData();
+                }
+            }
+        } else {
+            this.getVertexIndexes().clear();
+            this.vertexAttributesMap.values().forEach(VertexAttribute::clearData);
+        }
     }
 
     @Override
     public void clearMesh() {
-        this.clearData();
+        this.setSkeletonData(null);
+        this.clearData(false);
         this.vertexAttributesMap.clear();
         for (int a : this.vboMap.values()) {
             GL46.glDeleteBuffers(a);

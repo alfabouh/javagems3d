@@ -15,7 +15,7 @@ public class JGemsFogScene extends FogScene {
         buffer.put(this.getFogColor().x * skyBox.getSun().getSunBrightness());
         buffer.put(this.getFogColor().y * skyBox.getSun().getSunBrightness());
         buffer.put(this.getFogColor().z * skyBox.getSun().getSunBrightness());
-        buffer.put(!JGemsConfig.DEBUG.FULL_BRIGHT ? this.getFogDensity() : 0.0f);
+        buffer.put(!JGemsConfig.DEBUG.FULL_BRIGHT && JGemsConfig.DEBUG.FOG ? this.getFogDensity() : 0.0f);
         buffer.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, buffer);
     }

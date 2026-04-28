@@ -93,7 +93,7 @@ public class JSRenderHelperClass implements JSGlobalVarFactory<JSRenderHelperCla
 
     @JSCodingFunctionOrMethod(description = "Prepares animation info for shader using mesh structure.", paramNames = {"shaderManager", "meshStructure3D"})
     public void performAnimationsInfo(@NotNull JSShader shaderManager, @NotNull JSMeshStructure3D meshStructure3D) {
-        JGemsHelper.render().performAnimationsInfo(JGemsHelper.resources().getResourceManager(), shaderManager.getJavaShaderManager(), (IAnimated) meshStructure3D.getJavaMeshStructure3D());
+        JGemsHelper.render().performAnimationsInfo(shaderManager.getJavaShaderManager(), (IAnimated) meshStructure3D.getJavaMeshStructure3D());
     }
 
     @JSCodingFunctionOrMethod(description = "Performs shadows info on shader.", paramNames = {"environment", "shaderManager"})

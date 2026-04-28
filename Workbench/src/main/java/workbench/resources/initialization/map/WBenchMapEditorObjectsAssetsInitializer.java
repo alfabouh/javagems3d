@@ -53,7 +53,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final WBenchObject.ID ID = new WBenchObject.ID(prefix + gameResourceWorldObjectAsset.getID(), path);
         final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceWorldObjectAsset.getModelAssetRelativePath());
         final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
-        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), new WBenchRenderProperties()
+        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getDirect(), new WBenchRenderProperties()
                 .setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER) || gameResourceWorldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER))
                 .setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER)) ? 1.0f : gameResourceWorldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD))
         );
@@ -77,8 +77,8 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp, @Nullable Consumer<TagsContainer> doSomeTags) {
         final WBenchObjectData wBenchObjectData = apiResourceProp.getFabricWBench().create();
         final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
-        final MeshGroup meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(wBenchObjectData.getPathToModel(), true);
-        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties());
+        final MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), true);
+        final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getDirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
         if (doSomeTags != null) {
             doSomeTags.accept(tagsContainer);
@@ -94,7 +94,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroupWithBindlessBufferAttachment(new JGemsPathSource(wBenchMarkerData.getPathToModel(), ISource.Source.OUTSIDE_JAR), false);
+            meshGroup = systemResources.createMeshGroup(new JGemsPathSource(wBenchMarkerData.getPathToModel(), ISource.Source.OUTSIDE_JAR), true);
         }
         final TagsContainer tagsContainer = wBenchMarkerData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchMarkerData.getTranslationConstraints();

@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.models.mesh;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,16 +70,20 @@ public class DataMesh implements IMesh {
     }
 
     @Override
-    public void clearData() {
+    public void clearData(boolean keepTrianglesInMemory) {
         this.setSkeletonData(null);
-        this.getIndexesBuffer().values().clear();
-        this.getBufferMap().values().forEach(e -> e.values().clear());
-        this.getBufferMap().clear();
+        if (keepTrianglesInMemory) {
+            this.getBufferMap().keySet().removeIf(e -> e != DefaultAttributePointers.ATTR_POSITIONS.getPointer());
+        } else {
+            this.getIndexesBuffer().values().clear();
+            this.getBufferMap().values().forEach(e -> e.values().clear());
+            this.getBufferMap().clear();
+        }
     }
 
     @Override
     public void clearMesh() {
-        this.clearData();
+        this.clearData(false);
     }
 
     public SkeletonData getSkeletonData() {

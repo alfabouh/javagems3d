@@ -127,9 +127,7 @@ public final class IndirectBufferProgram {
         GL46.glBindVertexArray(0);
 
         obj.forEach(e -> {
-            if (!e.isKeepNodesInMemory()) {
-                e.clearNodesData();
-            }
+            e.clearNodesData(e.isKeepTrianglesInMemory());
         });
     }
 

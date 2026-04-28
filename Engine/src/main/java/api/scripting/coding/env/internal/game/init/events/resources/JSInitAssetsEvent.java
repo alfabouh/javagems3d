@@ -51,9 +51,9 @@ public class JSInitAssetsEvent implements JSEventI {
         return new JSOggSound(this.systemResources.getJavaSystemResources().createSoundBuffer(new JGemsPathSource(pathToOggSound.getJavaPath(), ISource.Source.OUTSIDE_JAR), format.getValue()));
     }
 
-    @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh buffer.", paramNames = {"pathToGLTF2Model", "keepNodesInMemory"})
-    public JSMeshBuffer createGLTF2MeshBuffer(JSPath pathToGLTF2Model, boolean keepNodesInMemory) {
-        return new JSMeshBuffer(this.systemResources.getJavaSystemResources().createMeshBuffer(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepNodesInMemory));
+    @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh buffer.", paramNames = {"pathToGLTF2Model", "keepTrianglesInMemory"})
+    public JSMeshBuffer createGLTF2MeshBuffer(JSPath pathToGLTF2Model, boolean keepTrianglesInMemory) {
+        return new JSMeshBuffer(this.systemResources.getJavaSystemResources().createMeshBuffer(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepTrianglesInMemory));
     }
 
     @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh buffer with default settings.", paramNames = {"pathToGLTF2Model"})
@@ -61,9 +61,9 @@ public class JSInitAssetsEvent implements JSEventI {
         return this.createGLTF2MeshBuffer(pathToGLTF2Model, false);
     }
 
-    @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh group.", paramNames = {"pathToGLTF2Model", "keepNodesInMemory"})
-    public JSMeshGroup createGLTF2MeshGroup(JSPath pathToGLTF2Model, boolean keepNodesInMemory) {
-        return new JSMeshGroup(this.systemResources.getJavaSystemResources().createMeshGroup(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepNodesInMemory));
+    @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh group.", paramNames = {"pathToGLTF2Model", "keepTrianglesInMemory"})
+    public JSMeshGroup createGLTF2MeshGroup(JSPath pathToGLTF2Model, boolean keepTrianglesInMemory) {
+        return new JSMeshGroup(this.systemResources.getJavaSystemResources().createMeshGroup(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepTrianglesInMemory));
     }
 
     @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh group with default settings.", paramNames = {"pathToGLTF2Model"})

@@ -113,7 +113,7 @@ public final class JGemsCore implements ICore {
         this.getSoundManager().stopAllSounds();
         this.getResourceManager().destroyResourcesDataCache();
         this.getResourceManager().getLocalResources().destroy();
-        System.gc();
+        JGems3D.GC();
 
         this.getScreen().getScene().setCamera(null);
         this.getScreen().getWindow().setFocus(false);
@@ -143,6 +143,7 @@ public final class JGemsCore implements ICore {
         JGemsHelper.screen().getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
 
         this.getMapping().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
+        JGems3D.GC();
         JGemsHelper.controller().setCursorInCenter();
 
         JGemsHelper.screen().setWindowFocus(true);
@@ -218,6 +219,7 @@ public final class JGemsCore implements ICore {
                     }
                 }
                 this.getResourceManager().initGlobalResources();
+                JGemsHelper.initResourceManager(JGems3D.get().getResourceManager());
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();
                 this.createGraphics();

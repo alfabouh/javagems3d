@@ -32,6 +32,9 @@ public class ResourceCache {
         ICached removed = this.cache.remove(objectKey);
         if (removed != null) {
             removed.onClearingCache(this);
+            Log.get().debug("Cache. Cleaned: " + objectKey);
+        } else {
+            Log.get().error("Cache. Failed to clean: " + objectKey);
         }
         return removed;
     }

@@ -103,7 +103,7 @@ public interface IAssetsInitializer {
         dataMesh.putVertexIndexes(JGemsHelper.Math.convertIntsList(IAssetsInitializer.CubeModelInd));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material());
         MeshBuffer meshBuffer = new MeshBuffer(meshBufferMeshNode3D);
-        meshBuffer.setKeepNodesInMemory(true);
+        meshBuffer.setKeepTrianglesInMemory(true);
         JGemsHelper.JGemsResources.createMeshAABBData(meshBuffer);
         return meshBuffer;
     }

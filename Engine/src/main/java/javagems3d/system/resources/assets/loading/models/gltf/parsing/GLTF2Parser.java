@@ -114,6 +114,43 @@ public abstract class GLTF2Parser {
         return new GLTF2RawData(new GLTF2Asset(generator, version), gltf2Scene);
     }
 
+    /*
+// NORMALIZE
+{
+    List<Float> positions = gltf2Mesh.objects();
+    Vector3f min = new Vector3f(Float.MAX_VALUE);
+    Vector3f max = new Vector3f(-Float.MAX_VALUE);
+    for (int i = 0; i < positions.size(); i += 3) {
+        float x = positions.get(i);
+        float y = positions.get(i + 1);
+        float z = positions.get(i + 2);
+        if (x < min.x) {
+            min.x = x;
+        }
+        if (y < min.y) {
+            min.y = y;
+        }
+        if (z < min.z) {
+            min.z = z;
+        }
+        if (x > max.x) {
+            max.x = x;
+        }
+        if (y > max.y) {
+            max.y = y;
+        }
+        if (z > max.z) {
+            max.z = z;
+        }
+    }
+    Vector3f center = new Vector3f((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, (min.z + max.z) * 0.5f);
+    for (int i = 0; i < positions.size(); i += 3) {
+        positions.set(i, positions.get(i) - center.x);
+        positions.set(i + 1, positions.get(i + 1) - center.y);
+        positions.set(i + 2, positions.get(i + 2) - center.z);
+    }
+}
+ */
     private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList, Vector3f modelCenterOffset) {
         final List<GLTF2Node> nodes = new ArrayList<>();
         final Map<Integer, List<Integer>> tempChildrenMap = new HashMap<>();
@@ -130,44 +167,6 @@ public abstract class GLTF2Parser {
 
             GLTF2Mesh gltf2Mesh = meshIndex != -1 ? GLTF2Parser.readMesh(buffersList, rootObject, meshIndex) : null;
             GLTF2Node gltf2Node = new GLTF2Node(nodeName, gltf2Mesh);
-
-            /*
-            // NORMALIZE
-            {
-                List<Float> positions = gltf2Mesh.objects();
-                Vector3f min = new Vector3f(Float.MAX_VALUE);
-                Vector3f max = new Vector3f(-Float.MAX_VALUE);
-                for (int i = 0; i < positions.size(); i += 3) {
-                    float x = positions.get(i);
-                    float y = positions.get(i + 1);
-                    float z = positions.get(i + 2);
-                    if (x < min.x) {
-                        min.x = x;
-                    }
-                    if (y < min.y) {
-                        min.y = y;
-                    }
-                    if (z < min.z) {
-                        min.z = z;
-                    }
-                    if (x > max.x) {
-                        max.x = x;
-                    }
-                    if (y > max.y) {
-                        max.y = y;
-                    }
-                    if (z > max.z) {
-                        max.z = z;
-                    }
-                }
-                Vector3f center = new Vector3f((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, (min.z + max.z) * 0.5f);
-                for (int i = 0; i < positions.size(); i += 3) {
-                    positions.set(i, positions.get(i) - center.x);
-                    positions.set(i + 1, positions.get(i + 1) - center.y);
-                    positions.set(i + 2, positions.get(i + 2) - center.z);
-                }
-            }
-             */
 
             gltf2Node.setLocalTransform(new Matrix4f(localTransform));
             gltf2Node.setSkin(skin);
@@ -639,28 +638,30 @@ public abstract class GLTF2Parser {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> GLTF2Accessor<T> readAccessor(GLTF2BufferView gltf2BufferView, GLTF2AccessorData gltf2AccessorData, List<ByteBuffer> bufferList) {
-        final int bytesOfType = GLTF2Parser.getBytesOfType(gltf2AccessorData.componentType());
-        final int typeSize = GLTF2Accessor.ValueType.getTypeSize(gltf2AccessorData.typeStr());
-        final int elementByteSize = typeSize * bytesOfType;
-        ByteBuffer buffer = bufferList.get(gltf2BufferView.id());
+    private static <T> GLTF2Accessor<T> readAccessor(GLTF2BufferView bv, GLTF2AccessorData ad, List<ByteBuffer> buffers) {
+        ByteBuffer buffer = buffers.get(bv.id());
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        int stride = gltf2BufferView.byteStride() == 0 ? elementByteSize : gltf2BufferView.byteStride();
 
-        final List<T> readObjects = new ArrayList<>(gltf2AccessorData.count() * typeSize);
+        int typeSize = GLTF2Accessor.ValueType.getTypeSize(ad.typeStr());
+        int bytesPerComponent = getBytesOfType(ad.componentType());
+        int stride = bv.byteStride() == 0 ? typeSize * bytesPerComponent : bv.byteStride();
 
-        for (int k = 0; k < gltf2AccessorData.count(); k++) {
-            int basePosition = gltf2BufferView.byteOffset() + gltf2AccessorData.byteOffset() + k * stride;
-            buffer.position(basePosition);
-            for (int i = 0; i < typeSize; i++) {
-                T component = (T) GLTF2Parser.readComponent(buffer, gltf2AccessorData.componentType());
-                readObjects.add(component);
+        List<T> out = new ArrayList<>(ad.count() * typeSize);
+
+        int baseOffset = bv.byteOffset() + ad.byteOffset();
+
+        for (int i = 0; i < ad.count(); i++) {
+            int pos = baseOffset + i * stride;
+            buffer.position(pos);
+
+            for (int j = 0; j < typeSize; j++) {
+                Object v = readComponent(buffer, ad.componentType());
+                out.add((T) v);
             }
         }
 
-        return new GLTF2Accessor<>(readObjects, gltf2AccessorData);
+        return new GLTF2Accessor<>(out, ad);
     }
-
 
     private static Matrix4f pullMatrixFromNode(JsonObject node) {
         Matrix4f localTransform = new Matrix4f().identity();

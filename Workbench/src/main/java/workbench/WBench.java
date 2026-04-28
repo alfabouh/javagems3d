@@ -7,6 +7,7 @@ import javagems3d.JGems3D;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.service.exceptions.JGemsAPIException;
@@ -140,6 +141,7 @@ public final class WBench {
             JGemsCore.printSystemInfo();
             WBench.get().getSoundManager().createSystem();
             WBench.get().getResourceManager().initGlobalResources();
+            JGemsHelper.initResourceManager(WBench.get().getResourceManager());
             WBench.get().getScreen().createScreenAndContext();
             WBench.get().getScreen().createObjects(WBench.get().getScreen().getWindow());
             WBench.get().getScreen().runRenderThread();

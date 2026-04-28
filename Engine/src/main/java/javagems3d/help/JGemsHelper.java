@@ -592,12 +592,12 @@ public final class JGemsHelper {
             shaderManager.enableWarns();
         }
 
-        public void performAnimationsInfo(@NotNull ResourceManager resourceManager, @NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
+        public void performAnimationsInfo(@NotNull JGemsShaderManager shaderManager, @NotNull IAnimated animated) {
             shaderManager.disableWarns();
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.isAnimated() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
             shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.isAnimated() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
             if (animated.isAnimated()) {
-                shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), resourceManager.getAnimationMatricesTexture());
+                shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), JGemsHelper.INSTANCE.resourceManager.getAnimationMatricesTexture());
                 shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
             }
             shaderManager.enableWarns();

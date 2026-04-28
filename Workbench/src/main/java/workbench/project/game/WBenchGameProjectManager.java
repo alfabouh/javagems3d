@@ -114,6 +114,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().refreshScripts(this.getGameProject().getProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
+            JGems3D.GC();
         }
     }
 
@@ -124,6 +125,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().refreshMaps(this.getGameProject().getProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
+            JGems3D.GC();
         }
     }
 
@@ -134,6 +136,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().refreshModels(this.getGameProject().getProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
+            JGems3D.GC();
         }
     }
 
@@ -144,6 +147,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().refreshTextures(this.getGameProject().getProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
+            JGems3D.GC();
         }
     }
 
@@ -154,6 +158,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().refreshSounds(this.getGameProject().getProjectAbsolutePath());
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
+            JGems3D.GC();
         }
     }
 
@@ -175,6 +180,7 @@ public class WBenchGameProjectManager {
         this.getGameResourcesManager().readCreatableResourceObjects(WBenchProjectResourcesManager.AssetsTarget.ALL, this.getGameProject().getProjectAbsolutePath());
         WBenchResourceManager.createLocalGameEditorShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
+        JGems3D.GC();
     }
 
     private void destroyLocalGameResources() {

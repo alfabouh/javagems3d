@@ -8,7 +8,6 @@ import api.scripting.coding.env.internal.util.resources.instances.models.animati
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.bound.JSMeshBoundingBox;
 import api.scripting.coding.env.internal.util.resources.instances.models.poly.nodes.JSMeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
@@ -55,18 +54,18 @@ public class JSMeshBuffer implements JSCanBeCachedInMemory, JSMeshStructure3D {
     }
 
     @JSCodingFunctionOrMethod(description = "Check if mesh nodes are kept in memory even when not used.")
-    public boolean isKeepNodesInMemory() {
-        return this.meshBuffer.isKeepNodesInMemory();
+    public boolean iskeepTrianglesInMemory() {
+        return this.meshBuffer.isKeepTrianglesInMemory();
     }
 
     @JSCodingFunctionOrMethod(description = "Set whether to keep mesh nodes in memory.")
-    public void setKeepNodesInMemory(boolean keepNodesInMemory) {
-        this.meshBuffer.setKeepNodesInMemory(keepNodesInMemory);
+    public void setkeepTrianglesInMemory(boolean keepTrianglesInMemory) {
+        this.meshBuffer.setKeepTrianglesInMemory(keepTrianglesInMemory);
     }
 
-    @JSCodingFunctionOrMethod(description = "Clear mesh nodes data without removing the nodes themselves.")
-    public void clearNodesData() {
-        this.meshBuffer.clearNodesData();
+    @JSCodingFunctionOrMethod(description = "Clear mesh nodes data without removing the nodes themselves.", paramNames = {"keepTriangleInMem"})
+    public void clearNodesData(boolean keepTriangleInMem) {
+        this.meshBuffer.clearNodesData(keepTriangleInMem);
     }
 
     @JSCodingFunctionOrMethod(description = "Check if any node in the buffer has transparency.")

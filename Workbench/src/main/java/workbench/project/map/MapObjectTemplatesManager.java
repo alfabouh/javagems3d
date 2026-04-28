@@ -35,6 +35,9 @@ public class MapObjectTemplatesManager {
     }
 
     public void addSkyBox(String name, SkyBoxTemplate cubeMapProgram) {
+        if (!name.startsWith("/")) {
+            name = "/" + name;
+        }
         this.getSkyBoxes().put(name, cubeMapProgram);
         this.getSkyBoxesCache().put(cubeMapProgram.getCubeMapProgram(), cubeMapProgram);
     }
@@ -73,6 +76,9 @@ public class MapObjectTemplatesManager {
         private ICubeMapProgram cubeMapProgram;
 
         public SkyBoxTemplate(String nameId, ICubeMapProgram.CMTextures cmTextures) {
+            if (!nameId.startsWith("/")) {
+                nameId = "/" + nameId;
+            }
             this.nameId = nameId;
             this.cmTextures = cmTextures;
         }

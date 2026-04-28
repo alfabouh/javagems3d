@@ -2,7 +2,6 @@ package javagems3d.system.resources.assets.models.mesh.structures.solid;
 
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,10 +10,10 @@ import java.util.*;
 public class MeshBuffer extends MeshStructure3D<DataMesh> {
     public static final String POSTFIX = "_buffer";
     private final Map<Integer, List<PassData>> meshPassData;
-    private boolean keepNodesInMemory;
+    private boolean keepTrianglesInMemory;
 
     public MeshBuffer(@Nullable List<MeshNode3D<DataMesh>> meshNodes) {
-        this.keepNodesInMemory = false;
+        this.keepTrianglesInMemory = false;
         this.meshPassData = new HashMap<>();
         this.initPassDataLayers();
         if (meshNodes != null) {
@@ -23,6 +22,7 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
     }
 
     protected void initPassDataLayers() {
+        this.meshPassData.clear();
         for (int i : this.getLayersToInit()) {
             this.meshPassData.put(i, new ArrayList<>());
         }
@@ -40,23 +40,26 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
         this((List<MeshNode3D<DataMesh>>) null);
     }
 
-    public boolean isKeepNodesInMemory() {
-        return this.keepNodesInMemory;
+    public boolean isKeepTrianglesInMemory() {
+        return this.keepTrianglesInMemory;
     }
 
-    public void setKeepNodesInMemory(boolean keepNodesInMemory) {
-        this.keepNodesInMemory = keepNodesInMemory;
+    public void setKeepTrianglesInMemory(boolean keepTrianglesInMemory) {
+        this.keepTrianglesInMemory = keepTrianglesInMemory;
     }
 
     @Override
-    public void clearNodesData() {
-        super.clearNodesData();
-        this.nodesLayers.values().forEach(List::clear);
+    public void clearNodesData(boolean keepTrianglesInMemory) {
+        super.clearNodesData(keepTrianglesInMemory);
+        if (!keepTrianglesInMemory) {
+            this.nodesLayers.values().forEach(List::clear);
+        }
     }
 
     @Override
     public void clear() {
         super.clear();
+        this.nodesLayers.clear();
         this.meshPassData.clear();
         this.initPassDataLayers();
     }

@@ -9,7 +9,7 @@ import workbench.project.map.settings.MapProjectSettings;
 public class WBenchFogScene extends JGemsFogScene implements ISnapshotCompatible<WBenchFogScene.WBenchFogSceneSnapshotData> {
     @Override
     public float getFogDensity() {
-        return WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG ? super.getFogDensity() : 0.0f;
+        return super.getFogDensity();
     }
 
     @Override

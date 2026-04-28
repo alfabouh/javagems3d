@@ -62,7 +62,7 @@ public class InterfaceActionsEnvSkyM {
         }
         try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_brightness", WBenchUITrackingHelper::INSTANCE)) {
             float[] brightness = new float[]{environment.getSkyBox().getSun().getSunBrightness()};
-            if (ImGui.sliderFloat("Brightness", brightness, 0.0f, 5.0f)) {
+            if (ImGui.dragFloat("Brightness", brightness, 0.001f,0.0f, 5.0f)) {
                 uiTrackingHelper.saveSnapshot();
                 environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
             }

@@ -3,6 +3,7 @@ package api.system;
 import api.application.JGemsApplication;
 import api.events.EventBus;
 import api.scripting.JGemsAPIScriptingCore;
+import javagems3d.JGems3D;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
@@ -119,7 +120,7 @@ public final class JGemsAPI implements Closeable {
 
     public void dispose() {
         this.reflections = null;
-        System.gc();
+        JGems3D.GC();
     }
 
     private Pair<Class<?>, JGemsAppEntry> findApiAppInFile() {

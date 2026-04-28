@@ -20,6 +20,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.Indirect
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
@@ -84,7 +85,9 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
-            final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
+            final ISkyBackground skyBackground = this.getSkyBox().getBackground();
+            final IRenderWorld sceneWorld = (IRenderWorld) this.getWorld();
+            pair.first().performUniform(new UniformString(DefaultUniformDefinitions.VIEW_SCALING), UniformFunctions.FLOAT(skyBackground.getViewScaling()));
             JGemsHelper.render().performDefaultModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
                     pair.second().getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
                             (float) pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :

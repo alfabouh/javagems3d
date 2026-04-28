@@ -125,6 +125,8 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Map Project")) {
+            ImGui.bulletText(WBench.get().getMapProjectManager().getCurrentMapProject().getMapName());
+            ImGui.separator();
             if (ImGui.menuItem("Run Map InGame")) {
                 WBench.get().getMapProjectManager().saveMapProject(true);
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
@@ -156,6 +158,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         }
         JGemsConfig.DEBUG.WIREFRAME_RENDERING = WBench.get().getMapProjectManager().mapProjectSettings.WIREFRAME_RENDERING;
         JGemsConfig.DEBUG.FULL_BRIGHT = WBench.get().getMapProjectManager().mapProjectSettings.FULL_BRIGHT;
+        JGemsConfig.DEBUG.FOG = WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG;
         if (ImGui.beginMenu("View")) {
             if (ImGui.checkbox("Fog", WBench.get().getMapProjectManager().mapProjectSettings.VIEW_FOG)) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();

@@ -58,8 +58,8 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
         this.clear();
     }
 
-    public void clearNodesData() {
-        this.nodesLayers.values().forEach(e -> e.forEach(MeshNode::clearData));
+    public void clearNodesData(boolean keepTrianglesInMemory) {
+        this.nodesLayers.values().forEach(e -> e.forEach(s -> s.clearData(keepTrianglesInMemory)));
     }
 
     public void clear() {

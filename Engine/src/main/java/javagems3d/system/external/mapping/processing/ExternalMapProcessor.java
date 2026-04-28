@@ -87,6 +87,7 @@ import org.lwjgl.openal.AL10;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -283,21 +284,21 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             final TagGameResourcesList tag_path = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_PATH, TagGameResourcesList.class);
 
             if (tag_volume != null && tag_pitch != null && tag_distance != null && tag_path != null) {
-                if (tag_distance.getValue() < 0.0f) {
-                    final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
-                    if (soundBuffer != null) {
-                        JGems3D.get().getSoundManager().playLocalSound(soundBuffer, SoundType.BACKGROUND_LOOP_SOUND, tag_pitch.getValue(), tag_volume.getValue());
-                    } else {
-                        Log.get().error("SoundBuffer is null");
-                    }
-                } else {
-                    final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
-                    if (soundBuffer != null) {
-                        JGems3D.get().getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, tag_pitch.getValue(), tag_volume.getValue(), 1.0f, tag_distance.getValue(), template.getPosition());
-                    } else {
-                        Log.get().error("SoundBuffer is null");
-                    }
-                }
+               try {
+                   if (tag_distance.getValue() < 0.0f) {
+                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
+                       if (soundBuffer != null) {
+                           JGems3D.get().getSoundManager().playLocalSound(soundBuffer, SoundType.BACKGROUND_LOOP_SOUND, tag_pitch.getValue(), tag_volume.getValue());
+                       }
+                   } else {
+                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
+                       if (soundBuffer != null) {
+                           JGems3D.get().getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, tag_pitch.getValue(), tag_volume.getValue(), 1.0f, tag_distance.getValue(), template.getPosition());
+                       }
+                   }
+               } catch (Exception e) {
+                   Log.get().exception(e);
+               }
             } else {
                 Log.get().error("Failed to load ambient_sound");
             }
@@ -307,7 +308,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
     protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
         if (skyData != null) {
-
+            String nameId = skyData.getNameId();
+            background.setViewScaling(skyData.backGroundScaling);
             final Map<String, ICubeMapProgram.CMTextures> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
             if (skyBoxesSet.containsKey(skyData.getNameId())) {
                 ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(skyBoxesSet.get(skyData.getNameId())), new CubeMapTexture.Properties(true));
@@ -392,7 +394,6 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             return;
         }
 
-        background.setViewScaling(skyData.backGroundScaling);
         this.onSetupSkyBox(sunData, skyData, skyBox, background);
     }
 
@@ -522,6 +523,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
+            //if (true) {
+            //    return null;
+            //}
             final TagRadioBoolean tagStaticBody = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE, TagRadioBoolean.class);
             final TagRadioBoolean tagDirectIndirect = template.getTagsContainer().getTagItem(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, TagRadioBoolean.class);
             MeshStructure3D<?> meshStructure3D = null;

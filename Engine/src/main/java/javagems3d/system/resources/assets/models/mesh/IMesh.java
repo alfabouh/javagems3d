@@ -26,7 +26,7 @@ public interface IMesh {
 
     SkeletonData getSkeletonData();
 
-    void clearData();
+    void clearData(boolean keepTrianglesInMemory);
     void clearMesh();
     int positionsIndex();
 }

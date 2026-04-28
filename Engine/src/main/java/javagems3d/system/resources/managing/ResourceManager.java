@@ -32,6 +32,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.LongBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,7 +116,11 @@ public abstract class ResourceManager {
     }
 
     public void loadModelAnimationsInTexture() {
-        this.animationMatricesTexture = this.createAnimationsTexture(this.getResourceDataCache().getMeshBuffersDataCache().getMeshBuffers());
+        this.animationMatricesTexture = this.createAnimationsTexture(new ArrayList<>() {{
+            for (SystemResources systemResources : ResourceManager.this.gameResourcesMap.values()) {
+                addAll(systemResources.getResourceArrays().getMeshesWithAnimation());
+            }
+        }});
     }
 
     public void writeResourcesDataCache() {
@@ -183,10 +188,11 @@ public abstract class ResourceManager {
         }
 
         floatBuffer.flip();
+        Texture2DProgram.Properties properties = new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null);
         if (totalMatrices == 0) {
-            texture2DProgram.createTexture(new Vector2i(1), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+            texture2DProgram.createTexture(new Vector2i(1), properties, floatBuffer);
         } else {
-            texture2DProgram.createTexture(new Vector2i(size), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+            texture2DProgram.createTexture(new Vector2i(size), properties, floatBuffer);
         }
 
         MemoryUtil.memFree(floatBuffer);

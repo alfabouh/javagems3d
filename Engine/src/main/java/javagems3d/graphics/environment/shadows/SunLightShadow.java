@@ -36,6 +36,7 @@ public class SunLightShadow extends Shadow {
         for (int i = 0; i < this.getTotalCascades(); i++) {
             this.cascades.add(new Cascade());
         }
+        this.setDefaultCascadeSplits();
     }
 
     /*

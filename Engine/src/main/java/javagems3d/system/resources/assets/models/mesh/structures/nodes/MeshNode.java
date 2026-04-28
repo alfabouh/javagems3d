@@ -17,9 +17,9 @@ public abstract class MeshNode<T extends IMesh> {
         this.meshData = null;
     }
 
-    public void clearData() {
+    public void clearData(boolean keepTrianglesInMemory) {
         if (this.getMeshData() != null) {
-            this.getMeshData().clearData();
+            this.getMeshData().clearData(keepTrianglesInMemory);
         }
     }
 
