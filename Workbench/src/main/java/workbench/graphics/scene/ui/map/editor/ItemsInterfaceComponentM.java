@@ -261,7 +261,7 @@ public class ItemsInterfaceComponentM {
             Vector3f origin = new Vector3f(center);
             List<Pair<SceneObject, Vector3f>> hits = this.getEditorInterface().getSceneComponent().getIntersectedObjectsRayCenter(WBenchOpenGLRenderer.isRenderingBackgroundScene() ? this.getEditorInterface().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getEditorInterface().getWorld().getSceneObjects(), origin, direction);
 
-            if (hits.isEmpty()) {
+            if (hits.isEmpty() || hits.getFirst().second() == null) {
                 return;
             }
             hits = hits.stream().filter(e -> !e.first().equals(wBenchObject)).toList();

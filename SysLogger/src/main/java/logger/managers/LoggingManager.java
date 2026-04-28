@@ -67,10 +67,10 @@ public abstract class LoggingManager {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         LoggerConfig loggerConfig = config.getLoggerConfig(SystemLogging.get().getLogManager().getLog().getName());
-        FileAppender fileAppender = (FileAppender) loggerConfig.getAppenders().get("FileAppender");
+        FileAppender fileAppender = (FileAppender) loggerConfig.getAppenders().get("FileERR_2");
         openLogFolderButton.addActionListener(e -> {
             try {
-                Desktop.getDesktop().open(new File(fileAppender.getFileName()));
+                Desktop.getDesktop().open(new File(fileAppender.getFileName()).getAbsoluteFile().getParentFile().getParentFile());
             } catch (IOException ex) {
                 SystemLogging.get().getLogManager().error("Failed to open logs files", ex);
             }

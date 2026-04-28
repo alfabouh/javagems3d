@@ -5,6 +5,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.json.JSONFileManaging;
 import javagems3d.system.service.files.JGemsPath;
+import logger.managers.LoggingManager;
 
 import java.io.File;
 import java.io.IOException;
