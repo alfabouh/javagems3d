@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
@@ -89,10 +91,13 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         }
-        this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-        this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
-        this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
-        this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+        if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
+            this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+            this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
+            this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+            EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
         }

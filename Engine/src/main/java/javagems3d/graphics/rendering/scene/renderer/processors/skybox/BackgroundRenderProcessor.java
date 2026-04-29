@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -13,6 +15,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
@@ -135,9 +138,12 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         if (this.isRender()) {
-            if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
-                this.renderIndirectObjects(frameTicking, indirectRenderObjects);
-                this.renderDirectObjects(frameTicking, directRenderObjects);
+            if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+                if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
+                    this.renderIndirectObjects(frameTicking, indirectRenderObjects);
+                    this.renderDirectObjects(frameTicking, directRenderObjects);
+                    EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+                }
             }
         }
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

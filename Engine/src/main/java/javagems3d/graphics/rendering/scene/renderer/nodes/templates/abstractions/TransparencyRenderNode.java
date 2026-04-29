@@ -1,5 +1,13 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.JavaToJsAPI;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.JSRenderNode;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.JSRenderOGLNodeEvent;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
@@ -61,10 +69,13 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);
 
         this.getOutColorBuffer().bindFBO();
-        GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-        GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
-        GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-        this.renderContent(frameTicking);
+        GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
+        GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+        GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
+        if (!EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.renderContent(frameTicking);
+            EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         this.getOutColorBuffer().unBindFBO();
 
         GL46.glDisable(GL46.GL_BLEND);

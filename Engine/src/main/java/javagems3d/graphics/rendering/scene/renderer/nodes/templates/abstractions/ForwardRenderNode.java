@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -62,11 +64,14 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
         GL46.glDisable(GL46.GL_BLEND);
 
         this.getOutColorBuffer().bindFBO();
-        this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
-        this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+        if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
+            this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 
-        this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
-        this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
+            this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
+            this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
+            EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         this.getOutColorBuffer().unBindFBO();
     }
 
