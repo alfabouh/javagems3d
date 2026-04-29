@@ -1,0 +1,151 @@
+//TODO ARRAYS
+uniform mat4 cascade_shadow_projection_view_0;
+uniform mat4 cascade_shadow_projection_view_1;
+uniform mat4 cascade_shadow_projection_view_2;
+//TODO ARRAYS
+uniform float cascade_shadow_split_distance_0;
+uniform float cascade_shadow_split_distance_1;
+uniform float cascade_shadow_split_distance_2;
+//TODO ARRAYS
+uniform sampler2D sun_shadow_map_0;
+uniform sampler2D sun_shadow_map_1;
+uniform sampler2D sun_shadow_map_2;
+//TODO ARRAYS
+uniform samplerCube point_light_cubemap_0;
+uniform samplerCube point_light_cubemap_1;
+uniform samplerCube point_light_cubemap_2;
+
+uniform float far_plane;
+uniform float PosExp;
+uniform float NegExp;
+
+vec2 warp(vec2 exponents, float depth) {
+    depth = 2.0f * depth - 1.0f;
+    float pos = exp(exponents.x * depth);
+    float neg = -exp(-exponents.y * depth);
+    vec2 wDepth = vec2(pos, neg);
+    return wDepth;
+}
+
+float variance(vec2 moments, float mean, float minVariance) {
+    if (mean <= moments.x) {
+        return 1.0f;
+    } else {
+        float variance = moments.y - (moments.x * moments.x);
+        variance = max(variance, minVariance);
+        float d = mean - moments.x;
+        return variance / (variance + (d * d));
+    }
+}
+
+vec4 sampleShadow(int idx, vec2 uv) {
+    if (idx == 0) {
+        return texture(sun_shadow_map_0, uv);
+    }
+    if (idx == 1) {
+        return texture(sun_shadow_map_1, uv);
+    }
+    return texture(sun_shadow_map_2, uv);
+}
+
+samplerCube sampleShadowPl(int idx) {
+    if (idx == 0) {
+        return point_light_cubemap_0;
+    }
+    if (idx == 1) {
+        return point_light_cubemap_1;
+    }
+    return point_light_cubemap_2;
+}
+
+float sampleSplitDist(int idx) {
+    if (idx == 0) {
+        return cascade_shadow_split_distance_0;
+    }
+    if (idx == 1) {
+        return cascade_shadow_split_distance_1;
+    }
+    return cascade_shadow_split_distance_2;
+}
+
+mat4 sampleProjView(int idx) {
+    if (idx == 0) {
+        return cascade_shadow_projection_view_0;
+    }
+    if (idx == 1) {
+        return cascade_shadow_projection_view_1;
+    }
+    return cascade_shadow_projection_view_2;
+}
+
+float EVSM(int idx, vec4 shadow_coord, float bias) {
+    float positiveExponent = PosExp;
+    float negativeExponent = NegExp;
+    vec2 exponents = vec2(positiveExponent, negativeExponent);
+
+    vec4 moments = sampleShadow(idx, shadow_coord.xy).xyzw;
+    vec2 posMoments = vec2(moments.x, moments.z);
+    vec2 negMoments = vec2(moments.y, moments.w);
+    vec2 wDepth = warp(exponents, shadow_coord.z);
+
+    vec2 depthScale = 8.e-4f * exponents * wDepth;
+    vec2 minVariance = depthScale * depthScale;
+    float posResult = variance(posMoments, wDepth.x, minVariance.x);
+    float negResult = variance(negMoments, wDepth.y, minVariance.y);
+    return min(posResult, negResult);
+}
+
+float calcShadowDepth(int idx, vec4 shadow_coord, float bias) {
+    return EVSM(idx, shadow_coord, bias);
+}
+
+float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
+    vec4 shadowMapPos = sampleProjView(idx) * worldPosition;
+    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
+    if (shadow_coord.x < 0.0 || shadow_coord.x > 1.0 || shadow_coord.y < 0.0 || shadow_coord.y > 1.0 || shadow_coord.z < 0.0 || shadow_coord.z > 1.0) {
+        return 1.0;
+    }
+    if (abs(shadowMapPos.w) < 1e-5) {
+        return 1.0;
+    }
+    float c0 = calcShadowDepth(idx, shadow_coord, bias);
+    return c0;
+}
+
+float calc_sun_shadows(vec4 world_position, vec3 frag_pos) {
+    const float bias = 1.0e-5f;
+    const float bias_f = 3.0;
+    const float half_bias_f = bias_f / 2.0;
+    const int max_cascades = 3;
+    int cascadeIndex = int(frag_pos.z < sampleSplitDist(0) - half_bias_f) + int(frag_pos.z < sampleSplitDist(1) - half_bias_f);
+    float f0 = calculate_shadow_vsm(world_position, cascadeIndex, bias);
+    if (cascadeIndex >= 0 && cascadeIndex < max_cascades) {
+        int cascadeIndex2 = int(frag_pos.z < sampleSplitDist(cascadeIndex) + half_bias_f) + cascadeIndex;
+        float f1 = calculate_shadow_vsm(world_position, cascadeIndex2, bias);
+        float p2 = (sampleSplitDist(cascadeIndex) + half_bias_f) - frag_pos.z;
+        return mix(f0, f1, p2 / bias_f);
+    }
+    return 1.;
+}
+
+float vsmFixLightBleed(float pMax, float amount) {
+    return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
+}
+
+float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
+{
+    vec3 fragToLight = fragPosition - lightPos;
+    float currentDepth = length(fragToLight);
+    currentDepth /= far_plane;
+
+    vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
+
+    float E_x2 = vsm.y;
+    float Ex_2 = vsm.x * vsm.x;
+    float var = max(E_x2 - Ex_2, 1.0e-5f);
+    float mD = vsm.x - currentDepth;
+    float mD_2 = mD * mD;
+    float p = var / (var + mD_2);
+
+    return max(vsmFixLightBleed(p, 0.7), currentDepth <= vsm.x ? 1.0 : 0.0);
+}

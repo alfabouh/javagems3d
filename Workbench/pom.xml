@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <buildName>jgems3d-workbench</buildName>
+        <coreName>jgems3d-core</coreName>
+        <launcherName>jgems3d-launcher</launcherName>
+    </properties>
+    <parent>
+        <groupId>com.github.gltexture</groupId>
+        <artifactId>javagems3d</artifactId>
+        <version>0.2</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>Workbench</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <finalName>${buildName}</finalName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-bat</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
+                                <echo file="../output/${buildName}-run.bat">
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${coreName}.jar;./core/${launcherName}.jar;./core/${buildName}.jar" launcher.bootstrap.Bootstrap workbench=true
+                                    pause
+                                </echo>
+                                <echo file="../output/${buildName}-run-debug.bat">
+                                    @echo off
+                                    java -Dpolyglotimpl.DisableMultiReleaseCheck=true --enable-native-access=ALL-UNNAMED -XX:+UseG1GC -Xms512m -Xmx4G -cp "./core/${coreName}.jar;./core/${launcherName}.jar;./core/${buildName}.jar" launcher.bootstrap.Bootstrap workbench=true debug=true
+                                    pause
+                                </echo>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.gltexture</groupId>
+            <artifactId>SysLogger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.gltexture</groupId>
+            <artifactId>Engine</artifactId>
+        </dependency>
+    </dependencies>
+</project>

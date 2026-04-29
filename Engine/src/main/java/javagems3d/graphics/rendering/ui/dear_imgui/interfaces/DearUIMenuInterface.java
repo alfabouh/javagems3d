@@ -1,0 +1,30 @@
+package javagems3d.graphics.rendering.ui.dear_imgui.interfaces;
+
+import imgui.ImGui;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiWindowFlags;
+import javagems3d.system.global.JGemsConfig;
+import javagems3d.graphics.screen.JGemsScreen;
+import javagems3d.system.controller.base.MouseKeyboardController;
+import logger.managers.LoggingManager;
+import org.joml.Vector2i;
+
+public class DearUIMenuInterface implements DearUIInterface {
+    public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
+        float logX = (float) windowSize.x / 3;
+        float logY = (float) windowSize.y / 1.5f;
+
+        ImGui.setNextWindowPos(windowSize.x - logX, 0, ImGuiCond.Always);
+        ImGui.setNextWindowSize(logX, logY);
+        ImGui.setNextWindowCollapsed(true, ImGuiCond.Once);
+        ImGui.begin("Output", ImGuiWindowFlags.AlwaysVerticalScrollbar | ImGuiWindowFlags.NoResize);
+        DearUIGameInterface.consoleContent();
+        ImGui.end();
+
+        ImGui.setNextWindowSize(JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
+        ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
+        ImGui.begin("Debug");
+        ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
+        ImGui.end();
+    }
+}

@@ -1,0 +1,14 @@
+#extension GL_ARB_bindless_texture : require
+precision highp float;
+precision highp int;
+
+layout (location = 0) out vec4 frag_color;
+in vec2 uv_coordinates;
+
+uniform sampler2D texture_map;
+
+void main()
+{
+  vec4 tex = texture(texture_map, uv_coordinates);
+  frag_color = tex;
+}

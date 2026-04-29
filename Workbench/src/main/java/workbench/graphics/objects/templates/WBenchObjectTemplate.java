@@ -1,0 +1,58 @@
+package workbench.graphics.objects.templates;
+
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.system.external.mapping.tags.TagsContainer;
+import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.managing.ResourceManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import workbench.graphics.objects.WBenchCommonObject;
+import workbench.graphics.objects.WBenchObject;
+import workbench.graphics.scene.world.WBenchWorld;
+
+public class WBenchObjectTemplate extends WBenchTemplate {
+    protected transient String modelDef;
+    protected MeshGroup meshGroup;
+    protected RenderAttributes renderAttributes;
+    protected TagsContainer tagsContainer;
+    protected TranslationConstraints translationConstraints;
+
+    public WBenchObjectTemplate(@NotNull WBenchObject.ID objectId, MeshGroup meshGroup, RenderAttributes renderAttributes, TagsContainer tagsContainer, TranslationConstraints translationConstraints) {
+        super(objectId);
+        this.meshGroup = meshGroup;
+        this.renderAttributes = renderAttributes;
+        this.tagsContainer = tagsContainer;
+        this.translationConstraints = translationConstraints;
+        this.modelDef = "NULL";
+    }
+
+    public WBenchObject<?> createObject(@NotNull WBenchWorld world, @Nullable TagsContainer overridedTagsContainer) {
+        return new WBenchCommonObject(world, this, overridedTagsContainer);
+    }
+
+    public String getModelDef() {
+        return this.modelDef;
+    }
+
+    public WBenchObjectTemplate setModelDef(String modelDef) {
+        this.modelDef = modelDef;
+        return this;
+    }
+
+    public TranslationConstraints getTranslationConstraints() {
+        return this.translationConstraints;
+    }
+
+    public TagsContainer getTagsContainer() {
+        return this.tagsContainer;
+    }
+
+    public MeshGroup getMeshGroup() {
+        return this.meshGroup == null ? ResourceManager.DEFAULT_CUBE_MESHGROUP() : this.meshGroup;
+    }
+
+    public RenderAttributes getRenderAttributes() {
+        return this.renderAttributes;
+    }
+}

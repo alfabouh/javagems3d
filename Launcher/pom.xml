@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <buildName>jgems3d-launcher</buildName>
+    </properties>
+    <parent>
+        <groupId>com.github.gltexture</groupId>
+        <artifactId>javagems3d</artifactId>
+        <version>0.2</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>Launcher</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <finalName>${buildName}</finalName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-bat</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.gltexture</groupId>
+            <artifactId>Engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.gltexture</groupId>
+            <artifactId>Workbench</artifactId>
+        </dependency>
+    </dependencies>
+</project>
