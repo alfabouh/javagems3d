@@ -29,6 +29,11 @@ public final class DoubleVertexAttribute extends VertexAttribute<Double> {
         }
     }
 
+    public void clearData() {
+        super.clearData();
+        this.doubleBuffer = null;
+    }
+
     @Override
     public Buffer getBuffer() {
         return this.doubleBuffer;

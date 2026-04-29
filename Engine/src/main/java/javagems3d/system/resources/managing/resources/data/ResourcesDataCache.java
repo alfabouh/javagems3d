@@ -25,6 +25,8 @@ public final class ResourcesDataCache {
         arrays.forEach(e -> {
             bindlessTexturesDataArraySet.add(e.getBindlessTexturesArray());
             meshBuffersDataArraySet.add(e.getMeshBuffersDataArray());
+            e.getBindlessTexturesArray().clear();
+            e.getMeshBuffersDataArray().clear();
         });
         {
             final MeshBuffersDataArray defCube = new MeshBuffersDataArray();
@@ -32,8 +34,7 @@ public final class ResourcesDataCache {
             defCube.addMaterial(new Material());
             meshBuffersDataArraySet.add(defCube);
         }
-        this.getBindlessTexturesCache().clear();
-        this.getMeshBuffersDataCache().clear();
+        this.clearAll();
         this.getBindlessTexturesCache().writeData(bindlessTexturesDataArraySet);
         this.getMeshBuffersDataCache().writeData(meshBuffersDataArraySet);
     }

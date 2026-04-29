@@ -36,7 +36,10 @@ public abstract class VertexAttribute<T> {
     public abstract int attributeType();
 
     public void clearData() {
-        this.getValues().clear();
+        if (this.values != null) {
+            this.getValues().clear();
+            this.values = null;
+        }
     }
 
     public List<T> getValues() {

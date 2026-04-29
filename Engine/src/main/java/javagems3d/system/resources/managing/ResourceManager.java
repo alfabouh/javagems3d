@@ -119,6 +119,7 @@ public abstract class ResourceManager {
         this.animationMatricesTexture = this.createAnimationsTexture(new ArrayList<>() {{
             for (SystemResources systemResources : ResourceManager.this.gameResourcesMap.values()) {
                 addAll(systemResources.getResourceArrays().getMeshesWithAnimation());
+                systemResources.getResourceArrays().getMeshesWithAnimation().clear();
             }
         }});
     }

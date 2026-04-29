@@ -30,6 +30,11 @@ public final class FloatVertexAttribute extends VertexAttribute<Float> {
         return this;
     }
 
+    public void clearData() {
+        super.clearData();
+        this.floatBuffer = null;
+    }
+
     @Override
     public Buffer getBuffer() {
         return this.floatBuffer;

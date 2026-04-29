@@ -23,6 +23,11 @@ public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
         MemoryUtil.memFree(this.intBuffer);
     }
 
+    public void clearData() {
+        super.clearData();
+        this.intBuffer = null;
+    }
+
     public void putArray(int[] i) {
         for (int a : i) {
             this.getValues().add(a);
