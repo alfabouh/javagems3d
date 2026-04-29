@@ -72,9 +72,9 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
         GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
         GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[] { 0.0f, 0.0f, 0.0f, 0.0f });
-        if (!EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
             this.renderContent(frameTicking);
-            EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+            EventLauncher.pushEvent(new EventBus.TransparencyOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
         }
         this.getOutColorBuffer().unBindFBO();
 

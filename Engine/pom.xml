@@ -9,13 +9,13 @@
     </properties>
 
     <parent>
-        <groupId>com.github.gltexture</groupId>
+        <groupId>io.github.gltexture</groupId>
         <artifactId>javagems3d</artifactId>
-        <version>0.2</version>
+        <version>beta0.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>Engine</artifactId>
+    <artifactId>engine</artifactId>
 
     <build>
         <plugins>
@@ -97,9 +97,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.gltexture</groupId>
-            <artifactId>SysLogger</artifactId>
-            <version>0.2</version>
+            <groupId>io.github.gltexture</groupId>
+            <artifactId>sysLogger</artifactId>
+            <version>beta0.1.1</version>
         </dependency>
     </dependencies>
 </project>

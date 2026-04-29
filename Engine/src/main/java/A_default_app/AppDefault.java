@@ -5,13 +5,13 @@ import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
 import api.application.scripts.IAppScriptContextRegistry;
 import api.application.workbench.manager.IAPIWBenchDataManager;
-import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import api.scripting.JavaToJsAPI;
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultMainMenuPanel;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;
@@ -22,7 +22,6 @@ import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import org.jetbrains.annotations.NotNull;
 import A_default_app.events.TestEvents;
-import A_default_app.gui.TestMainMenuPanel;
 import A_default_app.resources.ModelInitializer;
 
 @JGemsAppEntry(id = "DefaultGame")
@@ -59,7 +58,7 @@ public class AppDefault extends JGemsApplication {
     @Override
     public @NotNull PanelUI getMainMenuPanel() {
         if (JavaToJsAPI.uiContainer.getMainMenuPanel() == null) {
-            return new TestMainMenuPanel(null);
+            return new DefaultMainMenuPanel(null);
         }
         return JavaToJsAPI.uiContainer.getMainMenuPanel().second();
     }
@@ -149,13 +148,7 @@ public class AppDefault extends JGemsApplication {
         manager.addResourceProp("castle1", "Window_bars", Window_bars);
         manager.addResourceProp("castle1", "Window_glass", Window_glass);
 
-        //WBenchRenderProperties.getDefault().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false)
-        //JGemsRenderProperties.getDefault().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false)
-
-        manager.addResourceEntity("terrain", "flatgrass", () -> new WBenchObjectData(flatgrass), () -> new JGemsEntityData(flatgrass));
-        manager.addResourceProp("terrain", "flatgrass_back", () -> new WBenchObjectData(flatgrass_back), () -> new JGemsPropData(flatgrass_back));
         manager.addResourceProp("trees", () -> new WBenchObjectData(trees), () -> new JGemsPropData(trees));
-
         manager.SET_DEFAULTS();
     }
 }

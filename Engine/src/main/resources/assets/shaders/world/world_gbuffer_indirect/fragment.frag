@@ -100,5 +100,5 @@ void main()
     gNormal = normals;
     gColor = diffuse;
     gEmission = emission;
-    gMetallicRoughness = metallic_roughness;
+    gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
 }

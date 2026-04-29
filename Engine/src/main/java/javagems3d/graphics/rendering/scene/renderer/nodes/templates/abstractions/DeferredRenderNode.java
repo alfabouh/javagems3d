@@ -91,12 +91,12 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         }
-        if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
             this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
-            EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+            EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
         }
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);

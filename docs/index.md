@@ -1,8 +1,8 @@
 # JavaGems3D Engine
 
-JavaGems3D is a lightweight game engine written in Java.
+JavaGems3D is a game engine written in Java.
 
-Current version: **0.3**  
+Current version: **beta 1.0**  
 Development started in: **Autumn 2022**
 
 Repository: https://github.com/gltexture/javagems3d

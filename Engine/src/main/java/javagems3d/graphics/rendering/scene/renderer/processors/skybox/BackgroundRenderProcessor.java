@@ -138,11 +138,11 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         if (this.isRender()) {
-            if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
                 if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
                     this.renderIndirectObjects(frameTicking, indirectRenderObjects);
                     this.renderDirectObjects(frameTicking, directRenderObjects);
-                    EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+                    EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInBackgroundFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
                 }
             }
         }

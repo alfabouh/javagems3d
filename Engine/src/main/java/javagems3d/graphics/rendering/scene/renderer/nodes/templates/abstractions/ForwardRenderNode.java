@@ -64,13 +64,13 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
         GL46.glDisable(GL46.GL_BLEND);
 
         this.getOutColorBuffer().bindFBO();
-        if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 
             this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
             this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
-            EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent((JGemsOpenGLRenderer) this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+            EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
         }
         this.getOutColorBuffer().unBindFBO();
     }

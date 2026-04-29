@@ -20,6 +20,7 @@ import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.JGemsDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.JGemsForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.JGemsTransparencyRenderNode;
@@ -182,19 +183,19 @@ public abstract class EventBus {
     }
 
     public static final class TransparencyOGLRenderInMainFBOEvent extends Cancellable implements IEvent {
-        private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        private final OpenGLRenderer jGemsOpenGLRenderer;
         private final TransparencyRenderNode renderNode;
         private final FrameTicking frameTicking;
         private final Run run;
 
-        public TransparencyOGLRenderInMainFBOEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer, TransparencyRenderNode renderNode, FrameTicking frameTicking, Run run) {
+        public TransparencyOGLRenderInMainFBOEvent(OpenGLRenderer jGemsOpenGLRenderer, TransparencyRenderNode renderNode, FrameTicking frameTicking, Run run) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
             this.renderNode = renderNode;
             this.frameTicking = frameTicking;
             this.run = run;
         }
 
-        public JGemsOpenGLRenderer getjGemsOpenGLRenderer() {
+        public OpenGLRenderer getjGemsOpenGLRenderer() {
             return this.jGemsOpenGLRenderer;
         }
 
@@ -212,19 +213,19 @@ public abstract class EventBus {
     }
 
     public static final class DeferredOGLRenderInMainFBOEvent extends Cancellable implements IEvent {
-        private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        private final OpenGLRenderer jGemsOpenGLRenderer;
         private final DeferredRenderNode renderNode;
         private final FrameTicking frameTicking;
         private final Run run;
 
-        public DeferredOGLRenderInMainFBOEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer, DeferredRenderNode renderNode, FrameTicking frameTicking, Run run) {
+        public DeferredOGLRenderInMainFBOEvent(OpenGLRenderer jGemsOpenGLRenderer, DeferredRenderNode renderNode, FrameTicking frameTicking, Run run) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
             this.renderNode = renderNode;
             this.frameTicking = frameTicking;
             this.run = run;
         }
 
-        public JGemsOpenGLRenderer getjGemsOpenGLRenderer() {
+        public OpenGLRenderer getjGemsOpenGLRenderer() {
             return this.jGemsOpenGLRenderer;
         }
 
@@ -242,19 +243,19 @@ public abstract class EventBus {
     }
 
     public static final class ForwardOGLRenderInMainFBOEvent extends Cancellable implements IEvent {
-        private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        private final OpenGLRenderer jGemsOpenGLRenderer;
         private final ForwardRenderNode renderNode;
         private final FrameTicking frameTicking;
         private final Run run;
 
-        public ForwardOGLRenderInMainFBOEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer, ForwardRenderNode renderNode, FrameTicking frameTicking, Run run) {
+        public ForwardOGLRenderInMainFBOEvent(OpenGLRenderer jGemsOpenGLRenderer, ForwardRenderNode renderNode, FrameTicking frameTicking, Run run) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
             this.renderNode = renderNode;
             this.frameTicking = frameTicking;
             this.run = run;
         }
 
-        public JGemsOpenGLRenderer getjGemsOpenGLRenderer() {
+        public OpenGLRenderer getjGemsOpenGLRenderer() {
             return this.jGemsOpenGLRenderer;
         }
 
@@ -272,19 +273,19 @@ public abstract class EventBus {
     }
 
     public static final class ForwardOGLRenderInBackgroundFBOEvent extends Cancellable implements IEvent {
-        private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        private final OpenGLRenderer jGemsOpenGLRenderer;
         private final BackgroundRenderProcessor renderNode;
         private final FrameTicking frameTicking;
         private final Run run;
 
-        public ForwardOGLRenderInBackgroundFBOEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer, BackgroundRenderProcessor renderNode, FrameTicking frameTicking, Run run) {
+        public ForwardOGLRenderInBackgroundFBOEvent(OpenGLRenderer jGemsOpenGLRenderer, BackgroundRenderProcessor renderNode, FrameTicking frameTicking, Run run) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
             this.renderNode = renderNode;
             this.frameTicking = frameTicking;
             this.run = run;
         }
 
-        public JGemsOpenGLRenderer getjGemsOpenGLRenderer() {
+        public OpenGLRenderer getjGemsOpenGLRenderer() {
             return this.jGemsOpenGLRenderer;
         }
 

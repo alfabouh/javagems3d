@@ -7,13 +7,13 @@
         <buildName>jgems3d-launcher</buildName>
     </properties>
     <parent>
-        <groupId>com.github.gltexture</groupId>
+        <groupId>io.github.gltexture</groupId>
         <artifactId>javagems3d</artifactId>
-        <version>0.2</version>
+        <version>beta0.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>Launcher</artifactId>
+    <artifactId>launcher</artifactId>
 
     <build>
         <plugins>
@@ -50,12 +50,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.gltexture</groupId>
-            <artifactId>Engine</artifactId>
+            <groupId>io.github.gltexture</groupId>
+            <artifactId>engine</artifactId>
+            <version>beta0.1.1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.gltexture</groupId>
-            <artifactId>Workbench</artifactId>
+            <groupId>io.github.gltexture</groupId>
+            <artifactId>workbench</artifactId>
+            <version>beta0.1.1</version>
         </dependency>
     </dependencies>
 </project>

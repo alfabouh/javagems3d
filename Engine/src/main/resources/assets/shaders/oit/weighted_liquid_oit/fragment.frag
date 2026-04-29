@@ -152,7 +152,7 @@ void main()
     vec3 gNormal = normals;
     vec4 gColor = diffuse;
     vec3 gEmission = emission;
-    vec2 gMetallicRoughness = metallic_roughness;
+    vec2 gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
 
     vec3 refracted_color = refract_cubemap(model_vertex_normal * vec3(-1), 1.73, model_vertex_pos);
     gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
