@@ -55,8 +55,8 @@ public class JGemsShaderManager extends ShaderManager {
         this.performUniform(uniform, UniformFunctions.MAT4F(new Matrix4f(view).mul(model)));
     }
 
-    public void performMatrix4(UniformString uniform, Matrix4f perspective) {
-        this.performUniform(uniform, UniformFunctions.MAT4F(perspective));
+    public void performMatrix4(UniformString uniform, Matrix4f mat) {
+        this.performUniform(uniform, UniformFunctions.MAT4F(mat));
     }
 
     public void performModel3DMatrix(UniformString uniform, Model3D model) {//new UniformString(DefaultUniformDefinitions.MODEL_MATRIX)

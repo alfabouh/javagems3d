@@ -9,6 +9,11 @@ public final class MeshBuffersDataArray implements IDataArray {
     private final List<Material> materials;
     private final Set<MeshBuffer> meshBuffers;
 
+    private MeshBuffersDataArray(List<Material> materials, Set<MeshBuffer> meshBuffers) {
+        this.materials = materials;
+        this.meshBuffers = meshBuffers;
+    }
+
     public MeshBuffersDataArray() {
         this.materials = new ArrayList<>();
         this.meshBuffers = new HashSet<>();
@@ -37,5 +42,9 @@ public final class MeshBuffersDataArray implements IDataArray {
 
     public List<Material> getMaterials() {
         return this.materials;
+    }
+
+    public MeshBuffersDataArray copy() {
+        return new MeshBuffersDataArray(new ArrayList<>(this.materials), new HashSet<>(this.meshBuffers));
     }
 }

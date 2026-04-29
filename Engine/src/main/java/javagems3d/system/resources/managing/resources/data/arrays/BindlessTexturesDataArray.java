@@ -8,6 +8,10 @@ import java.util.List;
 public final class BindlessTexturesDataArray implements IDataArray {
     private final List<ITextureBindless> bindlessTextureList;
 
+    private BindlessTexturesDataArray(List<ITextureBindless> bindlessTextureList) {
+        this.bindlessTextureList = bindlessTextureList;
+    }
+
     public BindlessTexturesDataArray() {
         this.bindlessTextureList = new ArrayList<>();
     }
@@ -22,5 +26,9 @@ public final class BindlessTexturesDataArray implements IDataArray {
 
     public List<ITextureBindless> getBindlessTextureList() {
         return this.bindlessTextureList;
+    }
+
+    public BindlessTexturesDataArray copy() {
+        return new BindlessTexturesDataArray(new ArrayList<>(this.bindlessTextureList));
     }
 }

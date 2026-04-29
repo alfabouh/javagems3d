@@ -93,7 +93,7 @@ public abstract class EventBus {
 
     // NEW
 
-    public static class CollisionTriggered extends Cancellable implements IEvent {
+    public static final class CollisionTriggered extends Cancellable implements IEvent {
         public final IHasCollisionTrigger object;
         public final ITriggerAction triggerAction;
 
@@ -111,7 +111,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class RenderUIEvent extends Cancellable implements IEvent {
+    public static final class RenderUIEvent extends Cancellable implements IEvent {
         public final JGemsUI jGemsUI;
         public final FrameTicking frameTicking;
 
@@ -129,7 +129,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class RenderIMGUIEvent implements IEvent {
+    public static final class RenderIMGUIEvent implements IEvent {
         public final DearUIInterface dearUIInterface;
         public final IController controller;
         public final FrameTicking frameTicking;
@@ -153,7 +153,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class InitRendererOGLEvent implements IEvent {
+    public static final class InitRendererOGLEvent implements IEvent {
         private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
 
         public InitRendererOGLEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer) {
@@ -161,7 +161,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class StopRendererOGLEvent implements IEvent {
+    public static final class StopRendererOGLEvent implements IEvent {
         private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
 
         public StopRendererOGLEvent(JGemsOpenGLRenderer jGemsOpenGLRenderer) {
@@ -173,7 +173,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class RenderOGLNodeEvent extends Cancellable implements IEvent {
+    public static final class RenderOGLNodeEvent extends Cancellable implements IEvent {
         private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
         public final IRenderNode renderNode;
         private final FrameTicking frameTicking;
@@ -203,7 +203,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class RenderOGLSceneEvent extends Cancellable implements IEvent {
+    public static final class RenderOGLSceneEvent extends Cancellable implements IEvent {
         private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
         private final FrameTicking frameTicking;
         private final Run run;
@@ -239,7 +239,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class UpdateRenderEnvironment implements IEvent {
+    public static final class UpdateRenderEnvironment implements IEvent {
         private final JGemsEnvironment environment;
         private final ICamera camera;
         private final Run run;
@@ -263,7 +263,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class CreateRenderEnvironment implements IEvent {
+    public static final class CreateRenderEnvironment implements IEvent {
         private final JGemsEnvironment environment;
         private final JGemsOpenGLRenderer jGemsOpenGLRenderer;
 
@@ -281,7 +281,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class DestroyRenderEnvironment implements IEvent {
+    public static final class DestroyRenderEnvironment implements IEvent {
         private final JGemsEnvironment environment;
 
         public DestroyRenderEnvironment(JGemsEnvironment environment) {
@@ -293,7 +293,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class SceneWorldLifecycleEvent implements IEvent {
+    public static final class SceneWorldLifecycleEvent implements IEvent {
         private final SceneWorld world;
         private final State state;
 
@@ -306,7 +306,7 @@ public abstract class EventBus {
         public State getState() { return state; }
     }
 
-    public static class SceneWorldUpdateEvent extends Cancellable implements IEvent {
+    public static final class SceneWorldUpdateEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final Run run;
         private final int tick;
@@ -330,7 +330,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class SceneObjectSpawnEvent extends Cancellable implements IEvent {
+    public static final class SceneObjectSpawnEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final SceneObject object;
         private final Object renderData;
@@ -346,7 +346,7 @@ public abstract class EventBus {
         public Object getRenderData() { return this.renderData; }
     }
 
-    public static class SceneObjectDestroyEvent extends Cancellable implements IEvent {
+    public static final class SceneObjectDestroyEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final SceneObject object;
 
@@ -359,7 +359,7 @@ public abstract class EventBus {
         public SceneObject getObject() { return this.object; }
     }
 
-    public static class SceneObjectUpdateEvent implements IEvent {
+    public static final class SceneObjectUpdateEvent implements IEvent {
         private final SceneWorld world;
         private final SceneObject object;
 
@@ -372,7 +372,7 @@ public abstract class EventBus {
         public SceneObject getObject() { return object; }
     }
 
-    public static class SceneLiquidSpawnEvent extends Cancellable implements IEvent {
+    public static final class SceneLiquidSpawnEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final Liquid liquid;
         private final LiquidRenderData renderData;
@@ -388,7 +388,7 @@ public abstract class EventBus {
         public LiquidRenderData getRenderData() { return this.renderData; }
     }
 
-    public static class SceneLiquidDestroyEvent extends Cancellable implements IEvent {
+    public static final class SceneLiquidDestroyEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final SceneWorldLiquid liquid;
 
@@ -401,7 +401,7 @@ public abstract class EventBus {
         public SceneWorldLiquid getLiquid() { return this.liquid; }
     }
 
-    public static class SceneLightSpawnEvent extends Cancellable implements IEvent {
+    public static final class SceneLightSpawnEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final Light light;
 
@@ -414,7 +414,7 @@ public abstract class EventBus {
         public Light getLight() { return this.light; }
     }
 
-    public static class SceneLightDestroyEvent extends Cancellable implements IEvent {
+    public static final class SceneLightDestroyEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final Light light;
 
@@ -427,7 +427,7 @@ public abstract class EventBus {
         public Light getLight() { return this.light; }
     }
 
-    public static class SceneCameraEvent implements IEvent {
+    public static final class SceneCameraEvent implements IEvent {
         private final SceneWorld world;
         private final ICamera camera;
 
@@ -445,7 +445,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class SceneWorldObjectsUpdateEvent extends Cancellable implements IEvent {
+    public static final class SceneWorldObjectsUpdateEvent extends Cancellable implements IEvent {
         private final SceneWorld world;
         private final boolean refresh;
         private final FrameTicking frameTicking;
@@ -481,7 +481,7 @@ public abstract class EventBus {
         RowMapObjectData getTemplate();
     }
 
-    public static class MapPropConvertEvent extends Cancellable implements IMapConvertEvent {
+    public static final class MapPropConvertEvent extends Cancellable implements IMapConvertEvent {
         private final SceneWorld sceneWorld;
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
@@ -510,7 +510,7 @@ public abstract class EventBus {
         public void setResult(SceneProp result) { this.result = result; }
     }
 
-    public static class MapEntityConvertEvent extends Cancellable implements IMapConvertEvent {
+    public static final class MapEntityConvertEvent extends Cancellable implements IMapConvertEvent {
         private final SceneWorld sceneWorld;
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
@@ -533,7 +533,7 @@ public abstract class EventBus {
         public void setResult(WorldItem result) { this.result = result; }
     }
 
-    public static class MapMarkerConvertEvent extends Cancellable implements IMapConvertEvent {
+    public static final class MapMarkerConvertEvent extends Cancellable implements IMapConvertEvent {
         private final SceneWorld sceneWorld;
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
@@ -552,7 +552,7 @@ public abstract class EventBus {
         public JGemsMarkerData getMarkerData() { return this.markerData; }
     }
 
-    public static class MapPointLightConvertEvent extends Cancellable implements IMapConvertEvent {
+    public static final class MapPointLightConvertEvent extends Cancellable implements IMapConvertEvent {
         private final SceneWorld sceneWorld;
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
@@ -572,7 +572,7 @@ public abstract class EventBus {
         public void setResult(Pair<PointLight, Integer> result) { this.result = result; }
     }
 
-    public static class MapSkySetupEvent extends Cancellable implements IEvent {
+    public static final class MapSkySetupEvent extends Cancellable implements IEvent {
         private final SceneWorld sceneWorld;
         private final ISkyBox skyBox;
         private final ISkyBackground background;
@@ -594,7 +594,7 @@ public abstract class EventBus {
         public SkyData getSkyData() { return this.skyData; }
     }
 
-    public static class MapFogSetupEvent extends Cancellable implements IEvent {
+    public static final class MapFogSetupEvent extends Cancellable implements IEvent {
         private final IFogScene fogScene;
         private final FogData fogData;
 
@@ -607,7 +607,7 @@ public abstract class EventBus {
         public FogData getFogData() { return this.fogData; }
     }
 
-    public static class MapShadowsSetupEvent extends Cancellable implements IEvent {
+    public static final class MapShadowsSetupEvent extends Cancellable implements IEvent {
         private final IShadowScene shadowScene;
         private final ShadowsData shadowsData;
 
@@ -620,7 +620,7 @@ public abstract class EventBus {
         public ShadowsData getShadowsData() { return this.shadowsData; }
     }
 
-    public static class MapLightingSetupEvent extends Cancellable implements IEvent {
+    public static final class MapLightingSetupEvent extends Cancellable implements IEvent {
         private final ILightScene lightScene;
         private final LightingData shadowsData;
 
@@ -638,7 +638,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class MapProcessingEvent extends Cancellable implements IEvent {
+    public static final class MapProcessingEvent extends Cancellable implements IEvent {
         private final PhysicsWorld physicsWorld;
         private final SceneWorld sceneWorld;
         private final MapObjectsDataPack dataPack;
@@ -657,7 +657,7 @@ public abstract class EventBus {
         public Run getRun() { return this.run; }
     }
 
-    public static class PlayerConstructOnMapEvent extends Cancellable implements IEvent {
+    public static final class PlayerConstructOnMapEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final Collection<IGameMap.SpawnPlayerData> spawnDataList;
         public IPlayer player;
@@ -685,7 +685,7 @@ public abstract class EventBus {
         }
     }
 
-    public static class PhysicsWorldStateEvent extends Cancellable implements IEvent {
+    public static final class PhysicsWorldStateEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final State state;
 
@@ -698,7 +698,7 @@ public abstract class EventBus {
         public State getState() { return this.state; }
     }
 
-    public static class PhysicsWorldUpdateEvent extends Cancellable implements IEvent {
+    public static final class PhysicsWorldUpdateEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final Run run;
 
@@ -711,7 +711,7 @@ public abstract class EventBus {
         public Run getRun() { return this.run; }
     }
 
-    public static class PhysicsWorldObjectAddEvent extends Cancellable implements IEvent {
+    public static final class PhysicsWorldObjectAddEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final IWorldObject object;
 
@@ -724,7 +724,7 @@ public abstract class EventBus {
         public IWorldObject getObject() { return this.object; }
     }
 
-    public static class PhysicsWorldObjectRemoveEvent extends Cancellable implements IEvent {
+    public static final class PhysicsWorldObjectRemoveEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final IWorldObject object;
 
@@ -737,7 +737,7 @@ public abstract class EventBus {
         public IWorldObject getObject() { return this.object; }
     }
 
-    public static class PhysicsWorldClearEvent extends Cancellable implements IEvent {
+    public static final class PhysicsWorldClearEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
 
         public PhysicsWorldClearEvent(PhysicsWorld world) {
@@ -750,7 +750,7 @@ public abstract class EventBus {
 /*
 EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.POST, toRenderObjects, toRenderLiquids), TODO);
 
-    public static class Class123 implements IEvent {
+    public static final class Class123 implements IEvent {
 
     }
  */

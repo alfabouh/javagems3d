@@ -23,8 +23,8 @@ public final class ResourcesDataCache {
         Set<BindlessTexturesDataArray> bindlessTexturesDataArraySet = new HashSet<>();
         Set<MeshBuffersDataArray> meshBuffersDataArraySet = new HashSet<>();
         arrays.forEach(e -> {
-            bindlessTexturesDataArraySet.add(e.getBindlessTexturesArray());
-            meshBuffersDataArraySet.add(e.getMeshBuffersDataArray());
+            bindlessTexturesDataArraySet.add(e.getBindlessTexturesArray().copy());
+            meshBuffersDataArraySet.add(e.getMeshBuffersDataArray().copy());
             e.getBindlessTexturesArray().clear();
             e.getMeshBuffersDataArray().clear();
         });
