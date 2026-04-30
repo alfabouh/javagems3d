@@ -59,8 +59,8 @@ This is not a tech demo anymore — the engine is intended for actual game devel
 
 ### Links
 
-* Start Guide → `TOOLBOX_DOCS_LINK_PLACEHOLDER`
-* Full Documentation → `EXAMPLES_LINK_PLACEHOLDER`
+* Start Guide → ![Click](https://gltexture.github.io/javagems3d/getting-started/)
+* Full Documentation → ![Click](https://gltexture.github.io/javagems3d/)
 
 ---
 
