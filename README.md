@@ -59,8 +59,7 @@ This is not a tech demo anymore — the engine is intended for actual game devel
 
 ### Links
 
-* Start Guide → ![Click 1](https://gltexture.github.io/javagems3d/getting-started/)
-* Full Documentation → ![Click 2](https://gltexture.github.io/javagems3d/)
+* Full Documentation → ![Click 2](https://github.com/gltexture/javagems3d/deployments/github-pages)
 
 ---
 
