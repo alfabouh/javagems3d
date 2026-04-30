@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Game Editor - JavaGems3D</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">JavaGems3D</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../getting-started/" class="nav-link">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../architecture/" class="nav-link">Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../api/" class="nav-link">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Game Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../graphics/" class="nav-link">Graphics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../physics/" class="nav-link">Physics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../sounds/" class="nav-link">Sounds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build-game/" class="nav-link">Build Game</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../api/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../graphics/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#workbench-editor" class="nav-link">WorkBench Editor</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#asset-editor" class="nav-link">Asset Editor</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#left-panel-resources" class="nav-link">Left Panel — Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#editor-created-resources" class="nav-link">Editor-Created Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#bottom-panel-debug-console" class="nav-link">Bottom Panel — Debug Console</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#right-panel-actions" class="nav-link">Right Panel — Actions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#global-editor-settings" class="nav-link">Global Editor Settings</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#center-panel-preview-area" class="nav-link">Center Panel — Preview Area</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#top-panel-main-menu" class="nav-link">Top Panel — Main Menu</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#map-editor" class="nav-link">Map Editor</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#left-panel-resources_1" class="nav-link">Left Panel — Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#left-panel-items" class="nav-link">Left Panel — Items</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#top-panel-main-menu_1" class="nav-link">Top Panel — Main Menu</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#center-panel-scene-view" class="nav-link">Center Panel — Scene View</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#bottom-panel-console" class="nav-link">Bottom Panel — Console</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#right-panel-actions_1" class="nav-link">Right Panel — Actions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#api-extension" class="nav-link">API Extension</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="workbench-editor">WorkBench Editor</h1>
+<h2 id="overview">Overview</h2>
+<p>WorkBench is the game editor for JavaGems3D.</p>
+<p>It can be launched in two ways:</p>
+<ul>
+<li>by passing the runtime argument:</li>
+</ul>
+<pre><code class="language-text">workbench=true
+</code></pre>
+<ul>
+<li>by running the prebuilt Windows <code>.bat</code> launcher from the ready release package</li>
+</ul>
+<p>WorkBench is used for creating and managing:</p>
+<ul>
+<li>game projects</li>
+<li>assets</li>
+<li>maps</li>
+<li>scripts</li>
+<li>entities and props</li>
+<li>markers</li>
+<li>tags</li>
+<li>skyboxes</li>
+<li>editor configuration</li>
+</ul>
+<p>Each game project works independently and has its own isolated resource space.
+Multiple projects can exist at the same time.</p>
+<p>When WorkBench starts, the user first enters the project hub where a new game project can be created or an existing one can be opened.</p>
+<hr />
+<h1 id="asset-editor">Asset Editor</h1>
+<p><img alt="Asset Editor" src="../readme/p1.png" /></p>
+<p>After opening a project, the user enters the Asset Editor.</p>
+<p>This is the main workspace for managing game resources.</p>
+<hr />
+<h2 id="left-panel-resources">Left Panel — Resources</h2>
+<p>The left panel contains both:</p>
+<ul>
+<li>imported OS files</li>
+<li>editor-created resources</li>
+</ul>
+<h3 id="supported-import-formats">Supported Import Formats</h3>
+<h3 id="models">Models</h3>
+<ul>
+<li><code>.gltf</code></li>
+</ul>
+<h3 id="textures">Textures</h3>
+<ul>
+<li><code>.png</code></li>
+<li><code>.jpg</code></li>
+<li><code>.jpeg</code></li>
+<li><code>.bmp</code></li>
+<li><code>.tga</code></li>
+</ul>
+<h3 id="audio">Audio</h3>
+<ul>
+<li><code>.ogg</code></li>
+</ul>
+<p>The editor supports previewing:</p>
+<ul>
+<li>3D models</li>
+<li>textures</li>
+<li>skyboxes</li>
+<li>audio playback</li>
+</ul>
+<hr />
+<h2 id="editor-created-resources">Editor-Created Resources</h2>
+<h3 id="entities">Entities</h3>
+<p>Physical world objects with physics simulation.</p>
+<p>Used for gameplay objects that interact with the physics world.</p>
+<hr />
+<h3 id="props">Props</h3>
+<p>Non-physical scene objects.</p>
+<p>Used for decorative or static world elements.</p>
+<hr />
+<h3 id="tags">Tags</h3>
+<p>Custom user-defined attributes.</p>
+<p>Tags can be attached to:</p>
+<ul>
+<li>entities</li>
+<li>props</li>
+<li>markers</li>
+</ul>
+<p>They are later parsed during map loading and can be used inside events and custom game logic.
+This allows developers to configure object-specific behavior directly from the editor.</p>
+<hr />
+<h3 id="skyboxes">Skyboxes</h3>
+<p>Skyboxes are created from texture sets and used for environment rendering.</p>
+<hr />
+<h3 id="markers">Markers</h3>
+<p>Special utility objects.</p>
+<p>Markers are parsed by the game and can trigger any custom developer-defined behavior.</p>
+<p>They are commonly used for:</p>
+<ul>
+<li>spawn points</li>
+<li>triggers</li>
+<li>scripted events</li>
+<li>custom runtime actions</li>
+</ul>
+<hr />
+<h3 id="maps">Maps</h3>
+<p>Maps are created here and edited inside the separate Map Editor.</p>
+<p>They are described in the next section.</p>
+<hr />
+<h3 id="scripts">Scripts</h3>
+<p>Scripts can be:</p>
+<ul>
+<li>created</li>
+<li>edited</li>
+</ul>
+<p>The editor includes:</p>
+<ul>
+<li>script documentation access, Java-styled</li>
+<li>script editing tools</li>
+</ul>
+<p>There is also a built-in AI prompt field for generating code with external AI tools.</p>
+<p><img alt="Scripts" src="../readme/p5.png" /></p>
+<hr />
+<h2 id="bottom-panel-debug-console">Bottom Panel — Debug Console</h2>
+<p>The bottom panel contains the debugging console.</p>
+<p>It displays:</p>
+<ul>
+<li>logs</li>
+<li>warnings</li>
+<li>errors</li>
+<li>runtime output</li>
+</ul>
+<p>This is used for debugging both editor and game-side systems.</p>
+<hr />
+<h2 id="right-panel-actions">Right Panel — Actions</h2>
+<p>The right panel is used for:</p>
+<ul>
+<li>selected object configuration</li>
+<li>object actions</li>
+<li>editor operations</li>
+</ul>
+<p>It changes depending on the currently selected resource.</p>
+<hr />
+<h2 id="global-editor-settings">Global Editor Settings</h2>
+<p>Additional editor settings are also available on the right side.</p>
+<p>Examples:</p>
+<ul>
+<li>paths to required JAR files</li>
+<li>files used during compilation</li>
+<li>autosave parameters for Map Editor</li>
+<li>editor-specific global settings</li>
+</ul>
+<hr />
+<h2 id="center-panel-preview-area">Center Panel — Preview Area</h2>
+<p>The center area is used for:</p>
+<ul>
+<li>model preview</li>
+<li>texture preview</li>
+<li>script editing</li>
+<li>skybox preview</li>
+</ul>
+<hr />
+<h2 id="top-panel-main-menu">Top Panel — Main Menu</h2>
+<p>The main menu allows:</p>
+<ul>
+<li>launching the game for testing</li>
+<li>compiling the project</li>
+<li>saving changes</li>
+<li>exiting the editor</li>
+</ul>
+<hr />
+<h1 id="map-editor">Map Editor</h1>
+<p>The Map Editor works as a separate editor with its own isolated resource space.</p>
+<p>It is focused entirely on level creation and scene management.</p>
+<p><img alt="Map Editor 1" src="../readme/p2.png" /></p>
+<p><img alt="Map Editor 2" src="../readme/p3.png" /></p>
+<hr />
+<h2 id="left-panel-resources_1">Left Panel — Resources</h2>
+<p>Contains:</p>
+<ul>
+<li>entities</li>
+<li>props</li>
+<li>markers</li>
+<li>local map scripts</li>
+</ul>
+<p>Several system entities, props, and markers are always available by default.</p>
+<p>These are built-in editor resources required for map construction.</p>
+<p>Local scripts specific to the current map can also be created here.</p>
+<hr />
+<h2 id="left-panel-items">Left Panel — Items</h2>
+<p>The Items section shows all objects currently placed on the map.</p>
+<p>Users can:</p>
+<ul>
+<li>inspect objects</li>
+<li>select objects</li>
+<li>manage objects</li>
+<li>use context menu actions</li>
+</ul>
+<hr />
+<h2 id="top-panel-main-menu_1">Top Panel — Main Menu</h2>
+<p>Available actions:</p>
+<ul>
+<li>save map</li>
+<li>exit editor</li>
+<li>launch current map inside the game</li>
+<li>undo</li>
+<li>redo</li>
+</ul>
+<hr />
+<h2 id="center-panel-scene-view">Center Panel — Scene View</h2>
+<p>The center panel is the main 3D scene viewport.</p>
+<p>Users can:</p>
+<ul>
+<li>place objects</li>
+<li>move objects</li>
+<li>rotate objects</li>
+<li>scale objects</li>
+<li>delete objects</li>
+<li>select objects directly in the world</li>
+</ul>
+<h3 id="scene-types">Scene Types</h3>
+<p>There are two scene layers:</p>
+<h3 id="main-scene">Main Scene</h3>
+<p>The primary gameplay scene.</p>
+<h3 id="background-scene">Background Scene</h3>
+<p>Used mainly for skybox rendering.</p>
+<hr />
+<h2 id="bottom-panel-console">Bottom Panel — Console</h2>
+<p>Displays:</p>
+<ul>
+<li>logs</li>
+<li>debug output</li>
+<li>errors</li>
+</ul>
+<hr />
+<h2 id="right-panel-actions_1">Right Panel — Actions</h2>
+<p>Contains:</p>
+<ul>
+<li>selected object settings</li>
+<li>object parameters</li>
+<li>global map settings</li>
+</ul>
+<p>Examples of global map settings:</p>
+<ul>
+<li>lighting</li>
+<li>shadows</li>
+<li>environment</li>
+<li>rendering settings</li>
+<li>scene configuration</li>
+</ul>
+<p>This is where most map tuning is performed.</p>
+<hr />
+<h1 id="api-extension">API Extension</h1>
+<p>WorkBench can also be extended through the JavaGems3D API.</p>
+<p>Currently, API extension is limited mostly to:</p>
+<ul>
+<li>registering default entities</li>
+<li>registering default props</li>
+<li>registering markers</li>
+<li>defining editor-side default resources</li>
+</ul>
+<p>In future versions, editor extension capabilities will be expanded significantly.</p>
+<p>This will allow deeper integration of custom gameplay systems directly into WorkBench.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

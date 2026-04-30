@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
+@Deprecated
 public class MapNavGraphGenerator {
     private final Graph graph;
     private final DynamicsSystem dynamicsSystem;

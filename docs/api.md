@@ -135,7 +135,7 @@ The engine calls several initialization methods during startup.
 @Override
 public void initScripts(IAppScriptContextRegistry appScriptRegistry) {
     appScriptRegistry.addGlobalGameContextScript(
-        "A_default_app.scripts.test.TestJsJsTest"
+        "A_default_app.scripts.test"
     );
 }
 ```

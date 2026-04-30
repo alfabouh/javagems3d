@@ -7,6 +7,7 @@ import javagems3d.system.service.graph.GraphVertex;
 
 import java.util.*;
 
+@Deprecated
 public class MapPathFinder {
     private final Graph graph;
     private final GraphVertex start;

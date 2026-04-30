@@ -36,4 +36,4 @@ It is still under active development, and many features are either incomplete or
 - [Graphics System](graphics.md)
 - [Physics System](physics.md)
 - [Audio System](audio.md)
-- [Game Build System](build.md)
+- [Game Build System](build-game.md)

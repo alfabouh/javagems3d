@@ -3,6 +3,7 @@ package javagems3d.system.inventory;
 import javagems3d.physics.world.IWorld;
 import logger.Log;
 
+@Deprecated
 public interface Inventory {
     abstract class Item {
         private final String name;

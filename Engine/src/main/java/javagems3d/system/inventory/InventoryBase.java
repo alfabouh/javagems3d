@@ -8,6 +8,7 @@ import javagems3d.system.service.synchronizing.SyncManager;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class InventoryBase {
     private final int maxSlots;
     private final InventoryOwner owner;

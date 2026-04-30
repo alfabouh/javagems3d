@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>API - JavaGems3D</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">JavaGems3D</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../getting-started/" class="nav-link">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../architecture/" class="nav-link">Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../editor/" class="nav-link">Game Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../graphics/" class="nav-link">Graphics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../physics/" class="nav-link">Physics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../sounds/" class="nav-link">Sounds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build-game/" class="nav-link">Build Game</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../architecture/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../editor/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#api" class="nav-link">API</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#api-integration" class="nav-link">API Integration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#application-entry-point" class="nav-link">Application Entry Point</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#application-instance-injection" class="nav-link">Application Instance Injection</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#debug-mode" class="nav-link">Debug Mode</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#application-lifecycle" class="nav-link">Application Lifecycle</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#scripts" class="nav-link">Scripts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#events" class="nav-link">Events</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#resources" class="nav-link">Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#asset-initialization" class="nav-link">Asset Initialization</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#example" class="nav-link">Example</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#input-binding" class="nav-link">Input Binding</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#main-menu-ui" class="nav-link">Main Menu UI</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#window-properties" class="nav-link">Window Properties</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#editor-integration" class="nav-link">Editor Integration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#global-engine-configuration" class="nav-link">Global Engine Configuration</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#debug-configuration" class="nav-link">Debug Configuration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#system-configuration" class="nav-link">System Configuration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#jgemshelper" class="nav-link">JGemsHelper</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#main-subsystems" class="nav-link">Main Subsystems</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#camera-system" class="nav-link">Camera System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#controller-system" class="nav-link">Controller System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#map-system" class="nav-link">Map System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#world-system" class="nav-link">World System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#ui-system" class="nav-link">UI System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#state-control" class="nav-link">State Control</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#resource-access" class="nav-link">Resource Access</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#summary" class="nav-link">Summary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="api">API</h1>
+<h2 id="overview">Overview</h2>
+<p>The API is the main integration layer for working with the JGems engine.</p>
+<p>It is responsible for:</p>
+<ul>
+<li>application bootstrap</li>
+<li>game lifecycle control</li>
+<li>asset and resource loading</li>
+<li>event registration</li>
+<li>scripting integration</li>
+<li>UI initialization</li>
+<li>editor (<code>WBench</code>) integration</li>
+<li>access to engine subsystems (rendering, physics, world, audio, input)</li>
+</ul>
+<p>The API layer is intentionally separated from the engine core.<br />
+The engine (<code>JGems3D</code>) does not depend on the game application — the application depends on the engine.</p>
+<hr />
+<h2 id="api-integration">API Integration</h2>
+<p>To use the engine, an external application layer must be connected to runtime.</p>
+<p>There are two main ways to do this.</p>
+<hr />
+<h3 id="1-jar-deployment-production">1. JAR deployment (production)</h3>
+<p>The application can be packaged as a separate <code>.jar</code> and placed inside the <code>api/</code> directory near the engine core JAR.</p>
+<p>This is the recommended approach for production builds.</p>
+<p>Typical structure:</p>
+<pre><code class="language-text">engine/
+├── core.jar
+├── api/
+│   └── game.jar
+</code></pre>
+<hr />
+<h3 id="2-runtime-classpath-injection">2. Runtime classpath injection</h3>
+<p>You can also define the application entry point manually using launch arguments.</p>
+<p>Launch argument:</p>
+<p><code>api_app_classpath="classpath"</code></p>
+<p>Example:</p>
+<pre><code class="language-bash">java -cp game.jar;engine-core.jar;api.jar ^
+-Dapi_app_classpath=&quot;com.game.AppDefault&quot; ^
+-jar engine-core.jar
+</code></pre>
+<p>Requirements:</p>
+<ul>
+<li>the class must be available in runtime classpath</li>
+<li>the class must be accessible via <code>-cp</code></li>
+<li>the class must be annotated with <code>@JGemsAppEntry</code></li>
+<li>the class must extend <code>JGemsApplication</code></li>
+</ul>
+<p>This approach is useful for development and testing.</p>
+<hr />
+<h2 id="application-entry-point">Application Entry Point</h2>
+<p>The application entry point is defined using:</p>
+<pre><code class="language-java">@JGemsAppEntry(id = &quot;DefaultGame&quot;)
+public class AppDefault extends JGemsApplication {
+</code></pre>
+<h3 id="rules">Rules</h3>
+<ul>
+<li>only one entry point is allowed per project</li>
+<li>the class must extend <code>JGemsApplication</code></li>
+</ul>
+<p><code>JGemsApplication</code> contains the main initialization interfaces used by the engine.</p>
+<hr />
+<h2 id="application-instance-injection">Application Instance Injection</h2>
+<p>Optional singleton injection:</p>
+<pre><code class="language-java">@JGemsAppInstance
+public static AppDefault appDefault;
+</code></pre>
+<p>If this annotation is present, the engine automatically injects the current runtime instance of the application.</p>
+<p>Useful for global access.</p>
+<hr />
+<h2 id="debug-mode">Debug Mode</h2>
+<pre><code class="language-java">JGems3D.DEBUG_MODE = true;
+</code></pre>
+<p>Enables global debug mode.</p>
+<p>This affects:</p>
+<ul>
+<li>rendering diagnostics</li>
+<li>debug lines</li>
+<li>collision visualization</li>
+<li>lighting debug</li>
+<li>editor diagnostics</li>
+</ul>
+<hr />
+<h1 id="application-lifecycle">Application Lifecycle</h1>
+<p>The engine calls several initialization methods during startup.</p>
+<hr />
+<h2 id="scripts">Scripts</h2>
+<pre><code class="language-java">@Override
+public void initScripts(IAppScriptContextRegistry appScriptRegistry) {
+    appScriptRegistry.addGlobalGameContextScript(
+        &quot;A_default_app.scripts.test&quot;
+    );
+}
+</code></pre>
+<p>Used for script registration.</p>
+<p>Supported contexts:</p>
+<ul>
+<li>global context → entire game</li>
+<li>local context → current map only</li>
+</ul>
+<p>This allows script wrappers and JS integrations.</p>
+<blockquote>
+<p>Full scripting documentation will be added later.</p>
+</blockquote>
+<hr />
+<h2 id="events">Events</h2>
+<pre><code class="language-java">@Override
+public void initEvents(IAppEventSubscriber appEventSubscriber) {
+    appEventSubscriber.addClassWithEvents(TestEvents.class);
+}
+</code></pre>
+<p>Registers event hook classes.</p>
+<p>Used for:</p>
+<ul>
+<li>gameplay events</li>
+<li>engine callbacks</li>
+<li>interaction hooks</li>
+<li>runtime listeners</li>
+</ul>
+<blockquote>
+<p>Full event system documentation will be added later.</p>
+</blockquote>
+<hr />
+<h2 id="resources">Resources</h2>
+<pre><code class="language-java">@Override
+public void initResources(IAppResources appResources) {
+    appResources.putGlobalAssetsInitializer(new ModelInitializer());
+}
+</code></pre>
+<p>Registers resource loaders.</p>
+<p>This is where meshes, textures, models and other assets are loaded.</p>
+<hr />
+<h1 id="asset-initialization">Asset Initialization</h1>
+<p>Every resource loader must implement:</p>
+<pre><code class="language-java">IAssetsInitializer
+</code></pre>
+<hr />
+<h2 id="example">Example</h2>
+<pre><code class="language-java">public class ModelInitializer implements IAssetsInitializer {
+
+    @Override
+    public void load(SystemResources systemResources) {
+        // load models here
+    }
+
+    @Override
+    public LaunchMode loadMode() {
+        return LaunchMode.REGULAR;
+    }
+
+    @Override
+    public LoadPriority loadPriority() {
+        return LoadPriority.LOW;
+    }
+}
+</code></pre>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>inheritance from <code>IAssetsInitializer</code> is required</li>
+<li>supports models, textures, animations, materials</li>
+<li>loading order is controlled by <code>LoadPriority</code></li>
+<li>loading stage is controlled by <code>LaunchMode</code></li>
+</ul>
+<blockquote>
+<p>Detailed asset system documentation will be added later.</p>
+</blockquote>
+<hr />
+<h1 id="input-binding">Input Binding</h1>
+<pre><code class="language-java">@Override
+public BindingManager getBindingManager() {
+    return new DefaultBindings();
+}
+</code></pre>
+<p>Responsible for mapping:</p>
+<ul>
+<li>keyboard input</li>
+<li>mouse input</li>
+<li>controller input</li>
+</ul>
+<p>to gameplay actions.</p>
+<p>This is the main input binding layer.</p>
+<hr />
+<h1 id="main-menu-ui">Main Menu UI</h1>
+<pre><code class="language-java">@Override
+public PanelUI getMainMenuPanel() {
+    if (JavaToJsAPI.uiContainer.getMainMenuPanel() == null) {
+        return new TestMainMenuPanel(null);
+    }
+
+    return JavaToJsAPI.uiContainer.getMainMenuPanel().second();
+}
+</code></pre>
+<p>Defines the main menu panel of the game.</p>
+<h3 id="important">Important</h3>
+<p>This method must always return a valid <code>PanelUI</code>.</p>
+<p>Fallback UI should always exist.</p>
+<hr />
+<h1 id="window-properties">Window Properties</h1>
+<pre><code class="language-java">@Override
+public Window.WindowProperties getWindowProperties() {
+    return new Window.WindowProperties(
+        &quot;DefaultGame&quot;,
+        new JGemsPath(Window.DEFAULT_ICON)
+    );
+}
+</code></pre>
+<p>Defines:</p>
+<ul>
+<li>window title</li>
+<li>application icon</li>
+<li>startup window settings</li>
+</ul>
+<hr />
+<h1 id="editor-integration">Editor Integration</h1>
+<pre><code class="language-java">@Override
+public void setupEditorResources(IAPIWBenchDataManager manager) {
+}
+</code></pre>
+<p>Used only for the map editor (<code>WBench</code>).</p>
+<p>Typical usage:</p>
+<ul>
+<li>registering props</li>
+<li>terrain objects</li>
+<li>environment assets</li>
+<li>default editor entities</li>
+</ul>
+<p>This does not affect gameplay runtime directly.</p>
+<hr />
+<h1 id="global-engine-configuration">Global Engine Configuration</h1>
+<p>The engine provides a global configuration layer:</p>
+<pre><code class="language-java">JGemsConfig
+</code></pre>
+<hr />
+<h2 id="debug-configuration">Debug Configuration</h2>
+<pre><code class="language-java">JGemsConfig.DEBUG
+</code></pre>
+<p>Used for runtime diagnostics.</p>
+<p>Examples:</p>
+<ul>
+<li><code>WIREFRAME_RENDERING</code></li>
+<li><code>SHOW_CASCADES</code></li>
+<li><code>FULL_BRIGHT</code></li>
+<li><code>FOG</code></li>
+<li><code>SHOW_DEBUG_LINES</code></li>
+</ul>
+<p>Useful for development and debugging.</p>
+<hr />
+<h2 id="system-configuration">System Configuration</h2>
+<pre><code class="language-java">JGemsConfig.SYSTEM
+</code></pre>
+<p>Defines engine-wide technical limits.</p>
+<p>Examples:</p>
+<ul>
+<li>default resolution</li>
+<li>FOV</li>
+<li>render distance</li>
+<li>shadow system limits</li>
+<li>point light limits</li>
+<li>indirect rendering limits</li>
+<li>animation limits</li>
+<li>HDR / SSAO / Bloom / FXAA toggles</li>
+<li>UI scaling</li>
+<li>camera speed and sensitivity</li>
+</ul>
+<p>Important examples:</p>
+<pre><code class="language-java">JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH
+JGemsConfig.SYSTEM.MAX_POINT_LIGHTS
+JGemsConfig.SYSTEM.USE_SHADOWS
+JGemsConfig.SYSTEM.CAM_SPEED
+</code></pre>
+<p>This is the main place for low-level engine tuning.</p>
+<hr />
+<h1 id="jgemshelper">JGemsHelper</h1>
+<p><code>JGemsHelper</code> is the main helper facade for accessing engine subsystems.</p>
+<p>Instead of accessing internal engine classes directly, API code should use:</p>
+<pre><code class="language-java">JGemsHelper
+</code></pre>
+<p>This provides safe centralized access.</p>
+<hr />
+<h2 id="main-subsystems">Main Subsystems</h2>
+<pre><code class="language-java">JGemsHelper.render();
+JGemsHelper.world();
+JGemsHelper.camera();
+JGemsHelper.controller();
+JGemsHelper.map();
+JGemsHelper.ui();
+JGemsHelper.state();
+JGemsHelper.resources();
+JGemsHelper.files();
+JGemsHelper.math();
+</code></pre>
+<p>Available systems:</p>
+<ul>
+<li>rendering</li>
+<li>world</li>
+<li>map</li>
+<li>physics</li>
+<li>audio</li>
+<li>UI</li>
+<li>camera</li>
+<li>controller</li>
+<li>resources</li>
+<li>localisation</li>
+<li>files</li>
+<li>math utilities</li>
+</ul>
+<hr />
+<h1 id="camera-system">Camera System</h1>
+<pre><code class="language-java">JGemsHelper.camera().setCurrentCamera(camera);
+JGemsHelper.camera().enableFreeCamera(controller, pos, rot);
+JGemsHelper.camera().enableAttachedCamera(entity);
+</code></pre>
+<p>Features:</p>
+<ul>
+<li>free camera mode</li>
+<li>attached entity camera</li>
+<li>runtime camera switching</li>
+</ul>
+<p>Useful for gameplay, cutscenes and editor tools.</p>
+<hr />
+<h1 id="controller-system">Controller System</h1>
+<pre><code class="language-java">JGemsHelper.controller().lockController();
+JGemsHelper.controller().attachControllerTo(controller, target);
+JGemsHelper.controller().detachController();
+JGemsHelper.controller().setCursorInCenter();
+</code></pre>
+<p>Features:</p>
+<ul>
+<li>active controller access</li>
+<li>controller locking</li>
+<li>player/controller attachment</li>
+<li>cursor management</li>
+<li>binding access</li>
+</ul>
+<hr />
+<h1 id="map-system">Map System</h1>
+<pre><code class="language-java">JGemsHelper.map().loadMap(processor);
+JGemsHelper.map().exitMap();
+JGemsHelper.map().getCurrentGameMap();
+</code></pre>
+<p>Features:</p>
+<ul>
+<li>load maps</li>
+<li>unload maps</li>
+<li>get current player</li>
+<li>validate current map state</li>
+<li>access map-relative paths</li>
+</ul>
+<hr />
+<h1 id="world-system">World System</h1>
+<pre><code class="language-java">JGemsHelper.world().addWorldItem(item, renderData);
+JGemsHelper.world().addProp(prop);
+JGemsHelper.world().addLight(light);
+JGemsHelper.world().addLiquid(liquid, liquidData);
+</code></pre>
+<p>Used for runtime world manipulation.</p>
+<p>Supports:</p>
+<ul>
+<li>entities</li>
+<li>props</li>
+<li>liquids</li>
+<li>lights</li>
+<li>skybox</li>
+<li>fog</li>
+<li>environment access</li>
+</ul>
+<p>This is one of the most important gameplay APIs.</p>
+<hr />
+<h1 id="ui-system">UI System</h1>
+<pre><code class="language-java">JGemsHelper.ui().openMainMenu();
+JGemsHelper.ui().openPanel(panel);
+JGemsHelper.ui().closePanel();
+</code></pre>
+<p>Controls runtime UI panels.</p>
+<p>Useful for:</p>
+<ul>
+<li>pause menu</li>
+<li>inventory</li>
+<li>settings</li>
+<li>custom in-game interfaces</li>
+</ul>
+<hr />
+<h1 id="state-control">State Control</h1>
+<pre><code class="language-java">JGemsHelper.state().pauseGame(true);
+JGemsHelper.state().resumeGame();
+JGemsHelper.state().pauseGameAndLockResume(true);
+</code></pre>
+<p>Controls:</p>
+<ul>
+<li>game pause</li>
+<li>sound pause</li>
+<li>resume locking</li>
+</ul>
+<p>Useful for:</p>
+<ul>
+<li>menus</li>
+<li>cutscenes</li>
+<li>loading transitions</li>
+<li>editor mode switching</li>
+</ul>
+<hr />
+<h1 id="resource-access">Resource Access</h1>
+<pre><code class="language-java">JGemsHelper.resources().getGlobalGameResources();
+JGemsHelper.resources().reloadResources();
+</code></pre>
+<p>Used for:</p>
+<ul>
+<li>accessing local/global resources</li>
+<li>animation texture buffers</li>
+<li>runtime resource reload</li>
+</ul>
+<p>Helpful during development and hot reload workflows.</p>
+<hr />
+<h1 id="summary">Summary</h1>
+<p>The JGems API is built around strict modular separation:</p>
+<ul>
+<li>application layer</li>
+<li>engine core</li>
+<li>runtime subsystems</li>
+<li>editor subsystem</li>
+<li>helper facade (<code>JGemsHelper</code>)</li>
+</ul>
+<p>This architecture allows:</p>
+<ul>
+<li>modular game development</li>
+<li>isolated editor workflow</li>
+<li>runtime extensibility</li>
+<li>scalable rendering systems</li>
+<li>high-performance engine-side control</li>
+</ul>
+<p>The API should be considered the primary public interface for all gameplay and editor-side development.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

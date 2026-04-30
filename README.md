@@ -29,7 +29,7 @@ JavaGems3D is also largely a personal learning project where I continuously impr
 
 ---
 
-![Screenshot 4](readme/p4.png)
+![Screenshot 4](docs/readme/p4.png)
 
 ---
 
@@ -68,52 +68,53 @@ This is not a tech demo anymore — the engine is intended for actual game devel
 
 ### Engine Screenshots
 
-![Screenshot 1](readme/p1.png)
+![Screenshot 1](docs/readme/p1.png)
 
-![Screenshot 2](readme/p2.png)
+![Screenshot 2](docs/readme/p2.png)
 
-![Screenshot 3](readme/p3.png)
+![Screenshot 3](docs/readme/p3.png)
 
 ---
 
 ## Engine Features
 
-| Feature                 | Status                                |
-| ----------------------- | ------------------------------------- |
-| 3D Rendering            | ✅ OpenGL 4.3                          |
-| Physics Support         | ✅ Bullet Physics                      |
-| Deferred Rendering      | ✅ Implemented                         |
-| Indirect Rendering      | ✅ Implemented                         |
-| GPU-driven Rendering    | ✅ Implemented                         |
-| Shadows                 | ✅ Cascaded EVSM + Point Light Shadows VSM |
-| Lighting                | ✅ Point Lights + Directional Light    |
-| Post-Processing         | ✅ HDR, Bloom, FXAA, SSAO              |
-| OIT                     | ✅ Weighted OIT + 'Discard' Blending     |
-| PBR Workflow            | ❌ Planned                               |
+| Feature                 | Status                                              |
+|-------------------------|-----------------------------------------------------|
+| 3D Rendering            | ✅ OpenGL 4.3                                        |
+| Physics Support         | ✅ Bullet Physics                                    |
+| Deferred Rendering      | ✅ Implemented                                       |
+| Indirect Rendering      | ✅ Implemented                                       |
+| Direct Rendering        | ✅ Implemented                                       |
+| Scripting               | ✅ JavaScript                                        |
+| Shadows                 | ✅ Cascaded EVSM + Point Light Shadows VSM           |
+| Lighting                | ✅ Point Lights + Directional Light                  |
+| Post-Processing         | ✅ HDR, Bloom, FXAA, SSAO                            |
+| Transparency            | ✅ Weighted OIT + 'Discard' Blending                 |
+| PBR Workflow            | ❌ Planned                                           |
 | Material System         | ✅ Metallic / Roughness / Emission simple simulation |
-| Bindless Textures       | ✅ Implemented                         |
-| Sound System            | ✅ OpenAL                              |
-| UI System               | ✅ Dear ImGui + Custom Runtime UI      |
-| Engine API              | ✅ Implemented                         |
-| Map System              | ✅ Implemented                         |
-| Map Editor              | ✅ WBench Map Editor                  |
-| Game Editor             | ✅ WBench Game Editor                  |
-| Particle System         | ⚠️ Partial Implementation             |
-| Skeletal Animation      | ✅ Implemented                         |
-| Liquids / Triggers      | ⚠️ Partial Implementation                         |
-| Localization System     | ✅ Implemented                         |
-| Controller/Input System | ✅ Implemented                         |
-| Camera System           | ✅ Implemented                             |
-| Multi-threading         | ⚠️ Render + Physics Parallel          |
-| AI for Entities         | ⚠️ Requires Rework                    |
-| NavMesh System          | ⚠️ Requires Rework                    |
-| OS Support              | ⚠️ Windows (Primary)                  |
-| Linux Support           | ⚠️ Experimental                       |
-| Documentation           | ⚠️ ~0.1% (actively expanding)         |
-| Global Illumination     | ❌ Planned                             |
-| Ray Tracing             | ❌ Planned                             |
-| Network Multiplayer     | ❌ Planned                             |
-| LOD System              | ❌ Planned                             |
+| Bindless Textures       | ✅ Implemented                                       |
+| Sound System            | ✅ OpenAL                                            |
+| UI System               | ✅ Dear ImGui + Custom Runtime UI                    |
+| Engine API              | ✅ Implemented                                       |
+| Map System              | ✅ Implemented                                       |
+| Map Editor              | ✅ WorkBench Map Editor                              |
+| Game Editor             | ✅ WorkBench Game Editor                             |
+| Particle System         | ⚠️ Requires Rework                                  |
+| Skeletal Animation      | ✅ Implemented                                       |
+| Liquids / Triggers      | ⚠️ Simple Implementation                            |
+| Localization System     | ✅ Implemented                                       |
+| Controller/Input System | ✅ Implemented                                       |
+| Camera System           | ✅ Implemented                                       |
+| Multi-threading         | ⚠️ Render + Physics Parallel                        |
+| AI for Entities         | ⚠️ Requires Rework                                  |
+| NavMesh System          | ⚠️ Requires Rework                                  |
+| OS Support              | ⚠️ Windows (Primary)                                |
+| Linux Support           | ⚠️ Experimental                                     |
+| Documentation           | ⚠️ ~0.1% (actively expanding)                       |
+| Global Illumination     | ❌ Planned                                           |
+| Ray Tracing             | ❌ Planned                                           |
+| Network Multiplayer     | ❌ Planned                                           |
+| LOD System              | ❌ Planned                                           |
 
 ### Status Legend
 
