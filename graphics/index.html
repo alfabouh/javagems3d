@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Graphics - JavaGems3D</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">JavaGems3D</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../getting-started/" class="nav-link">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../architecture/" class="nav-link">Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../api/" class="nav-link">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../editor/" class="nav-link">Game Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Graphics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../physics/" class="nav-link">Physics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../sounds/" class="nav-link">Sounds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build-game/" class="nav-link">Build Game</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../editor/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../physics/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#graphics-system" class="nav-link">Graphics System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#rendering-features" class="nav-link">Rendering Features</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#shader-system" class="nav-link">Shader System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#shader-folder-structure" class="nav-link">Shader Folder Structure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#creating-custom-shaders" class="nav-link">Creating Custom Shaders</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#static-constants" class="nav-link">Static Constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#shader-libraries" class="nav-link">Shader Libraries</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#uniform-system" class="nav-link">Uniform System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#custom-uniform-values" class="nav-link">Custom Uniform Values</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#direct-and-indirect-rendering" class="nav-link">Direct and Indirect Rendering</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#mesh-types" class="nav-link">Mesh Types</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#meshgroup" class="nav-link">MeshGroup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#meshbuffer" class="nav-link">MeshBuffer</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#render-table-system" class="nav-link">Render Table System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#render-fabrics" class="nav-link">Render Fabrics</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#direct" class="nav-link">Direct</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#indirect" class="nav-link">Indirect</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#useful-global-rendering-resources" class="nav-link">Useful Global Rendering Resources</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#resource-cache" class="nav-link">Resource Cache</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#final-notes" class="nav-link">Final Notes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="graphics-system">Graphics System</h1>
+<p>JavaGems3D uses an OpenGL 4.3 based rendering pipeline focused on practical real-time rendering for small and experimental 3D projects.</p>
+<p>The rendering system is built around flexibility: both direct rendering and indirect rendering are supported, custom shaders can be fully integrated, and most engine rendering resources are accessible through the API.</p>
+<p>The current renderer is based on OpenGL, but in the future I plan to move the rendering backend toward Vulkan. OpenGL remains the stable production path for now, while Vulkan migration is considered a long-term architectural goal.</p>
+<p>This page covers only the basic concepts. The rendering system is large and will be documented in more detail later.</p>
+<hr />
+<h1 id="rendering-features">Rendering Features</h1>
+<p>Currently implemented:</p>
+<ul>
+<li>Deferred Rendering</li>
+<li>Forward rendering where needed</li>
+<li>SSAO (Screen Space Ambient Occlusion)</li>
+<li>HDR</li>
+<li>Bloom</li>
+<li>FXAA</li>
+<li>Weighted OIT (Order Independent Transparency)</li>
+<li>Discard-based transparency</li>
+<li>Cascaded EVSM shadows for directional light</li>
+<li>Point light VSM shadow maps</li>
+<li>Bindless textures</li>
+<li>SSBO buffers support</li>
+<li>Direct rendering pipeline</li>
+<li>Indirect rendering pipeline (<code>glMultiDrawElementsIndirect</code>)</li>
+<li>Skeletal animation support</li>
+<li>Skybox rendering</li>
+<li>Dear ImGui integration</li>
+<li>Custom internal UI system</li>
+<li>Background scene rendering</li>
+</ul>
+<p>Planned / future work:</p>
+<ul>
+<li>Vulkan migration</li>
+<li>PBR </li>
+<li>Global illumination</li>
+<li>Rendering pipeline cleanup and optimization</li>
+<li>Better editor-side rendering tooling</li>
+</ul>
+<hr />
+<h1 id="shader-system">Shader System</h1>
+<p>JavaGems3D supports multiple shader stages:</p>
+<pre><code class="language-java">FRAGMENT(&quot;fragment.frag&quot;),
+VERTEX(&quot;vertex.vert&quot;),
+GEOMETTRIC(&quot;geometric.geom&quot;),
+COMPUTE(&quot;compute.comp&quot;),
+TESS_CONTROL(&quot;tess.tesc&quot;),
+TESS_EVALUATION(&quot;tess.tese&quot;);
+</code></pre>
+<p>Tessellation shader support exists in the engine API, but it has not been fully tested yet.</p>
+<hr />
+<h1 id="shader-folder-structure">Shader Folder Structure</h1>
+<p>Shaders must be placed inside a dedicated folder.</p>
+<p>Each shader file must use strict predefined names:</p>
+<pre><code class="language-text">fragment.frag
+vertex.vert
+geometric.geom
+compute.comp
+tess.tesc
+tess.tese
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-text">assets/
+└── shaders/
+    └── my_shader/
+        ├── vertex.vert
+        └── fragment.frag
+</code></pre>
+<p>The engine automatically detects available stages from this folder.</p>
+<p>It is strongly recommended to use existing shaders from the engine <code>shaders/</code> folder as the base for new development.</p>
+<p>This makes integration significantly easier.</p>
+<hr />
+<h1 id="creating-custom-shaders">Creating Custom Shaders</h1>
+<p>Custom shaders are usually loaded through a class extending:</p>
+<pre><code class="language-java">ShadersInitializer&lt;JGemsShaderManager&gt;
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-java">public final class AppShadersInitializer extends ShadersInitializer&lt;JGemsShaderManager&gt; {
+
+    public JGemsShaderManager customWorldShader;
+    public ShaderStorageBufferObject sceneData;
+
+    @Override
+    protected void initStaticConstants(ShaderStaticConstants constants) {
+        constants.createConstant(
+            &quot;MAX_OBJECTS&quot;,
+            String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS)
+        );
+    }
+
+    @Override
+    protected void initShaderLibraries(ShaderLibrariesManager libraries) {
+        libraries.createLibrary(
+            new JGemsPathSource(
+                &quot;/assets/shaders/libs/lighting&quot;,
+                ISource.Source.INSIDE_JAR
+            )
+        );
+    }
+
+    @Override
+    protected void initObjects(ResourceCache cache) {
+        this.sceneData = new ShaderStorageBufferObject(
+            0,
+            1024
+        );
+
+        ShaderStorageBufferProgram.createSSBOStorage(
+            this.sceneData,
+            GL46.GL_DYNAMIC_STORAGE_BIT
+        );
+
+        this.customWorldShader = this.createShaderManager(
+            cache,
+            new JGemsPathSource(
+                new JGemsPath(
+                    JGems3D.DEFAULT_PATHS.SHADERS,
+                    &quot;world/custom_world&quot;
+                ),
+                ISource.Source.INSIDE_JAR
+            )
+        );
+    }
+
+    @Override
+    protected JGemsShaderManager createShaderObject(
+        @NotNull JGemsPathSource shaderPath,
+        ShaderStaticConstants constants,
+        ShaderLibrariesManager libraries
+    ) {
+        return new JGemsShaderManager(
+            new ShadersContainer(
+                shaderPath,
+                constants,
+                libraries
+            )
+        );
+    }
+}
+</code></pre>
+<p>This is the standard way to register application shaders.</p>
+<hr />
+<h1 id="static-constants">Static Constants</h1>
+<p>The engine supports compile-time shader constants.</p>
+<p>Example GLSL:</p>
+<pre><code class="language-glsl">layout(std430, binding = 1) buffer IndirectBufferData {
+    int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+};
+</code></pre>
+<p>These values are injected directly from the engine:</p>
+<pre><code class="language-java">constants.createConstant(
+    &quot;MAX_INDIRECT_RENDERING_MESH_DATASETS&quot;,
+    String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS)
+);
+</code></pre>
+<p>This avoids hardcoded values inside GLSL and keeps rendering configuration synchronized with engine limits.</p>
+<hr />
+<h1 id="shader-libraries">Shader Libraries</h1>
+<p>Shader libraries are also supported.</p>
+<p>Example:</p>
+<pre><code class="language-glsl">#include &quot;/assets/shaders/libs/animations&quot;
+</code></pre>
+<p>The engine parses this include and injects the shader code automatically.</p>
+<p>This is heavily used for:</p>
+<ul>
+<li>shadows</li>
+<li>skeletal animation</li>
+<li>lighting logic</li>
+<li>shared utility functions</li>
+</ul>
+<hr />
+<h1 id="uniform-system">Uniform System</h1>
+<p>You do not need to manually register uniforms.</p>
+<p>During shader loading, uniforms are automatically parsed and registered by the engine.</p>
+<p>This significantly simplifies shader integration.</p>
+<p>Basic usage:</p>
+<pre><code class="language-java">shader.beginShading();
+
+shader.performUniformTexture(
+    new UniformString(DefaultUniformDefinitions.TEXTURE_MAP),
+    finalFBO.getTextureByIndex(0)
+);
+
+shader.performOrthographicMatrix(
+    new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX),
+    this.getScreenModel(),
+    JGemsTransformManager.INSTANCE.getOrthographicMatrix()
+);
+
+JGemsHelper.render().renderModel2D(
+    this.getScreenModel(),
+    GL46.GL_TRIANGLES
+);
+
+shader.endShading();
+</code></pre>
+<hr />
+<h1 id="custom-uniform-values">Custom Uniform Values</h1>
+<p>For custom values, helper functions already exist:</p>
+<pre><code class="language-java">UniformFunctions.FLOAT(...)
+UniformFunctions.INTEGER(...)
+UniformFunctions.VEC3F(...)
+UniformFunctions.VEC4F(...)
+UniformFunctions.MAT4F(...)
+UniformFunctions.BOOLEAN(...)
+UniformFunctions.TEXTURE64ARB(...)
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-java">shaderManager.performUniform(
+    new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD),
+    UniformFunctions.FLOAT(
+        JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT
+    )
+);
+</code></pre>
+<p>This is the standard way to pass custom shader values.</p>
+<hr />
+<h1 id="direct-and-indirect-rendering">Direct and Indirect Rendering</h1>
+<p>The engine supports two rendering approaches:</p>
+<ul>
+<li>Direct Rendering</li>
+<li>Indirect Rendering</li>
+</ul>
+<p>Both can work inside the same scene.</p>
+<hr />
+<h1 id="mesh-types">Mesh Types</h1>
+<p>Two different mesh structures exist:</p>
+<h2 id="meshgroup">MeshGroup</h2>
+<p>Used for direct rendering.</p>
+<pre><code class="language-java">createMeshGroup(...)
+</code></pre>
+<p>This is the standard per-object rendering path.</p>
+<hr />
+<h2 id="meshbuffer">MeshBuffer</h2>
+<p>Used for indirect rendering.</p>
+<pre><code class="language-java">createMeshBuffer(...)
+</code></pre>
+<p>This is used for GPU-side batched rendering and large scene optimization.</p>
+<hr />
+<h1 id="render-table-system">Render Table System</h1>
+<p>Entities and props use the Render Table system for render configuration.</p>
+<p>This controls:</p>
+<ul>
+<li>direct vs indirect rendering</li>
+<li>rendering stage</li>
+<li>render properties</li>
+<li>object behavior inside pipelines</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-java">RenderTable.getDirect()
+RenderTable.getIndirect()
+</code></pre>
+<p>Rendering behavior can be configured using object properties and scene tags.</p>
+<p>This allows both rendering approaches to coexist naturally.</p>
+<hr />
+<h1 id="render-fabrics">Render Fabrics</h1>
+<p>To simplify rendering logic, JavaGems3D uses Render Fabric classes.</p>
+<h2 id="direct">Direct</h2>
+<pre><code class="language-java">DirectRenderFabric
+</code></pre>
+<p>Used for standard rendering passes.</p>
+<p>Includes:</p>
+<ul>
+<li>pre-render</li>
+<li>render</li>
+<li>post-render</li>
+</ul>
+<hr />
+<h2 id="indirect">Indirect</h2>
+<pre><code class="language-java">IndirectRenderFabric
+</code></pre>
+<p>Used for indirect rendering pipelines.</p>
+<p>Includes:</p>
+<ul>
+<li>matrix buffer preparation</li>
+<li>property buffer preparation</li>
+<li>indirect GPU command execution</li>
+</ul>
+<p>Internally this uses:</p>
+<pre><code class="language-java">glMultiDrawElementsIndirect(...)
+</code></pre>
+<p>for large batched rendering.</p>
+<p>This is the main optimization path for heavy scenes.</p>
+<hr />
+<h1 id="useful-global-rendering-resources">Useful Global Rendering Resources</h1>
+<p>Many useful resources are available through:</p>
+<pre><code class="language-java">JGemsResourceManager
+</code></pre>
+<p>Examples:</p>
+<pre><code class="language-java">JGemsResourceManager.globalShaderAssets
+JGemsResourceManager.globalTextureAssets
+JGemsResourceManager.globalModelAssets
+JGemsResourceManager.globalRenderDataAssets
+</code></pre>
+<p>Also:</p>
+<pre><code class="language-java">JGemsHelper.render()
+</code></pre>
+<p>contains many useful rendering helpers and utility functions.</p>
+<p>This is usually the first place to check before implementing custom rendering code.</p>
+<hr />
+<h1 id="resource-cache">Resource Cache</h1>
+<p>The engine includes resource caching for:</p>
+<ul>
+<li>models</li>
+<li>textures</li>
+<li>shaders</li>
+<li>sounds</li>
+</ul>
+<p>This avoids duplicated loading and improves runtime performance.</p>
+<p>Multiple loading paths are also supported depending on rendering mode.</p>
+<hr />
+<h1 id="final-notes">Final Notes</h1>
+<p>The graphics system is one of the largest parts of JavaGems3D.</p>
+<p>This page only explains the most important basics.</p>
+<p>Future documentation will cover:</p>
+<ul>
+<li>full rendering pipeline stages</li>
+<li>shadow system internals</li>
+<li>indirect rendering architecture</li>
+<li>animation rendering</li>
+<li>material system</li>
+<li>bindless textures</li>
+<li>editor rendering internals</li>
+<li>Vulkan migration roadmap</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Physics - JavaGems3D</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">JavaGems3D</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../getting-started/" class="nav-link">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../architecture/" class="nav-link">Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../api/" class="nav-link">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../editor/" class="nav-link">Game Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../graphics/" class="nav-link">Graphics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Physics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../sounds/" class="nav-link">Sounds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build-game/" class="nav-link">Build Game</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../graphics/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../sounds/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-system" class="nav-link">Physics System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-thread" class="nav-link">Physics Thread</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#render-synchronization" class="nav-link">Render Synchronization</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-startup" class="nav-link">Physics Startup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-space" class="nav-link">Physics Space</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-simulation-loop" class="nav-link">Physics Simulation Loop</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#physics-world" class="nav-link">Physics World</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#utility-functions" class="nav-link">Utility Functions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#recommended-physics-wrappers" class="nav-link">Recommended Physics Wrappers</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#static-bodies" class="nav-link">Static Bodies</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#dynamic-bodies" class="nav-link">Dynamic Bodies</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#raw-bullet-access" class="nav-link">Raw Bullet Access</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#collision-shapes" class="nav-link">Collision Shapes</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#static-objects" class="nav-link">Static Objects</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#dynamic-objects" class="nav-link">Dynamic Objects</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#custom-collision-factories" class="nav-link">Custom Collision Factories</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#collision-triggers" class="nav-link">Collision Triggers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#custom-kinematic-controller" class="nav-link">Custom Kinematic Controller</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#final-notes" class="nav-link">Final Notes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="physics-system">Physics System</h1>
+<p>JavaGems3D currently uses Libbulletjme as the main physics backend.</p>
+<p>Official overview: https://stephengold.github.io/Libbulletjme/lbj-en/English/overview.html</p>
+<p>The physics layer runs in a separate dedicated thread and is synchronized with the rendering pipeline.</p>
+<p>The goal of the physics system is not just to expose raw Bullet functionality, but to provide a higher-level API that is easier to use inside real gameplay code.</p>
+<p>Because of this, direct interaction with raw Bullet objects is generally not recommended unless there is a very specific reason.</p>
+<hr />
+<h1 id="physics-thread">Physics Thread</h1>
+<p>Physics simulation runs independently from rendering.</p>
+<p>By default:</p>
+<pre><code class="language-text">TPS = 40
+</code></pre>
+<p>This means physics updates happen 40 times per second.</p>
+<p>The physics service is started through:</p>
+<pre><code class="language-java">JGemsPhysics
+</code></pre>
+<p>Internally it uses:</p>
+<pre><code class="language-java">Executors.newSingleThreadExecutor(...)
+</code></pre>
+<p>which creates a dedicated physics thread.</p>
+<hr />
+<h1 id="render-synchronization">Render Synchronization</h1>
+<p>Rendering and physics are synchronized manually.</p>
+<p>The main synchronization happens inside:</p>
+<pre><code class="language-java">JGemsScene
+</code></pre>
+<p>Rendering receives:</p>
+<pre><code class="language-java">new FrameTicking(elapsedTime, frameDeltaTime)
+</code></pre>
+<p>This object contains interpolation values between physics ticks.</p>
+<p>It is used for:</p>
+<ul>
+<li>transform interpolation</li>
+<li>smooth movement between physics updates</li>
+<li>animation timing</li>
+<li>render-side prediction helpers</li>
+</ul>
+<p>This prevents visible jitter when render FPS is much higher than physics TPS.</p>
+<p>Physics state is stepped independently, while rendering smoothly interpolates between states.</p>
+<hr />
+<h1 id="physics-startup">Physics Startup</h1>
+<p>The main physics entry point is:</p>
+<pre><code class="language-java">DynamicsSystem
+</code></pre>
+<p>Responsibilities:</p>
+<ul>
+<li>native Bullet library loading</li>
+<li>physics world initialization</li>
+<li>collision configuration</li>
+<li>gravity setup</li>
+<li>collision trigger handling</li>
+<li>stepping simulation</li>
+<li>object registration</li>
+</ul>
+<p>Native libraries are automatically extracted into:</p>
+<pre><code class="language-java">JGems3D.getEngineFilesFolder()
+</code></pre>
+<p>and loaded from there during engine startup.</p>
+<p>This avoids requiring manual native installation.</p>
+<hr />
+<h1 id="physics-space">Physics Space</h1>
+<p>The engine creates a Bullet:</p>
+<pre><code class="language-java">PhysicsSpace
+</code></pre>
+<p>with configured:</p>
+<ul>
+<li>world bounds</li>
+<li>broadphase type</li>
+<li>solver type</li>
+<li>collision configuration</li>
+<li>gravity</li>
+</ul>
+<p>Default gravity:</p>
+<pre><code class="language-java">(0, -10, 0)
+</code></pre>
+<p>This is the low-level simulation space where all rigid bodies exist.</p>
+<hr />
+<h1 id="physics-simulation-loop">Physics Simulation Loop</h1>
+<p>Actual simulation happens inside:</p>
+<pre><code class="language-java">PhysicsProcessor
+</code></pre>
+<p>This is responsible for:</p>
+<ul>
+<li>stepping physics world</li>
+<li>updating physics objects</li>
+<li>collision checks</li>
+<li>trigger execution</li>
+<li>synchronization with render thread</li>
+</ul>
+<p>Simplified flow:</p>
+<pre><code class="language-text">World Update
+→ Bullet Step
+→ Collision Test
+→ Trigger Events
+</code></pre>
+<p>This repeats every physics tick.</p>
+<hr />
+<h1 id="physics-world">Physics World</h1>
+<p>The main gameplay entry point is:</p>
+<pre><code class="language-java">PhysicsWorld
+</code></pre>
+<p>This is the object developers should work with.</p>
+<p>It manages:</p>
+<ul>
+<li>world objects</li>
+<li>spawning</li>
+<li>destruction</li>
+<li>ticking</li>
+<li>world events</li>
+<li>physics entities</li>
+</ul>
+<p>You should create and manage physics objects through <code>PhysicsWorld</code>, not directly through raw Bullet APIs.</p>
+<hr />
+<h1 id="utility-functions">Utility Functions</h1>
+<p>Helper methods are available in:</p>
+<pre><code class="language-java">DynamicsUtils
+</code></pre>
+<p>Examples:</p>
+<ul>
+<li>vector conversion between JOML and JME</li>
+<li>transform creation</li>
+<li>rigid body movement</li>
+<li>rigid body rotation</li>
+<li>rigid body scaling</li>
+<li>interpolation helpers</li>
+<li>collision mesh generation</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-java">DynamicsUtils.translateRigidBody(...)
+DynamicsUtils.rotateRigidBody(...)
+DynamicsUtils.createTransform(...)
+</code></pre>
+<p>These wrappers simplify common operations and avoid repetitive conversion code.</p>
+<hr />
+<h1 id="recommended-physics-wrappers">Recommended Physics Wrappers</h1>
+<p>The recommended way to create physics objects is through engine wrappers.</p>
+<h2 id="static-bodies">Static Bodies</h2>
+<pre><code class="language-java">JGemsStaticBody
+</code></pre>
+<p>Used for:</p>
+<ul>
+<li>walls</li>
+<li>floors</li>
+<li>environment geometry</li>
+<li>non-moving world objects</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-java">JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), &quot;grass&quot;).setCanBeDeleted(false);
+JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
+worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
+</code></pre>
+<hr />
+<h2 id="dynamic-bodies">Dynamic Bodies</h2>
+<pre><code class="language-java">JGemsDynamicBody
+</code></pre>
+<p>Used for:</p>
+<ul>
+<li>movable objects</li>
+<li>physical props</li>
+<li>dynamic entities</li>
+<li>simulation-driven gameplay objects</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-java">jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(meshStructure3D), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDeleted(false);
+JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
+jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
+jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
+jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
+</code></pre>
+<p>These wrappers already contain:</p>
+<ul>
+<li>body creation</li>
+<li>transform handling</li>
+<li>physics parameter control</li>
+<li>world integration</li>
+<li>engine-side synchronization</li>
+</ul>
+<p>This is the preferred approach.</p>
+<hr />
+<h1 id="raw-bullet-access">Raw Bullet Access</h1>
+<p>If direct Bullet-level control is required, there is also:</p>
+<pre><code class="language-java">BulletBody
+</code></pre>
+<p>This allows working directly with:</p>
+<pre><code class="language-java">PhysicsRigidBody
+</code></pre>
+<p>while still staying integrated with the engine world system.</p>
+<p>This should only be used for advanced custom cases.</p>
+<p>For normal gameplay development, wrappers are strongly preferred.</p>
+<hr />
+<h1 id="collision-shapes">Collision Shapes</h1>
+<p>Collision shapes are generated during model loading.</p>
+<p>The default system uses:</p>
+<pre><code class="language-java">MeshCollisionData.DefaultFabric
+</code></pre>
+<p>Rules:</p>
+<h2 id="static-objects">Static Objects</h2>
+<p>Usually use:</p>
+<pre><code class="language-java">MeshCollisionShape
+</code></pre>
+<p>based on the real mesh.</p>
+<p>This provides accurate environment collision.</p>
+<hr />
+<h2 id="dynamic-objects">Dynamic Objects</h2>
+<p>Usually use:</p>
+<pre><code class="language-java">HullCollisionShape
+</code></pre>
+<p>for smaller objects.</p>
+<p>For large objects the engine may fallback to simplified:</p>
+<pre><code class="language-java">BoxCollisionShape
+</code></pre>
+<p>for better performance.</p>
+<p>This avoids expensive runtime collision cost.</p>
+<hr />
+<h1 id="custom-collision-factories">Custom Collision Factories</h1>
+<p>Developers can create custom collision factories using:</p>
+<pre><code class="language-java">MeshCollisionData.Fabric
+</code></pre>
+<p>This allows full control over:</p>
+<ul>
+<li>static collision shape generation</li>
+<li>dynamic collision shape generation</li>
+<li>animated object collision shapes</li>
+</ul>
+<p>This is useful for special gameplay requirements or optimization.</p>
+<hr />
+<h1 id="collision-triggers">Collision Triggers</h1>
+<p>Collision trigger support is built into the physics system.</p>
+<p>Objects implementing collision trigger interfaces can automatically react to contact events.</p>
+<p>Flow:</p>
+<pre><code class="language-text">Collision Detected
+→ Trigger Created
+→ EventBus Event
+→ Custom Action Executed
+</code></pre>
+<p>This allows gameplay logic like:</p>
+<ul>
+<li>pickups</li>
+<li>doors</li>
+<li>scripted events</li>
+<li>area triggers</li>
+<li>quest interactions</li>
+</ul>
+<p>without manual low-level collision handling.</p>
+<hr />
+<h1 id="custom-kinematic-controller">Custom Kinematic Controller</h1>
+<p>The default Bullet kinematic controller was not good enough for gameplay usage, so JavaGems3D uses a fully custom implementation.</p>
+<p>Main base class:</p>
+<pre><code class="language-java">JGemsKinematicItem
+</code></pre>
+<p>Player implementation:</p>
+<pre><code class="language-java">JGemsKinematicPlayer
+</code></pre>
+<p>This controller handles:</p>
+<ul>
+<li>movement</li>
+<li>jump logic</li>
+<li>ground detection</li>
+<li>body velocity</li>
+<li>collision response</li>
+<li>player state</li>
+<li>controlled character behavior</li>
+</ul>
+<p>It is still being improved and is far from perfect, but in practice it works significantly better than the default Bullet controller.</p>
+<p>This is the standard way to implement FPS-style or third-person player movement inside the engine.</p>
+<hr />
+<h1 id="final-notes">Final Notes</h1>
+<p>The physics system is intentionally wrapped behind higher-level abstractions.</p>
+<p>The goal is:</p>
+<p>not “use Bullet directly”</p>
+<p>but</p>
+<p>“use Bullet safely through engine systems”</p>
+<p>This makes gameplay development faster, cleaner, and much easier to maintain.</p>
+<p>Future documentation will be extended.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

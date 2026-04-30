@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Sounds - JavaGems3D</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">JavaGems3D</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../getting-started/" class="nav-link">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../architecture/" class="nav-link">Architecture</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../api/" class="nav-link">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../editor/" class="nav-link">Game Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../graphics/" class="nav-link">Graphics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../physics/" class="nav-link">Physics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Sounds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build-game/" class="nav-link">Build Game</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../physics/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../build-game/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#audio-system" class="nav-link">Audio System</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#supported-audio-formats" class="nav-link">Supported Audio Formats</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#sound-playback-types" class="nav-link">Sound Playback Types</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#sound-manager" class="nav-link">Sound Manager</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#creating-openal-system" class="nav-link">Creating OpenAL System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#playing-sounds" class="nav-link">Playing Sounds</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#simple-local-playback" class="nav-link">Simple local playback</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#positional-3d-sound" class="nav-link">Positional 3D sound</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#sound-attached-to-entity" class="nav-link">Sound attached to entity</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#pause-resume-system" class="nav-link">Pause / Resume System</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#manual-sound-creation" class="nav-link">Manual Sound Creation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#runtime-updates" class="nav-link">Runtime Updates</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#error-handling" class="nav-link">Error Handling</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#resource-cleanup" class="nav-link">Resource Cleanup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="audio-system">Audio System</h1>
+<p>JGems3D uses <strong>OpenAL</strong> (via LWJGL) for runtime audio playback and currently supports <strong>OGG</strong> as the main sound asset format.</p>
+<p>Audio resources are loaded through the standard asset loading pipeline using <code>systemResources</code>, the same way as textures, models, and other engine resources.</p>
+<hr />
+<h2 id="supported-audio-formats">Supported Audio Formats</h2>
+<p>The engine supports:</p>
+<ul>
+<li>Mono sound</li>
+<li>Stereo sound</li>
+</ul>
+<p>This allows usage for:</p>
+<ul>
+<li>positional 3D world sounds</li>
+<li>ambient environmental loops</li>
+<li>UI/system sounds</li>
+<li>background music</li>
+<li>non-positional gameplay sounds</li>
+</ul>
+<hr />
+<h2 id="sound-playback-types">Sound Playback Types</h2>
+<p>Several playback categories are built into the engine:</p>
+<pre><code class="language-java">WORLD_AMBIENT_SOUND(new SoundData(true, true)),
+WORLD_SOUND(new SoundData(true, false)),
+BACKGROUND_LOOP_SOUND(new SoundData(false, true)),
+BACKGROUND_SOUND(new SoundData(false, false)),
+SYSTEM(new SoundData(false, false));
+</code></pre>
+<h3 id="type-overview">Type Overview</h3>
+<h3 id="world_ambient_sound"><code>WORLD_AMBIENT_SOUND</code></h3>
+<p>3D positioned looping sound.</p>
+<p>Used for:</p>
+<ul>
+<li>ambient environment zones</li>
+<li>machinery hum</li>
+<li>wind sources</li>
+<li>continuous world effects</li>
+</ul>
+<hr />
+<h3 id="world_sound"><code>WORLD_SOUND</code></h3>
+<p>3D positioned one-shot sound.</p>
+<p>Used for:</p>
+<ul>
+<li>explosions</li>
+<li>gunshots</li>
+<li>footsteps</li>
+<li>object interactions</li>
+</ul>
+<hr />
+<h3 id="background_loop_sound"><code>BACKGROUND_LOOP_SOUND</code></h3>
+<p>Non-positional looping sound.</p>
+<p>Used for:</p>
+<ul>
+<li>background music</li>
+<li>menu music</li>
+<li>global ambience</li>
+</ul>
+<hr />
+<h3 id="background_sound"><code>BACKGROUND_SOUND</code></h3>
+<p>Non-positional one-shot sound.</p>
+<p>Used for:</p>
+<ul>
+<li>stingers</li>
+<li>notifications</li>
+<li>temporary music events</li>
+</ul>
+<hr />
+<h3 id="system"><code>SYSTEM</code></h3>
+<p>Non-positional system-level sounds.</p>
+<p>Usually used for:</p>
+<ul>
+<li>UI clicks</li>
+<li>debug notifications</li>
+<li>editor/system feedback</li>
+</ul>
+<p>System sounds are not paused automatically when global pause is triggered.</p>
+<hr />
+<h1 id="sound-manager">Sound Manager</h1>
+<p>Main entry point:</p>
+<pre><code class="language-java">JGemsHelper.getSoundManager()
+</code></pre>
+<p>Core implementation:</p>
+<pre><code class="language-java">public final class JGemsSoundManager
+</code></pre>
+<p>This class manages:</p>
+<ul>
+<li>OpenAL device/context creation</li>
+<li>sound playback</li>
+<li>positional updates</li>
+<li>pausing/resuming</li>
+<li>cleanup</li>
+<li>listener updates</li>
+<li>active sound lifecycle</li>
+</ul>
+<hr />
+<h1 id="creating-openal-system">Creating OpenAL System</h1>
+<p>The engine initializes OpenAL automatically:</p>
+<pre><code class="language-java">soundManager.createSystem();
+</code></pre>
+<p>Internally this creates:</p>
+<ul>
+<li>audio device</li>
+<li>OpenAL context</li>
+<li>capabilities</li>
+<li>distance attenuation model</li>
+</ul>
+<pre><code class="language-java">AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
+</code></pre>
+<p>This enables proper distance-based volume attenuation for world sounds.</p>
+<hr />
+<h1 id="playing-sounds">Playing Sounds</h1>
+<h2 id="simple-local-playback">Simple local playback</h2>
+<pre><code class="language-java">GameSound sound = JGemsHelper.getSoundManager()
+    .playLocalSound(
+        soundBuffer,
+        SoundType.BACKGROUND_SOUND,
+        1.0f,
+        1.0f
+    );
+</code></pre>
+<p>Used for:</p>
+<ul>
+<li>UI sounds</li>
+<li>simple music</li>
+<li>notifications</li>
+</ul>
+<p>No world position is used.</p>
+<hr />
+<h2 id="positional-3d-sound">Positional 3D sound</h2>
+<pre><code class="language-java">GameSound sound = JGemsHelper.getSoundManager()
+    .playSoundAt(
+        soundBuffer,
+        SoundType.WORLD_SOUND,
+        1.0f,
+        1.0f,
+        1.0f,
+        16.0f,
+        new Vector3f(10, 0, 5)
+    );
+</code></pre>
+<p>Parameters:</p>
+<ul>
+<li>pitch</li>
+<li>volume</li>
+<li>rollOff</li>
+<li>max distance</li>
+<li>world position</li>
+</ul>
+<p>Used for:</p>
+<ul>
+<li>weapon sounds</li>
+<li>environmental effects</li>
+<li>gameplay feedback</li>
+</ul>
+<hr />
+<h2 id="sound-attached-to-entity">Sound attached to entity</h2>
+<pre><code class="language-java">GameSound sound = JGemsHelper.getSoundManager()
+    .playSoundAtEntity(
+        soundBuffer,
+        SoundType.WORLD_AMBIENT_SOUND,
+        1.0f,
+        1.0f,
+        1.0f,
+        20.0f,
+        worldItem
+    );
+</code></pre>
+<p>The sound automatically follows the entity position.</p>
+<p>Used for:</p>
+<ul>
+<li>vehicles</li>
+<li>NPCs</li>
+<li>machines</li>
+<li>moving objects</li>
+</ul>
+<hr />
+<h1 id="pause-resume-system">Pause / Resume System</h1>
+<p>Useful for:</p>
+<ul>
+<li>pause menu</li>
+<li>alt-tab</li>
+<li>editor mode switching</li>
+</ul>
+<p>Pause:</p>
+<pre><code class="language-java">JGemsHelper.getSoundManager().pauseAllSounds();
+</code></pre>
+<p>Resume:</p>
+<pre><code class="language-java">JGemsHelper.getSoundManager().resumeAllSounds();
+</code></pre>
+<p>Important:</p>
+<p><code>SYSTEM</code> sounds are excluded from automatic pause.</p>
+<p>This is intentional.</p>
+<hr />
+<h1 id="manual-sound-creation">Manual Sound Creation</h1>
+<p>If needed, sound objects can be created manually:</p>
+<pre><code class="language-java">GameSound sound = JGemsHelper.getSoundManager()
+    .createSound(
+        soundBuffer,
+        SoundType.WORLD_SOUND,
+        1.0f,
+        1.0f,
+        1.0f,
+        15.0f
+    );
+</code></pre>
+<p>This allows delayed playback or custom runtime control.</p>
+<hr />
+<h1 id="runtime-updates">Runtime Updates</h1>
+<p>Every active sound is updated automatically during engine runtime:</p>
+<pre><code class="language-java">soundManager.update();
+</code></pre>
+<p>This handles:</p>
+<ul>
+<li>attached entity tracking</li>
+<li>source cleanup</li>
+<li>stopped sound removal</li>
+<li>validation checks</li>
+</ul>
+<p>Usually developers do not need to call this manually.</p>
+<hr />
+<h1 id="error-handling">Error Handling</h1>
+<p>The engine validates OpenAL state using:</p>
+<pre><code class="language-java">JGemsSoundManager.checkALonErrors();
+</code></pre>
+<p>It checks:</p>
+<ul>
+<li>invalid source IDs</li>
+<li>invalid enum usage</li>
+<li>invalid values</li>
+<li>invalid operations</li>
+<li>out-of-memory situations</li>
+</ul>
+<p>This helps catch audio bugs early during development.</p>
+<hr />
+<h1 id="resource-cleanup">Resource Cleanup</h1>
+<p>On shutdown:</p>
+<pre><code class="language-java">soundManager.stopAllSounds();
+soundManager.destroy();
+</code></pre>
+<p>This properly releases:</p>
+<ul>
+<li>sources</li>
+<li>buffers</li>
+<li>OpenAL context</li>
+<li>OpenAL device</li>
+</ul>
+<p>Never skip cleanup in production builds.</p>
+<hr /></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
