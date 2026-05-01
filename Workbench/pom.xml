@@ -11,7 +11,7 @@
     <parent>
         <groupId>io.github.gltexture</groupId>
         <artifactId>javagems3d</artifactId>
-        <version>beta0.1.3_1</version>
+        <version>beta0.1.3_2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -64,12 +64,12 @@
         <dependency>
             <groupId>io.github.gltexture</groupId>
             <artifactId>syslogger</artifactId>
-            <version>beta0.1.3_1</version>
+            <version>beta0.1.3_2</version>
         </dependency>
         <dependency>
             <groupId>io.github.gltexture</groupId>
             <artifactId>engine</artifactId>
-            <version>beta0.1.3_1</version>
+            <version>beta0.1.3_2</version>
         </dependency>
     </dependencies>
 </project>
