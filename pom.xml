@@ -126,27 +126,22 @@
         <dependencies>
             <dependency>
                 <groupId>io.github.gltexture</groupId>
-                <artifactId>SysLogger</artifactId>
+                <artifactId>syslogger</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.gltexture</groupId>
-                <artifactId>Engine</artifactId>
+                <artifactId>engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.gltexture</groupId>
-                <artifactId>Launcher</artifactId>
+                <artifactId>launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.gltexture</groupId>
-                <artifactId>DefaultApp</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.gltexture</groupId>
-                <artifactId>Workbench</artifactId>
+                <artifactId>workbench</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

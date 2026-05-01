@@ -415,21 +415,3 @@ This controller handles:
 It is still being improved and is far from perfect, but in practice it works significantly better than the default Bullet controller.
 
 This is the standard way to implement FPS-style or third-person player movement inside the engine.
-
----
-
-# Final Notes
-
-The physics system is intentionally wrapped behind higher-level abstractions.
-
-The goal is:
-
-not “use Bullet directly”
-
-but
-
-“use Bullet safely through engine systems”
-
-This makes gameplay development faster, cleaner, and much easier to maintain.
-
-Future documentation will be extended.

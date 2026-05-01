@@ -63,7 +63,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.gltexture</groupId>
-            <artifactId>sysLogger</artifactId>
+            <artifactId>syslogger</artifactId>
             <version>beta0.1.2</version>
         </dependency>
         <dependency>

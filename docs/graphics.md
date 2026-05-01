@@ -434,22 +434,3 @@ The engine includes resource caching for:
 This avoids duplicated loading and improves runtime performance.
 
 Multiple loading paths are also supported depending on rendering mode.
-
----
-
-# Final Notes
-
-The graphics system is one of the largest parts of JavaGems3D.
-
-This page only explains the most important basics.
-
-Future documentation will cover:
-
-* full rendering pipeline stages
-* shadow system internals
-* indirect rendering architecture
-* animation rendering
-* material system
-* bindless textures
-* editor rendering internals
-* Vulkan migration roadmap
