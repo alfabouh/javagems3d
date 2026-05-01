@@ -1,5 +1,12 @@
 package javagems3d.graphics.rendering.ui.dear_imgui;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.JavaToJsAPI;
+import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderIMGUIEvent;
+import api.scripting.coding.env.internal.util.controlling.JSController;
+import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiKey;
@@ -12,6 +19,7 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -134,6 +142,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     public void onRender(MouseKeyboardController mouseKeyboardController, DearUIInterface dearUIInterface, FrameTicking frameTicking) {
         ImGui.newFrame();
         dearUIInterface.drawGui(this.getWindow().getWindowSize(), mouseKeyboardController);
+        EventLauncher.pushEvent(new EventBus.RenderIMGUIEvent(dearUIInterface, mouseKeyboardController, frameTicking), new Pair<>(new JSRenderIMGUIEvent(JSScriptGlobalData.jsScreen, new JSFrameTicking(frameTicking), new JSController(mouseKeyboardController)), JavaToJsAPI.Target.Game));
         ImGui.endFrame();
         ImGui.render();
 

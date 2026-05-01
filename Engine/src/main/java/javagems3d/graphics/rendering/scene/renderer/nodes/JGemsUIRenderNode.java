@@ -51,7 +51,6 @@ public final class JGemsUIRenderNode implements IUIRenderNode {
         JGemsControllerDispatcher controllerDispatcher = JGemsHelper.controller().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.dearUIRenderer.onRender((MouseKeyboardController) controllerDispatcher.getCurrentController(), this.getAnInterface(), frameTicking);
-            EventLauncher.pushEvent(new EventBus.RenderIMGUIEvent(this.getAnInterface(), controllerDispatcher.getCurrentController(), frameTicking), new Pair<>(new JSRenderIMGUIEvent(JSScriptGlobalData.jsScreen, new JSFrameTicking(frameTicking), new JSController(controllerDispatcher.getCurrentController())), JavaToJsAPI.Target.Game));
         }
     }
 
