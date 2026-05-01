@@ -392,15 +392,10 @@ public final class JGems3D {
                 command.add("-XX:+UseG1GC");
                 command.add("-Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
 
-                if (location.isFile()) {
-                    command.add("-jar");
-                    command.add(location.getAbsolutePath());
-                } else {
-                    String classpath = System.getProperty("java.class.path");
-                    command.add("-cp");
-                    command.add(classpath);
-                    command.add("javagems3d.JGemsBootstrap");
-                }
+                String classpath = System.getProperty("java.class.path");
+                command.add("-cp");
+                command.add(classpath);
+                command.add("javagems3d.JGemsBootstrap");
 
                 if (args != null) {
                     command.addAll(Arrays.asList(args));
