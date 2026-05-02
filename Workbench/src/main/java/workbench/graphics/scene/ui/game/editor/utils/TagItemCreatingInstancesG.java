@@ -21,7 +21,7 @@ public class TagItemCreatingInstancesG {
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
             ImGui.bullet();
-            ImGui.text("Default value:");
+            ImGui.text("DefaultPhysTest value:");
             ImGui.indent();
             if (ImGui.selectable("TRUE", this.flagDefaultValue)) {
                 this.flagDefaultValue = true;
@@ -100,7 +100,7 @@ public class TagItemCreatingInstancesG {
 
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
-            ImGui.bulletText("Default value:");
+            ImGui.bulletText("DefaultPhysTest value:");
             ImGui.indent();
             float[] value = new float[] {this.value};
             if (ImGui.dragFloat("##value", value, 0.01f, this.min, this.max)) {
@@ -136,7 +136,7 @@ public class TagItemCreatingInstancesG {
 
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
-            ImGui.bulletText("Default value:");
+            ImGui.bulletText("DefaultPhysTest value:");
             ImGui.indent();
             int[] value = new int[] {this.value};
             if (ImGui.dragInt("##value", value, 0.01f, this.min, this.max)) {
@@ -170,7 +170,7 @@ public class TagItemCreatingInstancesG {
 
         @Override
         public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
-            ImGui.bulletText("Default text:");
+            ImGui.bulletText("DefaultPhysTest text:");
             ImGui.indent();
             ImString string = new ImString(this.value);
             if (ImGui.inputText("##defaultText", string)) {
@@ -234,7 +234,7 @@ public class TagItemCreatingInstancesG {
                 this.colorMode = colorModeMap.get(comboGet[this.imInt.get()]);
             }
             ImGui.unindent();
-            ImGui.bulletText("Default Color:");
+            ImGui.bulletText("DefaultPhysTest Color:");
             ImGui.indent();
             float[] colorArray = new float[]{this.colorVector.x, this.colorVector.y, this.colorVector.z, this.colorVector.w};
             if (ImGui.colorEdit4("##colorDefault", colorArray)) {
@@ -283,7 +283,7 @@ public class TagItemCreatingInstancesG {
                     }
                     ImGui.unindent();
 
-                    ImGui.bulletText("Default value:");
+                    ImGui.bulletText("DefaultPhysTest value:");
                     ImGui.indent();
 
                     float[] arr = new float[]{vector.x, vector.y, vector.z, vector.w};

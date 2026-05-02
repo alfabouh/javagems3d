@@ -27,6 +27,13 @@ public abstract class TransformUtils {
         return new Matrix4f().identity().perspective(fov, ratio, zNear, zFar);
     }
 
+    public static Matrix4f getCameraSpaceMatrix(ICamera camera) {
+        Vector3f cameraPos = camera.getCamPosition();
+        Vector3f cameraRot = camera.getCamRotation();
+        Matrix4f matrix4f = new Matrix4f().identity();
+        return matrix4f.translate(cameraPos).rotateXYZ(-cameraRot.x, -cameraRot.y, -cameraRot.z);
+    }
+
     public static Matrix4f getViewMatrix(ICamera camera) {
         Vector3f cameraPos = camera.getCamPosition();
         Vector3f cameraRot = camera.getCamRotation();

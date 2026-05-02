@@ -5,7 +5,6 @@ import api.events.EventBus;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.inventory.InventoryOwner;
 import javagems3d.system.service.synchronizing.SyncManager;
 
 import java.util.HashSet;
@@ -26,9 +25,6 @@ public final class WorldObjectsContainer {
     public void onUpdate() {
         for (IWorldTicked worldTicked : this.getWorldTickedObjects()) {
             if (worldTicked instanceof WorldItem worldItem1) {
-                if (worldItem1 instanceof InventoryOwner) {
-                    ((InventoryOwner) worldItem1).getInventory().updateInventory(world);
-                }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
             worldTicked.onUpdateWithEvent(world);

@@ -7,4 +7,5 @@ public interface IControllerDispatcher {
     void updateController(IWindow window);
 
     IController getCurrentController();
+    void setController(IController iController);
 }

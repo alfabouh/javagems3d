@@ -1,9 +1,8 @@
 package javagems3d.system.controller.dispatcher;
 
 import api.system.JGemsAPI;
-import javagems3d.system.controller.base.IInventoryController;
 import javagems3d.system.controller.JGemsMouseKeyboardController;
-import javagems3d.system.inventory.InventoryOwner;
+import javagems3d.system.controller.binding.BindingManager;
 import logger.Log;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -20,8 +19,8 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     private IControllable currentControlledItem;
     private boolean lockController;
 
-    public JGemsControllerDispatcher(IWindow window) {
-        JGemsControllerDispatcher.mouseKeyboardController = new JGemsMouseKeyboardController(window, JGemsAPI.APIAppData().getBindingManager());
+    public JGemsControllerDispatcher(IWindow window, BindingManager bindingManager) {
+        JGemsControllerDispatcher.mouseKeyboardController = new JGemsMouseKeyboardController(window, bindingManager);
         this.setController(JGemsControllerDispatcher.defaultController());
         Log.get().info("Created controller dispatcher");
     }
@@ -83,11 +82,6 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
             this.getCurrentController().updateControllerState(window);
             if (!JGems3D.get().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
-                    if (window.isWindowInFocus() && this.getCurrentControlledItem() instanceof InventoryOwner) {
-                        if (this.getCurrentController() instanceof IInventoryController iInventoryController) {
-                            iInventoryController.updateItemWithInventory(((InventoryOwner) this.getCurrentControlledItem()));
-                        }
-                    }
                     this.performControllerToItem(window, this.getCurrentController(), this.getCurrentControlledItem());
                 }
             }

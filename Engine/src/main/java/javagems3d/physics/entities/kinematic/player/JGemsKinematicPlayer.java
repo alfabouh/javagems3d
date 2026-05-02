@@ -6,14 +6,11 @@ import com.jme3.bullet.collision.shapes.ConvexShape;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
-import javagems3d.system.inventory.InventoryOwner;
-import javagems3d.system.inventory.InventoryBase;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer, InventoryOwner {
-    private InventoryBase inventoryBase;
+public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer {
     private float scalarSpeed;
 
     public JGemsKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
@@ -43,11 +40,6 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     @Override
     protected void setDefaults() {
         super.setDefaults();
-        this.createInventory();
-    }
-
-    protected void createInventory() {
-        this.inventoryBase = new InventoryBase(this, 4);
     }
 
     @Override
@@ -76,11 +68,6 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     @Override
     public float getEyeHeight() {
         return this.getPlayerHeight() / 2.0f - 0.16f;
-    }
-
-    @Override
-    public InventoryBase getInventory() {
-        return this.inventoryBase;
     }
 
     @Override

@@ -39,7 +39,16 @@ public abstract class ManualMapProcessor extends MapProcessor {
     }
 
     @Deprecated
-    public static class Default extends ManualMapProcessor {
+    public static class DefaultPhysTest extends ManualMapProcessor {
+        private final IGameMap.IPlayerConstructor playerConstructor;
+
+        public DefaultPhysTest() {
+            this.playerConstructor = ExternalMapProcessor.Default.getDefaultPlayerConstructor();
+        }
+
+        public DefaultPhysTest(IGameMap.IPlayerConstructor playerConstructor) {
+            this.playerConstructor = playerConstructor;
+        }
 
         @Override
         public void preProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
@@ -94,7 +103,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-            return ExternalMapProcessor.Default.getDefaultPlayerConstructor();
+            return this.playerConstructor;
         }
 
         @Override
@@ -104,12 +113,12 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public @NotNull String getMapName() {
-            return "Default";
+            return "DefaultPhysTest";
         }
 
         @Override
         public @NotNull String getMapInformation() {
-            return "Default Map";
+            return "DefaultPhysTest Map";
         }
     }
 }

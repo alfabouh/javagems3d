@@ -103,6 +103,7 @@ public class UIDefaultButton extends UIInteractiveElement {
         int result = 1;
         result = prime * result + this.uiText.hashCode();
         result = prime * result + this.getSize().hashCode();
+        result = prime * result + this.getPosition().hashCode();
         return result;
     }
 

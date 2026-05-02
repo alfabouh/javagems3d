@@ -167,7 +167,7 @@ public final class JGemsAPI implements Closeable {
             } else {
                 Pair<Class<?>, JGemsAppEntry> found = this.findApiAppInFile();
                 if (found == null) {
-                    Log.get().error("Couldn't find JGems3D entry class, Returned Default!");
+                    Log.get().error("Couldn't find JGems3D entry class, Returned DefaultPhysTest!");
                     clazz = Class.forName("A_default_app.AppDefault");
                     jGemsAppEntry = clazz.getAnnotation(JGemsAppEntry.class);
                 } else {

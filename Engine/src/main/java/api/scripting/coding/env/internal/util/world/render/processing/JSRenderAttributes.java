@@ -63,12 +63,12 @@ public class JSRenderAttributes {
         return this.renderAttributes.getCullingRules();
     }
 
-    @JSCodingFunctionOrMethod(description = "Default direct RenderAttributes")
+    @JSCodingFunctionOrMethod(description = "DefaultPhysTest direct RenderAttributes")
     public static JSRenderAttributes getDefaultDirect() {
         return new JSRenderAttributes(RenderAttributes.getDefaultDirect());
     }
 
-    @JSCodingFunctionOrMethod(description = "Default indirect RenderAttributes")
+    @JSCodingFunctionOrMethod(description = "DefaultPhysTest indirect RenderAttributes")
     public static JSRenderAttributes getDefaultIndirect() {
         return new JSRenderAttributes(RenderAttributes.getDefaultIndirect());
     }

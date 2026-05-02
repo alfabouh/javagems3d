@@ -12,7 +12,6 @@ import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.system.inventory.InventoryBase;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -164,12 +163,6 @@ public class JSKinematicPlayer implements JSWorldObjectI, JSControllableItem, JS
     @JSCodingFunctionOrMethod(description = "Rewarp player to position")
     public void rewarp() {
         this.player.resetWarp();
-    }
-
-    @JSCodingFunctionOrMethod(description = "Get player's inventory")
-    @JSHideFromDoc
-    public InventoryBase getInventory() {
-        return this.player.getInventory();
     }
 
     @JSCodingFunctionOrMethod(description = "Get underlying Java player object")

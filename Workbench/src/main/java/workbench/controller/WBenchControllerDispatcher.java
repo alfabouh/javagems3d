@@ -35,4 +35,8 @@ public class WBenchControllerDispatcher implements IControllerDispatcher {
     public MouseKeyboardController getCurrentController() {
         return this.mouseKeyboardController;
     }
+
+    @Override
+    public void setController(IController iController) {
+    }
 }

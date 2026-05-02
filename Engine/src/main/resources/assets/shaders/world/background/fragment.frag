@@ -108,7 +108,7 @@ void main()
         normals = calc_normal_map();
     }
     if (useRoughnessMetallicTexture) {
-      vec4 mr = texture(sampler2D(metallic_roughness_map), uv_coordinates);
+        vec4 mr = texture(sampler2D(metallic_roughness_map), uv_coordinates);
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 
@@ -123,7 +123,7 @@ void main()
         gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
 
-    vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
+    vec3 lights = calc_light(gPosition, gNormal, 1., model_vertex_pos);
     frag_color = gColor * vec4(lights + gEmission, 1.0);
     frag_color = calc_fog(gPosition, frag_color);
     frag_color = vec4(frag_color.rgb, 1.);

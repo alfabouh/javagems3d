@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -44,12 +46,18 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
         this.getBloomRenderProcessor().runProcessorRendering(frameTicking);
 
         this.getOutColorBuffer().bindFBO();
-        this.getHdrRenderProcessor().runProcessorRendering(frameTicking);
+        if (!EventLauncher.pushEvent(new EventBus.PostFXOGLRenderInHDRFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.getHdrRenderProcessor().runProcessorRendering(frameTicking);
+            EventLauncher.pushEvent(new EventBus.PostFXOGLRenderInHDRFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         this.getOutColorBuffer().unBindFBO();
 
         this.getOutColorBuffer().bindFBO();
-        this.getFxaaRenderProcessor().setValue((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2));
-        this.getFxaaRenderProcessor().runProcessorRendering(frameTicking);
+        if (!EventLauncher.pushEvent(new EventBus.PostFXOGLRenderInFXAAFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.getFxaaRenderProcessor().setValue((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2));
+            this.getFxaaRenderProcessor().runProcessorRendering(frameTicking);
+            EventLauncher.pushEvent(new EventBus.PostFXOGLRenderInFXAAFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         this.getOutColorBuffer().unBindFBO();
     }
 

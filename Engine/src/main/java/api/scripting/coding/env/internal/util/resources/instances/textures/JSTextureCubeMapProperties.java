@@ -13,7 +13,7 @@ public record JSTextureCubeMapProperties(boolean linearFiltration) {
         this.linearFiltration = linearFiltration;
     }
 
-    @JSCodingConstructor(description = "Default constructor")
+    @JSCodingConstructor(description = "DefaultPhysTest constructor")
     public JSTextureCubeMapProperties() {
         this(true);
     }

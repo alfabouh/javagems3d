@@ -178,7 +178,9 @@ public final class JGemsUI implements IWindow.ResizeEvent {
             uiElement.setDefaultScaling();
         }
         T ui = this.addUIInCache(clazz, uiElement);
-        ui.render(this.frameDeltaTicks);
+        if (!this.requestCleanFrame) {
+            ui.render(this.frameDeltaTicks);
+        }
         return ui;
     }
 

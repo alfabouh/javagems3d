@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -7,6 +9,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IGluingRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.GluingRenderProcessor;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIDefaultButton;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +43,10 @@ public abstract class GluingRenderNode extends IRenderNode.Template implements I
     @Override
     public void onRender(FrameTicking frameTicking) {
         this.getOutColorBuffer().bindFBO();
-        this.getSceneGluingRenderProcessor().runProcessorRendering(frameTicking);
+        if (!EventLauncher.pushEvent(new EventBus.GlueRenderFBOsOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.getSceneGluingRenderProcessor().runProcessorRendering(frameTicking);
+            EventLauncher.pushEvent(new EventBus.GlueRenderFBOsOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
+        }
         this.getOutColorBuffer().unBindFBO();
     }
 

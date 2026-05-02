@@ -183,9 +183,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     public static void renderNodeWithEvent(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, IRenderNode node) {
         if (openGLRenderer instanceof JGemsOpenGLRenderer) {
-            if (!EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent((JGemsOpenGLRenderer) openGLRenderer, node, frameTicking, EventBus.Run.PRE), new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.PRE), JavaToJsAPI.Target.Game)).isCancelled()) {
+            if (!EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent(openGLRenderer, node, frameTicking, EventBus.Run.PRE), new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.PRE), JavaToJsAPI.Target.Game)).isCancelled()) {
                 node.onRender(frameTicking);
-                EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent((JGemsOpenGLRenderer) openGLRenderer, node, frameTicking, EventBus.Run.POST),  new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.POST), JavaToJsAPI.Target.Game));
+                EventLauncher.pushEvent(new EventBus.RenderOGLNodeEvent(openGLRenderer, node, frameTicking, EventBus.Run.POST),  new Pair<>(new JSRenderOGLNodeEvent(new JSOpenGLRenderer(openGLRenderer), JSRenderNode.get(node.getNodeID()), new JSFrameTicking(frameTicking), JSEventRun.POST), JavaToJsAPI.Target.Game));
             }
         } else {
             node.onRender(frameTicking);
@@ -397,12 +397,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void recreateResources() {
+        EventLauncher.pushEvent(new EventBus.ReCreateRenderResourcesEvent(this), null);
         super.recreateResources();
         this.recreateEnvironment();
     }
 
     @Override
     public void createResources() {
+        EventLauncher.pushEvent(new EventBus.CreateRenderResourcesEvent(this), null);
         this.getDebugLinesDrawer().setup();
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
@@ -410,6 +412,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void destroyResources() {
+        EventLauncher.pushEvent(new EventBus.DestroyRenderResourcesEvent(this), null);
         this.getDebugLinesDrawer().clear();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneCulling().destroyResources();
@@ -417,6 +420,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void onWindowResize(IWindow window) {
+        EventLauncher.pushEvent(new EventBus.ResizeWindowRenderPipelineEvent(this), null);
         if (this.getJGemsUI() != null) {
             this.getJGemsUI().onWindowResize(window);
         }

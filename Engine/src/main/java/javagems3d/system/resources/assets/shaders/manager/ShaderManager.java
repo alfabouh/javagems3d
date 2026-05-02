@@ -27,16 +27,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
- */
 public abstract class ShaderManager implements ICached, ICopyable<ShaderManager> {
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShadersContainer shadersContainer;
     private ActiveShader activeShader;
     private ShaderHandler graphicShaderHandler;
     private ShaderHandler computingShaderHandler;
-    private int usedTextureUnits;
+    private Set<String> usedTexturesCache;
 
     private boolean warns;
 
@@ -44,7 +41,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
         this.uniformBufferObjects = new HashSet<>();
         this.shadersContainer = shadersContainer;
         this.activeShader = ActiveShader.NONE;
-        this.usedTextureUnits = 0;
+        this.usedTexturesCache = new HashSet<>();
 
         this.warns = true;
     }
@@ -58,7 +55,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
     }
 
     public void clearUsedTextureSlots() {
-        this.usedTextureUnits = 0;
+        this.usedTexturesCache.clear();
     }
 
     public ShaderManager attachUBOs(UniformBufferObject... uniformBufferObjects) {
@@ -171,7 +168,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
     }
 
     public void performUniformTexture(UniformString uniform, ITextureProgram program) {
-        this.performUniformTexture(uniform, program, this.usedTextureUnits++);
+        this.performUniformTexture(uniform, program, this.usedTexturesCache.size());
     }
 
     public void performUniformTexture(UniformString uniform, ITextureProgram program, int textureUnit) {
@@ -199,11 +196,12 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             program.unBindSampler(textureUnit);
         }
         program.bindTexture();
+        this.usedTexturesCache.add(uniform.toString());
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment) {
-        this.performUniformTexture(uniform, textureID, samplerId, textureAttachment, this.usedTextureUnits++);
+        this.performUniformTexture(uniform, textureID, samplerId, textureAttachment, this.usedTexturesCache.size());
     }
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment, int textureUnit) {
@@ -229,6 +227,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             GL46.glBindSampler(textureUnit, samplerId);
         }
         GL46.glBindTexture(textureAttachment, textureID);
+        this.usedTexturesCache.add(uniform.toString());
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }
 
@@ -357,7 +356,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
     }
 
     public int getUsedTextureUnits() {
-        return this.usedTextureUnits;
+        return this.usedTexturesCache.size();
     }
 
     public ShaderHandler getComputingShaderGroup() {

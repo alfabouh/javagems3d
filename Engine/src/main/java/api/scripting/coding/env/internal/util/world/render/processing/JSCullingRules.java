@@ -52,6 +52,6 @@ public class JSCullingRules {
         return this.rules;
     }
 
-    @JSCodingField(description = "Default CullingRules instance")
+    @JSCodingField(description = "DefaultPhysTest CullingRules instance")
     public static final JSCullingRules DEFAULT = new JSCullingRules(CullingRules.get());
 }

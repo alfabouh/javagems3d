@@ -209,7 +209,7 @@ public abstract class SystemResources implements ISystemResources {
             this.processMessage("Successfully loaded texture", 0x00ff00, ResLoadSysMessageType.LOG);
             return t;
         } catch (Exception e) {
-            this.processMessage("Error, while processing texture: " + name + ". Default returned", 0xff0000, ResLoadSysMessageType.ERR);
+            this.processMessage("Error, while processing texture: " + name + ". DefaultPhysTest returned", 0xff0000, ResLoadSysMessageType.ERR);
             if (returnDefault != null) {
                 return returnDefault;
             } else {

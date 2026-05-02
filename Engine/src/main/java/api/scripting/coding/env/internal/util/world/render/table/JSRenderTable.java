@@ -22,46 +22,46 @@ public class JSRenderTable {
     @JSCodingField(description = "The underlying Java RenderTable object")
     protected final RenderTable table;
 
-    // Default shaders
-    @JSCodingField(description = "Default scene shader for direct rendering")
+    // DefaultPhysTest shaders
+    @JSCodingField(description = "DefaultPhysTest scene shader for direct rendering")
     public static JSShader DEFAULT_SCENE_SHADER = new JSShader(RenderTable.DEFAULT_SCENE_SHADER);
-    @JSCodingField(description = "Default background shader for direct rendering")
+    @JSCodingField(description = "DefaultPhysTest background shader for direct rendering")
     public static JSShader DEFAULT_BACKGROUND_SHADER = new JSShader(RenderTable.DEFAULT_BACKGROUND_SHADER);
-    @JSCodingField(description = "Default sun shadow map shader (direct)")
+    @JSCodingField(description = "DefaultPhysTest sun shadow map shader (direct)")
     public static JSShader DEFAULT_SUN_L_SHADOW_MAP_SHADER = new JSShader(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER);
-    @JSCodingField(description = "Default point light shadow map shader (direct)")
+    @JSCodingField(description = "DefaultPhysTest point light shadow map shader (direct)")
     public static JSShader DEFAULT_POINT_L_SHADOW_MAP_SHADER = new JSShader(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER);
-    @JSCodingField(description = "Default transparency shader (direct)")
+    @JSCodingField(description = "DefaultPhysTest transparency shader (direct)")
     public static JSShader DEFAULT_TRANSPARENCY_SHADER = new JSShader(RenderTable.DEFAULT_TRANSPARENCY_SHADER);
 
-    // Default indirect shaders
-    @JSCodingField(description = "Default scene shader for indirect rendering")
+    // DefaultPhysTest indirect shaders
+    @JSCodingField(description = "DefaultPhysTest scene shader for indirect rendering")
     public static JSShader DEFAULT_SCENE_SHADER_IND = new JSShader(RenderTable.DEFAULT_SCENE_SHADER_IND);
-    @JSCodingField(description = "Default background shader for indirect rendering")
+    @JSCodingField(description = "DefaultPhysTest background shader for indirect rendering")
     public static JSShader DEFAULT_BACKGROUND_SHADER_IND = new JSShader(RenderTable.DEFAULT_BACKGROUND_SHADER_IND);
-    @JSCodingField(description = "Default sun shadow map shader (indirect)")
+    @JSCodingField(description = "DefaultPhysTest sun shadow map shader (indirect)")
     public static JSShader DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = new JSShader(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND);
-    @JSCodingField(description = "Default point light shadow map shader (indirect)")
+    @JSCodingField(description = "DefaultPhysTest point light shadow map shader (indirect)")
     public static JSShader DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = new JSShader(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND);
-    @JSCodingField(description = "Default transparency shader (indirect)")
+    @JSCodingField(description = "DefaultPhysTest transparency shader (indirect)")
     public static JSShader DEFAULT_TRANSPARENCY_SHADER_IND = new JSShader(RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND);
 
-    // Default render fabrics
-    @JSCodingField(description = "Default direct scene render fabric")
+    // DefaultPhysTest render fabrics
+    @JSCodingField(description = "DefaultPhysTest direct scene render fabric")
     public static JSDirectRenderFabric DEFAULT_SCENE_RENDER_FABRIC = new JSDirectRenderFabric((DirectRenderFabric) RenderTable.DEFAULT_SCENE_RENDER_FABRIC);
-    @JSCodingField(description = "Default forward scene render fabric")
+    @JSCodingField(description = "DefaultPhysTest forward scene render fabric")
     public static JSDirectRenderFabric DEFAULT_SCENE_RENDER_FABRIC_FOR = new JSDirectRenderFabric((DirectRenderFabric) RenderTable.DEFAULT_SCENE_RENDER_FABRIC_FOR);
-    @JSCodingField(description = "Default indirect scene render fabric")
+    @JSCodingField(description = "DefaultPhysTest indirect scene render fabric")
     public static JSIndirectRenderFabric DEFAULT_SCENE_RENDER_FABRIC_IND = new JSIndirectRenderFabric((IndirectRenderFabric) RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
 
-    @JSCodingField(description = "Default transparency render fabric (direct)")
+    @JSCodingField(description = "DefaultPhysTest transparency render fabric (direct)")
     public static JSDirectRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC = new JSDirectRenderFabric((DirectRenderFabric) RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC);
-    @JSCodingField(description = "Default transparency render fabric (indirect)")
+    @JSCodingField(description = "DefaultPhysTest transparency render fabric (indirect)")
     public static JSIndirectRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND = DEFAULT_SCENE_RENDER_FABRIC_IND;
 
-    @JSCodingField(description = "Default shadow render fabric (direct)")
+    @JSCodingField(description = "DefaultPhysTest shadow render fabric (direct)")
     public static JSDirectRenderFabric DEFAULT_SHADOW_RENDER_FABRIC = new JSDirectRenderFabric((DirectRenderFabric) RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
-    @JSCodingField(description = "Default shadow render fabric (indirect)")
+    @JSCodingField(description = "DefaultPhysTest shadow render fabric (indirect)")
     public static JSIndirectRenderFabric DEFAULT_SHADOW_RENDER_FABRIC_IND = new JSIndirectRenderFabric((IndirectRenderFabric) RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
 
     @JSCodingConstructor(description = "Constructs a JS wrapper for a RenderTable", paramNames = {"table"})

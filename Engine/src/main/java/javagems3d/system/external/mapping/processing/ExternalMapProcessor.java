@@ -604,7 +604,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     }
                 }
             } catch (Exception e) {
-                Log.get().warn("Couldn't create any player. Default returned");
+                Log.get().warn("Couldn't create any player. DefaultPhysTest returned");
             }
             return this.playerConstructor;
         }

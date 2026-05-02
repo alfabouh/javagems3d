@@ -11,7 +11,7 @@ import api.scripting.coding.env.internal.util.resources.instances.sound.JSOggSou
 import api.scripting.coding.env.internal.util.resources.instances.textures.JSTexture2D;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
-@JSCodingClass(binding = "JSDefaultGameResources", description = "Default engine resources")
+@JSCodingClass(binding = "JSDefaultGameResources", description = "DefaultPhysTest engine resources")
 public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaultGameResources> {
     @JSHideFromDoc public static JSDefaultGameResources jsDefaultGameResources = new JSDefaultGameResources();
 
@@ -156,7 +156,7 @@ public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaul
 
     // --- FONTS ---
 
-    @JSCodingField(description = "Default font")
+    @JSCodingField(description = "DefaultPhysTest font")
     public JSFont buttonFont;
 
     @JSHideFromDoc

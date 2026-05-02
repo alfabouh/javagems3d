@@ -7,7 +7,7 @@ import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.controlling.bind.keys.JSKey;
 import javagems3d.system.controller.binding.DefaultBindings;
 
-@JSCodingClass(binding = "JSDefaultBindings", description = "Default key bindings accessible from JS.")
+@JSCodingClass(binding = "JSDefaultBindings", description = "DefaultPhysTest key bindings accessible from JS.")
 public class JSDefaultBindings {
     @JSHideFromDoc
     private final DefaultBindings bindings;
