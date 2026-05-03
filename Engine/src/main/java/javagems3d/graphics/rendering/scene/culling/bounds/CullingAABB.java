@@ -4,9 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class CullingAABB {
-    private Vector3f center;
-    private final Vector3f aabbMin;
-    private final Vector3f aabbMax;
+    private Vector3f aabbMin;
+    private Vector3f aabbMax;
 
     public CullingAABB(Vector3f aabbMin, Vector3f aabbMax) {
         this.aabbMin = aabbMin;
@@ -35,15 +34,21 @@ public class CullingAABB {
         return new Matrix4f().translate(center).scale(scale);
     }
 
+    public CullingAABB setAabbMin(Vector3f aabbMin) {
+        this.aabbMin = aabbMin;
+        return this;
+    }
+
+    public CullingAABB setAabbMax(Vector3f aabbMax) {
+        this.aabbMax = aabbMax;
+        return this;
+    }
+
     public Vector3f getAabbMin() {
         return new Vector3f(this.aabbMin);
     }
 
     public Vector3f getAabbMax() {
         return new Vector3f(this.aabbMax);
-    }
-
-    public Vector3f getCenter() {
-        return new Vector3f(this.center);
     }
 }

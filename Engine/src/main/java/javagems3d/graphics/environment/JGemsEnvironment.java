@@ -19,6 +19,7 @@ import javagems3d.graphics.environment.skybox.JGemsSkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
@@ -73,7 +74,7 @@ public class JGemsEnvironment implements IEnvironment {
     public void updateEnvironment(ICamera camera) {
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.PRE), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.PRE), JavaToJsAPI.Target.Game));
         final HashMap<PointLight, Integer> lightIdxHashMap = this.getShadowScene().getSortedPointLightMapReadyToBind(JGemsTransformManager.INSTANCE.getCameraViewMatrix().getTranslation(new Vector3f()), this.getLightScene().getPointLights());
-        this.getSkyBox().getSun().onUpdateWithEvent(this.getWorld());
+        this.getSkyBox().getSun().onUpdate(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {

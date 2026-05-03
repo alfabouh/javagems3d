@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.structures.solid;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;

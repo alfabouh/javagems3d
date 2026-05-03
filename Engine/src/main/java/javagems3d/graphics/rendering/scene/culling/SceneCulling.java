@@ -5,23 +5,26 @@ import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.culling.stages.CPUDistanceCulling;
 import javagems3d.graphics.rendering.scene.culling.stages.CPUFrustumCulling;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class SceneCulling implements ISceneCulling {
-    private Set<? extends ICulled> snapshot;
-
     private final CPUDistanceCulling cpuDistanceCulling;
     private final CPUFrustumCulling cpuFrustumCulling;
     private final Pipeline pipeline;
@@ -31,40 +34,48 @@ public class SceneCulling implements ISceneCulling {
     public SceneCulling(int modes, @Nullable Pipeline pipeline) {
         this.modes = modes;
         this.pipeline = pipeline;
-        this.snapshot = null;
 
         this.cpuDistanceCulling = new CPUDistanceCulling(256.0f);
         this.cpuFrustumCulling = new CPUFrustumCulling();
     }
 
     @Override
+    public void updateFrustum(@NotNull Matrix4f projectionMatrix, @NotNull ICamera camera) {
+        if (!this.isFrozen()) {
+            if ((this.getModes() & SceneCulling.FRUSTUM_CPU) != 0) {
+                this.getCpuFrustumCulling().rebuildFrustum(projectionMatrix, TransformUtils.getViewMatrix(camera));
+            }
+        }
+    }
+
+    @Override
     public final void cull(@NotNull Matrix4f projectionMatrix, @NotNull ICamera camera, @NotNull Collection<? extends ICulled>[] objects) {
-        for (int i = 0; i < objects.length; i++){
-            Collection<? extends ICulled> collection = objects[i];
+        for (Collection<? extends ICulled> collection : objects) {
             if (collection.isEmpty()) {
                 return;
-            }
-            this.setFreeze(false);
-            if (this.snapshot != null) {
-                if (!this.isFrozen()) {
-                    this.snapshot = null;
-                } else {
-                    objects[i] = new HashSet<>(this.snapshot);
-                    return;
-                }
             }
             if ((this.getModes() & SceneCulling.DISTANCE) != 0) {
                 this.getCpuDistanceCulling().setCamera(camera);
                 this.getCpuDistanceCulling().filter(collection);
             }
             if ((this.getModes() & SceneCulling.FRUSTUM_CPU) != 0) {
-                this.getCpuFrustumCulling().rebuildFrustum(projectionMatrix, TransformUtils.getViewMatrix(camera));
                 this.getCpuFrustumCulling().filter(collection);
             }
-            if (this.isFrozen() && this.snapshot == null) {
-                this.snapshot = new HashSet<>(collection);
-            }
         }
+    }
+
+    @Override
+    public List<MeshNode3D<RenderMesh>> cullSubMeshes(Pose3D pose3D, List<MeshNode3D<RenderMesh>> meshNodes) {
+        if ((this.getModes() & SceneCulling.FRUSTUM_CPU) != 0) {
+            return meshNodes.stream().filter(e -> {
+                boolean flag = e.getMeshData().getLocalAABB() == null || this.getCpuFrustumCulling().isInFrustum(MeshBoundingBoxData.transformAABB(e.getMeshData().getLocalAABB(), pose3D));
+                if (!flag) {
+                    JGemsOpenGLRenderer.DEBUG_CULLED_SUBMESHES++;
+                }
+                return flag;
+            }).toList();
+        }
+        return meshNodes;
     }
 
     @Override
@@ -77,7 +88,6 @@ public class SceneCulling implements ISceneCulling {
     public void destroyResources() {
         this.getCpuDistanceCulling().destroyResources();
         this.getCpuFrustumCulling().destroyResources();
-        this.snapshot = null;
     }
 
     public int getModes() {

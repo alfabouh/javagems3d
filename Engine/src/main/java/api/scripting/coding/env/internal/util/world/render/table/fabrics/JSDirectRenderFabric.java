@@ -7,10 +7,12 @@ import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRe
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.scene.DefaultDirectRenderFabric;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(binding = "JSDirectRenderFabric", description = "Wrapper for DirectRenderFabric. Allows scripts to implement custom render factories and manage resources.")
@@ -40,7 +42,7 @@ public class JSDirectRenderFabric implements JSRenderFabricI {
 
     @JSCodingFunctionOrMethod(description = "Render all meshes of a 3D model at a given layer using the specified shader and renderer", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
     public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
-        for (MeshNode3D<RenderMesh> meshNode3D : jsModel.getJavaModel3D().<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
+        for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(jsModel.getJavaModel3D().<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), jsModel.getJavaModel3D().getPose(), jsRenderer.getJavaRenderer(), (MeshGroup) jsModel.getMesh().getJavaMeshStructure3D())) {
             JGemsHelper.render().performDefaultModelMaterialOnShader(jsRenderer.getJavaRenderer().getWorld().getEnvironment(), jsShader.getJavaShaderManager(), meshNode3D.getMaterial(), discardAlphaLevel);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }

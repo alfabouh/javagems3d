@@ -78,6 +78,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionCallback {
+    public static int DEBUG_CULLED_OBJECTS;
+    public static int DEBUG_CULLED_SUBMESHES;
+
     public static JGemsShaderManager UBO_SHADER = null;
 
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
@@ -194,6 +197,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        {
+            JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS = 0;
+            JGemsOpenGLRenderer.DEBUG_CULLED_SUBMESHES = 0;
+        }
         IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
         IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.FORWARD_RENDER_PASS);
         ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
@@ -222,6 +229,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         final Set<JSSceneObjectI> sceneObjectJS = toRenderObjects.stream().map(e -> (JSSceneObjectI) () -> e).collect(Collectors.toSet());
         final Set<JSSceneWorldLiquid> sceneWorldLiquidsJS = toRenderLiquids.stream().map(JSSceneWorldLiquid::new).collect(Collectors.toSet());
+        this.getSceneCulling().updateFrustum(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
         if (!EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.PRE, toRenderObjects, toRenderLiquids), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.PRE, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game)).isCancelled()) {
             JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
                 @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids };
@@ -266,9 +274,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             //     }
             // }
             for (SceneObject sceneObject : sceneObjects) {
-                CullingAABB cullingAABB = sceneObject.getCullingData();
-                if (cullingAABB != null) {
-                    JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                if (sceneObject.getModel() != null) {
+                    JGemsHelper.render().renderModelAABBDebug(JGemsOpenGLRenderer.DebugLinesDrawer(), sceneObject.getModel());
                 }
                 IPlayer player = JGemsHelper.map().getCurrentGameMapPlayer();
                 if (player instanceof JGemsKinematicItem) {

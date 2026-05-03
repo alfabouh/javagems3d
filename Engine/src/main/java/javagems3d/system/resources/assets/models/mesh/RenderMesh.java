@@ -1,10 +1,12 @@
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.VertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -25,11 +27,12 @@ public class RenderMesh implements IMesh, AutoCloseable {
 
     private boolean baked;
     private SkeletonData skeletonData;
+    private CullingAABB localAABB;
 
     public RenderMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.vertexIndexes = new ArrayList<>();
-
+        this.localAABB = null;
         this.skeletonData = null;
         this.baked = false;
         this.vertexAttributesMap = new HashMap<>();
@@ -148,6 +151,7 @@ public class RenderMesh implements IMesh, AutoCloseable {
 
     @Override
     public void clearMesh() {
+        this.localAABB = null;
         this.setSkeletonData(null);
         this.clearData(false);
         this.vertexAttributesMap.clear();
@@ -194,6 +198,16 @@ public class RenderMesh implements IMesh, AutoCloseable {
     @Override
     public @NotNull List<Float> getVertexPositions() {
         return this.<Float>getVertexAttributeByIndex(this.positionsIndex()).getValues();
+    }
+
+    public RenderMesh setLocalAABB(CullingAABB localAABB) {
+        this.localAABB = localAABB;
+        return this;
+    }
+
+    @Override
+    public @Nullable CullingAABB getLocalAABB() {
+        return this.localAABB;
     }
 
     public int getVao() {

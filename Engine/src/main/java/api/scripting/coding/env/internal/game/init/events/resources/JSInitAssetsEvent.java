@@ -63,7 +63,7 @@ public class JSInitAssetsEvent implements JSEventI {
 
     @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh group.", paramNames = {"pathToGLTF2Model", "keepTrianglesInMemory"})
     public JSMeshGroup createGLTF2MeshGroup(JSPath pathToGLTF2Model, boolean keepTrianglesInMemory) {
-        return new JSMeshGroup(this.systemResources.getJavaSystemResources().createMeshGroup(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepTrianglesInMemory));
+        return new JSMeshGroup(this.systemResources.getJavaSystemResources().createMeshGroup(new JGemsPathSource(pathToGLTF2Model.getJavaPath(), ISource.Source.OUTSIDE_JAR), keepTrianglesInMemory, true));
     }
 
     @JSCodingFunctionOrMethod(description = "Load GLTF2 mesh group with default settings.", paramNames = {"pathToGLTF2Model"})

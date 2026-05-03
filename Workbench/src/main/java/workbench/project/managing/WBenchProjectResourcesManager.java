@@ -470,7 +470,7 @@ public class WBenchProjectResourcesManager {
 
     private GameResourceModelAsset loadModelAsset(File rootFolder, File fullPath) {
         try {
-            MeshGroup meshGroup = this.systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR),true);
+            MeshGroup meshGroup = this.systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath(fullPath.getPath()), ISource.Source.OUTSIDE_JAR), true, true);
             final String relativePath = fullPath.getPath().substring(rootFolder.getPath().length()).replace("\\", "/");
             final GameResourceModelAsset modelAsset = new GameResourceModelAsset(fullPath.getName(), relativePath, meshGroup);
             this.modelsKeysCache.put(relativePath, modelAsset);

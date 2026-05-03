@@ -80,7 +80,7 @@ public abstract class LightScene implements ILightScene {
 
     @Override
     public void updateBuffers(MemoryStack stack, HashMap<PointLight, Integer> lightIntegerHashMap, IWorld world, Matrix4f viewMatrix) {
-        this.getPointLights().forEach(e -> e.onUpdateWithEvent(world));
+        this.getPointLights().forEach(e -> e.onUpdate(world));
         this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
         this.updatePointLightsBuffer(lightIntegerHashMap, this.getPointLightsBuffer(), stack, viewMatrix);
     }

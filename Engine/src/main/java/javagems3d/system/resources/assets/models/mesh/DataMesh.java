@@ -1,9 +1,11 @@
 package javagems3d.system.resources.assets.models.mesh;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +17,11 @@ public class DataMesh implements IMesh {
     private final Map<Integer, VertexBuffer<Float>> bufferMap;
     private VertexBuffer<Integer> indexes;
     private SkeletonData skeletonData;
+    private CullingAABB localAABB;
 
     public DataMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
+        this.localAABB = null;
         this.bufferMap = new HashMap<>();
         this.skeletonData = null;
     }
@@ -69,6 +73,16 @@ public class DataMesh implements IMesh {
         return this.getBufferById(this.positionsIndex()).values();
     }
 
+    public DataMesh setLocalAABB(CullingAABB localAABB) {
+        this.localAABB = localAABB;
+        return this;
+    }
+
+    @Override
+    public @Nullable CullingAABB getLocalAABB() {
+        return this.localAABB;
+    }
+
     @Override
     public void clearData(boolean keepTrianglesInMemory) {
         this.setSkeletonData(null);
@@ -83,6 +97,7 @@ public class DataMesh implements IMesh {
 
     @Override
     public void clearMesh() {
+        this.localAABB = null;
         this.clearData(false);
     }
 

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.loading.models.gltf.parsing.structure.*;
 import javagems3d.system.resources.assets.loading.models.gltf.parsing.structure.skinning.GLTF2Animations;
@@ -30,11 +31,11 @@ import java.util.*;
 public abstract class GLTF2Parser {
     public static final String DEFAULT_IDENTIFIER = "unknown";
 
-    public static GLTF2RawData parse(@NotNull JGemsPathSource pathToMainFile) {
+    public static GLTF2RawData parse(@NotNull JGemsPathSource pathToMainFile, boolean buildSubMeshesAABBs) {
         try (InputStream jsonInput = JGems3D.getInputStream(pathToMainFile)) {
             JSONFileManaging jsonFileManaging = JSONFileManaging.createSerializationRules();
             JsonElement root = jsonFileManaging.read(jsonInput);
-            return GLTF2Parser.readStructure(pathToMainFile, root);
+            return GLTF2Parser.readStructure(pathToMainFile, root, buildSubMeshesAABBs);
         } catch (JGemsException e) {
             Log.get().error("Failed to load: " + pathToMainFile);
             throw e;
@@ -44,7 +45,7 @@ public abstract class GLTF2Parser {
         }
     }
 
-    private static GLTF2RawData readStructure(@NotNull JGemsPathSource pathToMainFile, JsonElement root) {
+    private static GLTF2RawData readStructure(@NotNull JGemsPathSource pathToMainFile, JsonElement root, boolean buildSubMeshesAABBs) {
         JsonObject rootObject = root.getAsJsonObject();
 
         List<ByteBuffer> buffersList = new ArrayList<>();
@@ -99,9 +100,9 @@ public abstract class GLTF2Parser {
         }
 
         Vector3f modelOffsetCenter = new Vector3f();
-        final List<GLTF2Node> nodes = GLTF2Parser.readNodes(rootObject, nodesArray, buffersList, modelOffsetCenter);
-        List<GLTF2Skin> skins = GLTF2Parser.readSkin(nodes, buffersList, rootObject, modelOffsetCenter);
         List<GLTF2Animations> animations = GLTF2Parser.readAnimations(buffersList, rootObject);
+        final List<GLTF2Node> nodes = GLTF2Parser.readNodes(rootObject, nodesArray, buffersList, modelOffsetCenter, buildSubMeshesAABBs && (animations == null || animations.isEmpty()));
+        List<GLTF2Skin> skins = GLTF2Parser.readSkin(nodes, buffersList, rootObject, modelOffsetCenter);
 
         if ((skins == null && animations != null) || (skins != null && animations == null)) {
             throw new JGemsIOException("Model has invalid animations data");
@@ -151,7 +152,7 @@ public abstract class GLTF2Parser {
     }
 }
  */
-    private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList, Vector3f modelCenterOffset) {
+    private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList, Vector3f modelCenterOffset, boolean buildSubMeshesAABBs) {
         final List<GLTF2Node> nodes = new ArrayList<>();
         final Map<Integer, List<Integer>> tempChildrenMap = new HashMap<>();
 
@@ -201,6 +202,8 @@ public abstract class GLTF2Parser {
 
             if (gltf2Mesh != null) {
                 for (GLTF2Primitive primitive : gltf2Mesh.getPrimitives()) {
+                    Vector3f local_min = new Vector3f(Float.MAX_VALUE);
+                    Vector3f local_max = new Vector3f(-Float.MAX_VALUE);
                     List<Float> positions = primitive.getPOSITION().objects();
 
                     for (int i = 0; i < positions.size(); i += 3) {
@@ -209,25 +212,14 @@ public abstract class GLTF2Parser {
                         positions.set(i, pos.x);
                         positions.set(i + 1, pos.y);
                         positions.set(i + 2, pos.z);
-                        if (pos.x < min.x) {
-                            min.x = pos.x;
-                        }
-                        if (pos.y < min.y) {
-                            min.y = pos.y;
-                        }
-                        if (pos.z < min.z) {
-                            min.z = pos.z;
-                        }
-                        if (pos.x > max.x) {
-                            max.x = pos.x;
-                        }
-                        if (pos.y > max.y) {
-                            max.y = pos.y;
-                        }
-                        if (pos.z > max.z) {
-                            max.z = pos.z;
-                        }
+                        local_min.min(pos.xyz(new Vector3f()));
+                        local_max.max(pos.xyz(new Vector3f()));
                     }
+                    if (gltf2Mesh.getPrimitives().size() > 1 && buildSubMeshesAABBs) {
+                        primitive.setLocalCullingAABB(new CullingAABB(local_min, local_max));
+                    }
+                    min.min(local_min);
+                    max.max(local_max);
 
                     Matrix3f normalMatrix = new Matrix3f();
                     worldTransform.normal(normalMatrix);
@@ -264,6 +256,10 @@ public abstract class GLTF2Parser {
         for (GLTF2Node gltf2Node : nodes) {
             if (gltf2Node.getMesh() != null) {
                 for (GLTF2Primitive primitive : gltf2Node.getMesh().getPrimitives()) {
+                    if (primitive.getLocalCullingAABB() != null) {
+                        primitive.getLocalCullingAABB().setAabbMin(primitive.getLocalCullingAABB().getAabbMin().sub(modelCenterOffset));
+                        primitive.getLocalCullingAABB().setAabbMax(primitive.getLocalCullingAABB().getAabbMax().sub(modelCenterOffset));
+                    }
                     List<Float> positions = primitive.getPOSITION().objects();
                     for (int i = 0; i < positions.size(); i += 3) {
                         positions.set(i, positions.get(i) - modelCenterOffset.x);

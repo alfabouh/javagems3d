@@ -16,6 +16,8 @@ import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -23,6 +25,7 @@ import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Matrix4f;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class DefaultDirectRenderFabric extends DirectRenderFabric {
@@ -60,10 +63,18 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
     }
 
     public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer, float alpha) {
-        for (MeshNode3D<RenderMesh> meshNode3D : model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
+        MeshGroup meshGroup = model3D.getMeshStructureCast();
+        for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), model3D.getPose(), openGLRenderer, meshGroup)) {
             JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), alpha);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }
+    }
+
+    public static List<MeshNode3D<RenderMesh>> getNodes(List<MeshNode3D<RenderMesh>> orig, Pose3D pose3D, OpenGLRenderer openGLRenderer, MeshGroup meshGroup) {
+        if (meshGroup.isHasSubMeshAABs()) {
+            return openGLRenderer.getSceneCulling().cullSubMeshes(pose3D, orig);
+        }
+        return orig;
     }
 
     @Override

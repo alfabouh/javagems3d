@@ -22,10 +22,10 @@ public class WBenchGameEditorModelAssetsInitializer implements IAssetsInitialize
     }
 
     private void createDefaults(SystemResources systemResources) {
-        this.markerDefault = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker/marker.gltf"), ISource.Source.INSIDE_JAR), true);
-        this.markerCursor = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cursor/marker.gltf"), ISource.Source.INSIDE_JAR), true);
-        this.markerAabb = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_aabb/marker.gltf"), ISource.Source.INSIDE_JAR), true);
-        this.markerCube = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cube/marker.gltf"), ISource.Source.INSIDE_JAR), true);
+        this.markerDefault = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
+        this.markerCursor = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cursor/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
+        this.markerAabb = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_aabb/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
+        this.markerCube = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cube/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
     }
 
     @Override

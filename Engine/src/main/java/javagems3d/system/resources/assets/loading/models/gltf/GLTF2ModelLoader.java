@@ -58,14 +58,14 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         this.systemResources = systemResources;
     }
 
-    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean attachMeshBuffer, boolean keepTrianglesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile());
+    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean attachMeshBuffer, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile(), buildSubMeshesAABBs);
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
-        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, attachMeshBuffer, keepTrianglesInMemory);
+        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, attachMeshBuffer, keepTrianglesInMemory).setHasSubMeshAABs((gltf2Scene.animations() == null || gltf2Scene.animations().isEmpty()) && buildSubMeshesAABBs);
     }
 
     public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepTrianglesInMemory) {
-        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile());
+        GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile(), false);
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
         return this.createMeshBuffer(gltf2Scene, meshCollisionDataFabric, keepTrianglesInMemory);
     }
@@ -86,14 +86,14 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
             meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), attachMeshBuffer, keepTrianglesInMemory);
+            JGemsHelper.JGemsResources.createMeshAABBData(meshGroup);
+            if (DynamicsSystem.VALID) {
+                JGemsHelper.JGemsResources.createMeshCollisionData(meshGroup, fabric);
+            }
             this.getResourceCache().registerInCache(grString, meshGroup);
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while processing the model");
-        }
-        JGemsHelper.JGemsResources.createMeshAABBData(meshGroup);
-        if (DynamicsSystem.VALID) {
-            JGemsHelper.JGemsResources.createMeshCollisionData(meshGroup, fabric);
         }
         meshGroup.clearNodesData(keepTrianglesInMemory);
         if (meshGroup.isAnimatedStructure()) {
@@ -110,14 +110,14 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
             meshBuffer = this.processMeshBuffer(gltf2Scene, this.getSystemResources(), keepTrianglesInMemory);
+            JGemsHelper.JGemsResources.createMeshAABBData(meshBuffer);
+            if (DynamicsSystem.VALID) {
+                JGemsHelper.JGemsResources.createMeshCollisionData(meshBuffer, fabric);
+            }
             this.getResourceCache().registerInCache(bffString, meshBuffer);
         }
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while processing the model");
-        }
-        JGemsHelper.JGemsResources.createMeshAABBData(meshBuffer);
-        if (DynamicsSystem.VALID) {
-            JGemsHelper.JGemsResources.createMeshCollisionData(meshBuffer, fabric);
         }
         if (meshBuffer.isAnimatedStructure()) {
             this.systemResources.getResourceArrays().getMeshesWithAnimation().add(meshBuffer);
@@ -346,6 +346,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         }
 
         DataMesh dataMesh = new DataMesh();
+        dataMesh.setLocalAABB(gltf2Primitive.getLocalCullingAABB());
         dataMesh.setSkeletonData(skeletonData);
 
         dataMesh.putVertexIndexes(vertices);
@@ -381,6 +382,7 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         }
 
         RenderMesh renderMesh = new RenderMesh();
+        renderMesh.setLocalAABB(gltf2Primitive.getLocalCullingAABB());
         renderMesh.setSkeletonData(skeletonData);
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);

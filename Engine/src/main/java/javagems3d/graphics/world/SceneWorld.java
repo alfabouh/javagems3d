@@ -134,7 +134,9 @@ public final class SceneWorld implements IRenderWorld {
             if (sceneObject.isDead()) {
                 EventBus.SceneObjectDestroyEvent destroyEvent = new EventBus.SceneObjectDestroyEvent(this, sceneObject);
                 EventLauncher.pushEvent(destroyEvent, new Pair<>(new JSSceneObjectDestroyEvent(new JSSceneWorld(this), () -> sceneObject), JavaToJsAPI.Target.Game));
-                if (destroyEvent.isCancelled()) { continue; }
+                if (destroyEvent.isCancelled()) {
+                    continue;
+                }
                 if (sceneObject instanceof SceneEntity e) {
                     this.getObjectMap().remove(e.getWorldItem().getItemId());
                 }
@@ -146,7 +148,7 @@ public final class SceneWorld implements IRenderWorld {
             EventLauncher.pushEvent(new EventBus.SceneObjectUpdateEvent(this, sceneObject), new Pair<>(new JSSceneObjectUpdateEvent(new JSSceneWorld(this), () -> sceneObject), JavaToJsAPI.Target.Game));
             sceneObject.updateAnimation();
             if (sceneObject instanceof IWorldTicked worldTicked) {
-                worldTicked.onUpdateWithEvent(this);
+                worldTicked.onUpdate(this);
             }
             if (sceneObject instanceof SceneEntity e) {
                 if (refresh) {

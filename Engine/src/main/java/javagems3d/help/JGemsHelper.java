@@ -25,6 +25,8 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
@@ -58,6 +60,7 @@ import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
@@ -472,6 +475,36 @@ public final class JGemsHelper {
         public static final int NORMALS_CODE = 1 << 3;
         public static final int EMISSION_CODE = 1 << 4;
         public static final int METALLIC_ROUGHNESS_CODE = 1 << 5;
+
+        public void renderModelAABBDebug(DebugLinesDrawer debugLinesDrawer, Model3D model3D) {
+            this.renderModelAABBDebug(debugLinesDrawer, model3D.getMeshStructure(), model3D.getPose());
+        }
+
+        public void renderModelAABBDebug(DebugLinesDrawer debugLinesDrawer, MeshStructure3D<?> meshStructure3D, Pose3D pose3D) {
+            if (meshStructure3D == null) {
+                return;
+            }
+            final CullingAABB globalAABB = meshStructure3D.getMeshAABBData().getNormalizedAABB(pose3D);
+            if (globalAABB != null) {
+                debugLinesDrawer.addRequest(DebugLinesDrawer.BoxRequest(globalAABB.getAabbMin(), globalAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            }
+            this.getLocalAABBs(debugLinesDrawer, meshStructure3D, pose3D).forEach(localAABB -> {
+                if (localAABB != null) {
+                    localAABB = MeshBoundingBoxData.transformAABB(localAABB, pose3D);
+                    debugLinesDrawer.addRequest(DebugLinesDrawer.BoxRequest(localAABB.getAabbMin(), localAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
+            });
+        }
+
+        private List<CullingAABB> getLocalAABBs(DebugLinesDrawer debugLinesDrawer, MeshStructure3D<?> meshStructure3D, Pose3D pose3D) {
+            List<CullingAABB> aabbs = new ArrayList<>();
+            for (MeshNode3D<?> meshNode : meshStructure3D.getAllNodes()) {
+                if (meshNode.getMeshData().getLocalAABB() != null) {
+                    aabbs.add(meshNode.getMeshData().getLocalAABB());
+                }
+            }
+            return aabbs;
+        }
 
         public int getMaxTextureUnits() {
             return GL46.glGetInteger(GL46.GL_MAX_TEXTURE_IMAGE_UNITS);

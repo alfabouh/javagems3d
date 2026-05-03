@@ -1,9 +1,11 @@
 package javagems3d.system.resources.assets.loading.models.gltf.parsing.structure;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class GLTF2Primitive {
+    private CullingAABB localCullingAABB;
     private final GLTF2Accessor<Float> POSITION;
     private final GLTF2Accessor<Float> NORMAL;
     private final GLTF2Accessor<Float> TEXCOORD_0;
@@ -16,6 +18,7 @@ public final class GLTF2Primitive {
     private final GLTF2Accessor<Integer> indices;
 
     public GLTF2Primitive(@NotNull GLTF2Accessor<Float> POSITION, @NotNull GLTF2Accessor<Float> NORMAL, @Nullable GLTF2Accessor<Float> TEXCOORD_0, @NotNull GLTF2Accessor<Float> TANGENT, @NotNull GLTF2Accessor<Float> BiTANGENT, @Nullable GLTF2Accessor<Integer> JOINTS_0, @Nullable GLTF2Accessor<Float> WEIGHTS_0, int materialId, @NotNull GLTF2Accessor<Integer> indices) {
+        this.localCullingAABB = null;
         this.POSITION = POSITION;
         this.NORMAL = NORMAL;
         this.TEXCOORD_0 = TEXCOORD_0;
@@ -25,6 +28,15 @@ public final class GLTF2Primitive {
         this.WEIGHTS_0 = WEIGHTS_0;
         this.materialId = materialId;
         this.indices = indices;
+    }
+
+    public GLTF2Primitive setLocalCullingAABB(CullingAABB localCullingAABB) {
+        this.localCullingAABB = localCullingAABB;
+        return this;
+    }
+
+    public CullingAABB getLocalCullingAABB() {
+        return this.localCullingAABB;
     }
 
     public GLTF2Accessor<Float> getPOSITION() {

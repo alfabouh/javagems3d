@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +39,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
             }
             int id = i++;
             idMap.put(sceneObject, id);
-            JGemsHelper.Files.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
+            JGemsHelper.Files.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<>() {{
                 add(sceneObject);
             }}, (ex, nw) ->
             {
@@ -55,45 +56,45 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
 
             if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
                 int firstIdxSolid = 0;
-                Set<Map.Entry<Integer, List<MeshBuffer.PassData>>> entries = entry.getKey().getMeshPassDataMap().entrySet();
-                for (Map.Entry<Integer, List<MeshBuffer.PassData>> entry1 : entries) {
+                for (Map.Entry<Integer, List<MeshBuffer.PassData>> entry1 : entry.getKey().getMeshPassDataMap().entrySet()) {
                     firstIdxSolid = 0;
                     for (MeshBuffer.PassData data : entry1.getValue()) {
-                        commandsBuffer.putInt(data.numVertexIndexes());
-                        commandsBuffer.putInt(entitiesCount);
-                        commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdxSolid);
-                        commandsBuffer.putInt(data.getOffset());
-                        commandsBuffer.putInt(baseInstance);
-
-                        firstIdxSolid += data.numVertexIndexes();
-                        for (SceneObject modeled : entry.getValue()) {
-                            if (materialIds != null) {
-                                materialIds.put(data.getMaterialId());
+                       // if (data.getLocalAABB() == null || data.getLocalAABB().getAabbMin().y > -15) {
+                            commandsBuffer.putInt(data.numVertexIndexes());
+                            commandsBuffer.putInt(entitiesCount);
+                            commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdxSolid);
+                            commandsBuffer.putInt(data.getOffset());
+                            commandsBuffer.putInt(baseInstance);
+                            baseInstance += entitiesCount;
+                            for (SceneObject modeled : entry.getValue()) {
+                                if (materialIds != null) {
+                                    materialIds.put(data.getMaterialId());
+                                }
+                                indexes.put(idMap.get(modeled));
                             }
-                            indexes.put(idMap.get(modeled));
-                        }
-                        baseInstance += entitiesCount;
+                       // }
+                        firstIdxSolid += data.numVertexIndexes();
                     }
                 }
             } else {
                 final List<MeshBuffer.PassData> passData = this.chooseCollection(mode, entry.getKey());
                 int firstIdx = 0;
                 for (MeshBuffer.PassData data : passData) {
-                    commandsBuffer.putInt(data.numVertexIndexes());
-                    commandsBuffer.putInt(entitiesCount);
-                    commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdx);
-                    commandsBuffer.putInt(data.getOffset());
-                    commandsBuffer.putInt(baseInstance);
-
-                    firstIdx += data.numVertexIndexes();
-                    baseInstance += entitiesCount;
-
-                    for (SceneObject modeled : entry.getValue()) {
-                        if (materialIds != null) {
-                            materialIds.put(data.getMaterialId());
+                    //if (firstIdx <= -100) {
+                        commandsBuffer.putInt(data.numVertexIndexes());
+                        commandsBuffer.putInt(entitiesCount);
+                        commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdx);
+                        commandsBuffer.putInt(data.getOffset());
+                        commandsBuffer.putInt(baseInstance);
+                        baseInstance += entitiesCount;
+                        for (SceneObject modeled : entry.getValue()) {
+                            if (materialIds != null) {
+                                materialIds.put(data.getMaterialId());
+                            }
+                            indexes.put(idMap.get(modeled));
                         }
-                        indexes.put(idMap.get(modeled));
-                    }
+                    //}
+                    firstIdx += data.numVertexIndexes();
                 }
             }
         }

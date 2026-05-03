@@ -27,7 +27,7 @@ public final class WorldObjectsContainer {
             if (worldTicked instanceof WorldItem worldItem1) {
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
-            worldTicked.onUpdateWithEvent(world);
+            worldTicked.onUpdate(world);
         }
     }
 

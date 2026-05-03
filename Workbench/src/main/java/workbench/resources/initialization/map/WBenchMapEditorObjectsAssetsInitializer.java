@@ -77,7 +77,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp, @Nullable Consumer<TagsContainer> doSomeTags) {
         final WBenchObjectData wBenchObjectData = apiResourceProp.getFabricWBench().create();
         final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
-        final MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), true);
+        final MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), true, true);
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getDirect(), wBenchObjectData.getRenderProperties());
         final TagsContainer tagsContainer = wBenchObjectData.getTagsContainer();
         if (doSomeTags != null) {
@@ -94,7 +94,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroup(new JGemsPathSource(wBenchMarkerData.getPathToModel(), ISource.Source.OUTSIDE_JAR), true);
+            meshGroup = systemResources.createMeshGroup(new JGemsPathSource(wBenchMarkerData.getPathToModel(), ISource.Source.OUTSIDE_JAR), true, true);
         }
         final TagsContainer tagsContainer = wBenchMarkerData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchMarkerData.getTranslationConstraints();

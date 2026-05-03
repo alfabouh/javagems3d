@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.scene.DefaultDirectRenderFabric;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -52,7 +53,7 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
     }
 
     public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
-        for (MeshNode3D<RenderMesh> meshNode3D : model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer)) {
+        for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), model3D.getPose(), openGLRenderer, model3D.getMeshStructureCast())) {
             JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), 1.0f);
             JGemsHelper.render().performShadowsInfo(openGLRenderer.getWorld().getEnvironment(), shaderManager);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());

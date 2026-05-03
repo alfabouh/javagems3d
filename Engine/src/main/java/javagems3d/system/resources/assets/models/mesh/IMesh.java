@@ -1,8 +1,10 @@
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -24,6 +26,10 @@ public interface IMesh {
         return this.getVertexPositions().size();
     }
 
+    IMesh setLocalAABB(CullingAABB localAABB);
+    @Nullable CullingAABB getLocalAABB();
+
+    IMesh setSkeletonData(SkeletonData skeletonData);
     SkeletonData getSkeletonData();
 
     void clearData(boolean keepTrianglesInMemory);

@@ -16,7 +16,7 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        this.getSimpleTriggerZone().onUpdateWithEvent(iWorld);
+        this.getSimpleTriggerZone().onUpdate(iWorld);
     }
 
     @Override

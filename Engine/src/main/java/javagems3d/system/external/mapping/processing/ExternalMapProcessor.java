@@ -477,7 +477,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             MeshStructure3D<?> meshStructure3D = null;
             PropRenderData propRenderData = null;
             if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
-                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false);
+                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false, true);
                 propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getDirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
             } else {
                 meshStructure3D = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
@@ -499,7 +499,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             MeshStructure3D<?> meshStructure3D = null;
             PropRenderData propRenderData = null;
             if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
-                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false);
+                meshStructure3D = this.getLocalResources().createMeshGroup(propData.pathToModel(), false, true);
                 propRenderData = new PropRenderData(propData.propRenderData(), new RenderAttributes(RenderTable.getDirect(), propData.propRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
             } else {
                 meshStructure3D = this.getLocalResources().createMeshBuffer(propData.pathToModel(), false);
@@ -531,7 +531,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             MeshStructure3D<?> meshStructure3D = null;
             EntityRenderData entityRenderData = null;
             if (tagDirectIndirect == null || tagDirectIndirect.getInfoMap().get("Indirect") == null || !tagDirectIndirect.getInfoMap().get("Indirect").isFlag()) {
-                meshStructure3D = this.getLocalResources().createMeshGroup(entityData.pathToModel(), false);
+                meshStructure3D = this.getLocalResources().createMeshGroup(entityData.pathToModel(), false, true);
                 entityRenderData = new EntityRenderData(entityData.entityRenderData(), new RenderAttributes(RenderTable.getDirect(), entityData.entityRenderData().getObjectRenderAttributes().getProperties()), meshStructure3D);
             } else {
                 meshStructure3D = this.getLocalResources().createMeshBuffer(entityData.pathToModel(), false);

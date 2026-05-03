@@ -160,6 +160,12 @@ public class DearUIGameInterface implements DearUIInterface {
 
         boolean flag = JGemsHelper.camera().getCurrentCamera() instanceof ControlledCamera;
         if (ImGui.collapsingHeader("Tools")) {
+            ImGui.text("Culled Prev Frame (OBJ): " + JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS);
+            ImGui.text("Culled Prev Frame (SBMSH): " + JGemsOpenGLRenderer.DEBUG_CULLED_SUBMESHES);
+            if (ImGui.checkbox("Freeze Frustum", sceneRender.getSceneCulling().isFrozen())) {
+                sceneRender.getSceneCulling().setFreeze(!sceneRender.getSceneCulling().isFrozen());
+            }
+            ImGui.spacing();
             if (ImGui.checkbox("FreeCam", flag)) {
                 if (!flag) {
                     JGemsHelper.camera().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());

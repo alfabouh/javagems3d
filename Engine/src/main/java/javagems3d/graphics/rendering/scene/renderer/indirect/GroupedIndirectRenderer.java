@@ -11,9 +11,7 @@ import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgra
 import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
-import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
