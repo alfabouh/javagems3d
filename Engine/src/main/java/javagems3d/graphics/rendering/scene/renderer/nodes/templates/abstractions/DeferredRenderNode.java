@@ -32,6 +32,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,8 +93,9 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         }
         if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
-            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-            this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+           this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
+           this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+//MODEL MATRIX PROBLEM
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.POST), null);
@@ -264,26 +266,26 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
     }
     /*
     public void MillionCubesTest() {
-        final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+        final Consumer<JGemsShaderManager> uniformsHandler = (mainSceneShaderManager) -> {
             final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
-            shaderManager.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
-                shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
+            mainSceneShaderManager.performUniformNoWarn(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(camera.getCamPosition()));
+            if (cubeMapProgram != null && mainSceneShaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP))) {
+                mainSceneShaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.AMBIENT_CUBEMAP), cubeMapProgram);
             }
-            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
-            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
+            mainSceneShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
+            mainSceneShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
         };
 
         IndirectBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
-        BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
+        DefaultIndirectCommandsProgram baseIndirectCommandProgram1 = new DefaultIndirectCommandsProgram(renderBuffer);
         baseIndirectCommandProgram1.createBuffer();
         //baseIndirectCommandProgram1.buildCommands(null, null, JGemsResourceManager.globalModelAssets.grassCube, 1_000_000);
-        GroupedIndirectRenderer.IRenderingFunction renderingFunction = IndirectRenderFabric.DEFAULT_FUNC;
+        GroupedSceneObjectsIndirectRenderer.IRenderingFunction renderingFunction = IndirectRenderFabric.DEFAULT_FUNC;
         renderingFunction.func(JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect, baseIndirectCommandProgram1, renderBuffer, ArbitraryArguments.pass(uniformsHandler));
         baseIndirectCommandProgram1.destroyBuffer();
     }

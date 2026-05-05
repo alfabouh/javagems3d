@@ -22,6 +22,46 @@ public abstract class IndirectCommandsProgram {
         this.indirectBufferProgram = indirectBufferProgram;
     }
 
+    public void buildCommands(MeshBuffer buffer, int drawCount) {
+        if (buffer == null) {
+            throw new JGemsNullException("MeshBuffer cannot be null for indirect rendering");
+        }
+
+        ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);
+        int baseInstance = 0;
+        for (MeshBuffer.PassData data : buffer.getSolidPassData()) {
+            commandsBuffer.putInt(data.numVertexIndexes());
+            commandsBuffer.putInt(drawCount);
+            commandsBuffer.putInt(data.getFirstIndexOffset());
+            commandsBuffer.putInt(data.getOffset());
+            commandsBuffer.putInt(0);
+            baseInstance++;
+        }
+        this.passCommandsByteBuffer(commandsBuffer);
+    }
+
+    public void buildCommands(@Nullable IntBuffer indexes, MeshBuffer buffer, int drawCount) {
+        if (buffer == null) {
+            throw new JGemsNullException("MeshBuffer cannot be null for indirect rendering");
+        }
+
+        ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);
+        int baseInstance = 0;
+        for (MeshBuffer.PassData data : buffer.getSolidPassData()) {
+            commandsBuffer.putInt(data.numVertexIndexes());
+            commandsBuffer.putInt(drawCount);
+            commandsBuffer.putInt(data.getFirstIndexOffset());
+            commandsBuffer.putInt(data.getOffset());
+            commandsBuffer.putInt(0);
+
+            if (indexes != null) {
+                indexes.put(baseInstance);
+            }
+            baseInstance++;
+        }
+        this.passCommandsByteBuffer(commandsBuffer);
+    }
+
     public void buildCommands(@Nullable IntBuffer indexes, @Nullable IntBuffer materialIds, MeshBuffer buffer, int drawCount) {
         if (buffer == null) {
             throw new JGemsNullException("MeshBuffer cannot be null for indirect rendering");

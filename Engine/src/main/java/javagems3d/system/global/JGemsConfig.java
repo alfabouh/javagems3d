@@ -43,6 +43,9 @@ public abstract class JGemsConfig {
         public static final int DEFAULT_MAX_SHADOW_RES = 2048;
         public static final float HDR_EXPOSURE_DEFAULT = 2.5f;
         public static final float HDR_GAMMA_DEFAULT = 0.3f;
+        public static final float SSAO_RADIUS = 0.25f;
+        public static final float SSAO_BIAS = 0.01f;
+        public static final float SSAO_RANGE = 1.25f;
 
         public static float EVSM_POSITIVE_EXPONENT = 60.0f;
         public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
@@ -50,21 +53,25 @@ public abstract class JGemsConfig {
         public static boolean CAST_SHADOWS_FROM_TRANSPARENT_MESHES = true;
         public static boolean DRAW_BACK_FACES_FOR_SHADOWS = true;
 
-        public static int POINT_LIGHT_STRUCT_SIZE = 11 + (2) + (3);
+        public static int POINT_LIGHT_STRUCT_SIZE = 12;
         public static int POINT_LIGHT_BUFFER_PACK_SIZE = (SYSTEM.POINT_LIGHT_STRUCT_SIZE * SYSTEM.MAX_POINT_LIGHTS);
-        public static int SUN_LIGHT_BUFFER_PACK_SIZE = 16;
+        public static int SUN_LIGHT_BUFFER_PACK_SIZE = 8;
         public static int FOG_BUFFER_PACK_SIZE = 8 + (1);
 
-        public static int INDIRECT_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
-        public static int INDIRECT_RENDERING_PROPERTIES_PACK_SIZE = 1;
-
-        public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 64);
+        public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 24);
 
         public static int INDIRECT_SSBO_SIZE_MUL = 1;
+        public static int INDIRECT_SCENE_OBJ_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
+        public static int INDIRECT_SCENE_OBJ_RENDERING_PROPERTIES_PACK_SIZE = 1;
+        public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
 
-        public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
-        public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
-        public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 4096 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_PARTICLES = 512;
+
+        public static int INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE = 4 + 4 + 4 + 2;
+        public static int MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES = SYSTEM.MAX_PARTICLES * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS = SYSTEM.MAX_PARTICLES * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_BINDLESS_TEXTURES = 2048;
 
 
@@ -73,14 +80,10 @@ public abstract class JGemsConfig {
         public static int ANIM_MAX_WEIGHTS = 4;
 
 
-        public static int MAX_PARTICLES = 512;
         public static float CAM_SENS = 0.0015f;
         public static float CAM_SPEED = 10.0f;
 
         public static int SSAO_NOISE_SIZE = 4;
-        public static float SSAO_RADIUS = 0.25f;
-        public static float SSAO_BIAS = 0.01f;
-        public static float SSAO_RANGE = 1.25f;
         public static boolean USE_HDR = true;
         public static boolean USE_SSAO = true;
         public static boolean USE_BLOOM = true;

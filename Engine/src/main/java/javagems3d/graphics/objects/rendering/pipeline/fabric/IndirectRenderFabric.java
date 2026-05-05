@@ -7,7 +7,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
-import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.IndirectSceneObjectsRenderer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import logger.Log;
@@ -20,12 +20,12 @@ import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
 public abstract class IndirectRenderFabric implements IRenderFabric {
-    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC = new DefaultIndirectFunction();
+    public static final IndirectSceneObjectsRenderer.IRenderingFunction DEFAULT_FUNC = new DefaultIndirectFunction();
 
-    private final IndirectObjectsRenderer.IRenderingFunction renderingFunction;
+    private final IndirectSceneObjectsRenderer.IRenderingFunction renderingFunction;
     private final Stage stage;
 
-    public IndirectRenderFabric(@NotNull Stage stage, @NotNull IndirectObjectsRenderer.IRenderingFunction renderingFunction) {
+    public IndirectRenderFabric(@NotNull Stage stage, @NotNull IndirectSceneObjectsRenderer.IRenderingFunction renderingFunction) {
         this.renderingFunction = renderingFunction;
         if (!stage.getType().equals(Type.INDIRECT)) {
             Log.get().warn("RenderFabric type doesn't belong to INDIRECT");
@@ -46,11 +46,11 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         return this.stage;
     }
 
-    public @NotNull IndirectObjectsRenderer.IRenderingFunction getRenderingFunction() {
+    public @NotNull IndirectSceneObjectsRenderer.IRenderingFunction getRenderingFunction() {
         return this.renderingFunction;
     }
 
-    public static class DefaultIndirectFunction implements IndirectObjectsRenderer.IRenderingFunction {
+    public static class DefaultIndirectFunction implements IndirectSceneObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             Consumer<JGemsShaderManager> functionToHandleUniforms = metaData.getterFunc().getObject(0);

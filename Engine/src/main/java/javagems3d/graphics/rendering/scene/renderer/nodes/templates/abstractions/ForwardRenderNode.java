@@ -20,6 +20,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -67,6 +68,9 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
         if (!EventLauncher.pushEvent(new EventBus.ForwardOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+
+            this.getWorld().getEnvironment().getParticlesScene().passObjectInMainSceneSSBO();
+            this.getWorld().getEnvironment().getParticlesScene().getParticlesIndirectRendererScene().processAndRender(ArbitraryArguments.pass(this.getWorld().getEnvironment().getParticlesScene().getDefaultConsumerForParticlesScene()));
 
             this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
             this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);

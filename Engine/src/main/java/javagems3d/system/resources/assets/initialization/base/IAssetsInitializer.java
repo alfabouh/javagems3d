@@ -1,20 +1,42 @@
 package javagems3d.system.resources.assets.initialization.base;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import org.joml.Vector3f;
 
 public interface IAssetsInitializer {
     void load(SystemResources systemResources);
     LaunchMode loadMode();
     LoadPriority loadPriority();
+
+    float[] ParticleModelPos = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            -0.5f,  0.5f, 0.0f
+    };
+
+    float[] ParticleUV = {
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f
+    };
+
+    int[] ParticleIndices = {
+            0, 1, 2,
+            2, 3, 0
+    };
 
     float[] CubeUV = {
             0f,0f, 1f,0f, 1f,1f, 0f,1f,
@@ -94,6 +116,18 @@ public interface IAssetsInitializer {
             0f, -1f, 0f,
             0f, -1f, 0f
     };
+
+    static MeshBuffer createGlobalParticle_MBuffer() {
+        DataMesh dataMesh = new DataMesh();
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.Math.convertFloatsList(IAssetsInitializer.ParticleModelPos));
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, JGemsHelper.Math.convertFloatsList(IAssetsInitializer.ParticleUV));
+        dataMesh.putVertexIndexes(JGemsHelper.Math.convertIntsList(IAssetsInitializer.ParticleIndices));
+        MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material());
+        MeshBuffer meshBuffer = new MeshBuffer(meshBufferMeshNode3D);
+        meshBuffer.setKeepTrianglesInMemory(false);
+        meshBuffer.setMeshAABBData(new MeshBoundingBoxData(new CullingAABB(new Vector3f(-0.5f), new Vector3f(0.5f))));
+        return meshBuffer;
+    }
 
     static MeshBuffer createDefaultCube_MBuffer() {
         DataMesh dataMesh = new DataMesh();

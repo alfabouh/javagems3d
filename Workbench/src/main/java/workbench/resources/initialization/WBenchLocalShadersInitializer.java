@@ -66,8 +66,11 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
+        shaderStaticConstants.createConstant("MAX_PARTICLE_INDIRECT_RENDERING_DATA", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES));
         shaderStaticConstants.createConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES));
-        shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS));
+        shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MATERIALS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS));
+        shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_PROPERIES", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES));
+        shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS));
         shaderStaticConstants.createConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
@@ -80,25 +83,28 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/shadows"), ISource.Source.INSIDE_JAR));
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/animations"), ISource.Source.INSIDE_JAR));
-        shaderLibrary.createLibrary(new JGemsPathSource(new JGemsPath("/assets/shaders/libs/lighting"), ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows_simple", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/animations", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/fog", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting_simple", ISource.Source.INSIDE_JAR));
     }
 
     protected void initObjects(ResourceCache resourceCache) {
         this.TimerData = new ShaderStorageBufferObject(0, Float.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.TimerData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.MainSceneIndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.MainSceneIndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBOStorage(this.MainSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.BindlessTexturesData = new ShaderStorageBufferObject(2, Long.BYTES * JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES);
         ShaderStorageBufferProgram.createSSBOStorage(this.BindlessTexturesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.MaterialsData = new ShaderStorageBufferObject(3, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        this.MaterialsData = new ShaderStorageBufferObject(3, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_SCENE_OBJ_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS);
         ShaderStorageBufferProgram.createSSBOStorage(this.MaterialsData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.MainScenePropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_PROPERTIES);
+        this.MainScenePropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_SCENE_OBJ_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES);
         ShaderStorageBufferProgram.createSSBOStorage(this.MainScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.SunLightData = new ShaderStorageBufferObject(5, Float.BYTES * JGemsConfig.SYSTEM.SUN_LIGHT_BUFFER_PACK_SIZE);

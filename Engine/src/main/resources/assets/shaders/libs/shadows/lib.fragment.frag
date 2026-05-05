@@ -132,9 +132,9 @@ float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
-float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
+float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 worldPosition, vec3 lightPos)
 {
-    vec3 fragToLight = fragPosition - lightPos;
+    vec3 fragToLight = worldPosition - lightPos;
     float currentDepth = length(fragToLight);
     currentDepth /= far_plane;
 

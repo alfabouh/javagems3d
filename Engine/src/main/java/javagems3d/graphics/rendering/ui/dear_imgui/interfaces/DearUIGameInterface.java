@@ -143,13 +143,13 @@ public class DearUIGameInterface implements DearUIInterface {
             if (ImGui.treeNode("SSAO Settings")) {
                 float[] radius = new float[]{JGemsConfig.SYSTEM.SSAO_RADIUS};
                 ImGui.sliderFloat("radius", radius, 0.0f, 5.0f);
-                JGemsConfig.SYSTEM.SSAO_RADIUS = radius[0];
+                //JGemsConfig.SYSTEM.SSAO_RADIUS = radius[0];
                 float[] bias = new float[]{JGemsConfig.SYSTEM.SSAO_BIAS};
                 ImGui.sliderFloat("bias", bias, 0.0f, 0.1f);
-                JGemsConfig.SYSTEM.SSAO_BIAS = bias[0];
+                //JGemsConfig.SYSTEM.SSAO_BIAS = bias[0];
                 float[] range = new float[]{JGemsConfig.SYSTEM.SSAO_RANGE};
                 ImGui.sliderFloat("range", range, 1.0f, 10.0f);
-                JGemsConfig.SYSTEM.SSAO_RANGE = range[0];
+                //JGemsConfig.SYSTEM.SSAO_RANGE = range[0];
                 ImGui.treePop();
             }
 

@@ -34,6 +34,12 @@ public final class ResourcesDataCache {
             defCube.addMaterial(new Material());
             meshBuffersDataArraySet.add(defCube);
         }
+        {
+            final MeshBuffersDataArray defParticle = new MeshBuffersDataArray();
+            defParticle.addMeshBuffer(ResourceManager.GLOBAL_PARTICLE_MESHBUFFER());
+            defParticle.addMaterial(new Material());
+            meshBuffersDataArraySet.add(defParticle);
+        }
         this.clearAll();
         this.getBindlessTexturesCache().writeData(bindlessTexturesDataArraySet);
         this.getMeshBuffersDataCache().writeData(meshBuffersDataArraySet);

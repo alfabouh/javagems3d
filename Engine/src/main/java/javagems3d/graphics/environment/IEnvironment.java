@@ -3,6 +3,7 @@ package javagems3d.graphics.environment;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
+import javagems3d.graphics.environment.particles.scene.IParticlesScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -36,6 +37,7 @@ public interface IEnvironment {
         this.getFogScene().setFogDensity(0.0f);
     }
 
+    IParticlesScene getParticlesScene();
     IWorld getWorld();
     IShadowScene getShadowScene();
     ILightScene getLightScene();

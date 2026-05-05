@@ -81,22 +81,22 @@ public class JSRenderHelperClass implements JSGlobalVarFactory<JSRenderHelperCla
         return JGemsHelper.render().getTexturingCodeForShader(material.getJavaMaterial());
     }
 
-    @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "shaderManager", "material", "discardAlphaLevel"})
+    @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "mainSceneShaderManager", "material", "discardAlphaLevel"})
     public void performDefaultModelMaterialOnShader(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager, @NotNull JSMaterial material, float discardAlphaLevel) {
         JGemsHelper.render().performDefaultModelMaterialOnShader(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager(), material.getJavaMaterial(), discardAlphaLevel);
     }
 
-    @JSCodingFunctionOrMethod(description = "Prepares empty animations info for shader.", paramNames = {"shaderManager"})
+    @JSCodingFunctionOrMethod(description = "Prepares empty animations info for shader.", paramNames = {"mainSceneShaderManager"})
     public void performEmptyAnimationsInfo(@NotNull JSShader shaderManager) {
         JGemsHelper.render().performEmptyAnimationsInfo(shaderManager.getJavaShaderManager());
     }
 
-    @JSCodingFunctionOrMethod(description = "Prepares animation info for shader using mesh structure.", paramNames = {"shaderManager", "meshStructure3D"})
+    @JSCodingFunctionOrMethod(description = "Prepares animation info for shader using mesh structure.", paramNames = {"mainSceneShaderManager", "meshStructure3D"})
     public void performAnimationsInfo(@NotNull JSShader shaderManager, @NotNull JSMeshStructure3D meshStructure3D) {
         JGemsHelper.render().performAnimationsInfo(shaderManager.getJavaShaderManager(), (IAnimated) meshStructure3D.getJavaMeshStructure3D());
     }
 
-    @JSCodingFunctionOrMethod(description = "Performs shadows info on shader.", paramNames = {"environment", "shaderManager"})
+    @JSCodingFunctionOrMethod(description = "Performs shadows info on shader.", paramNames = {"environment", "mainSceneShaderManager"})
     public void performShadowsInfo(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager) {
         JGemsHelper.render().performShadowsInfo(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager());
     }

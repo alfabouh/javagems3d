@@ -3,12 +3,11 @@ package javagems3d.graphics.rendering.scene.renderer.processors.geometry;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.GroupedSceneObjectsIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,12 +17,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
-    private final GroupedIndirectRenderer indirectMeshObjects;
+    private final GroupedSceneObjectsIndirectRenderer indirectMeshObjects;
     private Consumer<JGemsShaderManager> uniformsHandler;
 
     public IndirectGeometryRenderProcessor(@Nullable Consumer<JGemsShaderManager> uniformsHandler, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
-        this.indirectMeshObjects = new GroupedIndirectRenderer(openGLRenderer, indirectSSBO, propertiesSSBO, pipeline, true, true);
+        this.indirectMeshObjects = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, indirectSSBO, propertiesSSBO, pipeline, true, true);
         this.uniformsHandler = uniformsHandler;
     }
 
@@ -61,7 +60,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         return this.uniformsHandler;
     }
 
-    public GroupedIndirectRenderer getIndirectMeshObjects() {
+    public GroupedSceneObjectsIndirectRenderer getIndirectMeshObjects() {
         return this.indirectMeshObjects;
     }
 }

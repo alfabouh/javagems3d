@@ -41,6 +41,7 @@ public abstract class ResourceManager {
     private static ITexture2DProgram DEFAULT_TEXTURE = null;
     private static MeshGroup DEFAULT_CUBE_MESHGROUP = null;
     private static MeshBuffer DEFAULT_CUBE_MESHBUFFER = null;
+    private static MeshBuffer GLOBAL_PARTICLE_MESHBUFFER = null;
 
     public static final String GLOBAL = "Global";
     public static final String LOCAL1 = "Local1";
@@ -71,7 +72,7 @@ public abstract class ResourceManager {
     }
 
     public void loadMeshMaterialsIsSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
-        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfig.SYSTEM.INDIRECT_SCENE_OBJ_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS);
         for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
             final BindlessTexturesDataCache bindlessTexturesDataCache = this.getResourceDataCache().getBindlessTexturesCache();
 
@@ -233,6 +234,10 @@ public abstract class ResourceManager {
             ResourceManager.DEFAULT_CUBE_MESHGROUP.clear();
             ResourceManager.DEFAULT_CUBE_MESHGROUP = null;
         }
+        if (ResourceManager.GLOBAL_PARTICLE_MESHBUFFER != null) {
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER.clear();
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = null;
+        }
     }
 
     public static void initDefaults() {
@@ -252,9 +257,14 @@ public abstract class ResourceManager {
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
             texture2DProgram.createTexture(new Vector2i(grid, grid), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }
-        ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
-        ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
-        ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
+        {
+            ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
+            ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
+            ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
+        }
+        {
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = IAssetsInitializer.createGlobalParticle_MBuffer();
+        }
     }
 
     public static void CREATE_PHYS_FOR_DEFAULT_MODELS() {
@@ -274,6 +284,10 @@ public abstract class ResourceManager {
 
     public static @NotNull MeshBuffer DEFAULT_CUBE_MESHBUFFER() {
         return ResourceManager.DEFAULT_CUBE_MESHBUFFER;
+    }
+
+    public static @NotNull MeshBuffer GLOBAL_PARTICLE_MESHBUFFER() {
+        return ResourceManager.GLOBAL_PARTICLE_MESHBUFFER;
     }
 
     public interface Factory {

@@ -122,16 +122,6 @@ public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaul
     @JSCodingField(description = "GUI base texture")
     public JSTexture2D gui1;
 
-    @JSCodingField(description = "Zippo texture 1")
-    public JSTexture2D zippo1;
-
-    @JSCodingField(description = "Zippo texture 1_1")
-    public JSTexture2D zippo1_1;
-
-    @JSCodingField(description = "Zippo texture 2")
-    public JSTexture2D zippo2;
-
-
     // --- SOUNDS ---
     @JSCodingField(description = "Zippo open sound")
     public JSOggSound zippo_o;
@@ -196,9 +186,6 @@ public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaul
 
         JSDefaultGameResources.jsDefaultGameResources.crosshair = new JSTexture2D(JGemsResourceManager.globalTextureAssets.crosshair);
         JSDefaultGameResources.jsDefaultGameResources.gui1 = new JSTexture2D(JGemsResourceManager.globalTextureAssets.gui1);
-        JSDefaultGameResources.jsDefaultGameResources.zippo1 = new JSTexture2D(JGemsResourceManager.globalTextureAssets.zippo1);
-        JSDefaultGameResources.jsDefaultGameResources.zippo1_1 = new JSTexture2D(JGemsResourceManager.globalTextureAssets.zippo1_1);
-        JSDefaultGameResources.jsDefaultGameResources.zippo2 = new JSTexture2D(JGemsResourceManager.globalTextureAssets.zippo2);
 
         JSDefaultGameResources.jsDefaultGameResources.zippo_o = new JSOggSound(JGemsResourceManager.globalSoundAssets.zippo_o);
         JSDefaultGameResources.jsDefaultGameResources.zippo_c = new JSOggSound(JGemsResourceManager.globalSoundAssets.zippo_c);

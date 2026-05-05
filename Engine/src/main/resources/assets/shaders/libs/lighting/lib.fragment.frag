@@ -1,9 +1,8 @@
 struct Sun {
     vec3 position;
-    float _padding0; //PAD
+    float brightness;
     vec3 color;
     float ambient;
-    float brightness;
 };
 layout (std430, binding = 5) buffer SunLight {
     Sun sun;
@@ -12,15 +11,11 @@ layout (std430, binding = 5) buffer SunLight {
 struct PointLight
 {
     vec3 position;
-    float _padding0;
-    vec3 view_position;
-    float _padding00;
-    vec3 color;
     float brightness;
+    vec3 view_position;
     int attachedShadowSceneId;
+    vec3 color;
     int _padding000;
-    int _padding0000;
-    int _padding00000;
 };
 layout (std430, binding = 6) buffer PointLights {
     PointLight p_l[CONST.MAX_POINT_LIGHTS];

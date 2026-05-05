@@ -7,14 +7,6 @@ in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
-struct Fog {
-    vec3 color;
-    float density;
-};
-layout (std430, binding = 7) buffer WorldFog {
-    Fog fog;
-};
-
 uniform vec3 camera_pos;
 uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
@@ -30,6 +22,7 @@ uniform mat4 view_matrix;
 
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
+#include "/assets/shaders/libs/fog"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;
@@ -53,20 +46,6 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     lightFactors += point_light_factor;
 
     return lightFactors;
-}
-
-vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    if (fog.density <= 0) {
-        return color;
-    }
-
-    vec3 fog_color = fog.color;
-    float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
-    fogFactor = clamp(fogFactor, 0., 1.);
-
-    vec3 result = mix(fog_color, color.xyz, fogFactor);
-    return vec4(result.xyz, color.w);
 }
 
 vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
@@ -108,7 +87,7 @@ void main()
     vec3 lights = calc_light(frag_pos, normals, metallic_roughness.g, world_position) * vec3(f1);
 
     frag_color = g_texture * vec4(lights + emission, 1.0);
-    frag_color = calc_fog(frag_pos.xyz, frag_color);
+    frag_color = calc_fog(frag_pos.xyz, frag_color, 1.);
 
     float brightness = dot(frag_color.rgb + emission, vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);

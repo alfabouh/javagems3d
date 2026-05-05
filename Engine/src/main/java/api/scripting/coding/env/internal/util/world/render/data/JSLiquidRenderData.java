@@ -14,7 +14,7 @@ public class JSLiquidRenderData {
     @JSHideFromDoc
     private final LiquidRenderData data;
 
-    @JSCodingConstructor(description = "Create a new liquid render data", paramNames = {"material", "shaderManager"})
+    @JSCodingConstructor(description = "Create a new liquid render data", paramNames = {"material", "mainSceneShaderManager"})
     public JSLiquidRenderData(@NotNull JSMaterial material, @NotNull JSShader shaderManager) {
         this.data = new LiquidRenderData(material.getJavaMaterial(), shaderManager.getJavaShaderManager());
     }

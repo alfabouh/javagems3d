@@ -68,10 +68,10 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
                     ui.setUiPanel(new DefaultGamePanel(null));
                 });
 
-        //.setOnClick(() -> {
-               //    JGemsHelper.map().loadMap(new ManualMapProcessor.DefaultPhysTest());
-               //    ui.setUiPanel(new DefaultGamePanel(null));
-               //});
+      //.setOnClick(() -> {
+      //           JGemsHelper.map().loadMap(new ManualMapProcessor.DefaultPhysTest());
+      //           ui.setUiPanel(new DefaultGamePanel(null));
+      //       });
 
         ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {

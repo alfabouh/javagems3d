@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.*;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
-import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.IndirectSceneObjectsRenderer;
 import org.jetbrains.annotations.NotNull;
 
 @JSCodingClass(binding = "JSIndirectRenderFabric", description = "Wrapper for IndirectRenderFabric. Recommended to manage indirect rendering from Java code due to high complexity.")
@@ -29,7 +29,7 @@ public class JSIndirectRenderFabric implements JSRenderFabricI {
     }
 
     @JSCodingFunctionOrMethod(description = "Returns the rendering function associated with this fabric")
-    public IndirectObjectsRenderer.IRenderingFunction getRenderingFunction() {
+    public IndirectSceneObjectsRenderer.IRenderingFunction getRenderingFunction() {
         return this.fabric.getRenderingFunction();
     }
 

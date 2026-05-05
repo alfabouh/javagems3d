@@ -130,11 +130,11 @@ layout(std430, binding = 2) buffer BindlessTextures {
 };
 
 layout(std430, binding = 3) buffer MaterialsData {
-    Material materials[256];
+    Material materials[CONST.MAX_INDIRECT_RENDERING_MATERIALS];
 };
 
 layout(std430, binding = 4) buffer RenderPropertiesData {
-    Properties properties[512];
+    Properties properties[CONST.MAX_INDIRECT_RENDERING_PROPERIES];
 };
 
 void Shadows() {

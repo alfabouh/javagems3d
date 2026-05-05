@@ -15,14 +15,6 @@ layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
 layout (location = 2) out vec4 bright_color;
 
-struct Fog {
-    vec3 color;
-    float density;
-};
-layout (std430, binding = 7) buffer WorldFog {
-    Fog fog;
-};
-
 uniform vec3 camera_pos;
 uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
@@ -49,11 +41,11 @@ layout(std430, binding = 2) buffer BindlessTextures {
 };
 
 layout(std430, binding = 3) buffer MaterialsData {
-    Material materials[256];
+    Material materials[CONST.MAX_INDIRECT_RENDERING_MATERIALS];
 };
 
 layout(std430, binding = 4) buffer RenderPropertiesData {
-    Properties properties[512];
+    Properties properties[CONST.MAX_INDIRECT_RENDERING_PROPERIES];
 };
 
 const int diffuse_code = CONST.DIFFUSE_CODE;
@@ -63,6 +55,7 @@ const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
+#include "/assets/shaders/libs/fog"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;
@@ -86,27 +79,6 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     lightFactors += point_light_factor;
 
     return lightFactors;
-}
-
-float calc_fog_float(vec3 frag_pos, float f) {
-    float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
-    fogFactor = clamp(fogFactor, 0., 1.);
-    return f * fogFactor;
-}
-
-vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    if (fog.density <= 0) {
-        return color;
-    }
-
-    vec3 fog_color = fog.color;
-    float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
-    fogFactor = clamp(fogFactor, 0., 1.);
-
-    vec3 result = mix(fog_color, color.xyz, fogFactor);
-    return vec4(result.xyz, color.w);
 }
 
 vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
@@ -172,7 +144,7 @@ void main()
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
-    frag_color = calc_fog(gPosition, frag_color);
+    frag_color = calc_fog(gPosition, frag_color, 1.);
 
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;

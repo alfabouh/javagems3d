@@ -3,6 +3,7 @@ package workbench.graphics.environment;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.particles.scene.IParticlesScene;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.transformation.JGemsTransformManager;
@@ -43,6 +44,11 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightScene().clearPointLightsBuffer(stack);
         }
+    }
+
+    @Override
+    public IParticlesScene getParticlesScene() {
+        return null;
     }
 
     @Override

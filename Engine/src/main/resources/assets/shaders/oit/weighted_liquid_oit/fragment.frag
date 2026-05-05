@@ -17,15 +17,6 @@ layout (std430, binding = 0) buffer Timer {
     float w_tick;
 };
 
-struct Fog {
-    vec3 color;
-    float density;
-};
-
-layout (std430, binding = 7) buffer WorldFog {
-    Fog fog;
-};
-
 uniform vec3 camera_pos;
 uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
@@ -49,6 +40,7 @@ uniform vec2 texture_scaling;
 
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
+#include "/assets/shaders/libs/fog"
 
 vec2 getScaledTexture() {
     const float speed = 5.;
@@ -80,27 +72,6 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     lightFactors += point_light_factor;
 
     return lightFactors;
-}
-
-float calc_fog_float(vec3 frag_pos, float f) {
-    float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
-    fogFactor = clamp(fogFactor, 0., 1.);
-    return f * fogFactor;
-}
-
-vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    if (fog.density <= 0) {
-        return color;
-    }
-
-    vec3 fog_color = fog.color;
-    float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
-    fogFactor = clamp(fogFactor, 0., 1.);
-
-    vec3 result = mix(fog_color, color.xyz, fogFactor);
-    return vec4(result.xyz, color.w);
 }
 
 vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
@@ -159,7 +130,7 @@ void main()
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
-    frag_color = calc_fog(gPosition, frag_color);
+    frag_color = calc_fog(gPosition, frag_color, 1.);
     frag_color.a *= opacity;
     
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);

@@ -16,7 +16,7 @@ public class JSShader {
     @JSCodingField(description = "Real java object")
     private final JGemsShaderManager shaderManager;
 
-    @JSCodingConstructor(description = "Wrap existing shader manager", paramNames = {"shaderManager"})
+    @JSCodingConstructor(description = "Wrap existing shader manager", paramNames = {"mainSceneShaderManager"})
     public JSShader(JGemsShaderManager shaderManager) {
         this.shaderManager = shaderManager;
     }

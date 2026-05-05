@@ -9,7 +9,6 @@ import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
-import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.files.JGemsPath;
@@ -19,12 +18,12 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import java.awt.*;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
-    public static JGemsPathSource defaultSkyCubeUPPath =    new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_1.png"), ISource.Source.INSIDE_JAR);
-    public static JGemsPathSource defaultSkyCubeDOWNPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_2.png"), ISource.Source.INSIDE_JAR);
-    public static JGemsPathSource defaultSkyCubeFRONTPath = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_3.png"), ISource.Source.INSIDE_JAR);
-    public static JGemsPathSource defaultSkyCubeBACKPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_4.png"), ISource.Source.INSIDE_JAR);
-    public static JGemsPathSource defaultSkyCubeLEFTPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_5.png"), ISource.Source.INSIDE_JAR);
-    public static JGemsPathSource defaultSkyCubeRIGHTPath = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default/sky_6.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeUPPath =    new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_1.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeDOWNPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_2.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeFRONTPath = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_3.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeBACKPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_4.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeLEFTPath =  new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_5.png"), ISource.Source.INSIDE_JAR);
+    public static JGemsPathSource defaultSkyCubeRIGHTPath = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay/sky_6.png"), ISource.Source.INSIDE_JAR);
     public static final ICubeMapProgram.CMTextures DEF_CUBE_MAP_TEXTURES = new ICubeMapProgram.CMTextures(
             TextureAssetsInitializer.defaultSkyCubeUPPath,
             TextureAssetsInitializer.defaultSkyCubeDOWNPath,
@@ -36,7 +35,6 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
 
     public ITexture2DProgram waterTexture;
     public ITexture2DProgram waterNormals;
-    public ParticleTexturesPack particleTexturesPack;
     public ICubeMapProgram defaultSkyboxCubeMap;
     //public ICubeMapProgram skyboxCubeMap;
     //public ICubeMapProgram skyboxCubeMap2;
@@ -46,9 +44,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
     public ITexture2DProgram crosshair;
     public ITexture2DProgram gui1;
 
-    public ITexture2DProgram zippo1;
-    public ITexture2DProgram zippo1_1;
-    public ITexture2DProgram zippo2;
+    public ImageTexture defaultParticle;
 
     public void load(SystemResources systemResources) {
         Font gameFont = SystemResources.createFontFromFile(new JGemsPathSource(new JGemsPath("/assets/gamefont.ttf"), ISource.Source.INSIDE_JAR));
@@ -62,11 +58,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         this.crosshair = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "gui/crosshair.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
         this.gui1 = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "gui/gui1.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
 
-        this.zippo1 = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "items/zippo/zippo1.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
-        this.zippo1_1 = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "items/zippo/zippo1_1.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
-        this.zippo2 = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "items/zippo/zippo2.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
-
-        this.particleTexturesPack = new ParticleTexturesPack(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.PARTICLES, "flame"), ISource.Source.INSIDE_JAR), ".png", 4, 0.25f);
+        this.defaultParticle = (ImageTexture) systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "particles/Smoke45Frames.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
 
         this.defaultSkyboxCubeMap = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES), new CubeMapTexture.Properties(true));
         //this.skyboxCubeMap = systemResources.createCubeMapTexture(JGemsStringSource.GetSource.JAR, null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"), "png", new CubeMapTexture.JSTexture2DProperties(true));

@@ -91,12 +91,11 @@ public abstract class LightScene implements ILightScene {
         buffer.put(angle.x);
         buffer.put(angle.y);
         buffer.put(angle.z);
-        buffer.put(0f); //_padding0
+        buffer.put((JGemsConfig.DEBUG.FULL_BRIGHT || JGemsConfig.DEBUG.WIREFRAME_RENDERING) ? 1.0f : this.getEnvironment().getSkyBox().getSun().getSunBrightness());
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().x);
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().y);
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().z);
         buffer.put((JGemsConfig.DEBUG.FULL_BRIGHT || JGemsConfig.DEBUG.WIREFRAME_RENDERING) ? 1.0f : this.calcAmbientLight());
-        buffer.put((JGemsConfig.DEBUG.FULL_BRIGHT || JGemsConfig.DEBUG.WIREFRAME_RENDERING) ? 1.0f : this.getEnvironment().getSkyBox().getSun().getSunBrightness());
         buffer.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(sunBuffer, 0L, buffer);
     }
@@ -117,22 +116,18 @@ public abstract class LightScene implements ILightScene {
             buffer.putFloat(pointLight.getLightPosition().x);
             buffer.putFloat(pointLight.getLightPosition().y);
             buffer.putFloat(pointLight.getLightPosition().z);
-            buffer.putFloat(0.0f); //_padding0
+            buffer.putFloat(pointLight.getBrightness());
 
             buffer.putFloat(lightViewPos.x);
             buffer.putFloat(lightViewPos.y);
             buffer.putFloat(lightViewPos.z);
-            buffer.putFloat(0.0f); //_padding00;
+            buffer.putInt(pointLightIdsHashMap.getOrDefault(pointLight, -1));
 
             buffer.putFloat(pointLight.getLightColor().x);
             buffer.putFloat(pointLight.getLightColor().y);
             buffer.putFloat(pointLight.getLightColor().z);
-            buffer.putFloat(pointLight.getBrightness());
 
-            buffer.putInt(pointLightIdsHashMap.getOrDefault(pointLight, -1));
             buffer.putInt(0); //_padding000;
-            buffer.putInt(0); //_padding0000;
-            buffer.putInt(0); //_padding0000;
         }
         buffer.flip();
 

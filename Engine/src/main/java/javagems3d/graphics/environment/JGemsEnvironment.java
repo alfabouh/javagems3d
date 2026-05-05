@@ -14,6 +14,8 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
+import javagems3d.graphics.environment.particles.ParticlesManager;
+import javagems3d.graphics.environment.particles.scene.JGemsParticlesScene;
 import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.JGemsSkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
@@ -35,6 +37,7 @@ public class JGemsEnvironment implements IEnvironment {
     private final JGemsLightScene lightManager;
     private final JGemsSkyBox skyBox;
     private final JGemsFogScene fogManager;
+    private final JGemsParticlesScene particlesScene;
     private final IWorld world;
 
     public JGemsEnvironment(IWorld world) {
@@ -42,6 +45,7 @@ public class JGemsEnvironment implements IEnvironment {
         this.fogManager = new JGemsFogScene();
         this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData,this);
         this.shadowScene = new JGemsShadowScene(this);
+        this.particlesScene = new JGemsParticlesScene(this, new ParticlesManager());
         this.world = world;
     }
 
@@ -56,11 +60,13 @@ public class JGemsEnvironment implements IEnvironment {
     public void createEnvironment(OpenGLRenderer openGLRenderer) {
         EventLauncher.pushEvent(new EventBus.CreateRenderEnvironmentEvent(this, (JGemsOpenGLRenderer) openGLRenderer), new Pair<>(new JSCreateRenderEnvironmentEvent(new JSEnvironment(this), new JSOpenGLRenderer(openGLRenderer)), JavaToJsAPI.Target.Game));
         this.getShadowScene().createResources(openGLRenderer);
+        this.getParticlesScene().createResources(openGLRenderer);
     }
 
     public void destroyEnvironment() {
         EventLauncher.pushEvent(new EventBus.DestroyRenderEnvironmentEvent(this), new Pair<>(new JSDestroyRenderEnvironmentEvent(new JSEnvironment(this)), JavaToJsAPI.Target.Game));
         this.getShadowScene().destroyResources();
+        this.getParticlesScene().destroyResources();
     }
 
     public void clearPointLightsBuffer() {
@@ -81,6 +87,7 @@ public class JGemsEnvironment implements IEnvironment {
             this.updateLightsUBO(this.getWorld(), lightIdxHashMap, stack);
             this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
         }
+        this.getParticlesScene().update(this.getWorld());
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.POST), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 
@@ -91,6 +98,11 @@ public class JGemsEnvironment implements IEnvironment {
     @Override
     public SceneWorld getWorld() {
         return (SceneWorld) this.world;
+    }
+
+    @Override
+    public JGemsParticlesScene getParticlesScene() {
+        return this.particlesScene;
     }
 
     public JGemsShadowScene getShadowScene() {

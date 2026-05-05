@@ -29,7 +29,6 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
@@ -48,7 +47,6 @@ public final class SceneWorld implements IRenderWorld {
     private ICamera camera;
     private final IEnvironment environment;
 
-    private final ParticlesEmitter particlesEmitter;
     private final Set<Pair<WorldItem, ILightAttachable>> lightAttachmentQueue;
     private final Map<Integer, SceneEntity> objectMap;
 
@@ -59,15 +57,11 @@ public final class SceneWorld implements IRenderWorld {
 
     public SceneWorld() {
         this.camera = null;
-
         this.lightAttachmentQueue = SyncManager.createSyncronisedSet();
         this.objectMap = SyncManager.createSyncronisedMap();
         this.liquids = SyncManager.createSyncronisedSet();
         this.toRenderSet = SyncManager.createSyncronisedSet();
-
         this.environment = new JGemsEnvironment(this);
-
-        this.particlesEmitter = new ParticlesEmitter();
     }
 
     //section WorldStart
@@ -76,10 +70,7 @@ public final class SceneWorld implements IRenderWorld {
         EventLauncher.pushEvent(new EventBus.SceneWorldLifecycleEvent(this, EventBus.State.START), new Pair<>(new JSSceneWorldLifecycleEvent(new JSSceneWorld(this), JSEventState.START), JavaToJsAPI.Target.Game));
         JGemsConfig.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
-
-        this.getParticlesEmitter().create(this);
         this.getEnvironment().getSkyBox().createSkyBox(this);
-
         this.ticks = 0;
     }
 
@@ -107,15 +98,9 @@ public final class SceneWorld implements IRenderWorld {
     @Override
     public void onWorldEnd() {
         EventLauncher.pushEvent(new EventBus.SceneWorldLifecycleEvent(this, EventBus.State.END), new Pair<>(new JSSceneWorldLifecycleEvent(new JSSceneWorld(this), JSEventState.END), JavaToJsAPI.Target.Game));
-
-        if (this.getParticlesEmitter() != null) {
-            this.getParticlesEmitter().destroy(this);
-        }
-
         this.getEnvironment().destroyEnvironment();
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
-
         this.clearAll();
     }
 
@@ -125,9 +110,6 @@ public final class SceneWorld implements IRenderWorld {
         if (pre.isCancelled()) {
             return;
         }
-
-        this.getParticlesEmitter().onUpdateParticles(frameTicking.frameDeltaTime(), this);
-
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
@@ -333,10 +315,6 @@ public final class SceneWorld implements IRenderWorld {
 
     public ICamera getCamera() {
         return this.camera;
-    }
-
-    public ParticlesEmitter getParticlesEmitter() {
-        return this.particlesEmitter;
     }
 
     public SceneObject getSceneObject(WorldItem worldItem) {

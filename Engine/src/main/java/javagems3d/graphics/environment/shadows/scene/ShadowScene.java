@@ -3,6 +3,7 @@ package javagems3d.graphics.environment.shadows.scene;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.GroupedSceneObjectsIndirectRenderer;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -12,7 +13,6 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 
 public abstract class ShadowScene implements IShadowScene {
     private OpenGLRenderer openGLRenderer;
-    private GroupedIndirectRenderer pointLightIndirectRendered;
-    private GroupedIndirectRenderer sunlightIndirectRendered;
+    private GroupedSceneObjectsIndirectRenderer pointLightIndirectRendered;
+    private GroupedSceneObjectsIndirectRenderer sunlightIndirectRendered;
     private final IEnvironment environment;
     private List<PointLightShadow> pointLightShadows;
     private SunLightShadow sunLightShadow;
@@ -55,8 +55,8 @@ public abstract class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getSunShadowResolution()));
 
         this.openGLRenderer = openGLRenderer;
-        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getPointLightIndirectSSBO(), this.getPointLightPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, true, true);
-        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getSunIndirectSSBO(), this.getSunPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, true, true);
+        this.pointLightIndirectRendered = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, this.getPointLightIndirectSSBO(), this.getPointLightPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, true, true);
+        this.sunlightIndirectRendered = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, this.getSunIndirectSSBO(), this.getSunPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, true, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
@@ -64,6 +64,8 @@ public abstract class ShadowScene implements IShadowScene {
     public void destroyResources() {
         this.getPointLightShadows().forEach(PointLightShadow::destroyResources);
         this.getSunLightShadow().destroyResources();
+        this.pointLightIndirectRendered = null;
+        this.sunlightIndirectRendered = null;
     }
 
     protected abstract @NotNull ShaderStorageBufferObject getSunIndirectSSBO();
@@ -259,11 +261,11 @@ public abstract class ShadowScene implements IShadowScene {
         return map;
     }
 
-    public GroupedIndirectRenderer getPointLightIndirectRendered() {
+    public GroupedSceneObjectsIndirectRenderer getPointLightIndirectRendered() {
         return this.pointLightIndirectRendered;
     }
 
-    public GroupedIndirectRenderer getSunlightIndirectRendered() {
+    public GroupedSceneObjectsIndirectRenderer getSunlightIndirectRendered() {
         return this.sunlightIndirectRendered;
     }
 

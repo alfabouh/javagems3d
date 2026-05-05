@@ -30,6 +30,7 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -85,8 +86,12 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
     protected void renderContent(FrameTicking frameTicking) {
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
         this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
         this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+
+        this.getWorld().getEnvironment().getParticlesScene().passObjectInTransparencySSBO();
+        this.getWorld().getEnvironment().getParticlesScene().getParticlesIndirectRendererTransparency().processAndRender(ArbitraryArguments.pass(this.getWorld().getEnvironment().getParticlesScene().getDefaultConsumerForParticlesScene()));
     }
 
     @Override
