@@ -122,7 +122,7 @@ public final class SceneWorld implements IRenderWorld {
                 if (sceneObject instanceof SceneEntity e) {
                     this.getObjectMap().remove(e.getWorldItem().getItemId());
                 }
-                sceneObject.onDestroyWithEvent(this);
+                sceneObject.onDestroy(this);
                 iterator.remove();
                 continue;
             }
@@ -160,7 +160,7 @@ public final class SceneWorld implements IRenderWorld {
             SceneObject modeledSceneObject = iterator.next();
             iterator.remove();
             if (modeledSceneObject instanceof SceneEntity abstractSceneEntity) {
-                abstractSceneEntity.onDestroyWithEvent(this);
+                abstractSceneEntity.onDestroy(this);
             }
         }
 
@@ -244,7 +244,7 @@ public final class SceneWorld implements IRenderWorld {
         }
 
         this.getSceneObjects().add(sceneObject);
-        sceneObject.onSpawnWithEvent(this);
+        sceneObject.onSpawn(this);
 
         if (sceneObject instanceof SceneEntity e) {
             this.getObjectMap().put(e.getWorldItem().getItemId(), e);
@@ -259,7 +259,7 @@ public final class SceneWorld implements IRenderWorld {
         }
 
         this.getSceneObjects().remove(sceneObject);
-        sceneObject.onDestroyWithEvent(this);
+        sceneObject.onDestroy(this);
 
         if (sceneObject instanceof SceneEntity e) {
             this.getObjectMap().remove(e.getWorldItem().getItemId());
@@ -269,7 +269,7 @@ public final class SceneWorld implements IRenderWorld {
     @Override
     public void addObject(SceneObject sceneObject) {
         this.getSceneObjects().add(sceneObject);
-        sceneObject.onSpawnWithEvent(this);
+        sceneObject.onSpawn(this);
 
         if (sceneObject instanceof SceneEntity sceneEntity) {
             this.getObjectMap().put(sceneEntity.getWorldItem().getItemId(), sceneEntity);

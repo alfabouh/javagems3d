@@ -29,9 +29,11 @@ public class GroupedParticlesIndirectRenderer extends IndirectParticlesRenderer 
         Map<ShaderManager, Set<ParticleFX>> map = this.groupObjects(this.getIndirectMeshObjects());
         for (Map.Entry<ShaderManager, Set<ParticleFX>> particles : map.entrySet()) {
             this.fillSSBOWithParticleInformation(particles.getValue());
-            IndirectCommandsProgram indirectCommandsProgram = this.createCommands(renderBuffer, particles.getValue());
-            this.render(particles.getKey(), indirectCommandsProgram, renderBuffer, metaData);
-            indirectCommandsProgram.destroyBuffer();
+            if (!particles.getValue().isEmpty()) {
+                IndirectCommandsProgram indirectCommandsProgram = this.createCommands(renderBuffer, particles.getValue());
+                this.render(particles.getKey(), indirectCommandsProgram, renderBuffer, metaData);
+                indirectCommandsProgram.destroyBuffer();
+            }
         }
     }
 

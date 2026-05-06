@@ -18,6 +18,8 @@ struct RenderData {
     float alpha_discard;
     uvec2 diffusion_map;
     ivec2 cellsXY;
+    float interpolation;
+    float padding01_;
 };
 
 layout(std430, binding = 31) buffer ParticleRenderDataArray {
@@ -30,7 +32,9 @@ void main()
 {
     RenderData enRenderData = renderData[ent_id];
 
-    vec4 textureDiffuse = texture(sampler2D(enRenderData.diffusion_map), uv_coordinates);
+    vec2 id_uv = vec2(enRenderData.textureId % enRenderData.cellsXY.x, enRenderData.textureId / enRenderData.cellsXY.y);
+    vec2 UV = vec2((uv_coordinates.x / enRenderData.cellsXY.x) * id_uv.x, (uv_coordinates.y / enRenderData.cellsXY.y) * id_uv.y);
+    vec4 textureDiffuse = texture(sampler2D(enRenderData.diffusion_map), UV);
     vec3 color = textureDiffuse.rgb * enRenderData.diffuse_color.xyz;
     color *= enRenderData.emissionStrength + lightFactor * (1. - enRenderData.emissionStrength);
 

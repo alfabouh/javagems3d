@@ -42,7 +42,7 @@ public abstract class SkyBoxBackground implements ISkyBackground {
             SceneProp sceneProp = scenePropIterator.next();
             sceneProp.onUpdate(this.getWorld());
             if (sceneProp.isDead()) {
-                sceneProp.onDestroyWithEvent(this.getWorld());
+                sceneProp.onDestroy(this.getWorld());
                 scenePropIterator.remove();
             }
         }
@@ -53,19 +53,19 @@ public abstract class SkyBoxBackground implements ISkyBackground {
     }
 
     public void clearBackGround() {
-        this.getSkySceneObjects().forEach(e -> e.onDestroyWithEvent(this.getWorld()));
+        this.getSkySceneObjects().forEach(e -> e.onDestroy(this.getWorld()));
         this.getSkySceneObjects().clear();
     }
 
     @Override
     public void addObject(SceneProp object) {
-        object.onSpawnWithEvent(this.getWorld());
+        object.onSpawn(this.getWorld());
         this.getSkySceneObjects().add(object);
     }
 
     @Override
     public void removeObject(SceneProp object) {
-        object.onDestroyWithEvent(this.getWorld());
+        object.onDestroy(this.getWorld());
         this.getSkySceneObjects().remove(object);
     }
 

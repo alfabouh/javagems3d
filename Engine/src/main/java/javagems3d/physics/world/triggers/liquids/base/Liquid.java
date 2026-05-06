@@ -21,7 +21,7 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        this.getSimpleTriggerZone().onSpawnWithEvent(iWorld);
+        this.getSimpleTriggerZone().onSpawn(iWorld);
         this.init();
     }
 
@@ -39,7 +39,7 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        this.getSimpleTriggerZone().onDestroyWithEvent(iWorld);
+        this.getSimpleTriggerZone().onDestroy(iWorld);
     }
 
     public SimpleTriggerZone getSimpleTriggerZone() {

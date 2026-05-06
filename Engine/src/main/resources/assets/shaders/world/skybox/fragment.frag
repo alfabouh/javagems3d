@@ -9,10 +9,9 @@ layout (location = 1) out vec4 bright_color;
 
 struct Sun {
     vec3 position;
-    float _padding0;
+    float brightness;
     vec3 color;
     float ambient;
-    float brightness;
 };
 layout (std430, binding = 5) buffer SunLight {
     Sun sun;

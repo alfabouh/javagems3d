@@ -45,7 +45,7 @@ public class JGemsEnvironment implements IEnvironment {
         this.fogManager = new JGemsFogScene();
         this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData,this);
         this.shadowScene = new JGemsShadowScene(this);
-        this.particlesScene = new JGemsParticlesScene(this, new ParticlesManager());
+        this.particlesScene = new JGemsParticlesScene(this, new ParticlesManager(this));
         this.world = world;
     }
 

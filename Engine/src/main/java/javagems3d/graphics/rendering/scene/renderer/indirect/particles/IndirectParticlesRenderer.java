@@ -122,7 +122,9 @@ public abstract class IndirectParticlesRenderer {
             properties.putFloat(renderData.particleFXMaterial().getEmissionColor().color().y);
             properties.putFloat(renderData.particleFXMaterial().getEmissionColor().color().z);
         }
-        properties.putFloat(0.0f);
+        {
+            properties.putInt(particleFX.getCurrentTextureID());
+        }
         {
             properties.putFloat(renderData.particleFXProperties().getEmissionStrength());
             properties.putFloat(renderData.particleFXProperties().getAlphaDiscard());
@@ -131,6 +133,16 @@ public abstract class IndirectParticlesRenderer {
             final long descriptorImg = renderData.particleFXMaterial().getTextureMap().getBindingHandler();
             properties.putInt((int)(descriptorImg & 0xFFFFFFFFL)); // low
             properties.putInt((int)((descriptorImg >>> 32) & 0xFFFFFFFFL)); // high
+        }
+        {
+            properties.putInt(particleFX.getParticleFXRenderData().spriteProperties().cellsXY().x);
+            properties.putInt(particleFX.getParticleFXRenderData().spriteProperties().cellsXY().y);
+        }
+        {
+            properties.putFloat(particleFX.interpolationPoint());
+        }
+        {
+            properties.putInt(particleFX.getInterpolateWithTextureID());
         }
     }
 

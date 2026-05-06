@@ -12,21 +12,23 @@ public final class ParticleFXMaterial {
     private final ImageTexture textureMap;
     private final Color4Texture diffuseColor;
     private final Color3Texture emissionColor;
-    private final Vector2i cellsXY;
 
-    public ParticleFXMaterial(@NotNull ImageTexture textureMap, @NotNull Vector2i cellsXY) {
-        this(textureMap, new Color4Texture(new Vector4f(1f)), new Color3Texture(new Vector3f()), cellsXY);
+    public ParticleFXMaterial(@NotNull ImageTexture textureMap) {
+        this(textureMap, new Color4Texture(new Vector4f(1f)), new Color3Texture(new Vector3f()));
     }
 
-    public ParticleFXMaterial(@NotNull ImageTexture textureMap, @NotNull Color4Texture diffuseColor, @NotNull Vector2i cellsXY) {
-        this(textureMap, diffuseColor, new Color3Texture(new Vector3f()), cellsXY);
+    public ParticleFXMaterial(@NotNull ImageTexture textureMap, float transparency) {
+        this(textureMap, new Color4Texture(new Vector4f(1.0f, 1.0f, 1.0f, transparency)), new Color3Texture(new Vector3f()));
     }
 
-    public ParticleFXMaterial(@NotNull ImageTexture textureMap, @NotNull Color4Texture diffuseColor, @NotNull Color3Texture emissionColor, @NotNull Vector2i cellsXY) {
+    public ParticleFXMaterial(@NotNull ImageTexture textureMap, @NotNull Color4Texture diffuseColor) {
+        this(textureMap, diffuseColor, new Color3Texture(new Vector3f()));
+    }
+
+    public ParticleFXMaterial(@NotNull ImageTexture textureMap, @NotNull Color4Texture diffuseColor, @NotNull Color3Texture emissionColor) {
         this.textureMap = textureMap;
         this.diffuseColor = diffuseColor;
         this.emissionColor = emissionColor;
-        this.cellsXY = cellsXY;
     }
 
     public ImageTexture getTextureMap() {
@@ -39,9 +41,5 @@ public final class ParticleFXMaterial {
 
     public Color3Texture getEmissionColor() {
         return this.emissionColor;
-    }
-
-    public Vector2i getCellsXY() {
-        return this.cellsXY;
     }
 }

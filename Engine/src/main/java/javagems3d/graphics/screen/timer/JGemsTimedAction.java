@@ -25,6 +25,10 @@ public final class JGemsTimedAction {
         this.accumulatedTime = 0.0f;
     }
 
+    public void modAccumulatedTime(float modBy) {
+        this.accumulatedTime %= modBy;
+    }
+
     public void dispose() {
         this.shouldBeErased = true;
     }
