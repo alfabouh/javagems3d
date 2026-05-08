@@ -9,6 +9,7 @@ import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -447,13 +448,15 @@ public abstract class EventBus {
         private final Run run;
         private final Set<SceneObject> toRenderObjects;
         private final Set<SceneWorldLiquid> toRenderLiquids;
+        private final Set<ParticleFX> toRenderParticles;
 
-        public RenderOGLSceneEvent(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Run run, Set<SceneObject> toRenderObjects, Set<SceneWorldLiquid> toRenderLiquids) {
+        public RenderOGLSceneEvent(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Run run, Set<SceneObject> toRenderObjects, Set<SceneWorldLiquid> toRenderLiquids, Set<ParticleFX> toRenderParticles) {
             this.openGLRenderer = openGLRenderer;
             this.frameTicking = frameTicking;
             this.run = run;
             this.toRenderObjects = toRenderObjects;
             this.toRenderLiquids = toRenderLiquids;
+            this.toRenderParticles = toRenderParticles;
         }
 
         public OpenGLRenderer getOpenGLRenderer() {
@@ -466,6 +469,10 @@ public abstract class EventBus {
 
         public Run getRun() {
             return this.run;
+        }
+
+        public Set<ParticleFX> getToRenderParticles() {
+            return this.toRenderParticles;
         }
 
         public Set<SceneObject> getToRenderObjects() {

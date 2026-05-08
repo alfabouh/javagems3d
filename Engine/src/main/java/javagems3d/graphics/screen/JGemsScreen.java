@@ -3,15 +3,10 @@ package javagems3d.graphics.screen;
 import api.events.EventBus;
 import api.events.EventLauncher;
 import api.scripting.JavaToJsAPI;
-import api.scripting.coding.env.internal.game.init.events.rendering.JSRenderIMGUIEvent;
-import api.scripting.coding.env.internal.util.controlling.JSController;
-import api.scripting.coding.env.internal.util.global.JSScriptGlobalData;
-import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
 import api.system.JGemsAPI;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.binding.BindingManager;
-import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
@@ -104,7 +99,7 @@ public class JGemsScreen implements IScreen {
             if (JGems3D.DEBUG_MODE) {
                 OpenGLSysUtils.registerOGLDebugOutput();
             }
-            ResourceManager.initDefaults();
+            ResourceManager.initDefaultErrorTexture();
             JGemsResourceManager.createShaders();
 
             this.showGameLoadingScreen("System01");

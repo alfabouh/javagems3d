@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstraction
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -30,6 +31,7 @@ import java.util.function.Consumer;
 
 public abstract class ForwardRenderNode extends IRenderNode.Template implements IForwardRenderNode {
     private Collection<SceneObject> forwardRenderingObjects;
+    private Collection<ParticleFX> filteredParticlesToRender;
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private SkyboxRenderProcessor skyboxRenderProcessor;
     private BackgroundRenderProcessor backgroundRenderProcessor;
@@ -69,7 +71,7 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 
-            this.getWorld().getEnvironment().getParticlesScene().passObjectInMainSceneSSBO();
+            this.getWorld().getEnvironment().getParticlesScene().passObjectInMainSceneSSBO(this.filteredParticlesToRender);
             this.getWorld().getEnvironment().getParticlesScene().getParticlesIndirectRendererScene().processAndRender(ArbitraryArguments.pass(this.getWorld().getEnvironment().getParticlesScene().getDefaultConsumerForParticlesScene()));
 
             this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
@@ -82,13 +84,12 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
     public void initProcessors() {
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getWorld().getEnvironment().getSkyBox(), this.getSkyBoxShader(), this.getCube(), this.getOpenGLRenderer());
+        this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getWorld().getEnvironment().getSkyBox(), this.getSkyBoxShader(), this.getOpenGLRenderer());
         this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), this.getIndirectBufferData(), this.getPropertiesData(), this.getWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
     }
 
     public abstract @NotNull ShaderStorageBufferObject getIndirectBufferData();
     public abstract @NotNull ShaderStorageBufferObject getPropertiesData();
-    public abstract @NotNull MeshGroup getCube();
     public abstract @NotNull JGemsShaderManager getSkyBoxShader();
     public abstract boolean renderBackground();
 
@@ -110,6 +111,11 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
         this.getDirectGeometryRenderProcessor().destroyResources();
         this.getSkyboxRenderProcessor().destroyResources();
         this.getBackgroundRenderProcessor().destroyResources();
+    }
+
+    public ForwardRenderNode setFilteredParticlesToRender(Collection<ParticleFX> filteredParticlesToRender) {
+        this.filteredParticlesToRender = filteredParticlesToRender;
+        return this;
     }
 
     @Override

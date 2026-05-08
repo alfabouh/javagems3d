@@ -16,8 +16,6 @@ layout (location = 1) out vec4 bright_color;
 
 uniform float view_scaling;
 uniform vec3 camera_pos;
-uniform uvec2 ambient_cubemap;
-uniform bool useCubeMap;
 
 struct Properties {
     float alpha_discard;
@@ -55,19 +53,13 @@ const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 #include "/assets/shaders/libs/lighting"
 #include "/assets/shaders/libs/fog"
+#include "/assets/shaders/libs/cubemap_reflections"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;
     vec3 position = normalize(sun.position);
     vec3 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
     return lightFactors + sunFactor;
-}
-
-vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
-    float ratio = 1.0 / cnst;
-    vec3 I = normalize(world_position.xyz - camera_pos);
-    vec3 R = refract(I, normalize(normal), ratio);
-    return texture(samplerCube(ambient_cubemap), R).rgb;
 }
 
 bool checkCode(int i1, int i2) {
@@ -123,7 +115,7 @@ void main()
     vec2 gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
 
     if (useCubeMap) {
-        vec3 refracted_color = refract_cubemap(model_vertex_normal, 1.73, model_vertex_pos);
+        vec3 refracted_color = refract_cubemap(normals, 1.73, model_vertex_pos);
         gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
 

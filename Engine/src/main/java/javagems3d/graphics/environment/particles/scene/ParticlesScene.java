@@ -24,7 +24,7 @@ public abstract class ParticlesScene implements IParticlesScene {
     private GroupedParticlesIndirectRenderer particlesIndirectRendererTransparency;
     private final IParticlesManager particlesManager;
 
-    private Consumer<JGemsShaderManager> defaultConsumerForParticlesScene;
+    private final Consumer<JGemsShaderManager> defaultConsumerForParticlesScene;
 
     public ParticlesScene(@NotNull IEnvironment environment, @NotNull IParticlesManager particlesManager) {
         this.environment = environment;

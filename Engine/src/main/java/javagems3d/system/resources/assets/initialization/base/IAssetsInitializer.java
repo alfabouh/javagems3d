@@ -124,7 +124,7 @@ public interface IAssetsInitializer {
         dataMesh.putVertexIndexes(JGemsHelper.Math.convertIntsList(IAssetsInitializer.ParticleIndices));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material());
         MeshBuffer meshBuffer = new MeshBuffer(meshBufferMeshNode3D);
-        meshBuffer.setKeepTrianglesInMemory(false);
+        meshBuffer.setKeepTrianglesInMemory(true);
         meshBuffer.setMeshAABBData(new MeshBoundingBoxData(new CullingAABB(new Vector3f(-0.5f), new Vector3f(0.5f))));
         return meshBuffer;
     }

@@ -30,7 +30,6 @@ import java.util.Set;
 
 public abstract class IndirectParticlesRenderer {
     protected static final int SSBO_DATASETS_MATRICES_SIZE = JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS * 16;
-    protected static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS;
     protected static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsConfig.SYSTEM.INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES;
 
     private final Pipeline pipeline;

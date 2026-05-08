@@ -1,11 +1,13 @@
 package javagems3d.graphics.environment.particles.scene;
 
 import javagems3d.graphics.environment.particles.IParticlesManager;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.particles.GroupedParticlesIndirectRenderer;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 public interface IParticlesScene {
@@ -18,8 +20,8 @@ public interface IParticlesScene {
     GroupedParticlesIndirectRenderer getParticlesIndirectRendererTransparency();
     Consumer<JGemsShaderManager> getDefaultConsumerForParticlesScene();
 
-    default void passObjectInMainSceneSSBO() {
-        this.getParticlesIndirectRendererScene().setIndirectMeshObjects(this.getParticlesManager().getParticlesFXList());
+    default void passObjectInMainSceneSSBO(Collection<ParticleFX> filteredParticlesToRender) {
+        this.getParticlesIndirectRendererScene().setIndirectMeshObjects(filteredParticlesToRender);
     }
 
     default void passObjectInTransparencySSBO() {

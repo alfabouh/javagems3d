@@ -28,6 +28,7 @@ layout(std430, binding = 31) buffer ParticleRenderDataArray {
 };
 
 #include "/assets/shaders/libs/fog"
+#include "/assets/shaders/libs/oit"
 
 vec2 pickFrame(RenderData enRenderData, int id) {
     vec2 grid = vec2(enRenderData.cellsXY);
@@ -50,13 +51,11 @@ void main()
     vec3 color = diffuseInterpolated.rgb * enRenderData.diffuse_color.xyz;
     color *= lightFactor * (1. - enRenderData.emissionStrength);
 
-    float alpha_discard = enRenderData.alpha_discard;
     vec4 frag_color0 = vec4(color, diffuseInterpolated.a * enRenderData.diffuse_color.a);
     frag_color0 = calc_fog(frag_pos.xyz, frag_color0, 1.);
 
-    float weight = max(min(1.0, max(max(frag_color0.r, frag_color0.g), frag_color0.b) * frag_color0.a), frag_color0.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
-    accumulated = vec4(frag_color0.rgb * frag_color0.a, frag_color0.a) * weight;
-    reveal = frag_color0.a;
+    accumulated = calc_accumulated(frag_color0);
+    reveal = calc_alpha(frag_color0);
     reveal = calc_fog_float(frag_pos.xyz, frag_color0.a);
 
     float brightness = dot(frag_color0.rgb + enRenderData.emission_color, vec3(0.2126, 0.7152, 0.0722));

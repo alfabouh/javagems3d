@@ -31,11 +31,6 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
     }
 
     @Override
-    public @NotNull MeshGroup getCube() {
-        return JGemsResourceManager.DEFAULT_CUBE_MESHGROUP();
-    }
-
-    @Override
     public @NotNull JGemsShaderManager getSkyBoxShader() {
         return JGemsResourceManager.globalShaderAssets.skybox;
     }

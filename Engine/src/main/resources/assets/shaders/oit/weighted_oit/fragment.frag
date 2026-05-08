@@ -14,8 +14,6 @@ layout (location = 1) out float reveal;
 layout (location = 2) out vec4 bright_color;
 
 uniform vec3 camera_pos;
-uniform uvec2 ambient_cubemap;
-uniform bool useCubeMap;
 
 const int diffuse_code = CONST.DIFFUSE_CODE;
 const int normals_code = CONST.NORMALS_CODE;
@@ -36,6 +34,8 @@ uniform int texturing_code;
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
 #include "/assets/shaders/libs/fog"
+#include "/assets/shaders/libs/oit"
+#include "/assets/shaders/libs/cubemap_reflections"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;
@@ -59,13 +59,6 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     lightFactors += point_light_factor;
 
     return lightFactors;
-}
-
-vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
-    float ratio = 1.0 / cnst;
-    vec3 I = normalize(world_position.xyz - camera_pos);
-    vec3 R = refract(I, normalize(normal), ratio);
-    return texture(samplerCube(ambient_cubemap), R).rgb;
 }
 
 bool checkCode(int i1, int i2) {
@@ -102,7 +95,7 @@ void main()
         normals = calc_normal_map();
     }
     if (useRoughnessMetallicTexture) {
-      vec4 mr = texture(sampler2D(metallic_roughness_map), uv_coordinates);
+        vec4 mr = texture(sampler2D(metallic_roughness_map), uv_coordinates);
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 
@@ -110,20 +103,18 @@ void main()
     vec3 gNormal = normals;
     vec4 gColor = diffuse;
     vec3 gEmission = emission;
-    vec2 gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
+    vec2 gMetallicRoughness = vec2(0.375 + metallic_roughness.x * 0.625, 1. - metallic_roughness.y);
 
     if (useCubeMap) {
-        vec3 refracted_color = refract_cubemap(model_vertex_normal, 1.73, model_vertex_pos);
-        gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
+        vec3 refracted_color = refract_cubemap(normals, 1.73, model_vertex_pos);
+        gColor.rgb = mix(gColor.rgb, refracted_color, gMetallicRoughness.x * 0.5);
     }
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
     frag_color = calc_fog(gPosition, frag_color, 1.);
 
-    float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
-    accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;
-    reveal = frag_color.a;
+    accumulated = calc_accumulated(frag_color);
     reveal = calc_fog_float(gPosition, frag_color.a);
 
     float brightness = dot(frag_color.rgb + (gEmission), vec3(0.2126, 0.7152, 0.0722));

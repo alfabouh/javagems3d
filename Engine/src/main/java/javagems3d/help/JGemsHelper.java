@@ -480,6 +480,13 @@ public final class JGemsHelper {
             this.renderModelAABBDebug(debugLinesDrawer, model3D.getMeshStructure(), model3D.getPose());
         }
 
+        public void renderModelAABBDebug(DebugLinesDrawer debugLinesDrawer, CullingAABB cullingAABB) {
+            if (cullingAABB == null) {
+                return;
+            }
+            debugLinesDrawer.addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+        }
+
         public void renderModelAABBDebug(DebugLinesDrawer debugLinesDrawer, MeshStructure3D<?> meshStructure3D, Pose3D pose3D) {
             if (meshStructure3D == null) {
                 return;

@@ -101,7 +101,9 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows_simple", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/animations", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/cubemap_reflections", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/fog", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/oit", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting_simple", ISource.Source.INSIDE_JAR));
     }

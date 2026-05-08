@@ -51,6 +51,7 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
     public void onWorldEnd() {
         if (this.getEnvironment() != null) {
             this.getEnvironment().getSkyBox().destroySkyBox(this);
+            this.getEnvironment().getParticlesScene().getParticlesManager().clear();
         }
         this.clearAll();
         this.environment = null;

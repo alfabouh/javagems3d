@@ -58,7 +58,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         this.crosshair = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "gui/crosshair.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
         this.gui1 = systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "gui/gui1.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
 
-        this.defaultParticle = (ImageTexture) systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "particles/Smoke45Frames.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
+        this.defaultParticle = (ImageTexture) systemResources.createTexture(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.TEXTURES, "particles/default.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, false, false, false, false));
 
         this.defaultSkyboxCubeMap = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES), new CubeMapTexture.Properties(true));
         //this.skyboxCubeMap = systemResources.createCubeMapTexture(JGemsStringSource.GetSource.JAR, null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"), "png", new CubeMapTexture.JSTexture2DProperties(true));

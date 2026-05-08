@@ -18,8 +18,6 @@ layout (std430, binding = 0) buffer Timer {
 };
 
 uniform vec3 camera_pos;
-uniform uvec2 ambient_cubemap;
-uniform bool useCubeMap;
 
 const int diffuse_code = CONST.DIFFUSE_CODE;
 const int normals_code = CONST.NORMALS_CODE;
@@ -41,13 +39,14 @@ uniform vec2 texture_scaling;
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
 #include "/assets/shaders/libs/fog"
+#include "/assets/shaders/libs/oit"
+#include "/assets/shaders/libs/cubemap_reflections"
 
-vec2 getScaledTexture() {
-    const float speed = 5.;
+vec2 getScaledTexture(float speed) {
     float wave1 = sin(uv_coordinates.x * 20.0 + (w_tick * speed)) * 0.01;
     float wave2 = cos(uv_coordinates.y * 25.0 + (w_tick * speed) * 0.5) * 0.01;
     vec2 sincosFactor = vec2(wave1, wave2);
-    return (uv_coordinates) * (texture_scaling) + sincosFactor;
+    return (uv_coordinates) * (texture_scaling) + sincosFactor + (vec2(w_tick) * 2.5e-2);
 }
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
@@ -74,20 +73,13 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     return lightFactors;
 }
 
-vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
-    float ratio = 1.0 / cnst;
-    vec3 I = normalize(world_position.xyz - camera_pos);
-    vec3 R = refract(I, normalize(normal), ratio);
-    return texture(samplerCube(ambient_cubemap), R).rgb;
-}
-
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
     return bool(i3 != 0);
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(sampler2D(normals_map), getScaledTexture()).rgb;
+    vec3 normal = texture(sampler2D(normals_map), getScaledTexture(4.5)).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -106,16 +98,16 @@ void main()
     vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
     if (useDiffuseTexture) {
-        diffuse *= texture(sampler2D(diffuse_map), getScaledTexture());
+        diffuse *= texture(sampler2D(diffuse_map), getScaledTexture(4.5));
     }
     if (useEmissionTexture) {
-        emission *= texture(sampler2D(emission_map), getScaledTexture()).rgb;
+        emission *= texture(sampler2D(emission_map), getScaledTexture(4.5)).rgb;
     }
     if (useNormalsTexture) {
-        normals = calc_normal_map();
+        normals = mix(normals, calc_normal_map(), 0.25);
     }
     if (useRoughnessMetallicTexture) {
-        vec4 mr = texture(sampler2D(metallic_roughness_map), getScaledTexture());
+        vec4 mr = texture(sampler2D(metallic_roughness_map), getScaledTexture(4.5));
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 
@@ -123,19 +115,19 @@ void main()
     vec3 gNormal = normals;
     vec4 gColor = diffuse;
     vec3 gEmission = emission;
-    vec2 gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
+    vec2 gMetallicRoughness = vec2(0.5 + metallic_roughness.x * 0.5, 1. - metallic_roughness.y);
 
-    vec3 refracted_color = refract_cubemap(model_vertex_normal * vec3(-1), 1.73, model_vertex_pos);
-    gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
+    if (useCubeMap) {
+        vec3 refracted_color = refract_cubemap(normals * vec3(-1), 1.25, model_vertex_pos);
+        gColor.rgb = mix(gColor.rgb, refracted_color, gMetallicRoughness.r * 0.625);
+    }
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
     frag_color = calc_fog(gPosition, frag_color, 1.);
     frag_color.a *= opacity;
-    
-    float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
-    accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;
-    reveal = frag_color.a;
+
+    accumulated = calc_accumulated(frag_color);
     reveal = calc_fog_float(gPosition, frag_color.a);
 
     float brightness = dot(frag_color.rgb + (gEmission), vec3(0.2126, 0.7152, 0.0722));

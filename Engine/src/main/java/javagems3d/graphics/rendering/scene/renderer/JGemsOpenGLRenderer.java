@@ -12,6 +12,7 @@ import api.scripting.JavaToJsAPI;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
@@ -229,10 +230,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         final Set<JSSceneObjectI> sceneObjectJS = toRenderObjects.stream().map(e -> (JSSceneObjectI) () -> e).collect(Collectors.toSet());
         final Set<JSSceneWorldLiquid> sceneWorldLiquidsJS = toRenderLiquids.stream().map(JSSceneWorldLiquid::new).collect(Collectors.toSet());
+        final Set<ParticleFX> toRenderParticles = new HashSet<>(this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection());
+
         this.getSceneCulling().updateFrustum(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
-        if (!EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.PRE, toRenderObjects, toRenderLiquids), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.PRE, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game)).isCancelled()) {
-            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
-                @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids };
+        if (!EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.PRE, toRenderObjects, toRenderLiquids, toRenderParticles), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.PRE, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game)).isCancelled()) {
+            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, toRenderParticles, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+                @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids, toRenderParticles };
                 this.getSceneCulling().cull(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera(), collections);
             });
 
@@ -245,8 +248,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
             uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, uiRenderNode);
-            JGemsOpenGLRenderer.renderDebug(this.getWorld().getSceneObjects(), this.getWorld().getLiquids());
-            EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.POST, toRenderObjects, toRenderLiquids), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.POST, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game));
+            JGemsOpenGLRenderer.renderDebug(this.getWorld().getSceneObjects(), this.getWorld().getLiquids(), this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection());
+            EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.POST, toRenderObjects, toRenderLiquids, toRenderParticles), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.POST, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game));
         }
 
         JGemsOpenGLRenderer.DebugLinesDrawer().renderAndClearRequests((color_shader) -> {
@@ -265,7 +268,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
     }
 
-    public static void renderDebug(Set<SceneObject> sceneObjects, Set<SceneWorldLiquid> liquids) {
+    public static void renderDebug(Collection<SceneObject> sceneObjects, Collection<SceneWorldLiquid> liquids, Collection<ParticleFX> particleFXSet) {
         if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
             // for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
             //     CullingAABB cullingAABB = sceneObject.getCullingData();
@@ -273,6 +276,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             //         JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
             //     }
             // }
+            for (ParticleFX particleFX : particleFXSet) {
+                JGemsHelper.render().renderModelAABBDebug(JGemsOpenGLRenderer.DebugLinesDrawer(), particleFX.getCullingData());
+            }
             for (SceneObject sceneObject : sceneObjects) {
                 if (sceneObject.getModel() != null) {
                     JGemsHelper.render().renderModelAABBDebug(JGemsOpenGLRenderer.DebugLinesDrawer(), sceneObject.getModel());
@@ -305,7 +311,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
     }
 
-    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRenderObjects, Collection<SceneWorldLiquid> toRenderLiquids, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
+    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRenderObjects, Collection<SceneWorldLiquid> toRenderLiquids, Set<ParticleFX> toRenderParticles, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
         if (cullingFun != null) {
             cullingFun.accept(null);
         }
@@ -315,6 +321,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
+        forwardRenderNode.setFilteredParticlesToRender(toRenderParticles);
 
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, deferredRenderNode);
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, forwardRenderNode);

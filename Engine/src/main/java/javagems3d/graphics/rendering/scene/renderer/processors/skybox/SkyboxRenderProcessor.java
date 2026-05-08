@@ -16,22 +16,21 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 public class SkyboxRenderProcessor extends IRenderProcessor.Template {
-    private final Model3D skyBoxModel;
     private final ISkyBox skyBox;
     private ITexture2DProgram backgroundTexture;
     private final JGemsShaderManager skyBoxShader;
 
-    public SkyboxRenderProcessor(@NotNull ISkyBox skyBox, JGemsShaderManager skyBoxShader, MeshGroup cube, @NotNull OpenGLRenderer openGLRenderer) {
+    public SkyboxRenderProcessor(@NotNull ISkyBox skyBox, JGemsShaderManager skyBoxShader, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBoxShader = skyBoxShader;
         this.skyBox = skyBox;
         this.backgroundTexture = null;
-        this.skyBoxModel = new Model3D(new Pose3D(), cube);
     }
 
     @Override
@@ -51,12 +50,11 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         if (this.getSkyBox().getTexture() == null) {
             return;
         }
-        Model3D model = this.skyBoxModel;
         skyShaderManager.beginShading();
         GL46.glDisable(GL46.GL_CULL_FACE);
         GL46.glDepthFunc(GL46.GL_LEQUAL);
         skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-        Matrix4f viewMatrix = JGemsTransformManager.getModelViewMatrix(model);
+        Matrix4f viewMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
         viewMatrix.m30(0);
         viewMatrix.m31(0);
         viewMatrix.m32(0);
@@ -71,7 +69,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MAT_INVERTED), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX), viewMatrix);
         skyShaderManager.performUniform(new UniformString(DefaultUniformDefinitions.DRAW_SUN_MULT), UniformFunctions.FLOAT(!this.getSkyBox().isDrawSunOnSkyBox() ? 0.0f : 1.0f));
-        JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+        JGemsHelper.render().renderMeshList3D(JGemsResourceManager.DEFAULT_CUBE_MESHGROUP().getNodes(0), GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);
         GL46.glEnable(GL46.GL_CULL_FACE);

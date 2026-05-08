@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
+import javagems3d.JGemsRandom;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -126,13 +127,13 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         Texture2DProgram texture2DProgram = new Texture2DProgram(true);
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
-            float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
-            float y = JGems3D.random.nextFloat() * 2.0f - 1.0f;
-            float z = JGems3D.random.nextFloat();
+            float x = JGemsRandom.getRandom().nextFloat() * 2.0f - 1.0f;
+            float y = JGemsRandom.getRandom().nextFloat() * 2.0f - 1.0f;
+            float z = JGemsRandom.getRandom().nextFloat();
 
             Vector3f sample = new Vector3f(x, y, z);
             sample.normalize();
-            sample.mul(JGems3D.random.nextFloat());
+            sample.mul(JGemsRandom.getRandom().nextFloat());
 
             float scale = (float) i / ((float) size);
             scale = JGemsHelper.math().interpolate(0.1f, 1.0f, scale * scale);
@@ -153,8 +154,8 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         Texture2DProgram texture2DProgram = new Texture2DProgram(true);
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
-            float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
-            float y = JGems3D.random.nextFloat() * 2.0f - 1.0f;
+            float x = JGemsRandom.getRandom().nextFloat() * 2.0f - 1.0f;
+            float y = JGemsRandom.getRandom().nextFloat() * 2.0f - 1.0f;
             floatBuffer.put(x);
             floatBuffer.put(y);
             floatBuffer.put(0.0f);

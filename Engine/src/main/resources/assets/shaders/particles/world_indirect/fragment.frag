@@ -19,7 +19,7 @@ struct RenderData {
     uvec2 diffusion_map;
     ivec2 cellsXY;
     float interpolation;
-    float padding01_;
+    int nextFrameId;
 };
 
 layout(std430, binding = 31) buffer ParticleRenderDataArray {
@@ -28,21 +28,32 @@ layout(std430, binding = 31) buffer ParticleRenderDataArray {
 
 #include "/assets/shaders/libs/fog"
 
+vec2 pickFrame(RenderData enRenderData, int id) {
+    vec2 grid = vec2(enRenderData.cellsXY);
+    vec2 id_uv = vec2(float(id % int(grid.x)), float(id / int(grid.x)));
+    vec2 base_uv = uv_coordinates / grid;
+    vec2 UV = base_uv + id_uv / grid;
+    return UV;
+}
+
 void main()
 {
     RenderData enRenderData = renderData[ent_id];
-
-    vec2 id_uv = vec2(enRenderData.textureId % enRenderData.cellsXY.x, enRenderData.textureId / enRenderData.cellsXY.y);
-    vec2 UV = vec2((uv_coordinates.x / enRenderData.cellsXY.x) * id_uv.x, (uv_coordinates.y / enRenderData.cellsXY.y) * id_uv.y);
+    vec2 UV = pickFrame(enRenderData, enRenderData.textureId);
+    vec2 UV2 = pickFrame(enRenderData, enRenderData.nextFrameId);
     vec4 textureDiffuse = texture(sampler2D(enRenderData.diffusion_map), UV);
-    vec3 color = textureDiffuse.rgb * enRenderData.diffuse_color.xyz;
+    vec4 textureDiffuseInterpolation = texture(sampler2D(enRenderData.diffusion_map), UV2);
+
+    vec4 diffuseInterpolated = mix(textureDiffuse, textureDiffuseInterpolation, enRenderData.interpolation);
+
+    vec3 color = diffuseInterpolated.rgb * enRenderData.diffuse_color.xyz;
     color *= enRenderData.emissionStrength + lightFactor * (1. - enRenderData.emissionStrength);
 
     float alpha_discard = enRenderData.alpha_discard;
     frag_color0 = vec4(color, 1.);
     frag_color0 = calc_fog(frag_pos.xyz, frag_color0, 1.);
 
-    if (textureDiffuse.a * enRenderData.diffuse_color.a < enRenderData.alpha_discard) {
+    if (diffuseInterpolated.a * enRenderData.diffuse_color.a < enRenderData.alpha_discard) {
         discard;
     }
 

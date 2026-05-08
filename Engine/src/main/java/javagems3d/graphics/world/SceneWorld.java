@@ -100,6 +100,7 @@ public final class SceneWorld implements IRenderWorld {
         EventLauncher.pushEvent(new EventBus.SceneWorldLifecycleEvent(this, EventBus.State.END), new Pair<>(new JSSceneWorldLifecycleEvent(new JSSceneWorld(this), JSEventState.END), JavaToJsAPI.Target.Game));
         this.getEnvironment().destroyEnvironment();
         this.getEnvironment().getSkyBox().destroySkyBox(this);
+        this.getEnvironment().getParticlesScene().getParticlesManager().clear();
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
         this.clearAll();
     }

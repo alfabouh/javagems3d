@@ -51,7 +51,6 @@ public final class JGems3D {
     public static boolean DEBUG_MODE = false;
     public static boolean FIRST_LAUNCH = false;
     public static long rngSeed;
-    public static Random random = new Random(JGems3D.rngSeed);
     private static JGems3D mainObject;
 
     private JGemsCore core;

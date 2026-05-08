@@ -46,6 +46,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public JGemsShaderManager blur_ssao;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
+    public ShaderStorageBufferObject ParticleSceneIndirectBufferData;
+    public ShaderStorageBufferObject ParticleScenePropertiesData;
     //public ShaderStorageBufferObject ShadowSceneIndirectBufferData;
     //public ShaderStorageBufferObject ShadowScenePointLightIndirectBufferData;
 
@@ -86,8 +88,10 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/shadows_simple", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/animations", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/cubemap_reflections", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/fog", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/oit", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting_simple", ISource.Source.INSIDE_JAR));
     }
 
@@ -115,6 +119,13 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
+
+        this.ParticleSceneIndirectBufferData = new ShaderStorageBufferObject(30,
+                (JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        ShaderStorageBufferProgram.createSSBOStorage(this.ParticleSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
+
+        this.ParticleScenePropertiesData = new ShaderStorageBufferObject(31, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES);
+        ShaderStorageBufferProgram.createSSBOStorage(this.ParticleScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         //this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
         //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);

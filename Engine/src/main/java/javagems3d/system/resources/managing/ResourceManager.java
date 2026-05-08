@@ -134,7 +134,7 @@ public abstract class ResourceManager {
     }
 
     public void destroy() {
-        ResourceManager.destroyDefaults();
+        ResourceManager.destroyDefaultErrorTexture();
         ShaderStorageBufferProgram.clearAll();
         this.getResourceDataCache().clearAll();
         this.clearAll();
@@ -220,28 +220,15 @@ public abstract class ResourceManager {
         return this.resourcesDataCache;
     }
 
-    public static void destroyDefaults() {
+    public static void destroyDefaultErrorTexture() {
         if (ResourceManager.DEFAULT_TEXTURE != null) {
             ResourceManager.DEFAULT_TEXTURE.clear();
             ResourceManager.DEFAULT_TEXTURE = null;
         }
-        if (ResourceManager.DEFAULT_CUBE_MESHBUFFER != null) {
-            ResourceManager.DEFAULT_CUBE_MESHBUFFER.clear();
-            ResourceManager.DEFAULT_CUBE_MESHBUFFER = null;
-        }
-
-        if (ResourceManager.DEFAULT_CUBE_MESHGROUP != null) {
-            ResourceManager.DEFAULT_CUBE_MESHGROUP.clear();
-            ResourceManager.DEFAULT_CUBE_MESHGROUP = null;
-        }
-        if (ResourceManager.GLOBAL_PARTICLE_MESHBUFFER != null) {
-            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER.clear();
-            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = null;
-        }
     }
 
-    public static void initDefaults() {
-        final int grid = 16;
+    public static void initDefaultErrorTexture() {
+        final int grid = 24;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat((grid * grid) * 3);
             for (int y = 0; y < grid; y++) {
@@ -257,6 +244,24 @@ public abstract class ResourceManager {
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
             texture2DProgram.createTexture(new Vector2i(grid, grid), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }
+    }
+
+    public static void destroyDefaultMeshes() {
+        if (ResourceManager.DEFAULT_CUBE_MESHBUFFER != null) {
+            ResourceManager.DEFAULT_CUBE_MESHBUFFER.clear();
+            ResourceManager.DEFAULT_CUBE_MESHBUFFER = null;
+        }
+        if (ResourceManager.DEFAULT_CUBE_MESHGROUP != null) {
+            ResourceManager.DEFAULT_CUBE_MESHGROUP.clear();
+            ResourceManager.DEFAULT_CUBE_MESHGROUP = null;
+        }
+        if (ResourceManager.GLOBAL_PARTICLE_MESHBUFFER != null) {
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER.clear();
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = null;
+        }
+    }
+
+    public static void initDefaultMeshes() {
         {
             ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
             ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();

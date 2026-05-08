@@ -65,8 +65,7 @@ public final class JGemsMapping {
         this.getSceneWorld().getEnvironment().setEnvironmentDefaults();
         JavaToJsAPI.ScriptEnd(JavaToJsAPI.Target.Map);
         this.destroyWorlds();
-        final IEnvironment environment = this.getSceneWorld().getEnvironment();
-        environment.destroyEnvironment();
+        JGemsResourceManager.destroyDefaultMeshes();
     }
     
     public void loadMap(@NotNull IMapProcessor processor, IMapActionCallback... callbacks) {
@@ -74,6 +73,7 @@ public final class JGemsMapping {
             Log.get().error("Couldn't load map, while previous was not destroyed");
             return;
         }
+        JGemsResourceManager.initDefaultMeshes();
 
         IPlayer player = null;
         final IEnvironment environment = this.getSceneWorld().getEnvironment();
@@ -122,9 +122,7 @@ public final class JGemsMapping {
         //}
 
         this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
-
         this.getResourceManager().writeResourcesDataCache();
-
         this.currentLoadedMap = new GameMap(player, processor.getMapName(), processor.getMapInformation());
         for (IMapActionCallback mapActionCallback : callbacks) {
             mapActionCallback.onLoaded(processor, this.getCurrentLoadedMap(), this.getResourceManager());

@@ -2,6 +2,7 @@ package workbench.graphics.scene.renderer;
 
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -212,9 +213,10 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
             }
         }
         Set<SceneObject> toRender = new HashSet<>(renderBackGround ? this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getWorld().getSceneObjects());
+        final Set<ParticleFX> toRenderParticles = new HashSet<>(this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection());
 
-        JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, Collections.emptyList(), forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
-            @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRender };
+        JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, Collections.emptyList(), toRenderParticles, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+            @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRender, toRenderParticles };
             this.getSceneCulling().cull(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera(), collections);
         });
 

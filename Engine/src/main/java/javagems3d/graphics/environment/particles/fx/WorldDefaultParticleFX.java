@@ -9,18 +9,35 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class WorldDefaultParticleFX extends ParticleFX {
-    private float lifeTime;
+    private final float lifeTime;
     private Vector3f constantVelocity;
     private Vector3f constantAcceleration;
+    private Vector3f gravity;
     private @Nullable JGemsTimedAction lifeTimer;
     private float interpolationAccum = 0.0f;
+    private boolean fadeOut;
 
-    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f constantVelocity, Vector3f constantAcceleration) {
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime) {
+        this(particleFXRenderData, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), new Vector3f(), new Vector3f(1.0f));
+    }
+
+
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f constantVelocity) {
+        this(particleFXRenderData, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), constantVelocity, new Vector3f(1.0f));
+    }
+
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f gravity, Vector3f constantVelocity) {
+        this(particleFXRenderData, lifeTime, gravity, constantVelocity, new Vector3f(1.0f));
+    }
+
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f gravity, Vector3f constantVelocity, Vector3f constantAcceleration) {
         super(particleFXRenderData);
         this.lifeTime = lifeTime;
         this.constantVelocity = constantVelocity;
         this.constantAcceleration = constantAcceleration;
+        this.gravity = gravity;
         this.interpolationAccum = 0.0f;
+        this.fadeOut = false;
     }
 
     @Override
@@ -46,10 +63,24 @@ public class WorldDefaultParticleFX extends ParticleFX {
         return this.getParticleFXRenderData().spriteProperties().loopNextFrameInSecSpeed();
     }
 
+    private void strengthAffected(IWorld world, float frameDelta) {
+        Vector3f velocity = new Vector3f(this.constantVelocity).mul(this.constantAcceleration);
+        this.setPosition(this.getPosition().add(velocity.mul(frameDelta)));
+        this.constantVelocity.add(new Vector3f(this.gravity).mul(frameDelta));
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
         if (this.lifeTimer != null) {
-            if (this.lifeTime < 0.0f) {
+            if (this.lifeTime > 0.0f) {
+                if (this.fadeOut) {
+                    final float f1 = this.lifeTime * 0.5f;
+                    if (this.lifeTimer.getAccumulatedTime() >= f1) {
+                        final float f2 = (float) (f1 / this.lifeTimer.getAccumulatedTime());
+                        this.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().setColor(this.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().color().mul(1f, 1f, 1f, f2));
+                        this.getParticleFXRenderData().particleFXProperties().setEmissionStrength(this.getParticleFXRenderData().particleFXProperties().getEmissionStrength() * f2);
+                    }
+                }
                 if (this.lifeTimer.resetTimerAfterReachedSeconds(this.lifeTime)) {
                     this.setDead();
                 }
@@ -63,6 +94,7 @@ public class WorldDefaultParticleFX extends ParticleFX {
                 }
                 this.interpolationAccum %= 1.0f;
             }
+            this.strengthAffected(iWorld, this.lifeTimer.getDeltaTime());
         }
     }
 
@@ -77,6 +109,24 @@ public class WorldDefaultParticleFX extends ParticleFX {
             }
         }
         return nextFrame;
+    }
+
+    public boolean isFadeOut() {
+        return this.fadeOut;
+    }
+
+    public WorldDefaultParticleFX setFadeOut(boolean fadeOut) {
+        this.fadeOut = fadeOut;
+        return this;
+    }
+
+    public Vector3f getGravity() {
+        return this.gravity;
+    }
+
+    public WorldDefaultParticleFX setGravity(Vector3f gravity) {
+        this.gravity = gravity;
+        return this;
     }
 
     public Vector3f getConstantVelocity() {

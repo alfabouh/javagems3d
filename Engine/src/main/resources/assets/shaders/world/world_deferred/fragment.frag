@@ -8,8 +8,6 @@ layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
 uniform vec3 camera_pos;
-uniform uvec2 ambient_cubemap;
-uniform bool useCubeMap;
 uniform bool isSsaoValid;
 uniform sampler2D gPositions;
 uniform sampler2D gNormals;
@@ -23,6 +21,7 @@ uniform mat4 view_matrix;
 #include "/assets/shaders/libs/shadows"
 #include "/assets/shaders/libs/lighting"
 #include "/assets/shaders/libs/fog"
+#include "/assets/shaders/libs/cubemap_reflections"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
     vec3 lightFactors = vec3(sun.color) * sun.ambient;
@@ -46,13 +45,6 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     lightFactors += point_light_factor;
 
     return lightFactors;
-}
-
-vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
-    float ratio = 1.0 / cnst;
-    vec3 I = normalize(world_position.xyz - camera_pos);
-    vec3 R = refract(I, normalize(normal), ratio);
-    return texture(samplerCube(ambient_cubemap), R).rgb;
 }
 
 void main()

@@ -82,11 +82,6 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
     }
 
     @Override
-    public @NotNull MeshGroup getCube() {
-        return WBenchResourceManager.DEFAULT_CUBE_MESHGROUP();
-    }
-
-    @Override
     public @NotNull JGemsShaderManager getSkyBoxShader() {
         return WBenchResourceManager.localShaderAssets.skybox;
     }
