@@ -202,6 +202,9 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         final boolean renderBackGround = WBenchOpenGLRenderer.isRenderingBackgroundScene();
+
+        ((WBenchTransparencyRenderNode) transparencyRenderNode).setRenderParticles(!renderBackGround);
+
         JGemsConfig.DEBUG.DISABLE_POINT_LIGHTS = renderBackGround;
         if (this.getCamera() instanceof ControlledCamera camera) {
             WBenchBindingManager wBenchBindingManager = (WBenchBindingManager) WBench.get().getControllerDispatcher().getCurrentController().getBindingManager();

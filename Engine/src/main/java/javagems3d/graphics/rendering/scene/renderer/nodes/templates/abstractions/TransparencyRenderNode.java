@@ -50,12 +50,15 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
 
+    private boolean renderParticles;
+
     public TransparencyRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.indirectDeferredRenderingObjects = new HashSet<>();
         this.directDeferredRenderingObjects = new HashSet<>();
         this.inColor = inColor;
         this.outColor = new FBOTexture2DProgram(true, false);
+        this.renderParticles = true;
     }
 
     @Override
@@ -90,8 +93,10 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
         this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 
-        this.getWorld().getEnvironment().getParticlesScene().passObjectInTransparencySSBO();
-        this.getWorld().getEnvironment().getParticlesScene().getParticlesIndirectRendererTransparency().processAndRender(ArbitraryArguments.pass(this.getWorld().getEnvironment().getParticlesScene().getDefaultConsumerForParticlesScene()));
+        if (this.renderParticles) {
+            this.getWorld().getEnvironment().getParticlesScene().passObjectInTransparencySSBO();
+            this.getWorld().getEnvironment().getParticlesScene().getParticlesIndirectRendererTransparency().processAndRender(ArbitraryArguments.pass(this.getWorld().getEnvironment().getParticlesScene().getDefaultConsumerForParticlesScene()));
+        }
     }
 
     @Override
@@ -142,6 +147,15 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         if (this.getOutColorBuffer() != null) {
             this.getOutColorBuffer().clearFBO();
         }
+    }
+
+    public boolean isRenderParticles() {
+        return this.renderParticles;
+    }
+
+    public TransparencyRenderNode setRenderParticles(boolean renderParticles) {
+        this.renderParticles = renderParticles;
+        return this;
     }
 
     public DirectGeometryRenderProcessor getDirectGeometryRenderProcessor() {
