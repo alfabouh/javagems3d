@@ -67,8 +67,8 @@ public interface IAPIWBenchDataManager {
         this.addResourceProp(path, new ApiResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)), extCreator);
     }
 
-    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
-        this.addResourceMarker(path, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent)), extCreator);
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent, boolean canBeUsedInBackgroundSkyBox, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent), canBeUsedInBackgroundSkyBox), extCreator);
     }
 
     default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsEntityData> fabricGame, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
@@ -87,12 +87,12 @@ public interface IAPIWBenchDataManager {
         this.addResourceProp(null, id, fabricWBench, fabricGame, extCreator);
     }
 
-    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
-        this.addResourceMarker(path, new ApiResourceMarker(id, fabricWBench), extCreator);
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, boolean canBeUsedInBackgroundSkyBox, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, fabricWBench, canBeUsedInBackgroundSkyBox), extCreator);
     }
 
-    default void addResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
-        this.addResourceMarker(null, id, fabricWBench, extCreator);
+    default void addResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, boolean canBeUsedInBackgroundSkyBox, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator) {
+        this.addResourceMarker(null, id, fabricWBench, canBeUsedInBackgroundSkyBox, extCreator);
     }
 
     default void addResourceEntity(@Nullable String path, @NotNull String id, @Nullable JGemsPathSource modelPath) {
@@ -103,8 +103,8 @@ public interface IAPIWBenchDataManager {
         this.addResourceProp(path, new ApiResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)), null);
     }
 
-    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
-        this.addResourceMarker(path, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent)), null);
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent, boolean canBeUsedInBackgroundSkyBox) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent), canBeUsedInBackgroundSkyBox), null);
     }
 
     default void addResourceEntity(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull APIResource.MapObjectFabric<JGemsEntityData> fabricGame) {
@@ -123,12 +123,12 @@ public interface IAPIWBenchDataManager {
         this.addResourceProp(null, id, fabricWBench, fabricGame, null);
     }
 
-    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
-        this.addResourceMarker(path, new ApiResourceMarker(id, fabricWBench), null);
+    default void addResourceMarker(@Nullable String path, @NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, boolean canBeUsedInBackgroundSkyBox) {
+        this.addResourceMarker(path, new ApiResourceMarker(id, fabricWBench, canBeUsedInBackgroundSkyBox), null);
     }
 
-    default void addResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
-        this.addResourceMarker(null, id, fabricWBench, null);
+    default void addResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench, boolean canBeUsedInBackgroundSkyBox) {
+        this.addResourceMarker(null, id, fabricWBench, canBeUsedInBackgroundSkyBox, null);
     }
 
     default void SET_DEFAULTS() {
@@ -136,7 +136,7 @@ public interface IAPIWBenchDataManager {
         final JGemsPathSource cube = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ISource.Source.INSIDE_JAR);
         this.addResourceProp(IAPIWBenchDataManager.GENERIC_PROP, IAPIWBenchDataManager.DEFAULT_CUBE_OBJ, () -> new WBenchObjectData(cube), () -> new JGemsPropData(cube));
         this.addResourceEntity(IAPIWBenchDataManager.GENERIC_ENTITY, IAPIWBenchDataManager.DEFAULT_CUBE_OBJ, () -> new WBenchObjectData(cube).addTag(TAG_PHYSICS), () -> new JGemsEntityData(cube));
-        this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.PLAYER_SPAWN, () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false));
+        this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.PLAYER_SPAWN, () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false), false);
         {
             this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.AMBIENT_SOUND, () -> {
                 final TagFloat volume = new TagFloat(0.5f, 0.0f, 128.0f);
@@ -150,7 +150,7 @@ public interface IAPIWBenchDataManager {
                 final WBenchMarkerData wBenchMarkerData = new WBenchMarkerData(DefaultMarker.POINT, new Vector3f(3.0f, 0.0f, 0.0f), false);
                 wBenchMarkerData.addTags(tag_volume, tag_pitch, tag_distance, tag_sound);
                 return wBenchMarkerData;
-            });
+            }, false);
         }
         {
             this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.PARTICLE_EMITTER, () -> {
@@ -235,7 +235,7 @@ public interface IAPIWBenchDataManager {
                         tag_particleNormalizeY
                 );
                 return wBenchMarkerData;
-            }, ParticleEmitterObjectExtension::new);
+            }, false, ParticleEmitterObjectExtension::new);
         }
         {
             this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.POINT_LIGHT, () -> {
@@ -251,9 +251,9 @@ public interface IAPIWBenchDataManager {
                 wBenchMarkerData.addTags(enableShadowMap);
 
                 return wBenchMarkerData;
-            }, PointLightObjectExtension::new);
+            }, false, PointLightObjectExtension::new);
         }
-        this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.BOX_WATER, () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true));
+        this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.BOX_WATER, () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true), false);
         this.addResourceSkyCubeMap("SkyDay1", TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES);
     }
 

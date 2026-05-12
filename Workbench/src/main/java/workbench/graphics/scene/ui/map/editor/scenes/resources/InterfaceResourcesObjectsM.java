@@ -119,10 +119,15 @@ public class InterfaceResourcesObjectsM {
             ImGui.spacing();
             ImGui.separator();
             ImGui.spacing();
-            this.entities.render();
+            this.entities.render(null);
         }
-        this.props.render();
-        this.markers.render();
+        this.props.render(null);
+        this.markers.render((e) -> {
+            if (!flag) {
+                return e.isCanBeUsedInBackgroundSkyBox();
+            }
+            return true;
+        });
     }
 
     public CreatableResourcesTreeDrawerG<GameResourceScriptAsset, ScriptAssetPreview> getScriptResourceTreeDrawer() {

@@ -23,12 +23,14 @@ import workbench.resources.WBenchResourceManager;
 public class WBenchMarkerTemplate extends WBenchObjectTemplate {
     private final Vector3f color;
     private final boolean transparent;
+    private final boolean canBeUsedInBackgroundSkyBox;
 
-    public WBenchMarkerTemplate(@NotNull WBenchObject.ID objectId, MeshGroup meshGroup, TagsContainer tagsContainer, TranslationConstraints translationConstraints, Vector3f color, boolean transparent) {
+    public WBenchMarkerTemplate(@NotNull WBenchObject.ID objectId, MeshGroup meshGroup, TagsContainer tagsContainer, TranslationConstraints translationConstraints, Vector3f color, boolean transparent, boolean canBeUsedInBackgroundSkyBox) {
         super(objectId, meshGroup, null, tagsContainer, translationConstraints);
         this.color = color;
         this.transparent = transparent;
         this.renderAttributes = this.createRenderAttributes(transparent);
+        this.canBeUsedInBackgroundSkyBox = canBeUsedInBackgroundSkyBox;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class WBenchMarkerTemplate extends WBenchObjectTemplate {
     }
 
     protected RenderAttributes createRenderAttributes(boolean transparent) {
-        RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());
+        RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect(), WBenchRenderProperties.getDefault());
         renderAttributes.getProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false);
         if (transparent) {
             renderAttributes.getRenderTable().setRedirection(Redirections.SOLID_SCENE__IN__TRANSPARENCY);
@@ -51,6 +53,10 @@ public class WBenchMarkerTemplate extends WBenchObjectTemplate {
     public WBenchMarkerTemplate setModelDef(String modelDef) {
         this.modelDef = modelDef;
         return this;
+    }
+
+    public boolean isCanBeUsedInBackgroundSkyBox() {
+        return this.canBeUsedInBackgroundSkyBox;
     }
 
     public boolean isTransparent() {

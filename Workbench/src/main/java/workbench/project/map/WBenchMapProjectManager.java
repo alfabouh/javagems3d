@@ -291,7 +291,7 @@ public final class WBenchMapProjectManager {
                             (path, name) -> this.getMapObjectTemplates().getMarkers().find(path, name),
                             (tpl, t) -> new WBenchMarkerObject(this.getWorld(), Objects.requireNonNull(tpl), t.getTagsContainer(), tpl.getColor(), tpl.isTransparent()),
                             defaultMarkersToCreate,
-                            (rowMapObjectData -> new WBenchMarkerTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), WBenchResourceManager.gameEditorModelAssets.markerDefault, rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ), new Vector3f(1.0f), false))
+                            (rowMapObjectData -> new WBenchMarkerTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), WBenchResourceManager.gameEditorModelAssets.markerDefault, rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ), new Vector3f(1.0f), false, true))
                     );
                     Log.get().debug("Read Markers: " + objectsData.markerObjects.size());
                 } else {

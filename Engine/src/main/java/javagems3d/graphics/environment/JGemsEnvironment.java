@@ -79,12 +79,11 @@ public class JGemsEnvironment implements IEnvironment {
     @Override
     public void updateEnvironment(ICamera camera) {
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.PRE), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.PRE), JavaToJsAPI.Target.Game));
-        final HashMap<PointLight, Integer> lightIdxHashMap = this.getShadowScene().getSortedPointLightMapReadyToBind(JGemsTransformManager.INSTANCE.getCameraViewMatrix().getTranslation(new Vector3f()), this.getLightScene().getPointLights());
         this.getSkyBox().getSun().onUpdate(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld(), this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.updateLightsBuffer(this.getWorld(), lightIdxHashMap, stack);
+            this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), stack);
             this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
         }
         this.getParticlesScene().update(this.getWorld());

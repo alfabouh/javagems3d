@@ -71,7 +71,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
         final TagsContainer tagsContainer = gameResourceMarkerObjectAsset.getTagsContainer();
         final TranslationConstraints translationConstraints = gameResourceMarkerObjectAsset.getAxisConstraints();
-        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, gameResourceMarkerObjectAsset.getColor(), gameResourceMarkerObjectAsset.isTransparent()).setModelDef(gameResourceMarkerObjectAsset.getModelAssetRelativePath());
+        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, gameResourceMarkerObjectAsset.getColor(), gameResourceMarkerObjectAsset.isTransparent(), true).setModelDef(gameResourceMarkerObjectAsset.getModelAssetRelativePath());
     }
 
     private WBenchObjectTemplate createMapObjectTemplateFromApiPropSource(SystemResources systemResources, String path, APIResource<WBenchObjectData, ?> apiResourceProp, @Nullable Consumer<TagsContainer> doSomeTags) {
@@ -89,6 +89,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
 
     private WBenchMarkerTemplate createMapObjectTemplateFromApiMarkerSource(SystemResources systemResources, String path, APIResource<WBenchMarkerData, ?> apiResourceProp) {
         final WBenchMarkerData wBenchMarkerData = apiResourceProp.getFabricWBench().create();
+        final ApiResourceMarker apiResourceMarker = (ApiResourceMarker) apiResourceProp;
         final WBenchObject.ID ID = new WBenchObject.ID(apiResourceProp.name(), path);
         MeshGroup meshGroup = null;
         if (wBenchMarkerData.getDefaultMarker() != null) {
@@ -98,7 +99,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         }
         final TagsContainer tagsContainer = wBenchMarkerData.getTagsContainer();
         final TranslationConstraints translationConstraints = wBenchMarkerData.getTranslationConstraints();
-        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent()).setModelDef(wBenchMarkerData.getDefaultMarker() != null ? "DEFAULT" : (wBenchMarkerData.getPathToModel() == null ? null : wBenchMarkerData.getPathToModel().toString()));
+        return new WBenchMarkerTemplate(ID, meshGroup, tagsContainer, translationConstraints, wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent(), apiResourceMarker.isCanBeUsedInBackgroundSkyBox()).setModelDef(wBenchMarkerData.getDefaultMarker() != null ? "DEFAULT" : (wBenchMarkerData.getPathToModel() == null ? null : wBenchMarkerData.getPathToModel().toString()));
     }
 
     private <T extends VirtualObjectsFolder.ObjectWithName, E extends WBenchTemplate> void copyPlusConvertFolder(VirtualObjectsFolder<T> from, MapObjectTemplatesFolder<E> to, BiFunction<String, T, E> convert) {

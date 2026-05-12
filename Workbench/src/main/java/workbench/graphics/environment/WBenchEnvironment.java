@@ -49,11 +49,10 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
 
     @Override
     public void updateEnvironment(ICamera camera) {
-        final HashMap<PointLight, Integer> lightIdxHashMap = this.getShadowScene().getSortedPointLightMapReadyToBind(camera.getCamPosition(), this.getLightScene().getPointLights());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld(), this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.updateLightsBuffer(this.getWorld(), lightIdxHashMap, stack);
+            this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), stack);
             this.getFogScene().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), stack);
         }
         this.getParticlesScene().update(this.getWorld());
