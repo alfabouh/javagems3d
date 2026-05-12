@@ -8,6 +8,8 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.screen.timer.JGemsTimedAction;
+import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.world.IRenderWorld;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +80,7 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
         }
     }
 
-    private void clearAll() {
+    public void clearAll() {
         this.getFreeIds().clear();
         Iterator<WBenchObject<?>> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
@@ -88,10 +90,11 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
         }
     }
 
-    public void removeLight(Light light, @Nullable IObjectWithLights lighted) {
+    public void removeLight(Light light) {
         this.getEnvironment().getLightScene().removeLight(light);
-        if (lighted != null) {
-            lighted.removeLightAttachment((ILightAttachable) light);
+        ILightAttachable l = (ILightAttachable) light;
+        if (l.getAttachedTo() != null) {
+            l.getAttachedTo().removeLightAttachment(l);
         }
     }
 
@@ -121,6 +124,11 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
         this.getSceneObjects().add(wBenchObject);
         wBenchObject.onSpawn(this);
         Log.get().info("Created object: " + wBenchObject);
+    }
+
+    @Override
+    public TimerPool getTimerPool() {
+        return WBench.get().getScreen().getTimerPool();
     }
 
     public void removeObject(SceneObject renderObject) {
@@ -210,8 +218,10 @@ public class WBenchWorld implements IRenderWorld, ISnapshotCompatible<WBenchWorl
         this.freeIds.addAll(wBenchWorldSnapshotData.freeIds);
         this.idMap.clear();
         this.idMap.putAll(wBenchWorldSnapshotData.idMap);
+        this.toRenderSet.forEach(e -> e.onDestroy(this));
         this.toRenderSet.clear();
         this.toRenderSet.addAll(wBenchWorldSnapshotData.toRenderSet);
+        this.toRenderSet.forEach(e -> e.onSpawn(this));
         this.getEnvironment().fixSnapshot(wBenchWorldSnapshotData.environment);
 
         for (WBenchObject<?> wBenchObject : this.toRenderSet) {

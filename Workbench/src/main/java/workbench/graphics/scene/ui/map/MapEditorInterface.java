@@ -16,6 +16,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.items.TagFloat;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
@@ -73,6 +74,13 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
         this.sceneComponent = new SceneInterfaceComponentM(this);
 
         this.clear();
+    }
+
+    public static GameResourcesSet gameResourcesSet() {
+        return new GameResourcesSet(
+                WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
+                WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
+                WBench.get().getGameProjectManager().getGameResourcesManager().getSoundAssetsFolder());
     }
 
     public void resetSelected() {
@@ -371,6 +379,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
 
     public void addObjectInWorld(WBenchObject<?> wBenchObject) {
         WBenchUITrackingHelper.instantlyTrackAndPush();
+        WBenchObject.tryCreateObjectInstanceExtension(WBench.get().getScreen().getScene().getSceneRenderer(), wBenchObject);
         switch (this.getSelectedScene()) {
             case MAIN: {
                 this.getOpenGLRenderer().getWorld().addObject(wBenchObject);

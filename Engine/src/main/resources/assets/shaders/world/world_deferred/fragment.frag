@@ -33,11 +33,15 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     vec3 point_light_factor = vec3(0.0);
     for (int i = 0; i < total_plights; i++) {
         PointLight p = p_l[i];
-        float p_brightness = p.brightness;
-        vec3 params = getParams(p_brightness);
-        float p_id = p.attachedShadowSceneId;
-        float shadow = p_id >= 0 ? calculate_point_light_shadows(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
-        point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
+        vec3 delta = p.view_position - frag_pos;
+        float distSq = dot(delta, delta);
+        if (distSq <= p.clipRadius * p.clipRadius) {
+            float p_brightness = p.brightness;
+            vec3 params = getParams(p_brightness);
+            float p_id = p.attachedShadowSceneId;
+            float shadow = p_id >= 0 ? calculate_point_light_shadows(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
+            point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
+        }
     }
 
     float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
@@ -65,7 +69,7 @@ void main()
         vec4 model_normal_pos = vec4(normals, 1.0);
         vec4 world_normal = inversed_view * model_normal_pos;
         world_normal /= world_normal.w;
-        vec3 refracted_color = refract_cubemap(world_normal.xyz, 1.73, world_position);
+        vec3 refracted_color = refract_cubemap(-world_normal.xyz, 1.73, world_position);
         g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
 

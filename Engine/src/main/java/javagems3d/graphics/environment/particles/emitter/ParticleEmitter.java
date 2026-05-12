@@ -1,24 +1,22 @@
 package javagems3d.graphics.environment.particles.emitter;
 
-import javagems3d.JGems3D;
 import javagems3d.JGemsRandom;
 import javagems3d.graphics.environment.particles.IParticlesManager;
 import javagems3d.graphics.environment.particles.data.ParticleFXRenderData;
-import javagems3d.graphics.environment.particles.data.material.ParticleFXMaterial;
-import javagems3d.graphics.environment.particles.data.material.ParticleFXProperties;
 import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.environment.particles.fx.WorldDefaultParticleFX;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
-import javagems3d.system.controller.binding.DefaultBindings;
-import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -41,8 +39,11 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
     private float nextTimeToRespawn;
     private final IParticlesManager particlesManager;
 
+    private boolean enabled;
+
     public ParticleEmitter(@NotNull Vector3f emitterPosition, @NotNull IParticlesManager particlesManager, @NotNull Function<ParticleFXCreator, ParticleFX> particleCreator, float lifeTime) {
         this.isDead = false;
+        this.enabled = true;
         this.emitterProperties = new EmitterProperties();
         this.lifeTime = lifeTime;
         this.particleCreator = particleCreator;
@@ -52,9 +53,8 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         this.linkedParticles = new HashSet<>();
     }
 
-    public static Function<ParticleFXCreator, ParticleFX> DEFAULT_PARTICLE_WORLD(ImageTexture particleTexture, Vector2i cells, int maxSprites, boolean fadeOut) {
-        return (particleFXCreator -> new WorldDefaultParticleFX(ParticleFXRenderData.DEFAULT(particleTexture, cells, maxSprites), particleFXCreator.lifeTime(), particleFXCreator.gravity(), particleFXCreator.velocity(), particleFXCreator.acceleration())
-                .setFadeOut(fadeOut)
+    public static Function<ParticleFXCreator, ParticleFX> DEFAULT_PARTICLE_WORLD(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, ImageTexture particleTexture, @NotNull ParticleFXSpriteProperties particleFXSpriteProperties) {
+        return (particleFXCreator -> new WorldDefaultParticleFX(ParticleFXRenderData.DEFAULT(transparencyShaderManager, mainSceneShaderManager, particleTexture, particleFXSpriteProperties), particleFXCreator.lifeTime(), particleFXCreator.gravity(), particleFXCreator.velocity(), particleFXCreator.acceleration())
                 .setScaling(particleFXCreator.scaling())
                 .setPosition(particleFXCreator.pos()));
     }
@@ -65,14 +65,16 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        this.emitterLifeTime = JGemsHelper.screen().createTimer();
-        this.particleRespawner = JGemsHelper.screen().createTimer();
+        IRenderWorld renderWorld = (IRenderWorld) iWorld;
+        this.emitterLifeTime = renderWorld.createTimer();
+        this.particleRespawner = renderWorld.createTimer();
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
         this.emitterLifeTime.dispose();
         this.particleRespawner.dispose();
+        this.invalidate();
         this.linkedParticles = null;
     }
 
@@ -88,38 +90,64 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        if (!this.isEnabled()) {
+            return;
+        }
         if (this.emitterLifeTime != null) {
             if (this.lifeTime > 0.0f && this.emitterLifeTime.resetTimerAfterReachedSeconds(this.lifeTime)) {
+                this.spawnParticle();
                 this.setDead();
             }
         }
         if (this.particleRespawner != null) {
             if (this.getEmitterProperties().particleRespawnTime > 0.0f) {
                 if (this.particleRespawner.resetTimerAfterReachedSeconds(this.nextTimeToRespawn)) {
-                    final ParticleFX createdParticle = this.createParticle(
-                            new ParticleFXCreator(
-                                    this.getEmitterProperties(),
-                                    new Vector3f(this.getEmitterPosition()).add(JGemsRandom.instance.randomVector3f(this.getEmitterProperties().getParticleRandomSpawnPosOffsetRange())),
-                                    new Vector3f(this.getEmitterProperties().getParticleBaseScale()).add(JGemsRandom.instance.randomVector3f(this.getEmitterProperties().getParticleRandomSpawnScalingOffsetRange())),
-                                    this.getEmitterProperties().getParticleLifeTime() + (JGemsRandom.getRandom().nextFloat() * this.getEmitterProperties().getParticleLifeTimeRandomOffsetRange()),
-                                    new Vector3f(this.getEmitterProperties().getParticleGravity()),
-                                    new Vector3f(this.getEmitterProperties().getParticleBasicVelocity()).add(JGemsRandom.instance.randomVector3f(this.getEmitterProperties().getParticleBasicVelocityRandomOffsetRange())),
-                                    new Vector3f(this.getEmitterProperties().getParticleBasicAcceleration())
-                            )
-                    );
-                    createdParticle.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().setColor(new Vector4f(this.getEmitterProperties().getParticleColorMask(), this.getEmitterProperties().getParticleBlendingTransparency()));
-                    createdParticle.getParticleFXRenderData().particleFXMaterial().getEmissionColor().setColor(new Vector3f(this.getEmitterProperties().getParticleEmissiveColor()));
-                    createdParticle.getParticleFXRenderData().particleFXProperties().setEmissionStrength(this.getEmitterProperties().getParticleEmissiveFactorStrength());
-                    createdParticle.getParticleFXRenderData().particleFXProperties().setAlphaDiscard(this.getEmitterProperties().getParticleAlphaDiscard());
-                    this.particlesManager.spawnParticleFX(createdParticle);
-                    this.linkedParticles.add(createdParticle);
+                    this.spawnParticle();
                     this.nextTimeToRespawn = this.getEmitterProperties().particleRespawnTime + (JGemsRandom.getRandom().nextFloat() * this.getEmitterProperties().particleRespawnTimeRandomOffsetRange);
                 }
             } else {
-                this.setDead();
+                if (this.linkedParticles.size() > 1) {
+                    this.invalidate();
+                } else if (this.linkedParticles.isEmpty()) {
+                    this.spawnParticle();
+                } else {
+                    ParticleFX particleFX = this.linkedParticles.iterator().next();
+                    if (particleFX.snapToEmitterPos()) {
+                        particleFX.setPosition(new Vector3f(this.getEmitterPosition()).add(this.getEmitterProperties().getSpawnPosOffset()));
+                    }
+                }
             }
         }
         this.linkedParticles.removeIf(ParticleFX::isDead);
+    }
+
+    private void spawnParticle() {
+        final ParticleFX createdParticle = this.createParticle(
+                new ParticleFXCreator(
+                        this.getEmitterProperties(),
+                        new Vector3f(this.getEmitterPosition()).add(this.getEmitterProperties().getSpawnPosOffset()).add(JGemsRandom.instance.randomVector3f(this.getEmitterProperties().getParticleRandomSpawnPosOffsetRange())),
+                        new Vector3f(this.getEmitterProperties().getParticleBaseScale(), 1.0f).add(new Vector3f(JGemsRandom.instance.randomVector2f(this.getEmitterProperties().getParticleRandomSpawnScalingOffsetRange()), 0.0f)),
+                        this.getEmitterProperties().getParticleLifeTime() + (JGemsRandom.getRandom().nextFloat() * this.getEmitterProperties().getParticleLifeTimeRandomOffsetRange()),
+                        new Vector3f(this.getEmitterProperties().getParticleGravity()),
+                        new Vector3f(this.getEmitterProperties().getParticleBasicVelocity()).add(JGemsRandom.instance.randomVector3f(this.getEmitterProperties().getParticleBasicVelocityRandomOffsetRange())),
+                        new Vector3f(this.getEmitterProperties().getParticleBasicAcceleration())
+                )
+        );
+        createdParticle.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().setColor(new Vector4f(this.getEmitterProperties().getParticleColorMask(), this.getEmitterProperties().getParticleBlendingTransparency()));
+        createdParticle.getParticleFXRenderData().particleFXMaterial().getEmissionColor().setColor(new Vector3f(this.getEmitterProperties().getParticleEmissiveColor()));
+        createdParticle.getParticleFXRenderData().particleFXProperties().setEmissionStrength(this.getEmitterProperties().getParticleEmissiveFactorStrength());
+        createdParticle.getParticleFXRenderData().particleFXProperties().setAlphaDiscard(this.getEmitterProperties().getParticleAlphaDiscard());
+        this.particlesManager.spawnParticleFX(createdParticle);
+        this.linkedParticles.add(createdParticle);
+    }
+
+    public boolean isEnabled() {
+        return this.enabled && this.isAlive();
+    }
+
+    public ParticleEmitter setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
     public Set<ParticleFX> getLinkedParticles() {
@@ -127,8 +155,10 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
     }
 
     public void invalidate() {
-        this.linkedParticles.forEach(ParticleFX::setDead);
-        this.linkedParticles.clear();
+        if (this.linkedParticles != null) {
+            this.linkedParticles.forEach(ParticleFX::setDead);
+            this.linkedParticles.clear();
+        }
     }
 
     public Vector3f getEmitterPosition() {
@@ -158,14 +188,16 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         private float particleLifeTime;
         private float particleLifeTimeRandomOffsetRange;
 
+        private Vector3f spawnPosOffset;
+
         private Vector3f particleBasicVelocity;
         private Vector3f particleBasicVelocityRandomOffsetRange;
         private Vector3f particleBasicAcceleration;
 
         private Vector3f particleGravity;
-        private Vector3f particleBaseScale;
+        private Vector2f particleBaseScale;
         private Vector3f particleRandomSpawnPosOffsetRange;
-        private Vector3f particleRandomSpawnScalingOffsetRange;
+        private float particleRandomSpawnScalingOffsetRange;
 
         private Vector3f particleColorMask;
         private float particleBlendingTransparency;
@@ -182,14 +214,16 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
             this.particleLifeTimeRandomOffsetRange = 3.0f;
 
             this.particleRandomSpawnPosOffsetRange = new Vector3f(0.0f, 0.0f, 0.0f);
-            this.particleRandomSpawnScalingOffsetRange = new Vector3f(0.0f, 0.0f, 0.0f);
+            this.particleRandomSpawnScalingOffsetRange = 0.0f;
+
+            this.spawnPosOffset = new Vector3f(0.0f);
 
             this.particleBasicVelocity = new Vector3f(0.0f);
             this.particleBasicVelocityRandomOffsetRange = new Vector3f(0.0f);
             this.particleBasicAcceleration = new Vector3f(1.0f);
 
             this.particleGravity = new Vector3f(0.0f);
-            this.particleBaseScale = new Vector3f(1.0f);
+            this.particleBaseScale = new Vector2f(1.0f);
             this.particleColorMask = new Vector3f(1.0f);
 
             this.particleBlendingTransparency = 0.5f;
@@ -197,6 +231,15 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
             this.particleEmissiveColor = new Vector3f(0.0f, 0.0f, 0.0f);
             this.particleEmissiveFactorStrength = 0.0f;
+        }
+
+        public Vector3f getSpawnPosOffset() {
+            return this.spawnPosOffset;
+        }
+
+        public EmitterProperties setSpawnPosOffset(Vector3f spawnPosOffset) {
+            this.spawnPosOffset = spawnPosOffset;
+            return this;
         }
 
         public Vector3f getParticleBasicVelocity() {
@@ -235,11 +278,11 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
             return this;
         }
 
-        public Vector3f getParticleBaseScale() {
+        public Vector2f getParticleBaseScale() {
             return this.particleBaseScale;
         }
 
-        public EmitterProperties setParticleBaseScale(Vector3f particleBaseScale) {
+        public EmitterProperties setParticleBaseScale(Vector2f particleBaseScale) {
             this.particleBaseScale = particleBaseScale;
             return this;
         }
@@ -289,11 +332,11 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
             return this;
         }
 
-        public Vector3f getParticleRandomSpawnScalingOffsetRange() {
+        public float getParticleRandomSpawnScalingOffsetRange() {
             return this.particleRandomSpawnScalingOffsetRange;
         }
 
-        public EmitterProperties setParticleRandomSpawnScalingOffsetRange(Vector3f particleRandomSpawnScalingOffsetRange) {
+        public EmitterProperties setParticleRandomSpawnScalingOffsetRange(float particleRandomSpawnScalingOffsetRange) {
             this.particleRandomSpawnScalingOffsetRange = particleRandomSpawnScalingOffsetRange;
             return this;
         }

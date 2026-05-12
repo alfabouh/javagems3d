@@ -16,9 +16,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.global.JGemsConfig;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -83,7 +81,7 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
 
     public void initProcessors() {
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
         this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getWorld().getEnvironment().getSkyBox(), this.getSkyBoxShader(), this.getOpenGLRenderer());
         this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), this.getIndirectBufferData(), this.getPropertiesData(), this.getWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
     }

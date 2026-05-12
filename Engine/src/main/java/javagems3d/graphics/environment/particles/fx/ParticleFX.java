@@ -20,7 +20,6 @@ public abstract class ParticleFX implements ICulled, IWorldObject, IWorldTicked 
     private final ParticleFXRenderData particleFXRenderData;
     private Vector3f position;
     private Vector3f scaling;
-    private final int maxID;
     private int currentTextureID;
     private int interpolateWithTextureID;
     private boolean isDead;
@@ -29,7 +28,6 @@ public abstract class ParticleFX implements ICulled, IWorldObject, IWorldTicked 
         this.particleFXRenderData = particleFXRenderData;
         this.currentTextureID = 0;
         this.interpolateWithTextureID = 0;
-        this.maxID = particleFXRenderData.spriteProperties().cellsXY().x * particleFXRenderData.spriteProperties().cellsXY().y;
         this.position = new Vector3f();
         this.scaling = new Vector3f(1.0f);
         this.isDead = false;
@@ -50,10 +48,14 @@ public abstract class ParticleFX implements ICulled, IWorldObject, IWorldTicked 
     }
 
     public Matrix4f getMatrix() {
-        return TransformUtils.getOrientedToViewModelMatrix(new Pose3D().setPosition(this.getPosition()).setScaling(this.getScaling()), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        return TransformUtils.getOrientedToViewModelMatrix(new Pose3D().setPosition(this.getPosition()).setScaling(this.getScaling()), JGemsTransformManager.INSTANCE.getCameraViewMatrix(), this.getParticleFXRenderData().spriteProperties().normalizeY());
     }
 
     public abstract float interpolationPoint();
+
+    public boolean snapToEmitterPos() {
+        return false;
+    }
 
     public ParticleFXRenderData getParticleFXRenderData() {
         return this.particleFXRenderData;
@@ -99,10 +101,6 @@ public abstract class ParticleFX implements ICulled, IWorldObject, IWorldTicked 
     @Override
     public boolean isDead() {
         return this.isDead;
-    }
-
-    public int getMaxID() {
-        return this.maxID;
     }
 
     public int getCurrentTextureID() {

@@ -18,6 +18,9 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.objects.IObjectWithLights;
+import javagems3d.graphics.screen.timer.JGemsTimedAction;
+import javagems3d.graphics.screen.timer.TimerPool;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -155,7 +158,7 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     //section WorldClean
-    private void clearAll() {
+    public void clearAll() {
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject modeledSceneObject = iterator.next();
@@ -275,6 +278,11 @@ public final class SceneWorld implements IRenderWorld {
         if (sceneObject instanceof SceneEntity sceneEntity) {
             this.getObjectMap().put(sceneEntity.getWorldItem().getItemId(), sceneEntity);
         }
+    }
+
+    @Override
+    public TimerPool getTimerPool() {
+        return JGemsHelper.screen().getTimerPool();
     }
 
     public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {

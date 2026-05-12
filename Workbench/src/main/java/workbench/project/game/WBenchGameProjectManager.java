@@ -1,12 +1,11 @@
 package workbench.project.game;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.json.JSONFileManaging;
@@ -172,6 +171,7 @@ public class WBenchGameProjectManager {
         ((WBenchOpenGLRenderer) (WBench.get().getScreen().getScene().getSceneRenderer())).getDebugLinesDrawer().setup();
         WBench.get().getResourceManager().initLocalGameEditorResources();
         WBench.get().getResourceManager().loadLocalGameEditorResources();
+        ResourceManager.initDefaultMeshCubes();
         this.refreshModelFiles(false);
         this.refreshTextureFiles(false);
         this.refreshSoundFiles(false);
@@ -184,6 +184,7 @@ public class WBenchGameProjectManager {
     }
 
     private void destroyLocalGameResources() {
+        ResourceManager.destroyDefaultMeshCubes();
         WBench.get().getResourceManager().destroyLocalGameEditorResources();
         ((WBenchOpenGLRenderer) (WBench.get().getScreen().getScene().getSceneRenderer())).getDebugLinesDrawer().clear();
     }

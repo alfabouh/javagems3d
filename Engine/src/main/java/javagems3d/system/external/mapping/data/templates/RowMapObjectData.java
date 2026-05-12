@@ -70,13 +70,17 @@ public final class RowMapObjectData implements IJSONSerializable<RowMapObjectDat
         return this.scaling;
     }
 
+    public boolean checkGroupName(String group, String mapIdentifier, String name) {
+        return this.getObjectPath().equals("/" + group) && this.getObjectNameId().equals(mapIdentifier + name);
+    }
+
     public boolean checkGroupName(String group, String name) {
         return this.getObjectPath().equals("/" + group) && this.getObjectNameId().equals(name);
     }
 
     @Override
     public JSONFileManaging.@NotNull SerializationRules<RowMapObjectData> getSerializationRules() {
-        return new JSONFileManaging.SerializationRules<RowMapObjectData>() {
+        return new JSONFileManaging.SerializationRules<>() {
             @Override
             public JsonElement write(RowMapObjectData toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {

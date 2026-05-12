@@ -335,7 +335,6 @@ public final class JGemsHelper {
             return JGemsHelper.this.core.getScreen();
         }
 
-
         public void zeroRenderTick() {
             this.getScreen().zeroRenderTick();
         }

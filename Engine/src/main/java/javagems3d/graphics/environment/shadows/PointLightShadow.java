@@ -17,6 +17,7 @@ public class PointLightShadow extends Shadow {
     private final int id;
     private PointLight pointLight;
     private List<Matrix4f> shadowDirections;
+   // private float farPlane;
 
     public PointLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int id) {
         super(environment, shadowMapResolution);
@@ -26,9 +27,8 @@ public class PointLightShadow extends Shadow {
         this.pointLightCubeMap = new FBOCubeMapProgram();
     }
 
-
-
     public void configureMatrices() {
+       // this.farPlane = Math.min(this.getPointLight().getClipRadius() / 2.0f, 64.0f);
         this.shadowDirections = TransformUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPosition(), this.nearPlane(), this.farPlane());
     }
 

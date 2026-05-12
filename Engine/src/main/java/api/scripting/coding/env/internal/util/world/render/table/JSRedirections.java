@@ -35,11 +35,11 @@ public class JSRedirections {
 
     @JSCodingFunctionOrMethod(description = "Represents SCENE pipeline redirected into TRANSPARENCY pipeline", paramNames = {})
     public static JSRedirections SCENE__IN__TRANSPARENCY() {
-        return new JSRedirections(Redirections.SCENE__IN__TRANSPARENCY);
+        return new JSRedirections(Redirections.SOLID_SCENE__IN__TRANSPARENCY);
     }
 
     @JSCodingFunctionOrMethod(description = "Represents TRANSPARENCY pipeline redirected into SCENE pipeline", paramNames = {})
     public static JSRedirections TRANSPARENCY__IN__SCENE() {
-        return new JSRedirections(Redirections.TRANSPARENCY__IN__SCENE);
+        return new JSRedirections(Redirections.TRANSPARENCY__IN__SOLID_SCENE);
     }
 }

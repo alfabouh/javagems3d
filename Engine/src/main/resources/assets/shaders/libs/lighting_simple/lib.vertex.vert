@@ -15,7 +15,7 @@ struct PointLight
     vec3 view_position;
     int attachedShadowSceneId;
     vec3 color;
-    int _padding000;
+    int clipRadius;
 };
 layout (std430, binding = 6) buffer PointLights {
     PointLight p_l[CONST.MAX_POINT_LIGHTS];

@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -11,6 +12,7 @@ import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstant
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -84,6 +86,9 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MATERIALS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_PROPERIES", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS));
+        shaderStaticConstants.createConstant("POINT_LIGHT_CONSTANT_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_CONSTANT_ATT));
+        shaderStaticConstants.createConstant("POINT_LIGHT_LINEAR_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_LINEAR_ATT));
+        shaderStaticConstants.createConstant("POINT_LIGHT_EXP_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_EXP_ATT));
         shaderStaticConstants.createConstant("MAX_VERTEXES_IN_MODEL", String.valueOf(JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL));
         shaderStaticConstants.createConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));

@@ -13,6 +13,7 @@ import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObj
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -43,7 +44,7 @@ public abstract class ParticlesScene implements IParticlesScene {
 
     @Override
     public void createResources(OpenGLRenderer openGLRenderer) {
-        this.particlesIndirectRendererScene = new GroupedParticlesIndirectRenderer(openGLRenderer, IndirectRenderFabric.DEFAULT_FUNC, this.getParticlesIndirectSSBO(), this.getParticlesPropertiesSBO(), Pipeline.SCENE);
+        this.particlesIndirectRendererScene = new GroupedParticlesIndirectRenderer(openGLRenderer, IndirectRenderFabric.DEFAULT_FUNC, this.getParticlesIndirectSSBO(), this.getParticlesPropertiesSBO(), Pipeline.SOLID_SCENE);
         this.particlesIndirectRendererTransparency = new GroupedParticlesIndirectRenderer(openGLRenderer, IndirectRenderFabric.DEFAULT_FUNC, this.getParticlesIndirectSSBO(), this.getParticlesPropertiesSBO(), Pipeline.TRANSPARENCY);
     }
 

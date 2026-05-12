@@ -47,7 +47,7 @@ void main()
     vec4 diffuseInterpolated = mix(textureDiffuse, textureDiffuseInterpolation, enRenderData.interpolation);
 
     vec3 color = diffuseInterpolated.rgb * enRenderData.diffuse_color.xyz;
-    color *= enRenderData.emissionStrength + lightFactor * (1. - enRenderData.emissionStrength);
+    color *= (lightFactor * (1. - enRenderData.emissionStrength) + enRenderData.emissionStrength);
 
     float alpha_discard = enRenderData.alpha_discard;
     frag_color0 = vec4(color, 1.);
@@ -58,5 +58,8 @@ void main()
     }
 
     float brightness = dot(frag_color0.rgb, vec3(0.2126, 0.7152, 0.0722));
-    bright_color0 = (brightness >= 1.75 ? vec4(frag_color0.xyz, 1.) : vec4(0., 0., 0., 1.)) + vec4((vec4(enRenderData.emission_color, 0.)) * enRenderData.emissionStrength);
+    bright_color0 = (brightness >= 1.75 ? vec4(frag_color0.xyz, 1.) : vec4(vec3(frag_color0.xyz * enRenderData.emission_color) * enRenderData.emissionStrength, 1.));
+    if (textureDiffuse.a < 0.1) {
+        bright_color0 = vec4(0.);
+    }
 }

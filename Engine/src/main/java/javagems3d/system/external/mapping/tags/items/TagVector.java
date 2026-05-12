@@ -40,7 +40,7 @@ public class TagVector extends TagItem {
     }
 
     public Vector4f getValues() {
-        return this.values;
+        return new Vector4f(this.values);
     }
 
     public float getMin() {
@@ -59,33 +59,46 @@ public class TagVector extends TagItem {
     @Override
     public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet, @Nullable Supplier<UITrackingHelper> trackingHelper, @Nullable GameResourcesSet gameResourcesSet) {
         TagVector tagVector = (TagVector) tagItem;
-        Vector4f vec = tagVector.getValues();
-        float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};
+        float[] values = new float[] {this.values.x, this.values.y, this.values.z, this.values.w};
         String label = "##" + tagID.getNormalName();
 
-        boolean changed = false;
         switch (tagVector.getVectorMode()) {
             case VEC2F:
-                changed = ImGui.dragFloat2(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagVectorTAG_" + currentSelected, trackingHelper)) {
+                    if (ImGui.dragFloat2(label, values, 0.01f, tagVector.getMin(), tagVector.getMax())) {
+                        float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
+                        float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
+                        float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());
+                        float w = JGemsHelper.math().clamp(values[3], tagVector.getMin(), tagVector.getMax());
+                        uiTrackingHelper.saveSnapshot();
+                        this.values.set(x, y, z, w);
+                    }
+                }
                 break;
             case VEC3F:
-                changed = ImGui.dragFloat3(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagVectorTAG_" + currentSelected, trackingHelper)) {
+                    if (ImGui.dragFloat3(label, values, 0.01f, tagVector.getMin(), tagVector.getMax())) {
+                        float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
+                        float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
+                        float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());
+                        float w = JGemsHelper.math().clamp(values[3], tagVector.getMin(), tagVector.getMax());
+                        uiTrackingHelper.saveSnapshot();
+                        this.values.set(x, y, z, w);
+                    }
+                }
                 break;
             case VEC4F:
-                changed = ImGui.dragFloat4(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagVectorTAG_" + currentSelected, trackingHelper)) {
+                    if (ImGui.dragFloat4(label, values, 0.01f, tagVector.getMin(), tagVector.getMax())) {
+                        float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
+                        float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
+                        float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());
+                        float w = JGemsHelper.math().clamp(values[3], tagVector.getMin(), tagVector.getMax());
+                        uiTrackingHelper.saveSnapshot();
+                        this.values.set(x, y, z, w);
+                    }
+                }
                 break;
-        }
-
-        if (changed) {
-            if (trackingHelper != null) {
-                trackingHelper.get().takeSnapshot();
-            }
-            float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
-            float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
-            float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());
-            float w = JGemsHelper.math().clamp(values[3], tagVector.getMin(), tagVector.getMax());
-
-            vec.set(x, y, z, w);
         }
     }
 

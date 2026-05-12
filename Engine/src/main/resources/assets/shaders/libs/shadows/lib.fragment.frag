@@ -101,15 +101,15 @@ float calcShadowDepth(int idx, vec4 shadow_coord, float bias) {
 
 float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
     vec4 shadowMapPos = sampleProjView(idx) * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    if (shadow_coord.x < 0.0 || shadow_coord.x > 1.0 || shadow_coord.y < 0.0 || shadow_coord.y > 1.0 || shadow_coord.z < 0.0 || shadow_coord.z > 1.0) {
-        return 1.0;
-    }
     if (abs(shadowMapPos.w) < 1e-5) {
         return 1.0;
     }
-    float c0 = calcShadowDepth(idx, shadow_coord, bias);
-    return c0;
+    vec3 shadow_coord = shadowMapPos.xyz / shadowMapPos.w;
+    shadow_coord = shadow_coord * 0.5 + 0.5;
+    if (shadow_coord.x < 0.0 || shadow_coord.x > 1.0 ||shadow_coord.y < 0.0 || shadow_coord.y > 1.0 ||shadow_coord.z < 0.0 || shadow_coord.z > 1.0) {
+        return 1.0;
+    }
+    return calcShadowDepth(idx, vec4(shadow_coord, 1.0), bias);
 }
 
 float calc_sun_shadows(vec4 world_position, vec3 frag_pos) {

@@ -150,7 +150,7 @@ public class InterfaceActionsSelectedTemplateM {
                 for (TagID tag : tagIDSet) {
                     tagsStringBuilder.append(tag.getId());
                     if (i++ != tagIDSet.size() - 1) {
-                        tagsStringBuilder.append(", ");
+                        tagsStringBuilder.append("\n");
                     }
                 }
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
@@ -164,7 +164,12 @@ public class InterfaceActionsSelectedTemplateM {
                 } else {
                     ImGui.textWrapped("Model: " + selected.getModelDef());
                 }
-                ImGui.textWrapped("Tags: (" + tagsStringBuilder + ")");
+                ImGui.textWrapped("Tags: (" + selected.getTagsContainer().tags().size() + ")");
+                if (ImGui.isItemHovered()) {
+                    ImGui.beginTooltip();
+                    ImGui.setTooltip(tagsStringBuilder.toString());
+                    ImGui.endTooltip();
+                }
                 ImGui.textWrapped("Translation-Position: " + selected.getTranslationConstraints().positionConstraints());
                 ImGui.textWrapped("Translation-Rotation: " + selected.getTranslationConstraints().rotationConstraints());
                 ImGui.textWrapped("Translation-Scaling: " + selected.getTranslationConstraints().scalingConstraints());

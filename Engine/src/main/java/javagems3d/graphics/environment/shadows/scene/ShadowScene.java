@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.GroupedSceneObjectsIndirectRenderer;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -93,11 +94,11 @@ public abstract class ShadowScene implements IShadowScene {
         return modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER)).collect(Collectors.toSet());
     }
 
-    public void renderAllModelsInShadowMap(Set<? extends SceneObject> modeledSceneObjectSet) {
-        this.renderSceneInShadowMap(modeledSceneObjectSet);
+    public void renderAllModelsInShadowMap(IRenderWorld renderWorld, Set<? extends SceneObject> modeledSceneObjectSet) {
+        this.renderSceneInShadowMap(renderWorld, modeledSceneObjectSet);
     }
 
-    public void renderSceneInShadowMap(Set<? extends SceneObject> modeledSceneObjectSet) {
+    public void renderSceneInShadowMap(IRenderWorld renderWorld, Set<? extends SceneObject> modeledSceneObjectSet) {
         this.getSunLightShadow().refreshCascades();
         if (this.shouldNotRenderShadows()) {
             this.renderNullSunShadows();
@@ -114,7 +115,7 @@ public abstract class ShadowScene implements IShadowScene {
         } else {
             this.renderNullSunShadows();
         }
-        this.pointLightShadows(this.divideSet2Groups(filtered, Pipeline.POINT_LIGHT_SHADOW_MAP));
+        this.pointLightShadows(renderWorld, this.divideSet2Groups(filtered, Pipeline.POINT_LIGHT_SHADOW_MAP));
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
@@ -129,27 +130,31 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     @SuppressWarnings("all")
-    protected void pointLightShadows(Pair<List<SceneObject>, List<SceneObject>> groups) {
+    protected void pointLightShadows(IRenderWorld renderWorld, Pair<List<SceneObject>, List<SceneObject>> groups) {
         List<SceneObject> directRenderObjects = groups.first();
         List<SceneObject> indirectRenderObjects = groups.second();
 
         for (int i = 0; i < this.getMaxPointLightShadows(); i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isActive()) {
-                pointLightShadow.getPointLightCubeMap().bindFBO();
-                OpenGLRenderer.setViewPort(pointLightShadow.getShadowMapResolution());
-                pointLightShadow.configureMatrices();
-                for (int j = 0; j < 6; j++) {
-                    pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL46.GL_COLOR_ATTACHMENT0, j);
-                    GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
-                    GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
-                    Matrix4f lightProjection = pointLightShadow.getShadowDirections().get(j);
-                    Consumer<JGemsShaderManager> consumer = this.getUniformsConsumerPointLightShadows(pointLightShadow, lightProjection);
-                    this.renderModelsIndirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, indirectRenderObjects);
-                    this.renderModelsDirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, directRenderObjects);
-                    GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                final float distToLight = Math.max(pointLightShadow.getPointLight().getLightPosition().distance(renderWorld.getCamera().getCamPosition()) - pointLightShadow.getPointLight().getClipRadius() / 4.0f, 0.0f);
+                final int updateRate = distToLight <= 8.0f ? 1 : (int) (distToLight * 0.2f);
+                if (renderWorld.getTicks() % updateRate == 0) {
+                    pointLightShadow.getPointLightCubeMap().bindFBO();
+                    OpenGLRenderer.setViewPort(pointLightShadow.getShadowMapResolution());
+                    pointLightShadow.configureMatrices();
+                    for (int j = 0; j < 6; j++) {
+                        pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL46.GL_COLOR_ATTACHMENT0, j);
+                        GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+                        GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
+                        Matrix4f lightProjection = pointLightShadow.getShadowDirections().get(j);
+                        Consumer<JGemsShaderManager> consumer = this.getUniformsConsumerPointLightShadows(pointLightShadow, lightProjection);
+                        this.renderModelsIndirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, indirectRenderObjects);
+                        this.renderModelsDirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, directRenderObjects);
+                        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                    }
+                    pointLightShadow.getPointLightCubeMap().unBindFBO();
                 }
-                pointLightShadow.getPointLightCubeMap().unBindFBO();
             }
             pointLightShadow.setPointLight(null);
         }

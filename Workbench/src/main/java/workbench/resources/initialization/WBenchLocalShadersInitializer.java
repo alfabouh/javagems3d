@@ -43,7 +43,9 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public WBenchShaderManager blur5;
     public WBenchShaderManager hdr;
     public WBenchShaderManager world_ssao;
-    public JGemsShaderManager blur_ssao;
+    public WBenchShaderManager blur_ssao;
+    public WBenchShaderManager world_particle;
+    public WBenchShaderManager world_particle_oit;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
     public ShaderStorageBufferObject ParticleSceneIndirectBufferData;
@@ -73,6 +75,9 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MATERIALS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_PROPERIES", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS));
+        shaderStaticConstants.createConstant("POINT_LIGHT_CONSTANT_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_CONSTANT_ATT));
+        shaderStaticConstants.createConstant("POINT_LIGHT_LINEAR_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_LINEAR_ATT));
+        shaderStaticConstants.createConstant("POINT_LIGHT_EXP_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_EXP_ATT));
         shaderStaticConstants.createConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
@@ -164,6 +169,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.preview = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/preview"), ISource.Source.INSIDE_JAR));
         this.simple_flat = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath("/assets/wbench/shaders/world/simple_flat"), ISource.Source.INSIDE_JAR));
         this.world_ssao = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/screen_ssao"), ISource.Source.INSIDE_JAR));
+        this.world_particle = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/world_indirect"), ISource.Source.INSIDE_JAR));
+        this.world_particle_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/oit_indirect"), ISource.Source.INSIDE_JAR));
     }
 
     @Override

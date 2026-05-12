@@ -1,11 +1,19 @@
 package workbench.graphics.objects;
 
+import api.application.workbench.resources.data.wbench.WBenchData;
+import api.application.workbench.resources.data.wbench.ext.WBenchObjectInstanceExtension;
+import api.system.JGemsAPI;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.snapshots.instances.ISnapshotCompatible;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
+import javagems3d.physics.world.IWorld;
+import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
@@ -16,18 +24,19 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
+import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
-import workbench.project.map.settings.MapProjectSettings;
 
 import java.util.Objects;
 
 public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> extends SceneProp implements ISnapshotCompatible<E> {
+    private @Nullable WBenchObjectInstanceExtension objectInstanceExtension;
     private int id;
     private final WBenchObject.ID objectId;
     private TagsContainer tagsContainer;
     private final TranslationConstraints translationConstraints;
     private boolean forceConstraints;
-    private boolean wireRendering;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
         super(objectId.nameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
@@ -40,6 +49,35 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
 
     public WBenchObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer) {
         this(objectTemplate.getObjectId(), wBenchWorld, objectTemplate.getMeshGroup(), objectTemplate.getRenderAttributes().copy(), tagsContainer == null ? objectTemplate.getTagsContainer() : tagsContainer, objectTemplate.getTranslationConstraints());
+    }
+
+    private static WBenchObjectInstanceExtension.UtilityFunctions createExtensionUtility() {
+        return new WBenchObjectInstanceExtension.UtilityFunctions(MapEditorInterface.gameResourcesSet(),
+                (s) -> WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheTexture(s),
+                (s) -> WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(s),
+                (s) -> WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheSound(s)
+                );
+    }
+
+    public static @Nullable WBenchObjectInstanceExtension tryCreateObjectInstanceExtension(@NotNull OpenGLRenderer openGLRenderer, @NotNull WBenchObject<?> wBenchObject) {
+        if (JGemsAPI.APIEditorResources().getEditorResourcesManager().getObjectInstancesExtensions().containsKey(wBenchObject.objectId.toString())) {
+            WBenchObjectInstanceExtension wBenchObjectInstanceExtension = JGemsAPI.APIEditorResources().getEditorResourcesManager().getObjectInstancesExtensions().get(wBenchObject.objectId.toString()).apply(
+                    new WBenchObjectInstanceExtension.ContextData(
+                            wBenchObject.objectType(), wBenchObject.getTranslationConstraints(), wBenchObject::getTagsContainer, wBenchObject,
+                            WBenchOpenGLRenderer.isRenderingBackgroundScene(), WBenchOpenGLRenderer.DebugLinesDrawer(),
+                            WBenchObject.createExtensionUtility()
+                            )
+                    );
+            wBenchObject.setObjectInstanceExtension(wBenchObjectInstanceExtension);
+            return wBenchObjectInstanceExtension;
+        }
+        return null;
+    }
+
+    public void onTagsContainerAnyTagModified(TagsContainer tagsContainer, SceneProp sceneObject) {
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onTagsContainerAnyTagModified(tagsContainer, sceneObject);
+        }
     }
 
     public void setPosition(Vector3f newPos) {
@@ -117,14 +155,34 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     protected abstract void onScale(Vector3f scaling);
     public abstract Vector3f textInMenuColor();
     public abstract int orderInList();
+    public abstract WBenchData.ObjectType objectType();
 
-    public boolean isWireRendering() {
-        return this.wireRendering;
+    @Override
+    public void onSpawn(IWorld iWorld) {
+        super.onSpawn(iWorld);
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onSpawnExt((IRenderWorld) iWorld);
+        }
     }
 
-    public WBenchObject<E> setWireRendering(boolean wireRendering) {
-        this.wireRendering = wireRendering;
-        return this;
+    @Override
+    public void onDestroy(IWorld iWorld) {
+        super.onDestroy(iWorld);
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onDestroyExt((IRenderWorld) iWorld);
+        }
+    }
+
+    @Override
+    public void onUpdate(IWorld iWorld) {
+        super.onUpdate(iWorld);
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onUpdateExt((IRenderWorld) iWorld);
+        }
+    }
+
+    private void setObjectInstanceExtension(@Nullable WBenchObjectInstanceExtension objectInstanceExtension) {
+        this.objectInstanceExtension = objectInstanceExtension;
     }
 
     public synchronized Vector3f getPosition() {
@@ -184,7 +242,11 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
     }
 
     public String toString(boolean textPosition) {
-        return "[" + this.getListID() + "] " + this.getObjectNameId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
+        String s = "[" + this.getListID() + "] " + this.getObjectNameId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().overrideItemName(s);
+        }
+        return s;
     }
 
     @Override
@@ -205,6 +267,10 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
         return this.id;
     }
 
+    public @Nullable WBenchObjectInstanceExtension getObjectInstanceExtension() {
+        return this.objectInstanceExtension;
+    }
+
     public record ID(String nameId, String objectPath) {
             public ID(@NotNull String nameId) {
                 this(nameId, null);
@@ -216,7 +282,7 @@ public abstract class WBenchObject <E extends ISnapshotCompatible.SnapshotData> 
             }
 
             @Override
-            public String toString() {
+            public @NotNull String toString() {
                 return this.objectPath() + "/" + this.nameId();
             }
         }

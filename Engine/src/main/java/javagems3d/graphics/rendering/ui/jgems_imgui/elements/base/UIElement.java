@@ -35,7 +35,7 @@ public abstract class UIElement implements UIScalable {
 
     public abstract @NotNull Vector2i getPosition();
 
-    public abstract int calcUIHashCode();
+    public abstract int calcUIHash();
 
     public void setDefaultScaling() {
         this.scaling.set(1.0f);
@@ -104,6 +104,6 @@ public abstract class UIElement implements UIScalable {
 
     @Override
     public int hashCode() {
-        return this.calcUIHashCode();
+        return this.calcUIHash();
     }
 }

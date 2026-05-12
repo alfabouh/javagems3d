@@ -27,6 +27,9 @@ public class GroupedSceneObjectsIndirectRenderer extends IndirectSceneObjectsRen
     }
 
     public void processAndRender(@Nullable ArbitraryArguments metaData) {
+        if (!this.getRejected().isEmpty()) {
+            this.getRejected().clear();
+        }
         if (this.getIndirectMeshObjects() == null) {
             return;
         }

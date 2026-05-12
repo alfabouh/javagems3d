@@ -55,7 +55,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
                 if (model == null || !model.isValid()) {
                     continue;
                 }
-                if (pipeline.equals(Pipeline.SCENE) && !sceneObject.getRenderTable().isRedirected(Redirections.TRANSPARENCY__IN__SCENE)) {
+                if (pipeline.equals(Pipeline.SOLID_SCENE) && !sceneObject.getRenderTable().isRedirected(Redirections.TRANSPARENCY__IN__SOLID_SCENE)) {
                     if (sceneObject.getModel().getMeshStructure().hasTransparency()) {
                         this.getRejected().add(sceneObject);
                     }

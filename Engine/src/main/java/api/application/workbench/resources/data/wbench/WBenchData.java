@@ -1,9 +1,13 @@
 package api.application.workbench.resources.data.wbench;
 
+import api.application.workbench.resources.data.wbench.ext.WBenchObjectInstanceExtension;
 import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.external.mapping.tags.items.TagItem;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public abstract class WBenchData {
     private final TagsContainer tagsContainer;
@@ -13,7 +17,6 @@ public abstract class WBenchData {
         this.tagsContainer = tagsContainer;
         this.translationConstraints = translationConstraints;
     }
-
     @SuppressWarnings("all")
     public WBenchData addTags(Tag<? extends TagItem>... tags) {
         for (Tag<? extends TagItem> tag : tags) {
@@ -33,5 +36,11 @@ public abstract class WBenchData {
 
     public TranslationConstraints getTranslationConstraints() {
         return this.translationConstraints;
+    }
+
+    public enum ObjectType {
+        MARKER,
+        PROP,
+        ENTITY
     }
 }

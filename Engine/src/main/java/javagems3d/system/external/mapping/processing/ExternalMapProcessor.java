@@ -1,6 +1,7 @@
 package javagems3d.system.external.mapping.processing;
 
 import api.application.workbench.manager.ApiResourceObjectsFolder;
+import api.application.workbench.manager.IAPIWBenchDataManager;
 import api.application.workbench.resources.APIResource;
 import api.application.workbench.resources.ApiResourceEntity;
 import api.application.workbench.resources.ApiResourceMarker;
@@ -33,6 +34,9 @@ import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
+import javagems3d.graphics.environment.particles.ParticlesManager;
+import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
+import javagems3d.graphics.environment.particles.emitter.ParticleEmitter;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -43,7 +47,9 @@ import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.gaming.JGemsGaming;
@@ -70,7 +76,9 @@ import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.json.JSONFileManaging;
@@ -80,13 +88,12 @@ import javagems3d.system.service.files.source.JGemsPathSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.openal.AL10;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Math;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.Map;
@@ -153,31 +160,12 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     protected abstract @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background);
-    protected abstract @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
-    protected abstract @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
+    protected abstract @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
     protected abstract void preProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-
-    protected @Nullable Pair<PointLight, Integer> onProcessPointLight(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        final Vector4f tagColor = Objects.requireNonNull(template.getTagsContainer().<TagColor>getTagUnSafeItem(TagID.DEFAULT.COLOR3)).getColorVector();
-        final float brightness = Objects.requireNonNull(template.getTagsContainer().<TagFloat>getTagUnSafeItem(TagID.DEFAULT.BRIGHTNESS)).getValue();
-        final int attachedTo = Objects.requireNonNull(template.getTagsContainer().<TagObjectsList>getTagUnSafeItem(TagID.DEFAULT.OBJECT_LIST)).getValue();
-        final Vector3f offset = Objects.requireNonNull(template.getTagsContainer().<TagVector>getTagUnSafeItem(TagID.DEFAULT.FLOAT3)).getValues().xyz(new Vector3f());
-        final boolean shadows = template.getTagsContainer().hasTag(TagID.DEFAULT.SHADOW_MAP) && Objects.requireNonNull(template.getTagsContainer().<TagCheckBoolean>getTagUnSafeItem(TagID.DEFAULT.SHADOW_MAP)).isFlag();
-
-        PointLight pointLight = new PointLight();
-        pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
-        pointLight.setLightColor(tagColor.xyz(new Vector3f()));
-        pointLight.setBrightness(brightness);
-        pointLight.setOffset(offset);
-        pointLight.setEnableShadowMap(shadows);
-        pointLight.on();
-        sceneWorld.addLight(pointLight, null);
-
-        return new Pair<>(pointLight, attachedTo);
-    }
 
     //Map<String, APIWBenchDataManager.TemplatesTable<R>>
     @SuppressWarnings("all")
@@ -192,31 +180,11 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
     }
 
-    protected void onProcessing(Set<RowMapObjectData> backgroundPropObjects, Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, Set<RowMapObjectData> pointLights, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    protected void onProcessing(Set<RowMapObjectData> backgroundPropObjects, Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         final ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> resourcePropMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getProps();
         final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getEntities();
         final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getMarkers();
 
-        Map<Integer, List<PointLight>> pointLightIdMap = new HashMap<>();
-        for (RowMapObjectData template : pointLights) {
-            EventBus.MapPointLightConvertEvent event = new EventBus.MapPointLightConvertEvent(sceneWorld, physicsWorld, template);
-            EventLauncher.pushEvent(event, new Pair<>(new JSMapPointLightConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
-            if (event.isCancelled()) {
-                continue;
-            }
-
-            Pair<PointLight, Integer> pair = event.getResult() != null ? event.getResult() : this.onProcessPointLight(template, physicsWorld, sceneWorld);
-            if (pair != null) {
-                if (pair.second() >= 0) {
-                    JGemsHelper.Files.putObjectInMapOrUpdate(pointLightIdMap, pair.second(), new ArrayList<PointLight>() {{
-                        add(pair.first());
-                    }}, (ex, nw) -> {
-                        ex.add(nw);
-                        return ex;
-                    }, pair.first());
-                }
-            }
-        }
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
             EventBus.MapPropConvertEvent event = new EventBus.MapPropConvertEvent(true, sceneWorld, physicsWorld, template, data);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapPropConvertEvent(true, new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSPropData(data)), JavaToJsAPI.Target.Map));
@@ -233,7 +201,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 return;
             }
 
-            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessProp(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
+            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessProp(template, data, physicsWorld, sceneWorld);
         });
         this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> {
             EventBus.MapEntityConvertEvent event = new EventBus.MapEntityConvertEvent(sceneWorld, physicsWorld, template, data);
@@ -242,10 +210,10 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 return;
             }
 
-            WorldItem worldItem = event.getResult() != null ? event.getResult() : this.onProcessEntity(template, data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
+            WorldItem worldItem = event.getResult() != null ? event.getResult() : this.onProcessEntity(template, data, physicsWorld, sceneWorld);
         });
         this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> {
-            this.processDefaultMarkers(template);
+            this.processDefaultMarkers(template, physicsWorld, sceneWorld);
             EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(sceneWorld, physicsWorld, template, data);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapMarkerConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
             if (event.isCancelled()) {
@@ -257,8 +225,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
     }
 
-    protected void processDefaultMarkers(RowMapObjectData template) {
-        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "water")) {
+    protected void processDefaultMarkers(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        if (template.checkGroupName(IAPIWBenchDataManager.BOX_WATER, MapObjectsIdentifiers.MARKER + IAPIWBenchDataManager.BOX_WATER)) {
             Vector3f pos = template.getPosition();
             Vector3f scale = template.getScaling();
             Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
@@ -266,7 +234,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             Log.get().debug("Processed marker: water");
         }
 
-        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "player_spawn")) {
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.PLAYER_SPAWN)) {
             Matrix4f rotMatrix = new Matrix4f().rotateXYZ(template.getRotation().x, template.getRotation().y, template.getRotation().z);
             Vector3f forward = new Vector3f(0, 0, -1);
             rotMatrix.transformDirection(forward);
@@ -277,7 +245,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             Log.get().debug("Processed marker: player_spawn");
         }
 
-        if (template.checkGroupName("generic_marker", MapObjectsIdentifiers.MARKER + "ambient_sound")) {
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.AMBIENT_SOUND)) {
             final TagFloat tag_volume = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_VOLUME, TagFloat.class);
             final TagFloat tag_pitch = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_PITCH, TagFloat.class);
             final TagFloat tag_distance = template.getTagsContainer().getTagItem(TagID.DEFAULT.SOUND_DISTANCE, TagFloat.class);
@@ -303,6 +271,103 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 Log.get().error("Failed to load ambient_sound");
             }
             Log.get().debug("Processed marker: ambient_sound");
+        }
+
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.POINT_LIGHT)) {
+            final Vector4f tagColor = Objects.requireNonNull(template.getTagsContainer().<TagColor>getTagUnSafeItem(TagID.DEFAULT.COLOR3)).getColorVector();
+            final float brightness = Objects.requireNonNull(template.getTagsContainer().<TagFloat>getTagUnSafeItem(TagID.DEFAULT.BRIGHTNESS)).getValue();
+            final Vector3f offset = Objects.requireNonNull(template.getTagsContainer().<TagVector>getTagUnSafeItem(TagID.DEFAULT.FLOAT3)).getValues().xyz(new Vector3f());
+            final boolean shadows = template.getTagsContainer().hasTag(TagID.DEFAULT.SHADOW_MAP) && Objects.requireNonNull(template.getTagsContainer().<TagCheckBoolean>getTagUnSafeItem(TagID.DEFAULT.SHADOW_MAP)).isFlag();
+
+            PointLight pointLight = new PointLight();
+            pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
+            pointLight.setLightColor(tagColor.xyz(new Vector3f()));
+            pointLight.setBrightness(brightness);
+            pointLight.setOffset(offset);
+            pointLight.setEnableShadowMap(shadows);
+            pointLight.on();
+            sceneWorld.addLight(pointLight, null);
+        }
+
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.PARTICLE_EMITTER)) {
+            TagsContainer tags = template.getTagsContainer();
+            String texturePath = tags.hasTag(TagID.DEFAULT.TEXTURE_PATH) ? tags.getTag(TagID.DEFAULT.TEXTURE_PATH).<TagGameResourcesList>getTagItemUnsafeCast().getValue() : "NULL";
+            Vector3f spawnPosOffset = tags.hasTag(TagID.DEFAULT.PARTICLE_SPAWN_POS_OFFSET) ? tags.getTag(TagID.DEFAULT.PARTICLE_SPAWN_POS_OFFSET).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            float respawnTime = tags.hasTag(TagID.DEFAULT.PARTICLE_RESPAWN_TIME) ? tags.getTag(TagID.DEFAULT.PARTICLE_RESPAWN_TIME).<TagFloat>getTagItemUnsafeCast().getValue() : 0.1f;
+            float respawnTimeRand = tags.hasTag(TagID.DEFAULT.PARTICLE_RESPAWN_TIME_RANDOM_OFFSET_RANGE) ? tags.getTag(TagID.DEFAULT.PARTICLE_RESPAWN_TIME_RANDOM_OFFSET_RANGE).<TagFloat>getTagItemUnsafeCast().getValue() : 0.1f;
+            float lifeTime = tags.hasTag(TagID.DEFAULT.PARTICLE_LIFE_TIME) ? tags.getTag(TagID.DEFAULT.PARTICLE_LIFE_TIME).<TagFloat>getTagItemUnsafeCast().getValue() : 0.1f;
+            float lifeTimeRand = tags.hasTag(TagID.DEFAULT.PARTICLE_LIFE_TIME_RANDOM_OFFSET_RANGE) ? tags.getTag(TagID.DEFAULT.PARTICLE_LIFE_TIME_RANDOM_OFFSET_RANGE).<TagFloat>getTagItemUnsafeCast().getValue() : 0.1f;
+            Vector3f spawnPosRand = tags.hasTag(TagID.DEFAULT.PARTICLE_RANDOM_SPAWN_POS_OFFSET_RANGE) ? tags.getTag(TagID.DEFAULT.PARTICLE_RANDOM_SPAWN_POS_OFFSET_RANGE).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            float spawnScaleRand = tags.hasTag(TagID.DEFAULT.PARTICLE_RANDOM_SPAWN_SCALING_OFFSET_RANGE) ? tags.getTag(TagID.DEFAULT.PARTICLE_RANDOM_SPAWN_SCALING_OFFSET_RANGE).<TagFloat>getTagItemUnsafeCast().getValue() : 0.0f;
+            Vector3f velocity = tags.hasTag(TagID.DEFAULT.PARTICLE_BASIC_VELOCITY) ? tags.getTag(TagID.DEFAULT.PARTICLE_BASIC_VELOCITY).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            Vector3f velocityRand = tags.hasTag(TagID.DEFAULT.PARTICLE_BASIC_VELOCITY_RANDOM_OFFSET_RANGE) ? tags.getTag(TagID.DEFAULT.PARTICLE_BASIC_VELOCITY_RANDOM_OFFSET_RANGE).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            Vector3f acceleration = tags.hasTag(TagID.DEFAULT.PARTICLE_BASIC_ACCELERATION) ? tags.getTag(TagID.DEFAULT.PARTICLE_BASIC_ACCELERATION).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(1.0f);
+            Vector3f gravity = tags.hasTag(TagID.DEFAULT.PARTICLE_GRAVITY) ? tags.getTag(TagID.DEFAULT.PARTICLE_GRAVITY).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            Vector2f baseScale = tags.hasTag(TagID.DEFAULT.PARTICLE_BASE_SCALE) ? tags.getTag(TagID.DEFAULT.PARTICLE_BASE_SCALE).<TagVector>getTagItemUnsafeCast().getValues().xy(new Vector2f()) : new Vector2f(1.0f);
+            Vector3f colorMask = tags.hasTag(TagID.DEFAULT.PARTICLE_COLOR_MASK) ? tags.getTag(TagID.DEFAULT.PARTICLE_COLOR_MASK).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(1.0f);
+            float transparency = tags.hasTag(TagID.DEFAULT.PARTICLE_BLENDING_TRANSPARENCY) ? tags.getTag(TagID.DEFAULT.PARTICLE_BLENDING_TRANSPARENCY).<TagFloat>getTagItemUnsafeCast().getValue() : 0.5f;
+            float alphaDiscard = tags.hasTag(TagID.DEFAULT.PARTICLE_ALPHA_DISCARD) ? tags.getTag(TagID.DEFAULT.PARTICLE_ALPHA_DISCARD).<TagFloat>getTagItemUnsafeCast().getValue() : 0.1f;
+            Vector3f emissiveColor = tags.hasTag(TagID.DEFAULT.PARTICLE_EMISSIVE_COLOR) ? tags.getTag(TagID.DEFAULT.PARTICLE_EMISSIVE_COLOR).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+            float emissiveStrength = tags.hasTag(TagID.DEFAULT.PARTICLE_EMISSIVE_FACTOR_STRENGTH) ? tags.getTag(TagID.DEFAULT.PARTICLE_EMISSIVE_FACTOR_STRENGTH).<TagFloat>getTagItemUnsafeCast().getValue() : 0.0f;
+            boolean normalizeY = !tags.hasTag(TagID.DEFAULT.PARTICLE_NORMALIZE_Y) || tags.getTag(TagID.DEFAULT.PARTICLE_NORMALIZE_Y).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+            boolean looped = !tags.hasTag(TagID.DEFAULT.PARTICLE_ANIMATION_LOOPED) || tags.getTag(TagID.DEFAULT.PARTICLE_ANIMATION_LOOPED).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+            float animSpeed = tags.hasTag(TagID.DEFAULT.PARTICLE_ANIMATION_SPEED) ? tags.getTag(TagID.DEFAULT.PARTICLE_ANIMATION_SPEED).<TagFloat>getTagItemUnsafeCast().getValue() : 1.0f;
+            int cellsX = tags.hasTag(TagID.DEFAULT.CELLS_X) ? tags.getTag(TagID.DEFAULT.CELLS_X).<TagInt>getTagItemUnsafeCast().getValue() : 1;
+            int cellsY = tags.hasTag(TagID.DEFAULT.CELLS_Y) ? tags.getTag(TagID.DEFAULT.CELLS_Y).<TagInt>getTagItemUnsafeCast().getValue() : 1;
+            int maxSprites = tags.hasTag(TagID.DEFAULT.MAX_SPRITES) ? tags.getTag(TagID.DEFAULT.MAX_SPRITES).<TagInt>getTagItemUnsafeCast().getValue() : 1;
+            boolean fadeOut = !tags.hasTag(TagID.DEFAULT.PARTICLE_FADE_OUT) || tags.getTag(TagID.DEFAULT.PARTICLE_FADE_OUT).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+
+            ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(
+                    new JGemsPathSource(new JGemsPath(JGemsGaming.getTexturesFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR),
+                    ResourceManager.DEFAULT_TEXTURE(),
+                    new ImageTexture.Properties(false, true, false, false, false)
+            );
+            if (!(texture2DProgram instanceof ImageTexture)) {
+                texture2DProgram = JGemsResourceManager.globalTextureAssets.defaultParticle;
+            }
+            final ParticlesManager particlesManager = (ParticlesManager) sceneWorld.getEnvironment().getParticlesScene().getParticlesManager();
+            ParticleEmitter particleEmitter = particlesManager.spawnParticleFXEmitter(
+                    particlesManager.createDefaultWorldParticleEmitter(
+                            template.getPosition(),
+                            (ImageTexture) texture2DProgram,
+                            new ParticleFXSpriteProperties(
+                                    new Vector2i(cellsX, cellsY),
+                                    maxSprites,
+                                    looped,
+                                    animSpeed,
+                                    fadeOut,
+                                    normalizeY
+                            ),
+                            sceneWorld.getEnvironment(),
+                            -1.0f
+                    )
+            );
+
+            particleEmitter.getEmitterProperties()
+                    .setSpawnPosOffset(spawnPosOffset)
+                    .setParticleRandomSpawnPosOffsetRange(spawnPosRand)
+                    .setParticleRandomSpawnScalingOffsetRange(spawnScaleRand)
+
+                    .setParticleLifeTime(lifeTime)
+                    .setParticleLifeTimeRandomOffsetRange(lifeTimeRand)
+
+                    .setParticleRespawnTime(respawnTime)
+                    .setParticleRespawnTimeRandomOffsetRange(respawnTimeRand)
+
+                    .setParticleAlphaDiscard(alphaDiscard)
+                    .setParticleBlendingTransparency(transparency)
+
+                    .setParticleBaseScale(baseScale)
+                    .setParticleColorMask(colorMask)
+
+                    .setParticleBasicVelocity(velocity)
+                    .setParticleBasicVelocityRandomOffsetRange(velocityRand)
+                    .setParticleBasicAcceleration(acceleration)
+
+                    .setParticleGravity(gravity)
+
+                    .setParticleEmissiveColor(emissiveColor)
+                    .setParticleEmissiveFactorStrength(emissiveStrength);
         }
     }
 
@@ -370,10 +435,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final Set<RowMapObjectData> propObjects = this.getMapDataPack().getObjectsData().getPropObjects();
         final Set<RowMapObjectData> markerObjects = this.getMapDataPack().getObjectsData().getMarkerObjects();
         final Set<RowMapObjectData> entityObjects = this.getMapDataPack().getObjectsData().getEntityObjects();
-        final Set<RowMapObjectData> pointLights = this.getMapDataPack().getObjectsData().getPointLights();
         final Set<RowMapObjectData> backgroundProps = this.getMapDataPack().getObjectsData().getBackgroundProps();
 
-        this.onProcessing(backgroundProps, propObjects, markerObjects, entityObjects, pointLights, world, sceneWorld);
+        this.onProcessing(backgroundProps, propObjects, markerObjects, entityObjects, world, sceneWorld);
 
         EventLauncher.pushEvent(new EventBus.MapProcessingEvent(world, sceneWorld, this.getMapDataPack(), EventBus.Run.POST), new Pair<>(new JSMapProcessingEvent(new JSPhysicsWorld(world), new JSSceneWorld(sceneWorld), EventBus.Run.POST), JavaToJsAPI.Target.Map));
     }
@@ -494,7 +558,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         @Override
-        protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
+        protected @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
             final TagRadioBoolean tagDirectIndirect = template.getTagsContainer().getTagItem(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, TagRadioBoolean.class);
             MeshStructure3D<?> meshStructure3D = null;
             PropRenderData propRenderData = null;
@@ -513,16 +577,11 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
             sceneWorld.addObject(sceneWorldProp);
 
-            if (pointLightsToAttach != null) {
-                for (PointLight pointLight : pointLightsToAttach) {
-                    sceneWorldProp.addLightAttachment(pointLight);
-                }
-            }
             return sceneWorldProp;
         }
 
         @Override
-        protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
+        protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
             //if (true) {
             //    return null;
             //}
@@ -549,12 +608,6 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
-
-            if (pointLightsToAttach != null) {
-                for (PointLight pointLight : pointLightsToAttach) {
-                    sceneWorld.addWorldItemLight(jGemsBody, pointLight);
-                }
-            }
 
             return jGemsBody;
         }
@@ -604,7 +657,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     }
                 }
             } catch (Exception e) {
-                Log.get().warn("Couldn't create any player. DefaultPhysTest returned");
+                Log.get().warn("Couldn't create any player. Default returned");
             }
             return this.playerConstructor;
         }

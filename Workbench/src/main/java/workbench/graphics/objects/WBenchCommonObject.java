@@ -1,30 +1,17 @@
 package workbench.graphics.objects;
 
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
-import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import api.application.workbench.resources.data.wbench.WBenchData;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
-import javagems3d.system.external.mapping.tags.Tag;
-import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
-import javagems3d.system.external.mapping.tags.base.AxisConstraints;
-import javagems3d.system.external.mapping.tags.base.ColorMode;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
-import javagems3d.system.external.mapping.tags.base.VectorMode;
-import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
-import workbench.graphics.fabrics.MarkerSimpleRenderFabric;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.world.WBenchWorld;
-import workbench.resources.WBenchResourceManager;
 
 public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCommonObjectSnapshotData> {
     public WBenchCommonObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
@@ -35,10 +22,13 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
         super(wBenchWorld, objectTemplate, tagsContainer);
     }
 
-
     @Override
     public WBenchCommonObject clone() {
-        WBenchCommonObject commonObject = new WBenchCommonObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
+        TagsContainer tagsContainer = this.getTagsContainer().copy();
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onObjectCloned(tagsContainer, this);
+        }
+        WBenchCommonObject commonObject = new WBenchCommonObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints());
         commonObject.setPosition(this.getPosition());
         commonObject.setRotation(this.getRotation());
         commonObject.setScaling(this.getScaling());
@@ -47,14 +37,24 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
 
     @Override
     public Vector3f textInMenuColor() {
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().textInMenuColor();
+        }
         return new Vector3f(1.0f);
     }
 
     @Override
     public int orderInList() {
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().orderInItemsList();
+        }
         return 0;
     }
 
+    @Override
+    public WBenchData.ObjectType objectType() {
+        return this.getObjectNameId().nameId().startsWith(MapObjectsIdentifiers.ENTITY) ? WBenchData.ObjectType.ENTITY : WBenchData.ObjectType.PROP;
+    }
 
     @Override
     protected void onTranslate(Vector3f position) {
@@ -85,6 +85,10 @@ public class WBenchCommonObject extends WBenchObject<WBenchCommonObject.WBenchCo
         this.setPosition(wBenchCommonObjectSnapshotData.pos);
         this.setRotation(wBenchCommonObjectSnapshotData.rot);
         this.setScaling(wBenchCommonObjectSnapshotData.scale);
+
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onApplySnapshot(wBenchCommonObjectSnapshotData.tagsContainer, this);
+        }
     }
 
     public static class WBenchCommonObjectSnapshotData extends WBenchObject.WBenchObjectSnapshotData {

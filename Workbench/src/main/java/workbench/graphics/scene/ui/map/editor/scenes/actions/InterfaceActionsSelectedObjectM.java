@@ -14,7 +14,9 @@ import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagFloat;
 import javagems3d.system.external.mapping.tags.items.TagItem;
+import javagems3d.system.external.mapping.tags.items.TagVector;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -442,6 +444,7 @@ public class InterfaceActionsSelectedObjectM {
 
         final TagsContainer tagsContainer = selectedObject.getTagsContainer();
         if (!tagsContainer.isEmpty()) {
+            UITrackingHelper.startTrackingRowOfUITrackers();
             for (Tag<? extends TagItem> tag : tagsContainer.getTagCollection()) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
                 if (ImGui.collapsingHeader(tag.getTagID().getNormalName() == null ? tag.getTagID().getId() : tag.getTagID().getNormalName(), ImGuiTreeNodeFlags.DefaultOpen)) {
@@ -450,10 +453,7 @@ public class InterfaceActionsSelectedObjectM {
                     //ImGui.beginChild("##InsideTag_" + tag.getTagID().getId(), ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
                     {
                         tag.getTagItem().ImGuiRendering(tagsContainer, selectedObject, tag.getTagItem(), tag.getTagID(), worldObjectsToViewInList, WBenchUITrackingHelper::INSTANCE,
-                                new GameResourcesSet(
-                                        WBench.get().getGameProjectManager().getGameResourcesManager().getModelAssetsFolder(),
-                                        WBench.get().getGameProjectManager().getGameResourcesManager().getTextureAssetsFolder(),
-                                        WBench.get().getGameProjectManager().getGameResourcesManager().getSoundAssetsFolder()));
+                                MapEditorInterface.gameResourcesSet());
                         ImGui.separator();
                         //this.showItemDescription(tag.getTagID());
                     }
@@ -464,6 +464,9 @@ public class InterfaceActionsSelectedObjectM {
                 }
                 ImGui.spacing();
             }
+            if (UITrackingHelper.stopTrackingRowOfUITrackersAndGetResult()) {
+                selectedObject.onTagsContainerAnyTagModified(tagsContainer, selectedObject);
+            }
         } else {
             ImGui.text("<empty>");
         }
@@ -472,7 +475,7 @@ public class InterfaceActionsSelectedObjectM {
     private void forSelectedObject(WBenchObject<?> selectedObject, boolean manyObjects) {
         if (selectedObject != null && ImGui.collapsingHeader("Object: [" + selectedObject.getListID() + "] " + selectedObject.getObjectNameId().nameId(), manyObjects ? ImGuiTreeNodeFlags.DefaultOpen : 0)) {
             ImGui.pushID(this.getClass().getSimpleName() + "_" + selectedObject.getListID());
-            ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), 500, true, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.beginChild("##insideResourceObjPreview", ImGui.getColumnWidth(), Math.min(400 + selectedObject.getTagsContainer().tags().size() * 20, 1000), true, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Transformation");
             ImGui.popStyleColor();
@@ -523,7 +526,7 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.popStyleColor();
             {
                 ImGui.indent();
-                ImGui.beginChild("##ObjTags", ImGui.getColumnWidth(), 220, true, ImGuiWindowFlags.HorizontalScrollbar);
+                ImGui.beginChild("##ObjTags", ImGui.getColumnWidth(), 0, true, ImGuiWindowFlags.HorizontalScrollbar);
                 this.showTags(selectedObject);
                 ImGui.endChild();
                 ImGui.unindent();

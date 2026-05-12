@@ -15,7 +15,7 @@ struct PointLight
     vec3 view_position;
     int attachedShadowSceneId;
     vec3 color;
-    int _padding000;
+    float clipRadius;
 };
 layout (std430, binding = 6) buffer PointLights {
     PointLight p_l[CONST.MAX_POINT_LIGHTS];
@@ -25,12 +25,11 @@ layout (std430, binding = 6) buffer PointLights {
 vec3 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal, float specularFactor) {
     vec3 diffuseC = vec3(0.);
     vec3 specularC = vec3(0.);
-    float specularF = 0.;
     float diffuseF = max(dot(vNormal, light_dir), 0.);
     diffuseC = vec3(colors) * brightness * diffuseF;
     vec3 camDir = normalize(-vPos);
     vec3 reflectionF = normalize(light_dir + camDir);
-    specularF = 0.;
+    float specularF = 0.;
     if (!(dot(vNormal, light_dir) + 1.e-6 < 0)) {
         specularF = max(dot(vNormal, reflectionF), 0.);
         specularF = pow(specularF, 8.0);
@@ -54,8 +53,9 @@ vec3 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, 
 }
 
 vec3 getParams(float brightness) {
-    float at_base = 1.0;
-    float linear = 0.1 * brightness;
-    float expo = 0.032 / sqrt(brightness);
-    return vec3(at_base, linear, expo);
+    float constant = CONST.POINT_LIGHT_CONSTANT_ATT;
+    float linear = CONST.POINT_LIGHT_LINEAR_ATT;
+    float quadratic = CONST.POINT_LIGHT_EXP_ATT;
+
+    return vec3(constant, linear, quadratic);
 }

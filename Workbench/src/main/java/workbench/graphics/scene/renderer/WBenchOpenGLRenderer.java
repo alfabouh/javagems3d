@@ -30,6 +30,7 @@ import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.data.bindless_rendering_cache.MeshBuffersDataCache;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -263,10 +264,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     @Override
     public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
+        ResourceManager.initDefaultMeshParticle();
         this.setDefaultNodes();
         //this.getDebugLinesDrawer().setup();
 
-        resourceManager.writeResourcesDataCache();
+        WBenchOpenGLRenderer.reloadModelResources();
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(WBenchResourceManager.localShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(WBenchResourceManager.localShaderAssets.BindlessTexturesData);
@@ -288,7 +290,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getConveyorNodes().values().stream().filter(e -> !(e instanceof IUIRenderNode)).forEach(IRenderNode::destroyResources);
         this.getSceneCulling().destroyResources();
         this.removeNodes();
-
+        ResourceManager.destroyDefaultMeshParticle();
         Log.get().info("Cleared scenes data");
     }
 

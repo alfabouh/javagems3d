@@ -47,6 +47,10 @@ public abstract class JGemsConfig {
         public static final float SSAO_BIAS = 0.01f;
         public static final float SSAO_RANGE = 1.25f;
 
+        public static float POINT_LIGHT_CONSTANT_ATT = 1.0f;
+        public static float POINT_LIGHT_LINEAR_ATT = 0.14f;
+        public static float POINT_LIGHT_EXP_ATT = 0.07f;
+
         public static float EVSM_POSITIVE_EXPONENT = 60.0f;
         public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
         public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = DEFAULT_ALPHA_DISCARD;

@@ -21,7 +21,7 @@ public class JSPipeline {
     }
 
     @JSCodingField(description = "Pipeline for main scene rendering")
-    public static final JSPipeline SCENE = new JSPipeline(Pipeline.SCENE);
+    public static final JSPipeline SCENE = new JSPipeline(Pipeline.SOLID_SCENE);
 
     @JSCodingField(description = "Pipeline for background rendering")
     public static final JSPipeline BACKGROUND = new JSPipeline(Pipeline.BACKGROUND);

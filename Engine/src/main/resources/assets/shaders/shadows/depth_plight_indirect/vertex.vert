@@ -42,7 +42,7 @@ void main()
     vec4 tempBiTangent = vec4(0.0);
     perform_animation(position, tempNormal, tempTangent, tempBiTangent, aBoneIndexes, aBoneWeights, currAnimationOffset, currAnimationOffsetPrev, deltaFrame);
 
-    gl_Position = projection_view_matrix * model * position;
-    frag_pos = (model * vec4(aPosition, 1.0f));
+    frag_pos = model * position;
+    gl_Position = projection_view_matrix * frag_pos;
     uv_coordinates = texture;
 }

@@ -6,13 +6,15 @@ uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
 out vec3 normal;
+out vec3 frag_pos;
 
 void main()
 {
     mat4 modelViewMatrix = view_matrix * model_matrix;
 
     vec4 mv_pos = modelViewMatrix * vec4(aPosition, 1.0f);
-    gl_Position = projection_matrix * mv_pos;
+    frag_pos = mv_pos.xyz;
 
+    gl_Position = projection_matrix * mv_pos;
     normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
 }

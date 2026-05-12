@@ -1,6 +1,7 @@
 package javagems3d.system.external.mapping.tags.items;
 
 import imgui.ImGui;
+import imgui.type.ImInt;
 import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.external.gaming.def.misc.set.GameResourcesSet;
@@ -53,10 +54,10 @@ public class TagInt extends TagItem {
         TagInt tagInt = (TagInt) tagItem;
         if (trackingHelper != null && currentSelected != null) {
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TagIntTAG_" + currentSelected, trackingHelper)) {
-                int[] value = new int[]{tagInt.getValue()};
-                if (ImGui.dragInt("##" + tagID.getNormalName(), value, 1, tagInt.getMin(), tagInt.getMax())) {
+                ImInt value = new ImInt(tagInt.getValue());
+                if (ImGui.inputInt("##" + tagID.getNormalName(), value, 1)) {
                     uiTrackingHelper.saveSnapshot();
-                    tagInt.setValue(JGemsHelper.math().clamp(value[0], tagInt.getMin(), tagInt.getMax()));
+                    tagInt.setValue(JGemsHelper.math().clamp(value.intValue(), tagInt.getMin(), tagInt.getMax()));
                 }
             }
         }

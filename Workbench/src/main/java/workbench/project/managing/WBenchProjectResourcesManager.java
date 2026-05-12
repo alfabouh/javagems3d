@@ -196,7 +196,6 @@ public class WBenchProjectResourcesManager {
         }
         this.createSystemFolders(pathToGameFolder.toFile());
         this.modelAssetsFolder = this.readModelsFolder(JGemsGaming.getModelsFolder(pathToGameFolder));
-        WBenchOpenGLRenderer.reloadModelResources();
 
         {
             VirtualObjectsFolder<GameResourceModelAsset> defaultModels = new VirtualObjectsFolder<>("defaults");

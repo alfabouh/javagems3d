@@ -1,5 +1,6 @@
 package javagems3d.graphics.transformation;
 
+import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -77,11 +78,23 @@ public abstract class TransformUtils {
         return new Matrix4f(viewMatrix).mul(m1);
     }
 
-    public static Matrix4f getOrientedToViewModelMatrix(Pose3D pose, Matrix4f viewMatrix) {
+    public static Matrix4f getOrientedToViewModelMatrix(Pose3D pose, Matrix4f viewMatrix, boolean normalizeY) {
+        if (normalizeY) {
+            Vector3f pos = pose.getPosition();
+            Vector3f scale = pose.getScaling();
+            Matrix4f invView = new Matrix4f(viewMatrix).invert();
+            Vector3f camPos = invView.getTranslation(new Vector3f());
+            Vector3f dir = camPos.sub(pos, new Vector3f());
+            dir.y = 0.0f;
+            dir.normalize();
+            float angle = (float) Math.atan2(dir.x, dir.z);
+            return new Matrix4f().translation(pos).rotateY(angle).scale(scale);
+        }
         Matrix4f m1 = TransformUtils.getModelMatrix(pose);
         Vector3f scaling = new Vector3f();
         m1.getScale(scaling);
-        return viewMatrix.transpose3x3(m1).scale(scaling);
+        final Matrix4f viewMat = viewMatrix.transpose3x3(m1);
+        return viewMat.scale(scaling);
     }
 
     public static Matrix4f getModelOrthographicMatrix(Pose2D pose, Matrix4f orthographicMatrix) {

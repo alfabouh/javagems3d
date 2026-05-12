@@ -1,5 +1,6 @@
 package workbench.graphics.objects;
 
+import api.application.workbench.resources.data.wbench.WBenchData;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -29,7 +30,11 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
 
     @Override
     public WBenchMarkerObject clone() {
-        WBenchMarkerObject wBenchMarkerObject = new WBenchMarkerObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        TagsContainer tagsContainer = this.getTagsContainer().copy();
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onObjectCloned(tagsContainer, this);
+        }
+        WBenchMarkerObject wBenchMarkerObject = new WBenchMarkerObject(this.getObjectNameId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
         wBenchMarkerObject.setPosition(this.getPosition());
         wBenchMarkerObject.setRotation(this.getRotation());
         wBenchMarkerObject.setScaling(this.getScaling());
@@ -52,17 +57,31 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
     }
 
     public boolean isLighted() {
-        return true;
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().shouldMarkerBeFullLighted();
+        }
+        return false;
     }
 
     @Override
     public Vector3f textInMenuColor() {
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().textInMenuColor();
+        }
         return new Vector3f(0.0f, 1.0f, 1.0f);
     }
 
     @Override
     public int orderInList() {
+        if (this.getObjectInstanceExtension() != null) {
+            return this.getObjectInstanceExtension().orderInItemsList();
+        }
         return 1;
+    }
+
+    @Override
+    public WBenchData.ObjectType objectType() {
+        return WBenchData.ObjectType.MARKER;
     }
 
     public boolean isTransparent() {
@@ -70,9 +89,11 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
     }
 
     public Vector3f getColor() {
+        if (this.getObjectInstanceExtension() != null && this.getObjectInstanceExtension().returnNewMarkerColor() != null) {
+            return this.getObjectInstanceExtension().returnNewMarkerColor();
+        }
         return this.color;
     }
-
 
     @Override
     public WBenchMarkerObject.WBenchMarkerObjectSnapshotData takeSnapshot() {
@@ -90,6 +111,10 @@ public class WBenchMarkerObject extends WBenchObject<WBenchMarkerObject.WBenchMa
         this.setPosition(wBenchMarkerObjectSnapshotData.pos);
         this.setRotation(wBenchMarkerObjectSnapshotData.rot);
         this.setScaling(wBenchMarkerObjectSnapshotData.scale);
+
+        if (this.getObjectInstanceExtension() != null) {
+            this.getObjectInstanceExtension().onApplySnapshot(wBenchMarkerObjectSnapshotData.tagsContainer, this);
+        }
     }
 
     public static class WBenchMarkerObjectSnapshotData extends WBenchObject.WBenchObjectSnapshotData {

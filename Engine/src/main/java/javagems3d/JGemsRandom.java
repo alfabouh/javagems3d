@@ -38,11 +38,11 @@ public final class JGemsRandom {
     }
 
     public Vector3f randomVector3f(float bound) {
-        return new Vector3f(this.randomFloat(bound), this.randomFloat(bound), this.randomFloat(bound));
+        return new Vector3f(this.randomFloat(Math.abs(bound))).mul(bound < 0.0f ? -1.0f : 1.0f);
     }
 
     public Vector2f randomVector2f(float bound) {
-        return new Vector2f(this.randomFloat(bound), this.randomFloat(bound));
+        return new Vector2f(this.randomFloat(Math.abs(bound))).mul(bound < 0.0f ? -1.0f : 1.0f);
     }
 
     public float randomFloat(float range) {

@@ -12,6 +12,9 @@ public class WBenchUITrackingHelper extends UITrackingHelper {
     @Override
     public void takeSnapshot() {
         WBenchUITrackingHelper.instantlyTrackAndPush();
+        if (UITrackingHelper.dirtyMarker != null) {
+            UITrackingHelper.dirtyMarker.marked = true;
+        }
     }
 
     public static WBenchUITrackingHelper INSTANCE() {

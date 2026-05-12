@@ -317,7 +317,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
 
         List<SceneObject> redirectedInTransparency = new ArrayList<>();
-        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRenderObjects, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
+        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRenderObjects, Pipeline.SOLID_SCENE, new Pair<>(redirectedInTransparency, Redirections.SOLID_SCENE__IN__TRANSPARENCY));
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));

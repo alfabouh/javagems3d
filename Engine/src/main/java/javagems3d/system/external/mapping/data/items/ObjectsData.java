@@ -17,16 +17,14 @@ public class ObjectsData implements SectionData<ObjectsData> {
     public Set<RowMapObjectData> propObjects;
     public Set<RowMapObjectData> markerObjects;
     public Set<RowMapObjectData> entityObjects;
-    public Set<RowMapObjectData> pointLights;
 
     private ObjectsData() {
     }
 
-    public ObjectsData(Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, Set<RowMapObjectData> pointLights, Set<RowMapObjectData> backgroundProps) {
+    public ObjectsData(Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, Set<RowMapObjectData> backgroundProps) {
         this.propObjects = propObjects;
         this.markerObjects = markerObjects;
         this.entityObjects = entityObjects;
-        this.pointLights = pointLights;
         this.backgroundProps = backgroundProps;
     }
 
@@ -40,10 +38,6 @@ public class ObjectsData implements SectionData<ObjectsData> {
 
     public Set<RowMapObjectData> getEntityObjects() {
         return this.entityObjects;
-    }
-
-    public Set<RowMapObjectData> getPointLights() {
-        return this.pointLights;
     }
 
     public Set<RowMapObjectData> getBackgroundProps() {
@@ -61,7 +55,6 @@ public class ObjectsData implements SectionData<ObjectsData> {
                     jsonObject.add("propObjects", context.serialize(toWrite.propObjects));
                     jsonObject.add("markerObjects", context.serialize(toWrite.markerObjects));
                     jsonObject.add("entityObjects", context.serialize(toWrite.entityObjects));
-                    jsonObject.add("pointLights", context.serialize(toWrite.pointLights));
                     jsonObject.add("backgroundProps", context.serialize(toWrite.backgroundProps));
 
                     return jsonObject;
@@ -79,7 +72,6 @@ public class ObjectsData implements SectionData<ObjectsData> {
                     objectsData.propObjects = context.deserialize(jsonObject.get("propObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
                     objectsData.markerObjects = context.deserialize(jsonObject.get("markerObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
                     objectsData.entityObjects = context.deserialize(jsonObject.get("entityObjects"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
-                    objectsData.pointLights = context.deserialize(jsonObject.get("pointLights"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
                     objectsData.backgroundProps = context.deserialize(jsonObject.get("backgroundProps"), new TypeToken<Set<RowMapObjectData>>() {}.getType());
 
                     return objectsData;

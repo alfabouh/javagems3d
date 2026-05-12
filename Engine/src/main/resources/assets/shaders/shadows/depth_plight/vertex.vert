@@ -9,8 +9,8 @@ uniform mat4 projection_view_matrix;
 
 void main()
 {
-    gl_Position = projection_view_matrix * model_matrix * vec4(aPosition, 1.0f);
-    frag_pos = (model_matrix * vec4(aPosition, 1.0f));
+    frag_pos = model_matrix * vec4(aPosition, 1.0f);
+    gl_Position = projection_view_matrix * frag_pos;
 
     uv_coordinates = texture;
 }

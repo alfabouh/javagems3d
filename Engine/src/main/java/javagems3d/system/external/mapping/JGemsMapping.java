@@ -65,7 +65,8 @@ public final class JGemsMapping {
         this.getSceneWorld().getEnvironment().setEnvironmentDefaults();
         JavaToJsAPI.ScriptEnd(JavaToJsAPI.Target.Map);
         this.destroyWorlds();
-        JGemsResourceManager.destroyDefaultMeshes();
+        JGemsResourceManager.destroyDefaultMeshCubes();
+        JGemsResourceManager.destroyDefaultMeshParticle();
     }
     
     public void loadMap(@NotNull IMapProcessor processor, IMapActionCallback... callbacks) {
@@ -73,7 +74,8 @@ public final class JGemsMapping {
             Log.get().error("Couldn't load map, while previous was not destroyed");
             return;
         }
-        JGemsResourceManager.initDefaultMeshes();
+        JGemsResourceManager.initDefaultMeshParticle();
+        JGemsResourceManager.initDefaultMeshCubes();
 
         IPlayer player = null;
         final IEnvironment environment = this.getSceneWorld().getEnvironment();

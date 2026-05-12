@@ -47,11 +47,15 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
     vec3 point_light_factor = vec3(0.0);
     for (int i = 0; i < total_plights; i++) {
         PointLight p = p_l[i];
-        float p_brightness = p.brightness;
-        vec3 params = getParams(p_brightness);
-        float p_id = p.attachedShadowSceneId;
-        float shadow = p_id >= 0 ? calculate_point_light_shadows(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
-        point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
+        vec3 delta = p.view_position - frag_pos;
+        float distSq = dot(delta, delta);
+        if (distSq <= p.clipRadius * p.clipRadius) {
+            float p_brightness = p.brightness;
+            vec3 params = getParams(p_brightness);
+            float p_id = p.attachedShadowSceneId;
+            float shadow = p_id >= 0 ? calculate_point_light_shadows(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
+            point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
+        }
     }
 
     float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
@@ -103,10 +107,10 @@ void main()
     vec3 gNormal = normals;
     vec4 gColor = diffuse;
     vec3 gEmission = emission;
-    vec2 gMetallicRoughness = vec2(0.375 + metallic_roughness.x * 0.625, 1. - metallic_roughness.y);
+    vec2 gMetallicRoughness = vec2(0.5 + metallic_roughness.x * 0.5, 1. - metallic_roughness.y);
 
     if (useCubeMap) {
-        vec3 refracted_color = refract_cubemap(normals, 1.73, model_vertex_pos);
+        vec3 refracted_color = refract_cubemap(-model_vertex_normal, 1.73, model_vertex_pos);
         gColor.rgb = mix(gColor.rgb, refracted_color, gMetallicRoughness.x * 0.5);
     }
 

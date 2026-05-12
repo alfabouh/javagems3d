@@ -78,7 +78,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    public int calcUIHashCode() {
+    public int calcUIHash() {
         final int prime = 31;
         int result = 1;
         result = prime * result + this.hexColor;

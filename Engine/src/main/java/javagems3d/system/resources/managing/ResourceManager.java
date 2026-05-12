@@ -246,7 +246,20 @@ public abstract class ResourceManager {
         }
     }
 
-    public static void destroyDefaultMeshes() {
+    public static void destroyDefaultMeshParticle() {
+        if (ResourceManager.GLOBAL_PARTICLE_MESHBUFFER != null) {
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER.clear();
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = null;
+        }
+    }
+
+    public static void initDefaultMeshParticle() {
+        {
+            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = IAssetsInitializer.createGlobalParticle_MBuffer();
+        }
+    }
+
+    public static void destroyDefaultMeshCubes() {
         if (ResourceManager.DEFAULT_CUBE_MESHBUFFER != null) {
             ResourceManager.DEFAULT_CUBE_MESHBUFFER.clear();
             ResourceManager.DEFAULT_CUBE_MESHBUFFER = null;
@@ -255,20 +268,13 @@ public abstract class ResourceManager {
             ResourceManager.DEFAULT_CUBE_MESHGROUP.clear();
             ResourceManager.DEFAULT_CUBE_MESHGROUP = null;
         }
-        if (ResourceManager.GLOBAL_PARTICLE_MESHBUFFER != null) {
-            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER.clear();
-            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = null;
-        }
     }
 
-    public static void initDefaultMeshes() {
+    public static void initDefaultMeshCubes() {
         {
             ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
             ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
             ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
-        }
-        {
-            ResourceManager.GLOBAL_PARTICLE_MESHBUFFER = IAssetsInitializer.createGlobalParticle_MBuffer();
         }
     }
 

@@ -40,10 +40,10 @@ public class WBenchMarkerTemplate extends WBenchObjectTemplate {
         RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());
         renderAttributes.getProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false);
         if (transparent) {
-            renderAttributes.getRenderTable().setRedirection(Redirections.SCENE__IN__TRANSPARENCY);
+            renderAttributes.getRenderTable().setRedirection(Redirections.SOLID_SCENE__IN__TRANSPARENCY);
             renderAttributes.getRenderTable().setMatch(Pipeline.TRANSPARENCY, new RenderTable.Data(WBenchResourceManager.localShaderAssets.weighted_oit_simple, new MarkerSimpleTransparentRenderFabric(Stage.FORWARD)));
         } else {
-            renderAttributes.getRenderTable().setMatch(Pipeline.SCENE, new RenderTable.Data(WBenchResourceManager.localShaderAssets.simple, new MarkerSimpleRenderFabric(Stage.FORWARD)));
+            renderAttributes.getRenderTable().setMatch(Pipeline.SOLID_SCENE, new RenderTable.Data(WBenchResourceManager.localShaderAssets.simple, new MarkerSimpleRenderFabric(Stage.FORWARD)));
         }
         return renderAttributes;
     }

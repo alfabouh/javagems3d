@@ -73,7 +73,7 @@ public class UICarousel extends UIElement {
     }
 
     @Override
-    public int calcUIHashCode() {
+    public int calcUIHash() {
         final int prime = 31;
         int result = 1;
         result = prime * result + this.uiText.hashCode();

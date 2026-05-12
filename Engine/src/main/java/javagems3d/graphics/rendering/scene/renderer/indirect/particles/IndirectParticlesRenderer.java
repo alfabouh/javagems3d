@@ -12,6 +12,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,11 +64,10 @@ public abstract class IndirectParticlesRenderer {
     protected void fillSSBOWithParticleInformation(Collection<ParticleFX> particles) {
         ByteBuffer properties = MemoryUtil.memAlloc(Float.BYTES * IndirectParticlesRenderer.SSBO_DATASETS_PROPERTIES_SIZE);
         FloatBuffer modelMatrices = MemoryUtil.memAllocFloat(IndirectParticlesRenderer.SSBO_DATASETS_MATRICES_SIZE);
-        this.getRejected().clear();
         Iterator<ParticleFX> iterator = particles.iterator();
         while (iterator.hasNext()) {
             ParticleFX particleFX = iterator.next();
-            if (pipeline.equals(Pipeline.SCENE)) {
+            if (pipeline.equals(Pipeline.SOLID_SCENE)) {
                 if (particleFX.getParticleFXRenderData().isTransparent()) {
                     this.getRejected().add(particleFX);
                     iterator.remove();

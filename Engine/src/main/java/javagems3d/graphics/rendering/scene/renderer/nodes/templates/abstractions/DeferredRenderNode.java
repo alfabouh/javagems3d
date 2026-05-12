@@ -32,12 +32,10 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
-import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
@@ -175,8 +173,8 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         };
 
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SCENE, this.getOpenGLRenderer());
+        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
         if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader(), this.getSsaoBlurring());
         }

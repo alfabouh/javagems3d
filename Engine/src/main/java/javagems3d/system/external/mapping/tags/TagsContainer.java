@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements ICopyable<TagsContainer> {
+public record TagsContainer(LinkedHashMap<TagID, Tag<? extends TagItem>> tags) implements ICopyable<TagsContainer> {
     public static @NotNull Map<Class<?>, JSONFileManaging.SerializationRules<?>> TAG_ITEMS_SERIALIZATION_RULES = new HashMap<>();
 
     static {
@@ -48,7 +48,7 @@ public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements 
                     },
                     (json, context) -> {
                         JsonArray tagsArray = json.getAsJsonArray();
-                        Set<Tag<? extends TagItem>> tagsSet = new HashSet<>();
+                        Set<Tag<? extends TagItem>> tagsSet = new LinkedHashSet<>();
 
                         for (JsonElement element : tagsArray) {
                             JsonObject tagObj = element.getAsJsonObject();
@@ -73,7 +73,7 @@ public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements 
             );
 
     public TagsContainer(Collection<Tag<? extends TagItem>> tags) {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
         for (Tag<? extends TagItem> tag : tags) {
             this.addTag(tag.copy());
         }
@@ -85,7 +85,7 @@ public record TagsContainer(Map<TagID, Tag<? extends TagItem>> tags) implements 
     }
 
     public TagsContainer() {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
     }
 
     public boolean hasTag(TagID id) {

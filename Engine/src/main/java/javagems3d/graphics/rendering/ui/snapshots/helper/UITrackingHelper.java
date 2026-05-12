@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public abstract class UITrackingHelper implements AutoCloseable {
+    public static DirtyMarker dirtyMarker = null;
+
     public static final Map<String, UITrackingHelper> cache = new HashMap<>();
     private SnapshotsContainer snapshotsContainer;
     private final SnapshotsTrace snapshotsTrace;
@@ -18,6 +20,19 @@ public abstract class UITrackingHelper implements AutoCloseable {
         this.snapshotsContainer = null;
         this.snapshotsTrace = snapshotsTrace;
         this.id = null;
+    }
+
+    public static void startTrackingRowOfUITrackers() {
+        UITrackingHelper.dirtyMarker = new DirtyMarker();
+    }
+
+    public static boolean stopTrackingRowOfUITrackersAndGetResult() {
+        if (UITrackingHelper.dirtyMarker != null) {
+            boolean f = UITrackingHelper.dirtyMarker.marked;
+            UITrackingHelper.dirtyMarker = null;
+            return f;
+        }
+        return false;
     }
 
     public static UITrackingHelper create(String id, Supplier<UITrackingHelper> trackingHelperSupplier) {
@@ -47,9 +62,16 @@ public abstract class UITrackingHelper implements AutoCloseable {
         if (ImGui.isItemDeactivatedAfterEdit()) {
             if (this.snapshotsContainer != null) {
                 this.snapshotsTrace.pushSnapshot(this.snapshotsContainer);
+                if (UITrackingHelper.dirtyMarker != null) {
+                    UITrackingHelper.dirtyMarker.marked = true;
+                }
                 this.snapshotsContainer = null;
             }
             UITrackingHelper.cache.remove(this.id);
         }
+    }
+
+    public static class DirtyMarker {
+        public boolean marked;
     }
 }

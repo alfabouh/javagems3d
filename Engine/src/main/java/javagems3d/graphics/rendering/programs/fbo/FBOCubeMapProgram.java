@@ -57,6 +57,10 @@ public class FBOCubeMapProgram {
         this.unBindFBO();
     }
 
+    public void connectCubeMapToBuffer(int attachment) {
+        GL46.glFramebufferTexture(GL46.GL_FRAMEBUFFER, attachment, this.getCubeMapProgram().getTextureId(), 0);
+    }
+
     public void connectCubeMapToBuffer(int attachment, int j) {
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
     }

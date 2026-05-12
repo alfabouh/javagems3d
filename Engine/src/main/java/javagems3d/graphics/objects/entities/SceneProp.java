@@ -44,6 +44,18 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
         Log.get().trace("Removed light from: " + this);
     }
 
+    public Vector3f getPosition() {
+        return new Vector3f(this.getModel().getPose().getPosition());
+    }
+
+    public Vector3f getRotation() {
+        return new Vector3f(this.getModel().getPose().getRotation());
+    }
+
+    public Vector3f getScaling() {
+        return new Vector3f(this.getModel().getPose().getScaling());
+    }
+
     @Override
     public void onSpawn(IWorld iWorld) {
         Log.get().trace("[ " + this + " ]" + " - PreRender");

@@ -15,43 +15,43 @@ public record ParticleFXRenderData(@NotNull JGemsShaderManager transparencyShade
         return this.particleFXMaterial().getDiffuseColor().color().w < 1.0f;
     }
 
-    public static ParticleFXRenderData DEFAULT(ParticleFXSpriteProperties particleFXSpriteProperties, ParticleFXMaterial particleFXMaterial, Vector2i cells, int maxSprites) {
+    public static ParticleFXRenderData DEFAULT(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, @NotNull ParticleFXSpriteProperties particleFXSpriteProperties, @NotNull ParticleFXMaterial particleFXMaterial) {
         return new ParticleFXRenderData(
-                JGemsResourceManager.globalShaderAssets.world_particle_oit,
-                JGemsResourceManager.globalShaderAssets.world_particle,
+                transparencyShaderManager,
+                mainSceneShaderManager,
                 new ParticleFXProperties(0.0f, 0.0f),
                 particleFXMaterial,
                 particleFXSpriteProperties
         );
     }
 
-    public static ParticleFXRenderData DEFAULT(ImageTexture texture, ParticleFXSpriteProperties particleFXSpriteProperties, Vector2i cells, int maxSprites) {
+    public static ParticleFXRenderData DEFAULT(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, @NotNull ImageTexture texture, @NotNull ParticleFXSpriteProperties particleFXSpriteProperties) {
         return new ParticleFXRenderData(
-                JGemsResourceManager.globalShaderAssets.world_particle_oit,
-                JGemsResourceManager.globalShaderAssets.world_particle,
+                transparencyShaderManager,
+                mainSceneShaderManager,
                 new ParticleFXProperties(0.0f, 0.0f),
                 new ParticleFXMaterial(texture, new Color4Texture(1f, 1f, 1f, 0.99f)),
                 particleFXSpriteProperties
         );
     }
 
-    public static ParticleFXRenderData DEFAULT(ParticleFXMaterial particleFXMaterial, Vector2i cells, int maxSprites) {
+    public static ParticleFXRenderData DEFAULT(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, @NotNull ParticleFXMaterial particleFXMaterial, @NotNull Vector2i cells, int maxSprites) {
         return new ParticleFXRenderData(
-                JGemsResourceManager.globalShaderAssets.world_particle_oit,
-                JGemsResourceManager.globalShaderAssets.world_particle,
+                transparencyShaderManager,
+                mainSceneShaderManager,
                 new ParticleFXProperties(0.0f, 0.0f),
                 particleFXMaterial,
-                new ParticleFXSpriteProperties(cells, maxSprites, true, 0.1f)
+                new ParticleFXSpriteProperties(cells, maxSprites, true, 5.0f, true, false)
         );
     }
 
-    public static ParticleFXRenderData DEFAULT(ImageTexture texture, Vector2i cells, int maxSprites) {
+    public static ParticleFXRenderData DEFAULT(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, @NotNull ImageTexture texture, @NotNull Vector2i cells, int maxSprites) {
         return new ParticleFXRenderData(
-                JGemsResourceManager.globalShaderAssets.world_particle_oit,
-                JGemsResourceManager.globalShaderAssets.world_particle,
+                transparencyShaderManager,
+                mainSceneShaderManager,
                 new ParticleFXProperties(0.0f, 0.0f),
                 new ParticleFXMaterial(texture, new Color4Texture(1f, 1f, 1f, 0.99f)),
-                new ParticleFXSpriteProperties(cells, maxSprites, true, 0.1f)
+                new ParticleFXSpriteProperties(cells, maxSprites, true, 5.0f, true, false)
         );
     }
 }

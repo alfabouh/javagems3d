@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import com.google.common.base.Objects;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
@@ -98,7 +99,7 @@ public class UIDefaultButton extends UIInteractiveElement {
     }
 
     @Override
-    public int calcUIHashCode() {
+    public int calcUIHash() {
         final int prime = 31;
         int result = 1;
         result = prime * result + this.uiText.hashCode();

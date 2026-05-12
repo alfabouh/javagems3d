@@ -164,6 +164,7 @@ public final class WBenchMapProjectManager {
             object.setRotation(rowMapObjectData.getRotation() == null ? new Vector3f(0.0f) : rowMapObjectData.getRotation());
             object.setScaling(rowMapObjectData.getScaling() == null ? new Vector3f(0.0f) : rowMapObjectData.getScaling());
             object.setId(rowMapObjectData.getId());
+            WBenchObject.tryCreateObjectInstanceExtension(WBench.get().getScreen().getScene().getSceneRenderer(), object);
             if (background) {
                 this.getWorld().getEnvironment().getSkyBox().getBackground().addObject(object);
             } else {
@@ -258,7 +259,7 @@ public final class WBenchMapProjectManager {
                                 return wBenchCommonObject;
                             },
                             defaultPropsToCreate,
-                            (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultIndirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
+                            (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultDirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
                     );
                     Log.get().debug("Read Props: " + objectsData.propObjects.size());
                 } else {
@@ -276,7 +277,7 @@ public final class WBenchMapProjectManager {
                                 return wBenchCommonObject;
                             },
                             defaultEntitiesToCreate,
-                            (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultIndirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
+                            (rowMapObjectData -> new WBenchObjectTemplate(new WBenchObject.ID(rowMapObjectData.getObjectNameId(), rowMapObjectData.getObjectPath()), null, RenderAttributes.getDefaultDirect(), rowMapObjectData.getTagsContainer(), new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ)))
                     );
                     Log.get().debug("Read Entities: " + objectsData.entityObjects.size());
                 } else {
@@ -315,20 +316,6 @@ public final class WBenchMapProjectManager {
                     Log.get().debug("Map has no background props");
                 }
 
-                if (objectsData.pointLights != null) {
-                    for (RowMapObjectData template : objectsData.pointLights) {
-                        WBenchPointLightObject object = WBenchPointLightObject.create(template.getObjectNameId(), this.getWorld(), template.getTagsContainer());
-                        object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
-                        object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
-                        object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
-                        object.setId(template.getId());
-                        this.getWorld().addObject(object);
-                    }
-                    Log.get().debug("Read Point Lights: " + objectsData.pointLights.size());
-                } else {
-                    Log.get().debug("Map has no point lights");
-                }
-
                 final WBenchSkyBackground wBenchSkyBackground = (WBenchSkyBackground) world.getEnvironment().getSkyBox().getBackground();
                 WBenchWorld.calcFreeIds(world.getFreeIds(), world.getSceneObjects());
                 WBenchWorld.calcFreeIds(wBenchSkyBackground.getFreeIds(), wBenchSkyBackground.getSkySceneObjects());
@@ -362,7 +349,6 @@ public final class WBenchMapProjectManager {
         final Set<RowMapObjectData> backgroundProps = new HashSet<>();
         final Set<RowMapObjectData> entities = new HashSet<>();
         final Set<RowMapObjectData> markers = new HashSet<>();
-        final Set<RowMapObjectData> pointLights = new HashSet<>();
         final SkyBox skyBox = world.getEnvironment().getSkyBox();
 
         final MapObjectTemplatesManager.SkyBoxTemplate skyBoxTemplate = this.getMapObjectTemplates().getSkyBoxesCache().get(skyBox.getTexture());
@@ -385,7 +371,6 @@ public final class WBenchMapProjectManager {
                 categoryMap.put(MapObjectsIdentifiers.PROP, props);
                 categoryMap.put(MapObjectsIdentifiers.ENTITY, entities);
                 categoryMap.put(MapObjectsIdentifiers.MARKER, markers);
-                categoryMap.put(MapObjectsIdentifiers.POINT_LIGHT, pointLights);
                 categoryMap.put("backgroundProps", backgroundProps);
 
                 for (SceneObject sceneObject : objectsCopy) {
@@ -411,7 +396,7 @@ public final class WBenchMapProjectManager {
                     }
                 }
 
-                final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights, backgroundProps);
+                final ObjectsData objectsData = new ObjectsData(props, markers, entities, backgroundProps);
                 MapObjectsDataPack mapObjectsDataPack = new MapObjectsDataPack();
                 jsonFileManaging.setMatch(MapObjectsDataPack.class, mapObjectsDataPack.getSerializationRules());
                 mapObjectsDataPack.set(Objects.requireNonNull(fogData), Objects.requireNonNull(sunData), Objects.requireNonNull(objectsData), Objects.requireNonNull(skyData), Objects.requireNonNull(shadowsData), Objects.requireNonNull(lightingData));

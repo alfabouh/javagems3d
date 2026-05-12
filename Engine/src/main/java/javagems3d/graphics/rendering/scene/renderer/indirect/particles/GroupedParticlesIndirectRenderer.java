@@ -23,6 +23,9 @@ public class GroupedParticlesIndirectRenderer extends IndirectParticlesRenderer 
     }
 
     public void processAndRender(@Nullable ArbitraryArguments metaData) {
+        if (!this.getRejected().isEmpty()) {
+            this.getRejected().clear();
+        }
         if (this.getIndirectMeshObjects() == null) {
             return;
         }
@@ -41,7 +44,6 @@ public class GroupedParticlesIndirectRenderer extends IndirectParticlesRenderer 
     protected IndirectCommandsProgram createCommands(IndirectBufferProgram renderBuffer, Collection<ParticleFX> sceneObjects) {
         ParticleIndirectCommandsProgram particleIndirectCommandsProgram = new ParticleIndirectCommandsProgram(renderBuffer);
         particleIndirectCommandsProgram.createBuffer();
-        MeshBuffer meshBuffer = ParticleFX.getParticlesMeshBuffer();
         particleIndirectCommandsProgram.buildCommands(ParticleFX.getParticlesMeshBuffer(), sceneObjects.size());
         return particleIndirectCommandsProgram;
     }

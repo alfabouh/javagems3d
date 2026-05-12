@@ -2,6 +2,7 @@ package javagems3d.graphics.environment.particles.fx;
 
 import javagems3d.graphics.environment.particles.data.ParticleFXRenderData;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,6 @@ public class WorldDefaultParticleFX extends ParticleFX {
     private Vector3f gravity;
     private @Nullable JGemsTimedAction lifeTimer;
     private float interpolationAccum = 0.0f;
-    private boolean fadeOut;
 
     public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime) {
         this(particleFXRenderData, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), new Vector3f(), new Vector3f(1.0f));
@@ -37,12 +37,12 @@ public class WorldDefaultParticleFX extends ParticleFX {
         this.constantAcceleration = constantAcceleration;
         this.gravity = gravity;
         this.interpolationAccum = 0.0f;
-        this.fadeOut = false;
     }
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        this.lifeTimer = JGemsHelper.screen().createTimer();
+        IRenderWorld renderWorld = (IRenderWorld) iWorld;
+        this.lifeTimer = renderWorld.createTimer();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class WorldDefaultParticleFX extends ParticleFX {
         if (!this.getParticleFXRenderData().spriteProperties().loop() && this.lifeTime > 0.0f) {
             return this.lifeTime / this.getParticleFXRenderData().spriteProperties().maxSprites();
         }
-        return this.getParticleFXRenderData().spriteProperties().loopNextFrameInSecSpeed();
+        return this.getParticleFXRenderData().spriteProperties().loopNextFrameInSecSpeed() / this.getParticleFXRenderData().spriteProperties().maxSprites();
     }
 
     private void strengthAffected(IWorld world, float frameDelta) {
@@ -73,7 +73,7 @@ public class WorldDefaultParticleFX extends ParticleFX {
     public void onUpdate(IWorld iWorld) {
         if (this.lifeTimer != null) {
             if (this.lifeTime > 0.0f) {
-                if (this.fadeOut) {
+                if (this.getParticleFXRenderData().spriteProperties().fadeOut()) {
                     final float f1 = this.lifeTime * 0.5f;
                     if (this.lifeTimer.getAccumulatedTime() >= f1) {
                         final float f2 = (float) (f1 / this.lifeTimer.getAccumulatedTime());
@@ -111,13 +111,9 @@ public class WorldDefaultParticleFX extends ParticleFX {
         return nextFrame;
     }
 
-    public boolean isFadeOut() {
-        return this.fadeOut;
-    }
-
-    public WorldDefaultParticleFX setFadeOut(boolean fadeOut) {
-        this.fadeOut = fadeOut;
-        return this;
+    @Override
+    public boolean snapToEmitterPos() {
+        return this.lifeTime <= 0.0f;
     }
 
     public Vector3f getGravity() {

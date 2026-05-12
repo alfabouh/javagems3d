@@ -845,26 +845,6 @@ public abstract class EventBus {
         public JGemsMarkerData getMarkerData() { return this.markerData; }
     }
 
-    public static final class MapPointLightConvertEvent extends Cancellable implements IMapConvertEvent {
-        private final SceneWorld sceneWorld;
-        private final PhysicsWorld physicsWorld;
-        private final RowMapObjectData template;
-        private Pair<PointLight, Integer> result;
-
-        public MapPointLightConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template) {
-            this.sceneWorld = sceneWorld;
-            this.physicsWorld = physicsWorld;
-            this.template = template;
-        }
-
-        public SceneWorld getSceneWorld() { return this.sceneWorld; }
-        public PhysicsWorld getPhysicsWorld() { return this.physicsWorld; }
-        public RowMapObjectData getTemplate() { return this.template; }
-
-        public Pair<PointLight, Integer> getResult() { return this.result; }
-        public void setResult(Pair<PointLight, Integer> result) { this.result = result; }
-    }
-
     public static final class MapSkySetupEvent extends Cancellable implements IEvent {
         private final SceneWorld sceneWorld;
         private final ISkyBox skyBox;

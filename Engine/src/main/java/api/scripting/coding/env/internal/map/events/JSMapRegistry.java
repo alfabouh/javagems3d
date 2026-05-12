@@ -38,9 +38,6 @@ public class JSMapRegistry {
         this.eventSubscriber = eventSubscriber;
     }
 
-    @JSCodingField(description = "Event triggered during map conversion to create a point light from template data.")
-    public static final JSMapPointLightConvertEvent MAP_POINT_LIGHT_CONVERT_EVENT = new JSMapPointLightConvertEvent();
-
     @JSCodingField(description = "Event triggered during conversion of a map prop to a SceneProp instance.")
     public static final JSMapPropConvertEvent MAP_PROP_CONVERT_EVENT = new JSMapPropConvertEvent();
 

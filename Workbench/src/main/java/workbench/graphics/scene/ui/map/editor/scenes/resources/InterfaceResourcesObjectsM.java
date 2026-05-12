@@ -9,13 +9,11 @@ import imgui.type.ImBoolean;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.gaming.def.misc.GameResourceScriptAsset;
 import javagems3d.system.service.files.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
-import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.game.editor.instances.scripting.ScriptAssetPreview;
@@ -113,20 +111,6 @@ public class InterfaceResourcesObjectsM {
             if (ImGui.collapsingHeader("Misc", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.popStyleColor();
                 ImGui.treePush();
-                if (ImGui.collapsingHeader("Lighting", ImGuiTreeNodeFlags.DefaultOpen)) {
-                    ImGui.indent();
-                    ImGui.bullet();
-                    if (ImGui.selectable("Point Light", false)) {
-                        ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
-                        Vector3f posToSpawn = camera.getCamPosition();
-                        posToSpawn.add(JGemsHelper.math().calcLookVector(camera.getCamRotation()).mul(3.0f));
-
-                        WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("obj", this.getEditorInterface().getOpenGLRenderer().getWorld());
-                        pointLightObject.setPosition(posToSpawn);
-                        this.getEditorInterface().addObjectInWorld(pointLightObject);
-                    }
-                    ImGui.unindent();
-                }
                 this.getScriptResourceTreeDrawer().render();
                 ImGui.treePop();
             } else {

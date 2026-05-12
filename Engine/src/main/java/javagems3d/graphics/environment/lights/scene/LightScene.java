@@ -8,6 +8,7 @@ import javagems3d.graphics.environment.lights.LightType;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -61,9 +62,10 @@ public abstract class LightScene implements ILightScene {
     public void addLight(Light light) {
         if (light.getLightType().equals(LightType.POINT)) {
             if (this.getPointLights().size() >= this.getMaxPointLights()) {
-                throw new JGemsRuntimeException("Reached active point lights limit: " + this.getMaxPointLights());
+                Log.get().error("Reached point lights limit: " + this.getMaxPointLights());
+            } else {
+                this.getPointLights().add((PointLight) light);
             }
-            this.getPointLights().add((PointLight) light);
         }
     }
 
@@ -127,7 +129,7 @@ public abstract class LightScene implements ILightScene {
             buffer.putFloat(pointLight.getLightColor().y);
             buffer.putFloat(pointLight.getLightColor().z);
 
-            buffer.putInt(0); //_padding000;
+            buffer.putFloat(pointLight.getClipRadius());
         }
         buffer.flip();
 
@@ -143,26 +145,21 @@ public abstract class LightScene implements ILightScene {
         ByteBuffer buffer = stack.malloc(sizeMainBuffer);
         ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
 
-        for (int i = 0; i < this.getPointLights().size(); i++) {
+        for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS; i++) {
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f); //_padding0
-
             buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f); //_padding00;
 
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
 
-            buffer.putInt(-1);
-            buffer.putInt(0); //_padding000;
-            buffer.putInt(0); //_padding0000;
-            buffer.putInt(0); //_padding0000;
+            buffer.putFloat(0.0f);
+            buffer.putFloat(0.0f);
+            buffer.putFloat(0.0f);
+            buffer.putFloat(0.0f);
         }
         buffer.flip();
 
