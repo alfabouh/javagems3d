@@ -15,7 +15,6 @@ import org.joml.Vector3f;
 public abstract class SkyBox implements ISkyBox {
     private ICubeMapProgram sky2DTexture;
     private ISkyBackground background;
-    protected SunLight sunLight;
     private boolean isSkyCoveredByFog;
     private boolean drawSunOnSkyBox;
 
@@ -24,11 +23,6 @@ public abstract class SkyBox implements ISkyBox {
         this.isSkyCoveredByFog = true;
         this.background = skyBackground;
         this.drawSunOnSkyBox = true;
-        this.setSunLight();
-    }
-
-    protected void setSunLight() {
-        this.sunLight = new SunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
     }
 
     @Override
@@ -52,10 +46,6 @@ public abstract class SkyBox implements ISkyBox {
 
     public ISkyBackground getBackground() {
         return this.background;
-    }
-
-    public SunLight getSun() {
-        return this.sunLight;
     }
 
     public ICubeMapProgram getTexture() {

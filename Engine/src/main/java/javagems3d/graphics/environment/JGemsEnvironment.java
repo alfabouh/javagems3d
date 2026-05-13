@@ -13,6 +13,7 @@ import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.graphics.environment.particles.JGemsParticlesManager;
 import javagems3d.graphics.environment.particles.ParticlesManager;
@@ -43,7 +44,7 @@ public class JGemsEnvironment implements IEnvironment {
     public JGemsEnvironment(IWorld world) {
         this.skyBox = new JGemsSkyBox(world, 4.0f, null);
         this.fogManager = new JGemsFogScene();
-        this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData,this);
+        this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData, JGemsResourceManager.globalShaderAssets.SpotLightsData,this);
         this.shadowScene = new JGemsShadowScene(this);
         this.particlesScene = new JGemsParticlesScene(this, new JGemsParticlesManager(this));
         this.world = world;
@@ -58,7 +59,7 @@ public class JGemsEnvironment implements IEnvironment {
 
     @Override
     public void createEnvironment(OpenGLRenderer openGLRenderer) {
-        EventLauncher.pushEvent(new EventBus.CreateRenderEnvironmentEvent(this, (JGemsOpenGLRenderer) openGLRenderer), new Pair<>(new JSCreateRenderEnvironmentEvent(new JSEnvironment(this), new JSOpenGLRenderer(openGLRenderer)), JavaToJsAPI.Target.Game));
+        EventLauncher.pushEvent(new EventBus.CreateRenderEnvironmentEvent(this, openGLRenderer), new Pair<>(new JSCreateRenderEnvironmentEvent(new JSEnvironment(this), new JSOpenGLRenderer(openGLRenderer)), JavaToJsAPI.Target.Game));
         this.getShadowScene().createResources(openGLRenderer);
         this.getParticlesScene().createResources(openGLRenderer);
     }
@@ -71,7 +72,8 @@ public class JGemsEnvironment implements IEnvironment {
 
     public void clearPointLightsBuffer() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.getLightScene().clearPointLightsBuffer(stack);
+            this.getLightScene().clearPointLightsBuffer(stack, this.getLightScene().getPointLightsBuffer());
+            this.getLightScene().clearSpotLightsBuffer(stack, this.getLightScene().getSpotLightsBuffer());
             this.getLightScene().getPointLights().clear();
         }
     }
@@ -79,19 +81,19 @@ public class JGemsEnvironment implements IEnvironment {
     @Override
     public void updateEnvironment(ICamera camera) {
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.PRE), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.PRE), JavaToJsAPI.Target.Game));
-        this.getSkyBox().getSun().onUpdate(this.getWorld());
+        this.getLightScene().getSunLight().onUpdate(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld(), this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), stack);
-            this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
+            this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), this.getShadowScene().getSpotLightIdsHashMap(), stack);
+            this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), this.getLightScene(), stack);
         }
         this.getParticlesScene().update(this.getWorld());
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.POST), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 
-    protected void updateLightsBuffer(IWorld world, HashMap<PointLight, Integer> lightIdxHashMap, MemoryStack stack) {
-        this.getLightScene().updateBuffers(stack, lightIdxHashMap, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+    protected void updateLightsBuffer(IWorld world, HashMap<PointLight, Integer> pointLightIdxHashMap, HashMap<SpotLight, Integer> spotLightIntegerHashMap, MemoryStack stack) {
+        this.getLightScene().updateBuffers(stack, pointLightIdxHashMap, spotLightIntegerHashMap, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
     @Override

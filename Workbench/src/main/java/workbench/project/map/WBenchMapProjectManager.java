@@ -203,9 +203,9 @@ public final class WBenchMapProjectManager {
             }
 
             if (sunData != null) {
-                world.getEnvironment().getSkyBox().getSun().setSunBrightness(sunData.brightness);
-                world.getEnvironment().getSkyBox().getSun().setLightPosition(sunData.position);
-                world.getEnvironment().getSkyBox().getSun().setLightColor(sunData.color);
+                world.getEnvironment().getLightScene().getSunLight().setSunBrightness(sunData.brightness);
+                world.getEnvironment().getLightScene().getSunLight().setLightPosition(sunData.position);
+                world.getEnvironment().getLightScene().getSunLight().setLightColor(sunData.color);
                 Log.get().debug("Read SunData");
             } else {
                 Log.get().error("Couldn't get SunData");
@@ -338,7 +338,7 @@ public final class WBenchMapProjectManager {
         final WBenchWorld world = this.getWorld();
 
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
-        final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
+        final SunLight sunLight = world.getEnvironment().getLightScene().getSunLight();
         final FogScene fogScene = world.getEnvironment().getFogScene();
         final WBenchShadowScene shadowScene = (WBenchShadowScene) world.getEnvironment().getShadowScene();
         final ILightScene lightScene = world.getEnvironment().getLightScene();
@@ -356,7 +356,7 @@ public final class WBenchMapProjectManager {
         final SunData sunData = new SunData(world.getEnvironment().getSkyBox().isDrawSunOnSkyBox(), sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(skyBoxTemplate == null ? "" : skyBoxTemplate.getNameId(), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
-        final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits(), shadowScene.getSunLightShadow().isEnabled(), shadowScene.sunShadowMapResolution, shadowScene.pointLightShadowMapResolution);
+        final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits(), shadowScene.getSunLightShadow().isEnabled(), shadowScene.sunShadowMapResolution, shadowScene.pointLightShadowMapResolution, shadowScene.spotLightShadowMapResolution);
         final LightingData lightingData = new LightingData(lightScene.isBloomEnabled(), lightScene.getHdrExposure(), lightScene.getHdrGamma(), lightScene.getSsaoRange(),  lightScene.getSsaoBias(), lightScene.getSsaoRadius());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

@@ -50,7 +50,7 @@ public class InterfaceActionsEnvSkyM {
                 this.mapEditorInterface.overrideCamera(null);
             } else {
                 this.setCameraCheckBox(true);
-                Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
+                Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getLightScene().getSunLight());
                 this.sunCamera.setCameraPosition(camData.first());
                 this.sunCamera.setLookAt(camData.second());
                 this.mapEditorInterface.overrideCamera(this.sunCamera);
@@ -61,26 +61,26 @@ public class InterfaceActionsEnvSkyM {
             environment.getSkyBox().setDrawSunOnSkyBox(!environment.getSkyBox().isDrawSunOnSkyBox());
         }
         try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_brightness", WBenchUITrackingHelper::INSTANCE)) {
-            float[] brightness = new float[]{environment.getSkyBox().getSun().getSunBrightness()};
+            float[] brightness = new float[]{environment.getLightScene().getSunLight().getSunBrightness()};
             if (ImGui.dragFloat("Brightness", brightness, 0.001f,0.0f, 5.0f)) {
                 uiTrackingHelper.saveSnapshot();
-                environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
+                environment.getLightScene().getSunLight().setSunBrightness(brightness[0]);
             }
         }
         try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_fogColor", WBenchUITrackingHelper::INSTANCE)) {
-            float[] fogColor = new float[]{environment.getSkyBox().getSun().getLightColor().x, environment.getSkyBox().getSun().getLightColor().y, environment.getSkyBox().getSun().getLightColor().z};
+            float[] fogColor = new float[]{environment.getLightScene().getSunLight().getLightColor().x, environment.getLightScene().getSunLight().getLightColor().y, environment.getLightScene().getSunLight().getLightColor().z};
             if (ImGui.colorEdit3("Color", fogColor)) {
                 uiTrackingHelper.saveSnapshot();
-                environment.getSkyBox().getSun().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+                environment.getLightScene().getSunLight().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
             }
         }
 
         try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_sunPosition", WBenchUITrackingHelper::INSTANCE)) {
-            float[] sunPosition = {environment.getSkyBox().getSun().getLightPosition().x, environment.getSkyBox().getSun().getLightPosition().y, environment.getSkyBox().getSun().getLightPosition().z};
+            float[] sunPosition = {environment.getLightScene().getSunLight().getLightPosition().x, environment.getLightScene().getSunLight().getLightPosition().y, environment.getLightScene().getSunLight().getLightPosition().z};
             if (ImGui.sliderFloat3("Angle", sunPosition, -1.0f, 1.0f)) {
                 uiTrackingHelper.saveSnapshot();
-                environment.getSkyBox().getSun().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
-                Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
+                environment.getLightScene().getSunLight().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
+                Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getLightScene().getSunLight());
                 this.sunCamera.setCameraPosition(camData.first());
                 this.sunCamera.setLookAt(camData.second());
             }

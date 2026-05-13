@@ -36,16 +36,18 @@ public final class WBenchResourceManager extends ResourceManager {
         JGemsShaderManager DEFAULT_BACKGROUND_SHADER = WBenchResourceManager.localShaderAssets.background;
         JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER = WBenchResourceManager.localShaderAssets.depth_sun;
         JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER = WBenchResourceManager.localShaderAssets.depth_plight;
+        JGemsShaderManager DEFAULT_SPOT_L_SHADOW_MAP_SHADER = WBenchResourceManager.localShaderAssets.depth_slight;
         JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER = WBenchResourceManager.localShaderAssets.weighted_oit;
 
         JGemsShaderManager DEFAULT_SCENE_SHADER_IND = WBenchResourceManager.localShaderAssets.world_gbuffer_indirect;
         JGemsShaderManager DEFAULT_BACKGROUND_SHADER_IND = WBenchResourceManager.localShaderAssets.background_indirect;
         JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = WBenchResourceManager.localShaderAssets.depth_sun_indirect;
         JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = WBenchResourceManager.localShaderAssets.depth_plight_indirect;
+        JGemsShaderManager DEFAULT_SPOT_L_SHADOW_MAP_SHADER_IND = WBenchResourceManager.localShaderAssets.depth_slight_indirect;
         JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND = WBenchResourceManager.localShaderAssets.weighted_oit_indirect;
 
-        RenderTable.SET_DEFAULT_SHADERS_DIRECT(DEFAULT_SCENE_SHADER, DEFAULT_BACKGROUND_SHADER, DEFAULT_SUN_L_SHADOW_MAP_SHADER, DEFAULT_POINT_L_SHADOW_MAP_SHADER, DEFAULT_TRANSPARENCY_SHADER);
-        RenderTable.SET_DEFAULT_SHADERS_INDIRECT(DEFAULT_SCENE_SHADER_IND, DEFAULT_BACKGROUND_SHADER_IND, DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, DEFAULT_TRANSPARENCY_SHADER_IND);
+        RenderTable.SET_DEFAULT_SHADERS_DIRECT(DEFAULT_SCENE_SHADER, DEFAULT_BACKGROUND_SHADER, DEFAULT_SUN_L_SHADOW_MAP_SHADER, DEFAULT_POINT_L_SHADOW_MAP_SHADER, DEFAULT_SPOT_L_SHADOW_MAP_SHADER, DEFAULT_TRANSPARENCY_SHADER);
+        RenderTable.SET_DEFAULT_SHADERS_INDIRECT(DEFAULT_SCENE_SHADER_IND, DEFAULT_BACKGROUND_SHADER_IND, DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, DEFAULT_SPOT_L_SHADOW_MAP_SHADER_IND, DEFAULT_TRANSPARENCY_SHADER_IND);
     }
 
     public static void createGlobalShaders() {

@@ -3,6 +3,7 @@ package javagems3d.graphics.environment.shadows.scene;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
+import javagems3d.graphics.environment.shadows.SpotLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 public class JGemsShadowScene extends ShadowScene {
     private int sunShadowMapsBasicResolution;
     private int pointLightShadowMapsBasicResolution;
+    private int spotLightShadowMapsBasicResolution;
 
     public JGemsShadowScene(IEnvironment environment) {
         super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
@@ -37,6 +39,7 @@ public class JGemsShadowScene extends ShadowScene {
     protected void preInit() {
         this.sunShadowMapsBasicResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
         this.pointLightShadowMapsBasicResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
+        this.spotLightShadowMapsBasicResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
     }
 
     public static float qualityMultiplier() {
@@ -65,6 +68,16 @@ public class JGemsShadowScene extends ShadowScene {
     }
 
     @Override
+    protected @NotNull ShaderStorageBufferObject getSpotLightIndirectSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainSceneIndirectBufferData;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getSpotLightPropertiesSSBO() {
+        return JGemsResourceManager.globalShaderAssets.MainScenePropertiesData;
+    }
+
+    @Override
     protected @NotNull Vector2i getSunShadowResolution() {
         return new Vector2i((int) (this.sunShadowMapsBasicResolution * JGemsShadowScene.qualityMultiplier()));
     }
@@ -75,8 +88,18 @@ public class JGemsShadowScene extends ShadowScene {
     }
 
     @Override
+    protected @NotNull Vector2i getSpotLightShadowResolution() {
+        return new Vector2i((int) (this.spotLightShadowMapsBasicResolution * JGemsShadowScene.qualityMultiplier()));
+    }
+
+    @Override
     protected int getMaxPointLightShadows() {
         return JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS;
+    }
+
+    @Override
+    protected int getMaxSpotLightShadows() {
+        return JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS_SHADOWS;
     }
 
     @Override
@@ -99,6 +122,15 @@ public class JGemsShadowScene extends ShadowScene {
 
     public JGemsShadowScene setPointLightShadowMapsBasicResolution(int pointLightShadowMapsBasicResolution) {
         this.pointLightShadowMapsBasicResolution = pointLightShadowMapsBasicResolution;
+        return this;
+    }
+
+    public int getSpotLightShadowMapsBasicResolution() {
+        return this.spotLightShadowMapsBasicResolution;
+    }
+
+    public JGemsShadowScene setSpotLightShadowMapsBasicResolution(int spotLightShadowMapsBasicResolution) {
+        this.spotLightShadowMapsBasicResolution = spotLightShadowMapsBasicResolution;
         return this;
     }
 
@@ -140,8 +172,17 @@ public class JGemsShadowScene extends ShadowScene {
     protected @NotNull Consumer<JGemsShaderManager> getUniformsConsumerPointLightShadows(PointLightShadow pointLightShadow, Matrix4f lightProjection) {
         return (shaderManager) -> {
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_VIEW_MATRIX), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
-            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.LIGHT_POS), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPosition()));
+        };
+    }
+
+    @Override
+    protected @NotNull Consumer<JGemsShaderManager> getUniformsConsumerSpotLightShadows(SpotLightShadow spotLightShadow, Matrix4f lightProjection) {
+        return (shaderManager) -> {
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(spotLightShadow.farPlane()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_VIEW_MATRIX), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.LIGHT_POS), UniformFunctions.VEC3F(spotLightShadow.getSpotLight().getLightPosition()));
         };
     }
 }

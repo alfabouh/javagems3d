@@ -10,6 +10,7 @@ public abstract class JGemsConfig {
         public static boolean FULL_BRIGHT;
         public static boolean FOG;
         public static boolean DISABLE_POINT_LIGHTS;
+        public static boolean DISABLE_SPOT_LIGHTS;
         public static boolean SHOW_DEBUG_LINES;
         public static boolean WIREFRAME_RENDERING;
 
@@ -38,7 +39,9 @@ public abstract class JGemsConfig {
 
         public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
         public static final int MAX_POINT_LIGHTS = 128;
+        public static final int MAX_SPOT_LIGHTS = 64;
         public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
+        public static final int MAX_SPOT_LIGHTS_SHADOWS = 3;
         public static final int SUN_SHADOW_CASCADES = 3;
         public static final int DEFAULT_MAX_SHADOW_RES = 2048;
         public static final float HDR_EXPOSURE_DEFAULT = 2.5f;
@@ -47,9 +50,9 @@ public abstract class JGemsConfig {
         public static final float SSAO_BIAS = 0.01f;
         public static final float SSAO_RANGE = 1.25f;
 
-        public static float POINT_LIGHT_CONSTANT_ATT = 1.0f;
-        public static float POINT_LIGHT_LINEAR_ATT = 0.14f;
-        public static float POINT_LIGHT_EXP_ATT = 0.07f;
+        public static float _LIGHT_CONSTANT_ATT = 1.0f;
+        public static float LIGHT_LINEAR_ATT = 0.14f;
+        public static float LIGHT_EXP_ATT = 0.07f;
 
         public static float EVSM_POSITIVE_EXPONENT = 60.0f;
         public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
@@ -59,6 +62,8 @@ public abstract class JGemsConfig {
 
         public static int POINT_LIGHT_STRUCT_SIZE = 12;
         public static int POINT_LIGHT_BUFFER_PACK_SIZE = (SYSTEM.POINT_LIGHT_STRUCT_SIZE * SYSTEM.MAX_POINT_LIGHTS);
+        public static int SPOT_LIGHT_STRUCT_SIZE = 16;
+        public static int SPOT_LIGHT_BUFFER_PACK_SIZE = (SYSTEM.SPOT_LIGHT_STRUCT_SIZE * SYSTEM.MAX_SPOT_LIGHTS);
         public static int SUN_LIGHT_BUFFER_PACK_SIZE = 8;
         public static int FOG_BUFFER_PACK_SIZE = 8 + (1);
 

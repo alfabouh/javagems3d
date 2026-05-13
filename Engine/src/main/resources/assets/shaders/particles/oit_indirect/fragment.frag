@@ -59,7 +59,7 @@ void main()
     reveal = calc_fog_float(frag_pos.xyz, frag_color0.a);
 
     float brightness = dot(frag_color0.rgb, vec3(0.2126, 0.7152, 0.0722));
-    bright_color = (brightness >= 1.75 ? vec4(frag_color0.xyz, 1.) : vec4(vec3(frag_color0.xyz * enRenderData.emission_color) * enRenderData.emissionStrength, 1.));
+    bright_color = (brightness >= 1.75 ? vec4(frag_color0.xyz, 1.) : vec4(vec3(frag_color0.xyz * enRenderData.emission_color) * enRenderData.emissionStrength * calc_fog_float(frag_pos.xyz, 1.), 1.));
     if (textureDiffuse.a < 0.1) {
         bright_color = vec4(0.);
     }

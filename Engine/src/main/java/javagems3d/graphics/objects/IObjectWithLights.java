@@ -26,6 +26,7 @@ public interface IObjectWithLights {
     @NotNull Set<ILightAttachable> getAttachedLights();
 
     Vector3f getPositionToAttachLights();
+    Vector3f getRotationAngle();
 
     default boolean isLightAttached(ILightAttachable light) {
         return this.getAttachedLights().contains(light);

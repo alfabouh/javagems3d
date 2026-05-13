@@ -1,13 +1,14 @@
 package javagems3d.graphics.environment.shadows.scene;
 
+import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
+import javagems3d.graphics.environment.shadows.SpotLightShadow;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.GroupedSceneObjectsIndirectRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -36,21 +37,26 @@ import java.util.stream.Collectors;
 
 public abstract class ShadowScene implements IShadowScene {
     private OpenGLRenderer openGLRenderer;
+    private GroupedSceneObjectsIndirectRenderer spotLightIndirectRendered;
     private GroupedSceneObjectsIndirectRenderer pointLightIndirectRendered;
     private GroupedSceneObjectsIndirectRenderer sunlightIndirectRendered;
     private final IEnvironment environment;
     private List<PointLightShadow> pointLightShadows;
+    private List<SpotLightShadow> spotLightShadows;
     private SunLightShadow sunLightShadow;
     private HashMap<PointLight, Integer> pointLightIdsHashMap;
-   // protected HashMap<PointLight, Integer> pointLightIdsHashMapCached;
+    private HashMap<SpotLight, Integer> spotLightIdsHashMap;
+    // protected HashMap<PointLight, Integer> pointLightIdsHashMapCached;
 
     public ShadowScene(IEnvironment environment, int totalCascades) {
         this.environment = environment;
         this.preInit();
         this.initPointLightShadows();
+        this.initSpotLightShadows();
         this.initSunLightShadow(totalCascades);
         this.pointLightIdsHashMap = new HashMap<>();
-      //  this.pointLightIdsHashMapCached = new HashMap<>();
+        this.spotLightIdsHashMap = new HashMap<>();
+        //  this.pointLightIdsHashMapCached = new HashMap<>();
     }
 
     protected void preInit() {
@@ -59,20 +65,27 @@ public abstract class ShadowScene implements IShadowScene {
     public void createResources(OpenGLRenderer openGLRenderer) {
         Log.get().info("Shadow-Sun Res: " + this.getSunShadowResolution());
         Log.get().info("Shadow-PntLight Res: " + this.getPointLightShadowResolution());
+        Log.get().info("Shadow-SptLight Res: " + this.getSpotLightShadowResolution());
         this.getSunLightShadow().setShadowMapResolution(this.getSunShadowResolution());
-        this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getSunShadowResolution()));
+        this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getPointLightShadowResolution()));
+        this.getSpotLightShadows().forEach(e -> e.setShadowMapResolution(this.getSpotLightShadowResolution()));
 
         this.openGLRenderer = openGLRenderer;
+        this.spotLightIndirectRendered = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, this.getSpotLightIndirectSSBO(), this.getSpotLightPropertiesSSBO(), Pipeline.SPOT_LIGHT_SHADOW_MAP, true, true);
         this.pointLightIndirectRendered = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, this.getPointLightIndirectSSBO(), this.getPointLightPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, true, true);
         this.sunlightIndirectRendered = new GroupedSceneObjectsIndirectRenderer(openGLRenderer, this.getSunIndirectSSBO(), this.getSunPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, true, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
+        this.getSpotLightShadows().forEach(SpotLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
 
     public void destroyResources() {
+        this.getSpotLightIdsHashMap().clear();
         this.getPointLightIdsHashMap().clear();
         this.getPointLightShadows().forEach(PointLightShadow::destroyResources);
+        this.getSpotLightShadows().forEach(SpotLightShadow::destroyResources);
         this.getSunLightShadow().destroyResources();
+        this.spotLightIndirectRendered = null;
         this.pointLightIndirectRendered = null;
         this.sunlightIndirectRendered = null;
     }
@@ -81,14 +94,26 @@ public abstract class ShadowScene implements IShadowScene {
     protected abstract @NotNull ShaderStorageBufferObject getSunPropertiesSSBO();
     protected abstract @NotNull ShaderStorageBufferObject getPointLightIndirectSSBO();
     protected abstract @NotNull ShaderStorageBufferObject getPointLightPropertiesSSBO();
+    protected abstract @NotNull ShaderStorageBufferObject getSpotLightIndirectSSBO();
+    protected abstract @NotNull ShaderStorageBufferObject getSpotLightPropertiesSSBO();
 
+    protected abstract @NotNull Vector2i getSpotLightShadowResolution();
     protected abstract @NotNull Vector2i getPointLightShadowResolution();
     protected abstract @NotNull Vector2i getSunShadowResolution();
     protected abstract int getMaxPointLightShadows();
+    protected abstract int getMaxSpotLightShadows();
     protected abstract boolean shouldNotRenderShadows();
+
+    public HashMap<SpotLight, Integer> getSpotLightIdsHashMap() {
+        return this.spotLightIdsHashMap;
+    }
 
     public HashMap<PointLight, Integer> getPointLightIdsHashMap() {
         return this.pointLightIdsHashMap;
+    }
+
+    protected void resortSpotLightShadowLightBindings(ILightScene lightScene) {
+        this.spotLightIdsHashMap = this.getSortedSpotLightMapReadyToBind(JGemsTransformManager.INSTANCE.getCameraViewMatrix().getTranslation(new Vector3f()), lightScene.getSpotLights());
     }
 
     protected void resortPointLightShadowLightBindings(ILightScene lightScene) {
@@ -106,6 +131,13 @@ public abstract class ShadowScene implements IShadowScene {
         }
     }
 
+    protected void initSpotLightShadows() {
+        this.spotLightShadows = new ArrayList<>(this.getMaxSpotLightShadows());
+        for (int i = 0; i < this.getMaxSpotLightShadows(); i++) {
+            this.spotLightShadows.add(new SpotLightShadow(this.getEnvironment(), this.getSpotLightShadowResolution(), i));
+        }
+    }
+
     protected Set<SceneObject> filterSet(Set<? extends SceneObject> modeledSceneObjectSet) {
         return modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER)).collect(Collectors.toSet());
     }
@@ -118,6 +150,7 @@ public abstract class ShadowScene implements IShadowScene {
         if (this.shouldNotRenderShadows()) {
             this.renderNullSunShadows();
             this.renderNullPointLightShadows();
+            this.renderNullSpotLightShadows();
             return;
         }
         this.getSunLightShadow().refreshCascades();
@@ -132,6 +165,7 @@ public abstract class ShadowScene implements IShadowScene {
             this.renderNullSunShadows();
         }
         this.pointLightShadows(renderWorld, this.divideSet2Groups(filtered, Pipeline.POINT_LIGHT_SHADOW_MAP));
+        this.spotLightShadows(renderWorld, this.divideSet2Groups(filtered, Pipeline.SPOT_LIGHT_SHADOW_MAP));
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
@@ -143,6 +177,36 @@ public abstract class ShadowScene implements IShadowScene {
     protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet, Pipeline pipeline) {
         Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline)).getRenderFabric().getRenderingType().equals(Type.INDIRECT)));
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
+    }
+
+    @SuppressWarnings("all")
+    protected void spotLightShadows(IRenderWorld renderWorld, Pair<List<SceneObject>, List<SceneObject>> groups) {
+        List<SceneObject> directRenderObjects = groups.first();
+        List<SceneObject> indirectRenderObjects = groups.second();
+        //boolean invalidate = !this.pointLightIdsHashMapCached.keySet().equals(this.pointLightIdsHashMap.keySet());
+        this.resortSpotLightShadowLightBindings(renderWorld.getEnvironment().getLightScene());
+        //this.pointLightIdsHashMapCached = new HashMap<>(this.pointLightIdsHashMap);
+        for (int i = 0; i < this.getMaxSpotLightShadows(); i++) {
+            SpotLightShadow spotLightShadow = this.getSpotLightShadows().get(i);
+            if (spotLightShadow.isAttachedToLight() && spotLightShadow.getSpotLight().isActive()) {
+                //final float distToLight = Math.max(pointLightShadow.getPointLight().getLightPosition().distance(renderWorld.getCamera().getCamPosition()) - pointLightShadow.getPointLight().getClipRadius() / 4.0f, 0.0f);
+                //final int updateRate = distToLight <= 8.0f ? 1 : (int) (distToLight * 0.2f);
+                //if (renderWorld.getTicks() % updateRate == 0 || this.getPointLightIdsHashMap().isEmpty() || invalidate) {
+                spotLightShadow.getSpotLightFBO().bindFBO();
+                OpenGLRenderer.setViewPort(spotLightShadow.getShadowMapResolution());
+                spotLightShadow.configureMatrix();
+                GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+                GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
+                Matrix4f lightProjection = spotLightShadow.getShadowProjectionView();
+                Consumer<JGemsShaderManager> consumer = this.getUniformsConsumerSpotLightShadows(spotLightShadow, lightProjection);
+                this.renderModelsIndirect(consumer, Pipeline.SPOT_LIGHT_SHADOW_MAP, indirectRenderObjects);
+                this.renderModelsDirect(consumer, Pipeline.SPOT_LIGHT_SHADOW_MAP, directRenderObjects);
+                GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                spotLightShadow.getSpotLightFBO().unBindFBO();
+                // }
+            }
+            spotLightShadow.setSpotLight(null);
+        }
     }
 
     @SuppressWarnings("all")
@@ -201,9 +265,15 @@ public abstract class ShadowScene implements IShadowScene {
 
     protected abstract @NotNull Consumer<JGemsShaderManager> getUniformsConsumerSunShadows(SunLightShadow.Cascade cascade, Matrix4f lightProjection);
     protected abstract @NotNull Consumer<JGemsShaderManager> getUniformsConsumerPointLightShadows(PointLightShadow pointLightShadow, Matrix4f lightProjection);
+    protected abstract @NotNull Consumer<JGemsShaderManager> getUniformsConsumerSpotLightShadows(SpotLightShadow pointLightShadow, Matrix4f lightProjection);
 
     protected void renderModelsIndirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
         switch (pipeline) {
+            case SPOT_LIGHT_SHADOW_MAP: {
+                this.getSpotLightIndirectRendered().setIndirectMeshObjects(filteredObjectsSet);
+                this.getSpotLightIndirectRendered().processAndRender(ArbitraryArguments.pass(functionToHandleUniforms));
+                break;
+            }
             case POINT_LIGHT_SHADOW_MAP: {
                 this.getPointLightIndirectRendered().setIndirectMeshObjects(filteredObjectsSet);
                 this.getPointLightIndirectRendered().processAndRender(ArbitraryArguments.pass(functionToHandleUniforms));
@@ -253,9 +323,21 @@ public abstract class ShadowScene implements IShadowScene {
             pointLightShadow.getPointLightCubeMap().bindFBO();
             for (int j = 0; j < 6; j++) {
                 pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL46.GL_COLOR_ATTACHMENT0, j);
+                GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
                 GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             }
             pointLightShadow.getPointLightCubeMap().unBindFBO();
+        }
+        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    protected void renderNullSpotLightShadows() {
+        for (int i = 0; i < this.getMaxSpotLightShadows(); i++) {
+            SpotLightShadow spotLightShadow = this.getSpotLightShadows().get(i);
+            spotLightShadow.getSpotLightFBO().bindFBO();
+            GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
+            spotLightShadow.getSpotLightFBO().unBindFBO();
         }
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
@@ -267,6 +349,30 @@ public abstract class ShadowScene implements IShadowScene {
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);
         pointLightShadow.setPointLight(pointLight);
+    }
+
+    public void bindSpotLightToShadowScene(int attachCode, SpotLight spotLight) {
+        if (attachCode >= this.getMaxPointLightShadows()) {
+            Log.get().warn("Couldn't attach spot light with code: " + attachCode + ", because reached limit: " + this.getMaxSpotLightShadows());
+            return;
+        }
+        SpotLightShadow spotLightShadow = this.getSpotLightShadows().get(attachCode);
+        spotLightShadow.setSpotLight(spotLight);
+    }
+
+    public HashMap<SpotLight, Integer> getSortedSpotLightMapReadyToBind(Vector3f viewPoint, Collection<SpotLight> spotLightsRar) {
+        HashMap<SpotLight, Integer> map = new HashMap<>();
+        for (SpotLight spotLight : spotLightsRar.stream().sorted(Comparator.comparingDouble(e -> e.getLightPosition().distance(viewPoint))).toList()) {
+            if (!spotLight.isEnableShadowMap()) {
+                continue;
+            }
+            this.getSpotLightShadows().get(map.size()).setSpotLight(spotLight);
+            map.put(spotLight, map.size());
+            if (map.size() >= 3) {
+                break;
+            }
+        }
+        return map;
     }
 
     public HashMap<PointLight, Integer> getSortedPointLightMapReadyToBind(Vector3f viewPoint, Collection<PointLight> pointLightsRaw) {
@@ -284,6 +390,10 @@ public abstract class ShadowScene implements IShadowScene {
         return map;
     }
 
+    public GroupedSceneObjectsIndirectRenderer getSpotLightIndirectRendered() {
+        return this.spotLightIndirectRendered;
+    }
+
     public GroupedSceneObjectsIndirectRenderer getPointLightIndirectRendered() {
         return this.pointLightIndirectRendered;
     }
@@ -294,6 +404,10 @@ public abstract class ShadowScene implements IShadowScene {
 
     public SunLightShadow getSunLightShadow() {
         return this.sunLightShadow;
+    }
+
+    public List<SpotLightShadow> getSpotLightShadows() {
+        return this.spotLightShadows;
     }
 
     public List<PointLightShadow> getPointLightShadows() {

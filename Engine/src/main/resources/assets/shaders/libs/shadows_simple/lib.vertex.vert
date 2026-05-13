@@ -14,12 +14,21 @@ uniform sampler2D sun_shadow_map_2;
 uniform samplerCube point_light_cubemap_0;
 uniform samplerCube point_light_cubemap_1;
 uniform samplerCube point_light_cubemap_2;
+//TODO ARRAYS
+uniform sampler2D spot_light_shadow_map_0;
+uniform sampler2D spot_light_shadow_map_1;
+uniform sampler2D spot_light_shadow_map_2;
+//TODO ARRAYS
+uniform mat4 spot_light_shadow_projection_view_0;
+uniform mat4 spot_light_shadow_projection_view_1;
+uniform mat4 spot_light_shadow_projection_view_2;
 
-uniform float far_plane;
+uniform float pl_far_plane;
+uniform float sl_far_plane;
 uniform float PosExp;
 uniform float NegExp;
 
-vec4 sampleShadow(int idx, vec2 uv) {
+vec4 sampleShadowSun(int idx, vec2 uv) {
     if (idx == 0) {
         return texture(sun_shadow_map_0, uv);
     }
@@ -59,6 +68,26 @@ mat4 sampleProjView(int idx) {
     return cascade_shadow_projection_view_2;
 }
 
+sampler2D sampleShadowSl(int idx) {
+    if (idx == 0) {
+        return spot_light_shadow_map_0;
+    }
+    if (idx == 1) {
+        return spot_light_shadow_map_1;
+    }
+    return spot_light_shadow_map_2;
+}
+
+mat4 sampleProjViewSl(int idx) {
+    if (idx == 0) {
+        return spot_light_shadow_projection_view_0;
+    }
+    if (idx == 1) {
+        return spot_light_shadow_projection_view_1;
+    }
+    return spot_light_shadow_projection_view_2;
+}
+
 vec2 warp(vec2 exponents, float depth) {
     depth = 2.0f * depth - 1.0f;
     float pos = exp(exponents.x * depth);
@@ -84,7 +113,7 @@ float calcShadowDepth_simple(int idx, vec3 shadow_coord)
     float negativeExponent = NegExp;
     vec2 exponents = vec2(positiveExponent, negativeExponent);
 
-    vec4 moments = sampleShadow(idx, shadow_coord.xy).xyzw;
+    vec4 moments = sampleShadowSun(idx, shadow_coord.xy).xyzw;
     vec2 posMoments = vec2(moments.x, moments.z);
     vec2 negMoments = vec2(moments.y, moments.w);
     vec2 wDepth = warp(exponents, shadow_coord.z);
@@ -112,11 +141,22 @@ float calculate_sun_shadow_simple(vec4 worldPosition, float depthZ) {
     return calcShadowDepth_simple(cascadeIndex, shadow_coord);
 }
 
+float calculate_spot_light_shadows_simple(int idx, vec4 frag_worldPosition, vec3 lightPos)
+{
+    vec4 clip = sampleProjViewSl(idx) * frag_worldPosition;
+    float currentDepth = clip.z / sl_far_plane;
+    vec3 uv = clip.xyz / clip.w;
+    uv = uv * 0.5 + 0.5;
+    vec4 vsm = texture(sampleShadowSl(idx), uv.xy);
+
+    return currentDepth <= vsm.r ? 1.0 : 0.0;
+}
+
 float calculate_point_light_shadows_simple(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
 {
     vec3 fragToLight = fragPosition - lightPos;
     float currentDepth = length(fragToLight);
-    currentDepth /= far_plane;
+    currentDepth /= pl_far_plane;
     vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
     return currentDepth <= vsm.r ? 1.0 : 0.0;
 }

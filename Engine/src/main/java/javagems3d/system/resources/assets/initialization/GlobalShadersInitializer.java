@@ -1,7 +1,6 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -12,7 +11,6 @@ import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstant
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -50,6 +48,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager depth_sun_indirect;
     public JGemsShaderManager depth_plight;
     public JGemsShaderManager depth_plight_indirect;
+    public JGemsShaderManager depth_slight;
+    public JGemsShaderManager depth_slight_indirect;
     public JGemsShaderManager debug;
     public JGemsShaderManager imgui;
     public JGemsShaderManager alpha_scanning;
@@ -69,6 +69,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public ShaderStorageBufferObject TimerData;
     public ShaderStorageBufferObject SunLightData;
     public ShaderStorageBufferObject PointLightsData;
+    public ShaderStorageBufferObject SpotLightsData;
     public ShaderStorageBufferObject FogData;
     public ShaderStorageBufferObject TextureScan;
     public ShaderStorageBufferObject ModelVertexesData;
@@ -86,13 +87,15 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MATERIALS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_PROPERIES", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES));
         shaderStaticConstants.createConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS));
-        shaderStaticConstants.createConstant("POINT_LIGHT_CONSTANT_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_CONSTANT_ATT));
-        shaderStaticConstants.createConstant("POINT_LIGHT_LINEAR_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_LINEAR_ATT));
-        shaderStaticConstants.createConstant("POINT_LIGHT_EXP_ATT", String.valueOf(JGemsConfig.SYSTEM.POINT_LIGHT_EXP_ATT));
+        shaderStaticConstants.createConstant("LIGHT_CONSTANT_ATT", String.valueOf(JGemsConfig.SYSTEM._LIGHT_CONSTANT_ATT));
+        shaderStaticConstants.createConstant("LIGHT_LINEAR_ATT", String.valueOf(JGemsConfig.SYSTEM.LIGHT_LINEAR_ATT));
+        shaderStaticConstants.createConstant("LIGHT_EXP_ATT", String.valueOf(JGemsConfig.SYSTEM.LIGHT_EXP_ATT));
         shaderStaticConstants.createConstant("MAX_VERTEXES_IN_MODEL", String.valueOf(JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL));
         shaderStaticConstants.createConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
+        shaderStaticConstants.createConstant("MAX_SPOT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS));
+        shaderStaticConstants.createConstant("MAX_SPOT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS_SHADOWS));
         shaderStaticConstants.createConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
 
         shaderStaticConstants.createConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
@@ -108,6 +111,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/animations", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/cubemap_reflections", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/fog", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/light_fragment_calc", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/light_fragment_calc_simple", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/oit", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting_simple", ISource.Source.INSIDE_JAR));
@@ -134,6 +139,9 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
 
         this.PointLightsData = new ShaderStorageBufferObject(6, 4 * JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE + Integer.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.PointLightsData, GL46.GL_DYNAMIC_STORAGE_BIT);
+
+        this.SpotLightsData = new ShaderStorageBufferObject(16, 4 * JGemsConfig.SYSTEM.SPOT_LIGHT_BUFFER_PACK_SIZE + Integer.BYTES);
+        ShaderStorageBufferProgram.createSSBOStorage(this.SpotLightsData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
@@ -194,6 +202,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"), ISource.Source.INSIDE_JAR));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"), ISource.Source.INSIDE_JAR));
         this.depth_plight_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight_indirect"), ISource.Source.INSIDE_JAR));
+        this.depth_slight = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_slight"), ISource.Source.INSIDE_JAR));
+        this.depth_slight_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_slight_indirect"), ISource.Source.INSIDE_JAR));
         this.world_particle = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/world_indirect"), ISource.Source.INSIDE_JAR));
         this.world_particle_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/oit_indirect"), ISource.Source.INSIDE_JAR));
     }

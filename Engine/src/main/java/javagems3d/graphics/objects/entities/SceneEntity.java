@@ -143,6 +143,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     }
 
     @Override
+    public Vector3f getRotationAngle() {
+        return this.getRenderRotation();
+    }
+
+    @Override
     public Vector3f getPositionToAttachLights() {
         return this.getRenderPosition();
     }

@@ -164,6 +164,7 @@ public abstract class IndirectSceneObjectsRenderer {
     @SuppressWarnings("all")
     public Mode getMode() {
         switch (this.getPipeline()) {
+            case SPOT_LIGHT_SHADOW_MAP:
             case POINT_LIGHT_SHADOW_MAP:
             case SUN_LIGHT_SHADOW_MAP: {
                 return JGemsConfig.SYSTEM.CAST_SHADOWS_FROM_TRANSPARENT_MESHES ? Mode.ALL : Mode.ONLY_SOLID;

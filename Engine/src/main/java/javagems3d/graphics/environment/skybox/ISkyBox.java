@@ -15,7 +15,6 @@ public interface ISkyBox {
 
     ISkyBackground getBackground();
     ICubeMapProgram getTexture();
-    SunLight getSun();
 
     void setSkyCoveredByFog(boolean skyCoveredByFog);
     void setSky2DTexture(@Nullable ICubeMapProgram sky2DTexture);

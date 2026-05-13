@@ -19,15 +19,17 @@ public class ShadowsData implements SectionData<ShadowsData> {
     public boolean sunShadows;
     public int sunShadowRes;
     public int pointLightShadowRes;
+    public int spotLightShadowRes;
 
     private ShadowsData() {
     }
 
-    public ShadowsData(Vector3f splits, boolean sunShadows, int sunShadowRes, int pointLightShadowRes) {
+    public ShadowsData(Vector3f splits, boolean sunShadows, int sunShadowRes, int pointLightShadowRes, int spotLightShadowRes) {
         this.splits = splits;
         this.sunShadows = sunShadows;
         this.sunShadowRes = sunShadowRes;
         this.pointLightShadowRes = pointLightShadowRes;
+        this.spotLightShadowRes = spotLightShadowRes;
     }
 
     @Override
@@ -41,6 +43,7 @@ public class ShadowsData implements SectionData<ShadowsData> {
                     jsonObject.add("sunShadows", context.serialize(toWrite.sunShadows));
                     jsonObject.add("sunShadowRes", context.serialize(toWrite.sunShadowRes));
                     jsonObject.add("pointLightShadowRes", context.serialize(toWrite.pointLightShadowRes));
+                    jsonObject.add("spotLightShadowRes", context.serialize(toWrite.spotLightShadowRes));
                     return jsonObject;
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't write: " + toWrite.getClass(), e);
@@ -55,7 +58,8 @@ public class ShadowsData implements SectionData<ShadowsData> {
                     boolean sunShadows = jsonObject.has("sunShadows") ? context.deserialize(jsonObject.get("sunShadows"), boolean.class) : true;
                     int sunShadowRes = jsonObject.has("sunShadowRes") ? context.deserialize(jsonObject.get("sunShadowRes"), int.class) : JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
                     int pointLightShadowRes = jsonObject.has("pointLightShadowRes") ? context.deserialize(jsonObject.get("pointLightShadowRes"), int.class) : JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
-                    return new ShadowsData(splits, sunShadows, sunShadowRes, pointLightShadowRes);
+                    int spotLightShadowRes = jsonObject.has("spotLightShadowRes") ? context.deserialize(jsonObject.get("spotLightShadowRes"), int.class) : JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
+                    return new ShadowsData(splits, sunShadows, sunShadowRes, pointLightShadowRes, spotLightShadowRes);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

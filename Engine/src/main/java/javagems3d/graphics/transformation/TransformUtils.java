@@ -124,4 +124,12 @@ public abstract class TransformUtils {
         directions.add(projectionViewMatrix6);
         return directions;
     }
+
+    public static Matrix4f getDirectionViewSpace(Vector3f pos, float near, float far, float fov, Vector3f direction) {
+        Vector3f dir = new Vector3f(direction).normalize();
+        Vector3f up = Math.abs(dir.y) > 0.99f ? new Vector3f(0.0f, 0.0f, 1.0f) : new Vector3f(0.0f, 1.0f, 0.0f);
+        Matrix4f projection = new Matrix4f().perspective(fov, 1.0f, near, far);
+        Matrix4f view = new Matrix4f().lookAt(pos, new Vector3f(pos).add(dir), up);
+        return projection.mul(view);
+    }
 }

@@ -12,7 +12,7 @@ uniform vec4 diffuse_color;
 uniform uvec2 diffuse_map;
 uniform bool use_texture;
 uniform vec3 lightPos;
-uniform float pl_far_plane;
+uniform float sl_far_plane;
 
 void main()
 {
@@ -24,7 +24,7 @@ void main()
         discard;
     }
     float lightDistance = length(frag_pos.xyz - lightPos);
-    lightDistance /= pl_far_plane;
+    lightDistance /= sl_far_plane;
 
     float d = lightDistance;
     float dx = dFdx(d);

@@ -13,10 +13,10 @@ import api.application.workbench.resources.data.wbench.ext.WBenchObjectInstanceE
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.particles.IParticlesManager;
 import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
 import javagems3d.graphics.environment.particles.emitter.ParticleEmitter;
-import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.world.IRenderWorld;
@@ -51,6 +51,7 @@ public interface IAPIWBenchDataManager {
     String PLAYER_SPAWN = "player_spawn";
     String PARTICLE_EMITTER = "particle_emitter";
     String POINT_LIGHT = "point_light";
+    String SPOT_LIGHT = "spot_light";
     String BOX_WATER = "aabb_water";
 
     void addResourceEntity(@Nullable String path, @NotNull ApiResourceEntity resourceEntity, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator);
@@ -253,8 +254,130 @@ public interface IAPIWBenchDataManager {
                 return wBenchMarkerData;
             }, false, PointLightObjectExtension::new);
         }
+        {
+            this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.SPOT_LIGHT, () -> {
+                final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
+                final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+                final Tag<TagFloat> cutOff = Tag.create(TagID.DEFAULT.CUT_OFF, new TagFloat(17.5f, 1.0f, 60.0f));
+                final Tag<TagFloat> attFactor = Tag.create(TagID.DEFAULT.ATTENUATION_FACTOR, new TagFloat(16.0f, 0.0f, 256.0f));
+                final Tag<TagCheckBoolean> enableShadowMap = Tag.create(TagID.DEFAULT.SHADOW_MAP, new TagCheckBoolean(false));
+                final Tag<TagVector> offset = Tag.create(new TagID(TagID.DEFAULT.FLOAT3, "Offset"), new TagVector(VectorMode.VEC3F, new Vector4f(0.0f), -32.0f, 32.0f));
+
+                final WBenchMarkerData wBenchMarkerData = new WBenchMarkerData(DefaultMarker.POINT_DIR, new Vector3f(1.0f, 1.0f, 1.0f), false);
+                wBenchMarkerData.addTags(colorTag);
+                wBenchMarkerData.addTags(brightnessTag);
+                wBenchMarkerData.addTags(offset);
+                wBenchMarkerData.addTags(cutOff);
+                wBenchMarkerData.addTags(attFactor);
+                wBenchMarkerData.addTags(enableShadowMap);
+
+                return wBenchMarkerData;
+            }, false, SpotLightObjectExtension::new);
+        }
         this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.BOX_WATER, () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true), false);
         this.addResourceSkyCubeMap("SkyDay1", TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES);
+    }
+
+    class SpotLightObjectExtension extends WBenchObjectInstanceExtension {
+        private SpotLight spotLight;
+
+        public SpotLightObjectExtension(@NotNull ContextData dataPack) {
+            super(dataPack);
+        }
+
+        @Override
+        public Vector3f textInMenuColor() {
+            return new Vector3f(1.0f, 0.0f, 1.0f);
+        }
+
+        @Override
+        public int orderInItemsList() {
+            return 2;
+        }
+
+        @Override
+        public boolean shouldMarkerBeFullLighted() {
+            return true;
+        }
+
+        @Override
+        public void onSpawnExt(IRenderWorld world) {
+            this.spotLight = new SpotLight(this.getContextData().sceneProp().getPosition(), new Vector3f(1.0f), new Vector3f(0.0f)).on();
+            this.spotLight.setActionOnDetach(ILightAttachable.ActionOnDetach.DESTROY)
+                    .setBrightness(this.getBrightness(this.getContextData().tagsContainer().get()))
+                    .setDirection(this.getDirection(this.getContextData().tagsContainer().get()))
+                    .setCutOff(this.getOuterCutoff(this.getContextData().tagsContainer().get()))
+                    .setAttenuationFactor(this.getAttenuationFactor(this.getContextData().tagsContainer().get()))
+                    .setEnableShadowMap(this.enableShadows(this.getContextData().tagsContainer().get()));
+            world.addLight(this.spotLight, this.getContextData().sceneProp());
+        }
+
+        @Override
+        public void onDestroyExt(IRenderWorld world) {
+            if (this.spotLight != null) {
+                world.removeLight(this.spotLight);
+            }
+        }
+
+        @Override
+        public void onUpdateExt(IRenderWorld world) {
+            if (this.spotLight != null) {
+                TagsContainer tagsContainer = this.getContextData().tagsContainer().get();
+                this.spotLight
+                        .setLightColor(this.returnNewMarkerColor())
+                        .setBrightness(this.getBrightness(tagsContainer))
+                        .setOffset(this.getLightOffset(tagsContainer))
+                        .setCutOff(this.getOuterCutoff(tagsContainer))
+                        .setAttenuationFactor(this.getAttenuationFactor(tagsContainer))
+                        .setEnableShadowMap(this.enableShadows(tagsContainer));
+            }
+        }
+
+        @Override
+        public @Nullable Vector3f returnNewMarkerColor() {
+            Vector4f tagColor = this.getContextData().tagsContainer().get().getTag(TagID.DEFAULT.COLOR3).<TagColor>getTagItemUnsafeCast().getColorVector();
+            return new Vector3f(tagColor.x, tagColor.y, tagColor.z);
+        }
+
+        public float getBrightness(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.BRIGHTNESS)) {
+                return 1.0f;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.BRIGHTNESS).<TagFloat>getTagItemUnsafeCast().getValue();
+        }
+
+        public Vector3f getLightOffset(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.FLOAT3)) {
+                return new Vector3f(0.0f);
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.FLOAT3).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f());
+        }
+
+        public Vector3f getDirection(TagsContainer tagsContainer) {
+            return this.getContextData().sceneProp().getRotation();
+        }
+
+        public float getOuterCutoff(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.CUT_OFF)) {
+                return 17.5f;
+            }
+
+            return tagsContainer.getTag(TagID.DEFAULT.CUT_OFF).<TagFloat>getTagItemUnsafeCast().getValue();
+        }
+
+        public float getAttenuationFactor(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.ATTENUATION_FACTOR)) {
+                return 32.0f;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.ATTENUATION_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue();
+        }
+
+        public boolean enableShadows(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.SHADOW_MAP)) {
+                return false;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.SHADOW_MAP).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+        }
     }
 
     class PointLightObjectExtension extends WBenchObjectInstanceExtension {

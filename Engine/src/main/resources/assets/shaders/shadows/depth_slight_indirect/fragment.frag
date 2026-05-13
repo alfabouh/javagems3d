@@ -7,11 +7,10 @@ in vec4 frag_pos;
 
 layout (location = 0) out vec4 frag_color0;
 
-uniform vec3 lightPos;
-uniform float pl_far_plane;
-
 in flat uint matertial_id;
 in flat uint ent_id;
+uniform vec3 lightPos;
+uniform float sl_far_plane;
 
 struct Properties {
     float alpha_discard;
@@ -62,9 +61,8 @@ void main()
     if (diffuse_a < alpha_discard) {
         discard;
     }
-
     float lightDistance = length(frag_pos.xyz - lightPos);
-    lightDistance /= pl_far_plane;
+    lightDistance /= sl_far_plane;
 
     float d = lightDistance;
     float dx = dFdx(d);

@@ -2,6 +2,7 @@ package workbench.graphics.environment.components;
 
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
+import javagems3d.graphics.environment.shadows.SpotLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.objects.SceneObject;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatible<WBenchShadowScene.WBenchShadowSceneSnapshotData> {
     public int sunShadowMapResolution;
     public int pointLightShadowMapResolution;
+    public int spotLightShadowMapResolution;
 
     public WBenchShadowScene(IEnvironment environment) {
         super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
@@ -41,6 +43,8 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
         super.createResources(openGLRenderer);
         this.sunShadowMapResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
         this.pointLightShadowMapResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
+        this.spotLightShadowMapResolution = JGemsConfig.SYSTEM.DEFAULT_MAX_SHADOW_RES;
+
     }
 
     protected @NotNull Vector2i getSunShadowResolution() {
@@ -53,8 +57,18 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
     }
 
     @Override
+    protected @NotNull Vector2i getSpotLightShadowResolution() {
+        return new Vector2i(512);
+    }
+
+    @Override
     protected int getMaxPointLightShadows() {
         return JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS;
+    }
+
+    @Override
+    protected int getMaxSpotLightShadows() {
+        return JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS_SHADOWS;
     }
 
     @Override
@@ -87,6 +101,16 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
     }
 
     @Override
+    protected @NotNull ShaderStorageBufferObject getSpotLightIndirectSSBO() {
+        return WBenchResourceManager.localShaderAssets.MainSceneIndirectBufferData;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getSpotLightPropertiesSSBO() {
+        return WBenchResourceManager.localShaderAssets.MainScenePropertiesData;
+    }
+
+    @Override
     protected Set<SceneObject> filterSet(Set<? extends SceneObject> modeledSceneObjectSet) {
         return super.filterSet(modeledSceneObjectSet).stream().filter(e -> (e instanceof WBenchCommonObject)).collect(Collectors.toSet());
     }
@@ -105,8 +129,17 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
     protected @NotNull Consumer<JGemsShaderManager> getUniformsConsumerPointLightShadows(PointLightShadow pointLightShadow, Matrix4f lightProjection) {
         return (shaderManager) -> {
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_VIEW_MATRIX), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
-            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.LIGHT_POS), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPosition()));
+        };
+    }
+
+    @Override
+    protected @NotNull Consumer<JGemsShaderManager> getUniformsConsumerSpotLightShadows(SpotLightShadow spotLightShadow, Matrix4f lightProjection) {
+        return (shaderManager) -> {
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(spotLightShadow.farPlane()));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_VIEW_MATRIX), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
+            shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.LIGHT_POS), UniformFunctions.VEC3F(spotLightShadow.getSpotLight().getLightPosition()));
         };
     }
 

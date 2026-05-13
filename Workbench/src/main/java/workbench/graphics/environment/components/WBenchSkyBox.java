@@ -13,13 +13,9 @@ public class WBenchSkyBox extends SkyBox implements ISnapshotCompatible<WBenchSk
         super(new WBenchSkyBackground(world, backGroundViewScaling), sky2DTexture);
     }
 
-    protected void setSunLight() {
-        this.sunLight = new WBenchSunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
-    }
-
     @Override
     public WBenchSkyBoxSnapshotData takeSnapshot() {
-        return new WBenchSkyBoxSnapshotData(this.getTexture(), this.isSkyCoveredByFog(), this.isDrawSunOnSkyBox(), ((WBenchSkyBackground) (this.getBackground())).takeSnapshot(), ((WBenchSunLight) this.sunLight).takeSnapshot());
+        return new WBenchSkyBoxSnapshotData(this.getTexture(), this.isSkyCoveredByFog(), this.isDrawSunOnSkyBox(), ((WBenchSkyBackground) (this.getBackground())).takeSnapshot());
     }
 
     @Override
@@ -28,12 +24,10 @@ public class WBenchSkyBox extends SkyBox implements ISnapshotCompatible<WBenchSk
         this.setSkyCoveredByFog(wBenchSkyBoxSnapshotData.isSkyCoveredByFog);
         this.setDrawSunOnSkyBox(wBenchSkyBoxSnapshotData.drawSunOnSkyBox);
         ((WBenchSkyBackground) this.getBackground()).fixSnapshot(wBenchSkyBoxSnapshotData.wBenchSkyBackgroundSnapshotData);
-        ((WBenchSunLight) this.sunLight).fixSnapshot(wBenchSkyBoxSnapshotData.sunLightSnapshotData);
     }
 
     public record WBenchSkyBoxSnapshotData(ICubeMapProgram sky2DTexture, boolean isSkyCoveredByFog,
                                            boolean drawSunOnSkyBox,
-                                           WBenchSkyBackground.WBenchSkyBackgroundSnapshotData wBenchSkyBackgroundSnapshotData,
-                                           WBenchSunLight.WBenchSunLightSnapshotData sunLightSnapshotData) implements SnapshotData {
+                                           WBenchSkyBackground.WBenchSkyBackgroundSnapshotData wBenchSkyBackgroundSnapshotData) implements SnapshotData {
     }
 }

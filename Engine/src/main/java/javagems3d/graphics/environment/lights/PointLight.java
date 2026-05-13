@@ -58,7 +58,7 @@ public class PointLight extends Light implements ILightAttachable {
         Vector3f maxColor = new Vector3f(color).mul(brightness);
         final float maxC = maxColor.get(maxColor.maxComponent());
 
-        return (float) ((-JGemsConfig.SYSTEM.POINT_LIGHT_LINEAR_ATT + Math.sqrt(Math.pow(JGemsConfig.SYSTEM.POINT_LIGHT_LINEAR_ATT, 2.0f) - 4.0f * JGemsConfig.SYSTEM.POINT_LIGHT_EXP_ATT * (JGemsConfig.SYSTEM.POINT_LIGHT_CONSTANT_ATT - maxC * epsilon))) / (2.0f * JGemsConfig.SYSTEM.POINT_LIGHT_EXP_ATT));
+        return (float) ((-JGemsConfig.SYSTEM.LIGHT_LINEAR_ATT + Math.sqrt(Math.pow(JGemsConfig.SYSTEM.LIGHT_LINEAR_ATT, 2.0f) - 4.0f * JGemsConfig.SYSTEM.LIGHT_EXP_ATT * (JGemsConfig.SYSTEM._LIGHT_CONSTANT_ATT - maxC * epsilon))) / (2.0f * JGemsConfig.SYSTEM.LIGHT_EXP_ATT));
     }
 
     private static float EPS() {

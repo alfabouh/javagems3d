@@ -87,6 +87,11 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     }
 
     @Override
+    public Vector3f getRotationAngle() {
+        return this.hasModel() ? this.getModel().getPose().getRotation() : new Vector3f(0.0f, 1.0f, 0.0f);
+    }
+
+    @Override
     public Vector3f getPositionToAttachLights() {
         return this.hasModel() ? this.getModel().getPose().getPosition() : new Vector3f(0.0f);
     }

@@ -22,8 +22,37 @@ layout (std430, binding = 6) buffer PointLights {
     int total_plights;
 };
 
+struct SpotLight
+{
+    vec3 position;
+    float brightness;
+    vec3 direction;
+    int attachedShadowSceneId;
+    vec3 view_position;
+    float attenuationFactor;
+    vec3 color;
+    float cutOff;
+};
+layout (std430, binding = 16) buffer SpotLights {
+    SpotLight s_l[CONST.MAX_SPOT_LIGHTS];
+    int total_slights;
+};
+
 vec3 calc_point_light_simple(PointLight light, vec3 particlePos) {
     float dist = length(light.position - particlePos);
+    float attenuation = 1.0 / (1.0 + 0.1 * dist + 0.01 * dist * dist);
+    return light.color * vec3((light.brightness * attenuation));
+}
+
+vec3 calc_spot_light_simple(mat4 view_matrix, SpotLight light, vec3 particlePos) {
+    vec3 light_dir = light.position - particlePos;
+    vec3 to_light = normalize(light_dir);
+    float theta = dot(to_light, -(inverse(view_matrix) * vec4(light.direction, 0.)).xyz);
+    if (theta < light.cutOff)
+    {
+        return vec3(0.);
+    }
+    float dist = length(light_dir);
     float attenuation = 1.0 / (1.0 + 0.1 * dist + 0.01 * dist * dist);
     return light.color * vec3((light.brightness * attenuation));
 }

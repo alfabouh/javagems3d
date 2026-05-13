@@ -12,6 +12,7 @@ public class WBenchGameEditorModelAssetsInitializer implements IAssetsInitialize
     public MeshGroup markerCursor;
     public MeshGroup markerAabb;
     public MeshGroup markerCube;
+    public MeshGroup markerCubeDir;
 
     public WBenchGameEditorModelAssetsInitializer() {
     }
@@ -26,6 +27,7 @@ public class WBenchGameEditorModelAssetsInitializer implements IAssetsInitialize
         this.markerCursor = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cursor/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
         this.markerAabb = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_aabb/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
         this.markerCube = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cube/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
+        this.markerCubeDir = systemResources.createMeshGroup(new JGemsPathSource(new JGemsPath("/assets/models/marker_cube_dir/marker.gltf"), ISource.Source.INSIDE_JAR), true, false);
     }
 
     @Override

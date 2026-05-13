@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.ui.snapshots.helper.UITrackingHelper;
 import javagems3d.system.global.JGemsConfig;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.environment.components.WBenchShadowScene;
 import workbench.graphics.scene.ui.asnapshots.helper.WBenchUITrackingHelper;
@@ -22,22 +23,18 @@ public class InterfaceActionsEnvShadowsM {
         this.mapEditorInterface = mapEditorInterface;
     }
 
-    private void shadowResCombo(boolean sun) {
+    private void shadowResCombo(String id, int[] f1) {
         ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffa7);
         final WBenchShadowScene shadowScene = this.mapEditorInterface.getWorld().getEnvironment().getShadowScene();
         final String[] resolutions = {"256", "512", "1024", "2048", "4096"};
         ImGui.setNextItemWidth(80);
-        final int currentResolution = sun ? shadowScene.sunShadowMapResolution : shadowScene.pointLightShadowMapResolution;
-        if (ImGui.beginCombo("Resolution##" + (sun ? "sun" : "pl"), String.valueOf(currentResolution))) {
+        final int currentResolution = f1[0];
+        if (ImGui.beginCombo("Resolution##" + id, String.valueOf(currentResolution))) {
             for (String resolution : resolutions) {
                 int parsed = Integer.parseInt(resolution);
                 if (ImGui.selectable(resolution, currentResolution == parsed)) {
                     WBenchUITrackingHelper.instantlyTrackAndPush();
-                    if (sun) {
-                        shadowScene.sunShadowMapResolution = parsed;
-                    } else {
-                        shadowScene.pointLightShadowMapResolution = parsed;
-                    }
+                    f1[0] = parsed;
                 }
             }
             ImGui.endCombo();
@@ -49,12 +46,33 @@ public class InterfaceActionsEnvShadowsM {
         WBenchEnvironment environment = this.mapEditorInterface.getWorld().getEnvironment();
         if (ImGui.collapsingHeader("PointLight Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("##ShadowsContent1", ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
-            this.shadowResCombo(false);
+            {
+                int[] f1 = new int[]{environment.getShadowScene().pointLightShadowMapResolution};
+                this.shadowResCombo("pl", f1);
+                environment.getShadowScene().pointLightShadowMapResolution = f1[0];
+            }
+            ImGui.endChild();
+        }
+        if (ImGui.collapsingHeader("SpotLight Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
+            ImGui.beginChild("##ShadowsContent3", ImGui.getColumnWidth(), 60, true, ImGuiWindowFlags.HorizontalScrollbar);
+            {
+                int[] f1 = new int[]{environment.getShadowScene().spotLightShadowMapResolution};
+                this.shadowResCombo("sp", f1);
+                environment.getShadowScene().spotLightShadowMapResolution = f1[0];
+            }
             ImGui.endChild();
         }
         if (ImGui.collapsingHeader("Sun Shadows", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("##ShadowsContent2", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
-            this.shadowResCombo(true);
+            //ImGui.image(WBench.get().getScreen().getScene().getWorld().getEnvironment().getShadowScene().getSpotLightShadows().get(0).getSpotLightFBO().getTextureIDByIndex(0), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            //ImGui.image(WBench.get().getScreen().getScene().getWorld().getEnvironment().getShadowScene().getSpotLightShadows().get(1).getSpotLightFBO().getTextureIDByIndex(0), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            //ImGui.image(WBench.get().getScreen().getScene().getWorld().getEnvironment().getShadowScene().getSpotLightShadows().get(2).getSpotLightFBO().getTextureIDByIndex(0), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+            {
+                int[] f1 = new int[]{environment.getShadowScene().sunShadowMapResolution};
+                this.shadowResCombo("sun", f1);
+                environment.getShadowScene().sunShadowMapResolution = f1[0];
+            }
             try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_shadowSplits", WBenchUITrackingHelper::INSTANCE)) {
                 float[] shadowSplits = new float[]{environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
                 if (ImGui.dragFloat2("LOD Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {

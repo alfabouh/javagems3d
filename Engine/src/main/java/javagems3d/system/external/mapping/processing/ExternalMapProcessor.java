@@ -33,6 +33,7 @@ import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.particles.ParticlesManager;
 import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
@@ -289,6 +290,29 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             sceneWorld.addLight(pointLight, null);
         }
 
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.SPOT_LIGHT)) {
+            TagsContainer tags = template.getTagsContainer();
+            Vector4f color = tags.hasTag(TagID.DEFAULT.COLOR3) ? tags.getTag(TagID.DEFAULT.COLOR3).<TagColor>getTagItemUnsafeCast().getColorVector() : new Vector4f(1.0f);
+            float brightness = tags.hasTag(TagID.DEFAULT.BRIGHTNESS) ? tags.getTag(TagID.DEFAULT.BRIGHTNESS).<TagFloat>getTagItemUnsafeCast().getValue() : 1.0f;
+            float cutOff = tags.hasTag(TagID.DEFAULT.CUT_OFF) ? tags.getTag(TagID.DEFAULT.CUT_OFF).<TagFloat>getTagItemUnsafeCast().getValue() : 17.5f;
+            float attenuation = tags.hasTag(TagID.DEFAULT.ATTENUATION_FACTOR) ? tags.getTag(TagID.DEFAULT.ATTENUATION_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue() : 16.0f;
+            boolean shadows = tags.hasTag(TagID.DEFAULT.SHADOW_MAP) && tags.getTag(TagID.DEFAULT.SHADOW_MAP).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
+            Vector3f offset = tags.hasTag(TagID.DEFAULT.FLOAT3) ? tags.getTag(TagID.DEFAULT.FLOAT3).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+
+            SpotLight spotLight = new SpotLight();
+            spotLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
+            spotLight.setOffset(offset);
+            spotLight.setLightColor(color.xyz(new Vector3f()));
+            spotLight.setBrightness(brightness);
+            spotLight.setDirection(template.getRotation());
+            spotLight.setCutOff(cutOff);
+            spotLight.setEnableShadowMap(shadows);
+            spotLight.setAttenuationFactor(attenuation);
+            spotLight.on();
+
+            sceneWorld.addLight(spotLight, null);
+        }
+
         if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.PARTICLE_EMITTER)) {
             TagsContainer tags = template.getTagsContainer();
             String texturePath = tags.hasTag(TagID.DEFAULT.TEXTURE_PATH) ? tags.getTag(TagID.DEFAULT.TEXTURE_PATH).<TagGameResourcesList>getTagItemUnsafeCast().getValue() : "NULL";
@@ -371,7 +395,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
     }
 
-    protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
+    protected void onSetupSkyBox(SunData sunData, SkyData skyData, ILightScene lightScene, ISkyBox skyBox, ISkyBackground background) {
         if (skyData != null) {
             String nameId = skyData.getNameId();
             background.setViewScaling(skyData.backGroundScaling);
@@ -385,9 +409,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         if (sunData != null) {
-            skyBox.getSun().setLightPosition(sunData.position);
-            skyBox.getSun().setLightColor(sunData.color);
-            skyBox.getSun().setSunBrightness(sunData.brightness);
+            lightScene.getSunLight().setLightPosition(sunData.position);
+            lightScene.getSunLight().setLightColor(sunData.color);
+            lightScene.getSunLight().setSunBrightness(sunData.brightness);
         }
     }
 
@@ -408,6 +432,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             shadowScene.getSunLightShadow().setEnabled(shadowsData.sunShadows);
             ((JGemsShadowScene) shadowScene).setSunShadowMapsBasicResolution(shadowsData.sunShadowRes);
             ((JGemsShadowScene) shadowScene).setPointLightShadowMapsBasicResolution(shadowsData.pointLightShadowRes);
+            ((JGemsShadowScene) shadowScene).setSpotLightShadowMapsBasicResolution(shadowsData.spotLightShadowRes);
             //shadowScene.recreateResources((JGemsOpenGLRenderer) JGems3D.get().getSceneRenderer());
         }
     }
@@ -458,7 +483,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             return;
         }
 
-        this.onSetupSkyBox(sunData, skyData, skyBox, background);
+        this.onSetupSkyBox(sunData, skyData, environment.getLightScene(), skyBox, background);
     }
 
     @Override

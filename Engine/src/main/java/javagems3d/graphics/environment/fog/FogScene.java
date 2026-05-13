@@ -1,5 +1,6 @@
 package javagems3d.graphics.environment.fog;
 
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import org.joml.Vector3f;
@@ -14,7 +15,7 @@ public abstract class FogScene implements IFogScene {
         this.color = new Vector3f(0.85f);
     }
 
-    public abstract void updateFogBuffer(ShaderStorageBufferObject shaderStorageBufferObject, ISkyBox skyBox, MemoryStack stack);
+    public abstract void updateFogBuffer(ShaderStorageBufferObject shaderStorageBufferObject, ISkyBox skyBox, ILightScene lightScene, MemoryStack stack);
 
     public void setFogColor(Vector3f color) {
         this.color = color;

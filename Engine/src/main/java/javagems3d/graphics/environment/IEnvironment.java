@@ -20,9 +20,9 @@ public interface IEnvironment {
         this.getSkyBox().setSky2DTexture(null);
         this.getSkyBox().setSkyCoveredByFog(true);
 
-        this.getSkyBox().getSun().setLightColor(new Vector3f(1.0f));
-        this.getSkyBox().getSun().setLightPosition(new Vector3f(1.0f));
-        this.getSkyBox().getSun().setSunBrightness(1.0f);
+        this.getLightScene().getSunLight().setLightColor(new Vector3f(1.0f));
+        this.getLightScene().getSunLight().setLightPosition(new Vector3f(1.0f));
+        this.getLightScene().getSunLight().setSunBrightness(1.0f);
         this.getShadowScene().getSunLightShadow().setDefaultCascadeSplits();
 
         this.getLightScene().setBloomEnabled(true);

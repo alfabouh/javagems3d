@@ -14,8 +14,17 @@ uniform sampler2D sun_shadow_map_2;
 uniform samplerCube point_light_cubemap_0;
 uniform samplerCube point_light_cubemap_1;
 uniform samplerCube point_light_cubemap_2;
+//TODO ARRAYS
+uniform sampler2D spot_light_shadow_map_0;
+uniform sampler2D spot_light_shadow_map_1;
+uniform sampler2D spot_light_shadow_map_2;
+//TODO ARRAYS
+uniform mat4 spot_light_shadow_projection_view_0;
+uniform mat4 spot_light_shadow_projection_view_1;
+uniform mat4 spot_light_shadow_projection_view_2;
 
-uniform float far_plane;
+uniform float pl_far_plane;
+uniform float sl_far_plane;
 uniform float PosExp;
 uniform float NegExp;
 
@@ -38,7 +47,7 @@ float variance(vec2 moments, float mean, float minVariance) {
     }
 }
 
-vec4 sampleShadow(int idx, vec2 uv) {
+vec4 sampleShadowSun(int idx, vec2 uv) {
     if (idx == 0) {
         return texture(sun_shadow_map_0, uv);
     }
@@ -46,6 +55,16 @@ vec4 sampleShadow(int idx, vec2 uv) {
         return texture(sun_shadow_map_1, uv);
     }
     return texture(sun_shadow_map_2, uv);
+}
+
+mat4 sampleProjViewSun(int idx) {
+    if (idx == 0) {
+        return cascade_shadow_projection_view_0;
+    }
+    if (idx == 1) {
+        return cascade_shadow_projection_view_1;
+    }
+    return cascade_shadow_projection_view_2;
 }
 
 samplerCube sampleShadowPl(int idx) {
@@ -58,6 +77,16 @@ samplerCube sampleShadowPl(int idx) {
     return point_light_cubemap_2;
 }
 
+sampler2D sampleShadowSl(int idx) {
+    if (idx == 0) {
+        return spot_light_shadow_map_0;
+    }
+    if (idx == 1) {
+        return spot_light_shadow_map_1;
+    }
+    return spot_light_shadow_map_2;
+}
+
 float sampleSplitDist(int idx) {
     if (idx == 0) {
         return cascade_shadow_split_distance_0;
@@ -68,14 +97,14 @@ float sampleSplitDist(int idx) {
     return cascade_shadow_split_distance_2;
 }
 
-mat4 sampleProjView(int idx) {
+mat4 sampleProjViewSl(int idx) {
     if (idx == 0) {
-        return cascade_shadow_projection_view_0;
+        return spot_light_shadow_projection_view_0;
     }
     if (idx == 1) {
-        return cascade_shadow_projection_view_1;
+        return spot_light_shadow_projection_view_1;
     }
-    return cascade_shadow_projection_view_2;
+    return spot_light_shadow_projection_view_2;
 }
 
 float EVSM(int idx, vec4 shadow_coord, float bias) {
@@ -83,7 +112,7 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
     float negativeExponent = NegExp;
     vec2 exponents = vec2(positiveExponent, negativeExponent);
 
-    vec4 moments = sampleShadow(idx, shadow_coord.xy).xyzw;
+    vec4 moments = sampleShadowSun(idx, shadow_coord.xy).xyzw;
     vec2 posMoments = vec2(moments.x, moments.z);
     vec2 negMoments = vec2(moments.y, moments.w);
     vec2 wDepth = warp(exponents, shadow_coord.z);
@@ -100,7 +129,7 @@ float calcShadowDepth(int idx, vec4 shadow_coord, float bias) {
 }
 
 float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
-    vec4 shadowMapPos = sampleProjView(idx) * worldPosition;
+    vec4 shadowMapPos = sampleProjViewSun(idx) * worldPosition;
     if (abs(shadowMapPos.w) < 1e-5) {
         return 1.0;
     }
@@ -132,11 +161,29 @@ float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
-float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 worldPosition, vec3 lightPos)
+float calculate_spot_light_shadows(int idx, vec4 frag_worldPosition, vec3 lightPos)
 {
-    vec3 fragToLight = worldPosition - lightPos;
+    vec4 clip = sampleProjViewSl(idx) * frag_worldPosition;
+    float currentDepth = clip.z / sl_far_plane;
+    vec3 uv = clip.xyz / clip.w;
+    uv = uv * 0.5 + 0.5;
+    vec4 vsm = texture(sampleShadowSl(idx), uv.xy);
+
+    float E_x2 = vsm.y;
+    float Ex_2 = vsm.x * vsm.x;
+    float var = max(E_x2 - Ex_2, 1.0e-5f);
+    float mD = vsm.x - currentDepth;
+    float mD_2 = mD * mD;
+    float p = var / (var + mD_2);
+
+    return max(vsmFixLightBleed(p, 0.7), currentDepth <= vsm.x ? 1.0 : 0.0);
+}
+
+float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 frag_worldPosition, vec3 lightPos)
+{
+    vec3 fragToLight = frag_worldPosition - lightPos;
     float currentDepth = length(fragToLight);
-    currentDepth /= far_plane;
+    currentDepth /= pl_far_plane;
 
     vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
 

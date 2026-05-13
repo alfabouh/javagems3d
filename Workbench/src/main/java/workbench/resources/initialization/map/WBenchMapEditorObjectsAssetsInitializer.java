@@ -163,22 +163,14 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
     }
 
     private MeshGroup getModelFromDefaultMarker(SystemResources systemResources, @NotNull DefaultMarker defaultMarker) {
-        switch (defaultMarker) {
-            case CONE: {
-                return WBenchResourceManager.gameEditorModelAssets.markerDefault;
-            }
-            case CURSOR_CONE: {
-                return WBenchResourceManager.gameEditorModelAssets.markerCursor;
-            }
-            case AABB_ZONE: {
-                return WBenchResourceManager.gameEditorModelAssets.markerAabb;
-            }
-            case POINT: {
-                return WBenchResourceManager.gameEditorModelAssets.markerCube;
-            }
-            default:
-                throw new JGemsRuntimeException("NULL: " + defaultMarker);
-        }
+        return switch (defaultMarker) {
+            case CONE -> WBenchResourceManager.gameEditorModelAssets.markerDefault;
+            case CURSOR_CONE -> WBenchResourceManager.gameEditorModelAssets.markerCursor;
+            case AABB_ZONE -> WBenchResourceManager.gameEditorModelAssets.markerAabb;
+            case POINT -> WBenchResourceManager.gameEditorModelAssets.markerCube;
+            case POINT_DIR -> WBenchResourceManager.gameEditorModelAssets.markerCubeDir;
+            default -> throw new JGemsRuntimeException("NULL: " + defaultMarker);
+        };
     }
 
     @Override

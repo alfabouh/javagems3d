@@ -8,8 +8,8 @@ import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
+import javagems3d.graphics.environment.shadows.SpotLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
@@ -20,12 +20,10 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultDirectShadowRenderFabric;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -60,7 +58,6 @@ import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
@@ -89,12 +86,10 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -657,9 +652,19 @@ public final class JGemsHelper {
             }
             for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = shadowScene.getPointLightShadows().get(i);
-                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(pointLightShadow.farPlane())); //TODO
                 if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP.getS() + i))) {
                     shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.POINT_LIGHT_CUBE_MAP.getS() + i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                }
+            }
+            for (int i = 0; i < JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS_SHADOWS; i++) {
+                SpotLightShadow spotLightShadow = shadowScene.getSpotLightShadows().get(i);
+                if (spotLightShadow.getShadowProjectionView() != null) {
+                    shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_FAR_PLANE), UniformFunctions.FLOAT(spotLightShadow.farPlane())); //TODO
+                    if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_SHADOW_MAP.getS() + i))) {
+                        shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_SHADOW_MAP.getS() + i), spotLightShadow.getSpotLightFBO().getTextureByIndex(0));
+                        shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SPOT_LIGHT_SHADOW_PROJECTION_VIEW.getS() + i), UniformFunctions.MAT4F(spotLightShadow.getShadowProjectionView()));
+                    }
                 }
             }
             shaderManager.enableWarns();

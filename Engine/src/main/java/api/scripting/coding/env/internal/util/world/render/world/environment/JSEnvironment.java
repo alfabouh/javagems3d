@@ -109,32 +109,32 @@ public class JSEnvironment {
 
     @JSCodingFunctionOrMethod(description = "Returns sun brightness.", paramNames = {})
     public float getSunBrightness() {
-        return this.getJavaSkyBox().getSun().getSunBrightness();
+        return this.getJavaSun().getSunBrightness();
     }
 
     @JSCodingFunctionOrMethod(description = "Sets sun brightness.", paramNames = {"brightness"})
     public void setSunBrightness(float brightness) {
-        this.getJavaSkyBox().getSun().setSunBrightness(brightness);
+        this.getJavaSun().setSunBrightness(brightness);
     }
 
     @JSCodingFunctionOrMethod(description = "Returns sun position (direction).", paramNames = {})
     public JSVector3f getSunPosition() {
-        return new JSVector3f(this.getJavaSkyBox().getSun().getLightPosition());
+        return new JSVector3f(this.getJavaSun().getLightPosition());
     }
 
     @JSCodingFunctionOrMethod(description = "Sets sun position (direction).", paramNames = {"pos"})
     public void setSunPosition(@NotNull JSVector3f pos) {
-        this.getJavaSkyBox().getSun().setLightPosition(pos.getJavaVector3f());
+        this.getJavaSun().setLightPosition(pos.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Returns sun color.", paramNames = {})
     public JSVector3f getSunColor() {
-        return new JSVector3f(this.getJavaSkyBox().getSun().getLightColor());
+        return new JSVector3f(this.getJavaSun().getLightColor());
     }
 
     @JSCodingFunctionOrMethod(description = "Sets sun color.", paramNames = {"color"})
     public void setSunColor(@NotNull JSVector3f color) {
-        this.getJavaSkyBox().getSun().setLightColor(color.getJavaVector3f());
+        this.getJavaSun().setLightColor(color.getJavaVector3f());
     }
 
     @JSCodingFunctionOrMethod(description = "Returns true if sky is affected by fog.", paramNames = {})
@@ -169,7 +169,7 @@ public class JSEnvironment {
 
     @JSCodingFunctionOrMethod(description = "Returns sun light instance.", paramNames = {})
     public SunLight getJavaSun() {
-        return this.getJavaSkyBox().getSun();
+        return this.getJavaEnvironment().getLightScene().getSunLight();
     }
 
     @JSCodingFunctionOrMethod(description = "Returns skybox texture (cubemap).", paramNames = {})

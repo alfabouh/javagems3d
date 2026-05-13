@@ -19,31 +19,7 @@ layout(std430, binding = 30) buffer IndirectBufferData {
 
 #include "/assets/shaders/libs/shadows_simple"
 #include "/assets/shaders/libs/lighting_simple"
-
-vec3 calc_light(vec4 world_position, float zDepth) {
-    vec3 particle_coord = world_position.xyz;
-    vec3 lightFactors = sun.color * sun.ambient;
-
-    float sun_shadow = calculate_sun_shadow_simple(world_position, zDepth);
-
-    vec3 point_light_factor = vec3(0.0);
-    for (int i = 0; i < total_plights; i++) {
-        PointLight p = p_l[i];
-        vec3 delta = p.view_position - particle_coord;
-        float distSq = dot(delta, delta);
-        if (distSq <= p.clipRadius * p.clipRadius) {
-            float p_id = p.attachedShadowSceneId;
-            float shadow = p_id >= 0 ? calculate_point_light_shadows_simple(sampleShadowPl(int(p_id)), world_position.xyz, p.position.xyz) : 1.;
-            point_light_factor += calc_point_light_simple(p, particle_coord) * shadow;
-        }
-    }
-
-    float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
-    lightFactors += sun.brightness * clamp(sun_shadow, 0.0, 1.0);
-    lightFactors += point_light_factor;
-
-    return lightFactors;
-}
+#include "/assets/shaders/libs/light_fragment_calc_simple"
 
 void main()
 {
@@ -57,6 +33,6 @@ void main()
     frag_pos = view_pos;
 
     gl_Position = projection_matrix * view_pos;
-    lightFactor = calc_light(world_pos, view_pos.z);
+    lightFactor = calc_light(view_matrix, world_pos, view_pos.z);
     uv_coordinates = aTexture;
 }
