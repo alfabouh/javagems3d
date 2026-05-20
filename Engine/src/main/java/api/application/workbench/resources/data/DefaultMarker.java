@@ -8,7 +8,8 @@ public enum DefaultMarker {
     CURSOR_CONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_Y, AxisConstraints.NONE)),
     POINT(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.NONE)),
     POINT_DIR(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.NONE)),
-    AABB_ZONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.AXIS_XYZ));
+    AABB_ZONE(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NONE, AxisConstraints.AXIS_XYZ)),
+    AABB_ZONE_NO_CNSTR(new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ, AxisConstraints.AXIS_XYZ));
 
     private final TranslationConstraints translationConstraints;
 

@@ -31,6 +31,10 @@ import javagems3d.audio.sound.SoundBuffer;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.JGemsEnvironment;
+import javagems3d.graphics.environment.decals.DecalMaterial;
+import javagems3d.graphics.environment.decals.DecalTextureProperties;
+import javagems3d.graphics.environment.decals.fx.DecalFX;
+import javagems3d.graphics.environment.decals.fx.WorldDefaultDecalFX;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
@@ -76,6 +80,7 @@ import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -392,6 +397,38 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
                     .setParticleEmissiveColor(emissiveColor)
                     .setParticleEmissiveFactorStrength(emissiveStrength);
+        }
+
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.DECAL)) {
+            TagsContainer tags = template.getTagsContainer();
+            String texturePath = tags.hasTag(TagID.DEFAULT.TEXTURE_PATH) ? tags.getTag(TagID.DEFAULT.TEXTURE_PATH).<TagGameResourcesList>getTagItemUnsafeCast().getValue() : "";
+            Vector4f color = tags.hasTag(TagID.DEFAULT.COLOR4) ? tags.getTag(TagID.DEFAULT.COLOR4).<TagColor>getTagItemUnsafeCast().getColorVector() : new Vector4f(1.0f);
+            float emissiveFactor = tags.hasTag(TagID.DEFAULT.EMISSIVE_FACTOR) ? tags.getTag(TagID.DEFAULT.EMISSIVE_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue() : 0.0f;
+            int layerID = tags.hasTag(TagID.DEFAULT.DECAL_LAYER_ID) ? tags.getTag(TagID.DEFAULT.DECAL_LAYER_ID).<TagInt>getTagItemUnsafeCast().getValue() : 0;
+            TagObjectsList attachedObjects = tags.hasTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED) ? tags.getTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED).<TagObjectsList>getTagItemUnsafeCast() : new TagObjectsList();
+            ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(new JGemsPathSource(new JGemsPath(JGemsGaming.getTexturesFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, true, false, false, false));
+
+            if (!(texture2DProgram instanceof ImageTexture imageTexture)) {
+                texture2DProgram = JGemsResourceManager.globalTextureAssets.defaultParticle;
+            }
+
+            DecalFX decal = sceneWorld.getEnvironment().getDecalsScene().createDefaultWorldDecal(
+                    template.getPosition(),
+                    template.getRotation(),
+                    template.getScaling(),
+                    new DecalMaterial((ImageTexture) texture2DProgram, new Color3Texture(color.xyz(new Vector3f())), emissiveFactor),
+                    new DecalTextureProperties(color.w), sceneWorld.getEnvironment(), -1.0f, layerID);
+            sceneWorld.getEnvironment().getDecalsScene().spawnDecalFX(decal);
+
+          //if (!attachedObjects.getObjects().isEmpty()) {
+          //    String attachedObjectId = attachedObjects.getObjects().getFirst();
+
+          //    sceneWorld.getSceneObjectById(attachedObjectId).ifPresent(sceneObject -> {
+          //        decal.attachTo(sceneObject);
+          //    });
+          //}
+
+          //sceneWorld.addDecal(decal);
         }
     }
 

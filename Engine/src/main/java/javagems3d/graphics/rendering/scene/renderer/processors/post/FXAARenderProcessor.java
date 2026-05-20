@@ -11,17 +11,20 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 public class FXAARenderProcessor extends IRenderProcessor.Template {
+    private final FBOTexture2DProgram buffer;
     private final FBOTexture2DProgram inColor;
     private final JGemsShaderManager fxaaShader;
     private float value;
 
-    public FXAARenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull JGemsShaderManager fxaaShader) {
+    public FXAARenderProcessor(@NotNull FBOTexture2DProgram buffer, @NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull JGemsShaderManager fxaaShader) {
         super(openGLRenderer);
         this.inColor = inSceneColor;
+        this.buffer = buffer;
         this.fxaaShader = fxaaShader;
         this.value = 0;
     }
@@ -32,6 +35,10 @@ public class FXAARenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void destroyResources() {
+    }
+
+    public void prepare() {
+        this.getInColor().copyFBOtoFBOColor(this.buffer.getFrameBufferId(), new Pair[] {new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getOpenGLRenderer().getRenderingResolution(), this.getOpenGLRenderer().getRenderingResolution());
     }
 
     @Override

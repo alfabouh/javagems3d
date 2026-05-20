@@ -8,19 +8,19 @@ import org.joml.Vector2i;
 import java.util.*;
 
 public final class JGemsLaunchArgsRegistry {
-    private final Map<String, LaunchArg> reverseArgMap;
+    private final Map<String, LaunchArg> argsMap;
     private final Map<String, String> gotArgs;
     public static JGemsLaunchArgsRegistry INSTANCE = new JGemsLaunchArgsRegistry();
     public static DefaultLaunchArgs DEFAULT_ARGS = new DefaultLaunchArgs();
 
     private JGemsLaunchArgsRegistry() {
         this.gotArgs = new HashMap<>();
-        this.reverseArgMap = new HashMap<>();
+        this.argsMap = new HashMap<>();
     }
 
     public static void clear() {
         JGemsLaunchArgsRegistry.INSTANCE.gotArgs.clear();
-        JGemsLaunchArgsRegistry.INSTANCE.reverseArgMap.clear();
+        JGemsLaunchArgsRegistry.INSTANCE.argsMap.clear();
     }
 
     @SafeVarargs
@@ -66,7 +66,7 @@ public final class JGemsLaunchArgsRegistry {
         try {
             String key = this.gotArgs.get(input.argument());
             if (key != null) {
-                LaunchArg launchArg = this.reverseArgMap.get(input.argument());
+                LaunchArg launchArg = this.argsMap.get(input.argument());
                 if (launchArg != null) {
                     return (T) launchArg.argReaderFunction().read(key);
                 } else {
@@ -129,7 +129,7 @@ public final class JGemsLaunchArgsRegistry {
 
         public static LaunchArg create(@NotNull String argument, @NotNull ArgReaderFunction<?> argReaderFunction, @Nullable Object defaultValue) {
             LaunchArg launchArg = new LaunchArg(argument, argReaderFunction, defaultValue);
-            JGemsLaunchArgsRegistry.INSTANCE.reverseArgMap.put(argument, launchArg);
+            JGemsLaunchArgsRegistry.INSTANCE.argsMap.put(argument, launchArg);
             return launchArg;
         }
     }

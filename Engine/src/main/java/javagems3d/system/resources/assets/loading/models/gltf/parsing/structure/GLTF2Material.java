@@ -12,7 +12,7 @@ public final class GLTF2Material {
     public final static int DIFFUSION_COLOR = 1 << 2;
     public final static int DIFFUSION_TEXTURE = 1 << 3;
     public final static int NORMALS_TEXTURE = 1 << 4;
-    public final static int EMISSION_COLOR = 1 << 5;
+    public final static int emissive_color = 1 << 5;
     public final static int EMISSION_TEXTURE = 1 << 6;
     public final static int METALLIC_FACTOR = 1 << 7;
     public final static int ROUGHNESS_FACTOR = 1 << 8;
@@ -63,7 +63,7 @@ public final class GLTF2Material {
 
     public GLTF2Material setEmissionColor(@NotNull Vector3f emissionColor) {
         this.emissionColor = emissionColor;
-        this.matFlags |= GLTF2Material.EMISSION_COLOR;
+        this.matFlags |= GLTF2Material.emissive_color;
         return this;
     }
 

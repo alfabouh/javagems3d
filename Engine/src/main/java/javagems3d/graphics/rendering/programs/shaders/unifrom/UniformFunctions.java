@@ -8,6 +8,13 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.FloatBuffer;
 
 public abstract class UniformFunctions {
+    public static UniformProgram.UFunction UINTEGER(int i) {
+        return e -> {
+            GL46.glUniform1ui(e, i);
+            return true;
+        };
+    }
+
     public static UniformProgram.UFunction INTEGER(int i) {
         return e -> {
             GL46.glUniform1i(e, i);

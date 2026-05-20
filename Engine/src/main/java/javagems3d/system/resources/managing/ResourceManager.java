@@ -85,31 +85,26 @@ public abstract class ResourceManager {
             float metallicFactor = material.getMetallicFactor();
             float roughnessFactor = material.getRoughnessFactor();
 
-            //vec4 diffuse_color;
+
             byteBuffer.putFloat(diffuseColor.color().x);
             byteBuffer.putFloat(diffuseColor.color().y);
             byteBuffer.putFloat(diffuseColor.color().z);
             byteBuffer.putFloat(material.getTransparency().getOpacity());
-            //vec3 emission_color;
+
             byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().x);
             byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().y);
             byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.color().z);
             byteBuffer.putFloat(0.0f); //PADDING
-            //float metallic_factor;
+
             byteBuffer.putFloat(metallicFactor);
-            //float roughness_factor;
             byteBuffer.putFloat(roughnessFactor);
-            //int diffuse_map_id;
             byteBuffer.putInt((diffuseMap != null && diffuseMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuseMap) : 0);
-            //int normals_map_id;
+            byteBuffer.putFloat(0.0f); //PADDING2
+
             byteBuffer.putInt((normalsMap != null && normalsMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normalsMap) : 0);
-            //int emission_map_id;
             byteBuffer.putInt((emissionMap != null && emissionMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emissionMap) : 0);
-            //int metallic_roughness_map_id;
             byteBuffer.putInt((metallicRoughnessMap != null && metallicRoughnessMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallicRoughnessMap) : 0);
-            //int texturing_code;
             byteBuffer.putInt(JGemsHelper.render().getTexturingCodeForShader(material));
-            byteBuffer.putInt(0);
         }
         byteBuffer.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, byteBuffer);

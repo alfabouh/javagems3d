@@ -81,7 +81,7 @@ public class ScenePreviewMarkerObjectG<T extends GameResourceMarkerObjectAsset> 
                         ImGui.pushStyleColor(ImGuiCol.Text, 0xff00ff00);
                         ImGui.bulletText("Transparency");
                         ImGui.popStyleColor();
-                        if (ImGui.checkbox("50% Alpha", markerObjectAsset.isTransparent())) {
+                        if (ImGui.checkbox("25% Alpha", markerObjectAsset.isTransparent())) {
                             markerObjectAsset.setTransparent(!markerObjectAsset.isTransparent());
                         }
                     }

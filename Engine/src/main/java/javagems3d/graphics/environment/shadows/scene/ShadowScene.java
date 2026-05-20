@@ -113,11 +113,11 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected void resortSpotLightShadowLightBindings(ILightScene lightScene) {
-        this.spotLightIdsHashMap = this.getSortedSpotLightMapReadyToBind(JGemsTransformManager.INSTANCE.getCameraViewMatrix().getTranslation(new Vector3f()), lightScene.getSpotLights());
+        this.spotLightIdsHashMap = this.getSortedSpotLightMapReadyToBind(((IRenderWorld) (this.getEnvironment().getWorld())).getCamera().getCamPosition(), lightScene.getSpotLights());
     }
 
     protected void resortPointLightShadowLightBindings(ILightScene lightScene) {
-        this.pointLightIdsHashMap = this.getSortedPointLightMapReadyToBind(JGemsTransformManager.INSTANCE.getCameraViewMatrix().getTranslation(new Vector3f()), lightScene.getPointLights());
+        this.pointLightIdsHashMap = this.getSortedPointLightMapReadyToBind(((IRenderWorld) (this.getEnvironment().getWorld())).getCamera().getCamPosition(), lightScene.getPointLights());
     }
 
     protected void initSunLightShadow(int totalCascades) {
@@ -139,7 +139,7 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected Set<SceneObject> filterSet(Set<? extends SceneObject> modeledSceneObjectSet) {
-        return modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER)).collect(Collectors.toSet());
+        return modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER, true)).collect(Collectors.toSet());
     }
 
     public void renderAllModelsInShadowMap(IRenderWorld renderWorld, Set<? extends SceneObject> modeledSceneObjectSet) {
@@ -169,10 +169,10 @@ public abstract class ShadowScene implements IShadowScene {
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
-        this.blurShadows(this.getSunLightShadow().getSunShadowFBO());
+        this.blurShadows();
     }
 
-    protected abstract void blurShadows(FBOTexture2DProgram sunShadowFBO);
+    protected abstract void blurShadows();
 
     protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet, Pipeline pipeline) {
         Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline)).getRenderFabric().getRenderingType().equals(Type.INDIRECT)));

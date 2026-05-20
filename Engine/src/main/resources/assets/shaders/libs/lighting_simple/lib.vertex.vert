@@ -4,7 +4,7 @@ struct Sun {
     vec3 color;
     float ambient;
 };
-layout (std430, binding = 5) buffer SunLight {
+layout (std430, binding = 5) readonly restrict buffer SunLight {
     Sun sun;
 };
 
@@ -17,7 +17,7 @@ struct PointLight
     vec3 color;
     int clipRadius;
 };
-layout (std430, binding = 6) buffer PointLights {
+layout (std430, binding = 6) readonly restrict buffer PointLights {
     PointLight p_l[CONST.MAX_POINT_LIGHTS];
     int total_plights;
 };
@@ -33,7 +33,7 @@ struct SpotLight
     vec3 color;
     float cutOff;
 };
-layout (std430, binding = 16) buffer SpotLights {
+layout (std430, binding = 16) readonly restrict buffer SpotLights {
     SpotLight s_l[CONST.MAX_SPOT_LIGHTS];
     int total_slights;
 };

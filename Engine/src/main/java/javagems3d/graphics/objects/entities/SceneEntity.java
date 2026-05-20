@@ -116,7 +116,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (!this.canBeRendered() || this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION)) {
+        if (!this.canBeRendered() || this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION, true)) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);

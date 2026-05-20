@@ -183,33 +183,54 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff982cff);
             ImGui.bulletText("Properties");
             ImGui.popStyleColor();
-            if (renderProperties.propertiesMap == null || renderProperties.propertiesMap.isEmpty()) {
+            if (renderProperties.getPropertiesMap() == null || renderProperties.getPropertiesMap().isEmpty()) {
                 ImGui.text("<Error: Empty>!");
             } else {
-                renderProperties.propertiesMap.forEach((k, v) -> {
-                    if (v instanceof Double f) {
-                        float[] f1 = new float[]{f.floatValue()};
+                renderProperties.getPropertiesMap().forEach((k, v) -> {
+                    if (k.startsWith("KEY_")) {
+                        k = k.substring(4);
+                    }
+                    if (v instanceof RenderProperties.FloatValue f) {
+                        float[] value = new float[]{f.value};
                         ImGui.text(k);
                         ImGui.sameLine();
-                        ImGui.setNextItemWidth(80);
-                        boolean flag = ImGui.dragFloat("##" + k, f1, 0.01f, -1.0f, 1024.0f);
+                        ImGui.setNextItemWidth(60.0f);
+                        boolean changed = ImGui.dragFloat("##" + k, value, 0.01f, f.min, f.max);
                         if (withSnapshots) {
-                            try (UITrackingHelper uiTrackingHelper = UITrackingHelper.create("TRACK_operationFlag_" + k, WBenchUITrackingHelper::INSTANCE)) {
-                                if (flag) {
-                                    uiTrackingHelper.saveSnapshot();
+                            try (UITrackingHelper ignored = UITrackingHelper.create("TRACK_operationFlag_" + k, WBenchUITrackingHelper::INSTANCE)) {
+                                if (changed) {
+                                    ignored.saveSnapshot();
                                 }
                             }
                         }
-                        renderProperties.setValueFloat(k, f1[0]);
-                    } else if (v instanceof Boolean b) {
-                        boolean res = b;
+                        if (changed) {
+                            f.value = value[0];
+                        }
+                    } else if (v instanceof RenderProperties.IntValue i) {
+                        int[] value = new int[]{i.value};
                         ImGui.text(k);
                         ImGui.sameLine();
-                        if (ImGui.checkbox("##" + k, res)) {
+                        ImGui.setNextItemWidth(60.0f);
+                        boolean changed = ImGui.dragInt("##" + k, value, 1.0f, i.min, i.max);
+                        if (withSnapshots) {
+                            try (UITrackingHelper ignored = UITrackingHelper.create("TRACK_operationFlag_" + k, WBenchUITrackingHelper::INSTANCE)) {
+                                if (changed) {
+                                    ignored.saveSnapshot();
+                                }
+                            }
+                        }
+                        if (changed) {
+                            i.value = value[0];
+                        }
+                    } else if (v instanceof RenderProperties.BoolValue b) {
+                        ImGui.text(k);
+                        ImGui.sameLine();
+                        boolean changed = ImGui.checkbox("##" + k, b.value);
+                        if (changed) {
                             if (withSnapshots) {
                                 WBenchUITrackingHelper.instantlyTrackAndPush();
                             }
-                            renderProperties.setValueBool(k, !res);
+                            b.value = !b.value;
                         }
                     }
                 });
@@ -219,20 +240,20 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff982cff);
             ImGui.bulletText("Culling");
             ImGui.popStyleColor();
+
             {
-                boolean res = renderProperties.getCullingRules().isIgnoreDistanceCulling();
                 ImGui.text("Ignore Distance Culling");
                 ImGui.sameLine();
-                if (ImGui.checkbox("## Ignore Distance Culling", res)) {
-                    renderProperties.getCullingRules().setIgnoreDistanceCulling(!res);
+                if (ImGui.checkbox("##Ignore Distance Culling", renderProperties.getCullingRules().isIgnoreDistanceCulling())) {
+                    renderProperties.getCullingRules().setIgnoreDistanceCulling(!renderProperties.getCullingRules().isIgnoreDistanceCulling());
                 }
             }
+
             {
-                boolean res = renderProperties.getCullingRules().isIgnoreFrustumCulling();
                 ImGui.text("Ignore Frustum Culling");
                 ImGui.sameLine();
-                if (ImGui.checkbox("## Ignore Frustum Culling", res)) {
-                    renderProperties.getCullingRules().setIgnoreFrustumCulling(!res);
+                if (ImGui.checkbox("##Ignore Frustum Culling", renderProperties.getCullingRules().isIgnoreFrustumCulling())) {
+                    renderProperties.getCullingRules().setIgnoreFrustumCulling(!renderProperties.getCullingRules().isIgnoreFrustumCulling());
                 }
             }
         }

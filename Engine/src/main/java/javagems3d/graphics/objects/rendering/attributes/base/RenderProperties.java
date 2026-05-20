@@ -1,15 +1,15 @@
 package javagems3d.graphics.objects.rendering.attributes.base;
 
-import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RenderProperties implements ICopyable<RenderProperties> {
-    public Map<String, Object> propertiesMap;
+    private Map<String, RenderPropVal> propertiesMap;
     private final CullingRules cullingRules;
 
     public RenderProperties(CullingRules cullingRules) {
@@ -17,18 +17,28 @@ public class RenderProperties implements ICopyable<RenderProperties> {
         this.propertiesMap = new HashMap<>();
     }
 
-    public RenderProperties setValueFloat(String key, double value) {
-        this.propertiesMap.put(key, value);
+    public RenderProperties setValueFloat(String key, float value) {
+        @Nullable FloatValue existing = this.propertiesMap.containsKey(key) ? (FloatValue) this.propertiesMap.get(key) : null;
+        return this.setValueFloat(key, value, existing == null ? Float.NEGATIVE_INFINITY : existing.min, existing == null ? Float.POSITIVE_INFINITY : existing.max);
+    }
+
+    public RenderProperties setValueFloat(String key, float value, float min, float max) {
+        this.propertiesMap.put(key, new FloatValue(value, min, max));
         return this;
     }
 
     public RenderProperties setValueBool(String key, boolean value) {
-        this.propertiesMap.put(key, value);
+        this.propertiesMap.put(key, new BoolValue(value));
         return this;
     }
 
     public RenderProperties setValueInt(String key, int value) {
-        this.propertiesMap.put(key, value);
+        @Nullable IntValue existing = this.propertiesMap.containsKey(key) ? (IntValue) this.propertiesMap.get(key) : null;
+        return this.setValueInt(key, value, existing == null ? Integer.MIN_VALUE : existing.min, existing == null ? Integer.MAX_VALUE : existing.max);
+    }
+
+    public RenderProperties setValueInt(String key, int value, int min, int max) {
+        this.propertiesMap.put(key, new IntValue(value, min, max));
         return this;
     }
 
@@ -36,31 +46,67 @@ public class RenderProperties implements ICopyable<RenderProperties> {
         return this.propertiesMap.containsKey(key);
     }
 
-    public double getFloat(String key) {
-        return (double) this.propertiesMap.getOrDefault(key, -1.0f);
+    public float getFloat(String key, float defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof FloatValue f) {
+            return f.value;
+        }
+        return defaultV;
     }
 
-    public boolean getBool(String key) {
-        return (boolean) this.propertiesMap.getOrDefault(key, false);
+    public boolean getBool(String key, boolean defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof BoolValue b) {
+            return b.value;
+        }
+        return defaultV;
     }
 
-    public int getInt(String key) {
-        return (int) this.propertiesMap.getOrDefault(key, -1);
+    public int getInt(String key, int defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof IntValue i) {
+            return i.value;
+        }
+        return defaultV;
+    }
+
+    public FloatValue getFloatValue(String key, float defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof FloatValue f) {
+            return f;
+        }
+        return new FloatValue(defaultV, 0.0f, 0.0f);
+    }
+
+    public IntValue getIntValue(String key, int defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof IntValue i) {
+            return i;
+        }
+        return new IntValue(defaultV, 0, 0);
+    }
+
+    public BoolValue getBoolValue(String key, boolean defaultV) {
+        RenderPropVal val = this.propertiesMap.get(key);
+        if (val instanceof BoolValue b) {
+            return b;
+        }
+        return new BoolValue(defaultV);
     }
 
     public CullingRules getCullingRules() {
         return this.cullingRules;
     }
 
-    protected void setPropertiesMap(@NotNull Map<String, Object> map) {
+    protected void setPropertiesMap(@NotNull Map<String, RenderPropVal> map) {
         this.propertiesMap = map;
     }
 
-    protected Map<String, Object> getPropertiesMap() {
+    public Map<String, RenderPropVal> getPropertiesMap() {
         return this.propertiesMap;
     }
 
-    protected Map<String, Object> copyPropertiesMap() {
+    public Map<String, RenderPropVal> copyPropertiesMap() {
         return new HashMap<>(this.propertiesMap);
     }
 
@@ -69,5 +115,40 @@ public class RenderProperties implements ICopyable<RenderProperties> {
         RenderProperties renderProperties = new RenderProperties(this.getCullingRules());
         renderProperties.setPropertiesMap(this.copyPropertiesMap());
         return renderProperties;
+    }
+
+    public static class RenderPropVal {
+    }
+
+    public static class FloatValue extends RenderPropVal {
+        public float value;
+        public final float min;
+        public final float max;
+
+        public FloatValue(float value, float min, float max) {
+            this.value = value;
+            this.min = min;
+            this.max = max;
+        }
+    }
+
+    public static class IntValue extends RenderPropVal {
+        public int value;
+        public final int min;
+        public final int max;
+
+        public IntValue(int value, int min, int max) {
+            this.value = value;
+            this.min = min;
+            this.max = max;
+        }
+    }
+
+    public static class BoolValue extends RenderPropVal {
+        public boolean value;
+
+        public BoolValue(boolean value) {
+            this.value = value;
+        }
     }
 }

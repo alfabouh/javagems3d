@@ -81,10 +81,12 @@ public class JSRenderHelperClass implements JSGlobalVarFactory<JSRenderHelperCla
         return JGemsHelper.render().getTexturingCodeForShader(material.getJavaMaterial());
     }
 
-    @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "mainSceneShaderManager", "material", "discardAlphaLevel"})
-    public void performDefaultModelMaterialOnShader(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager, @NotNull JSMaterial material, float discardAlphaLevel) {
-        JGemsHelper.render().performDefaultModelMaterialOnShader(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager(), material.getJavaMaterial(), discardAlphaLevel);
-    }
+    //TODO
+
+   // @JSCodingFunctionOrMethod(description = "Performs default material setup on shader.", paramNames = {"environment", "mainSceneShaderManager", "material", "discardAlphaLevel"})
+   // public void performDefaultModelMaterialOnShader(@NotNull JSEnvironment environment, @NotNull JSShader shaderManager, @NotNull JSMaterial material, float discardAlphaLevel) {
+   //     JGemsHelper.render().performDefaultModelMaterialOnShader(environment.getJavaEnvironment(), shaderManager.getJavaShaderManager(), material.getJavaMaterial(), discardAlphaLevel);
+   // }
 
     @JSCodingFunctionOrMethod(description = "Prepares empty animations info for shader.", paramNames = {"mainSceneShaderManager"})
     public void performEmptyAnimationsInfo(@NotNull JSShader shaderManager) {

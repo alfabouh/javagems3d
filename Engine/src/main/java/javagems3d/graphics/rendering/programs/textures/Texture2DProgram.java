@@ -28,7 +28,7 @@ public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
         this.bindTexture();
         this.size = size;
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
-        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.textureFormat(), this.getSize().x, this.getSize().y, 0, properties.internalFormat(), properties.getTextureTypeByFormat(properties.internalFormat), pixels);
+        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.textureFormat(), this.getSize().x, this.getSize().y, 0, properties.internalFormat(), properties.getTextureTypeByFormat(properties.textureFormat()), pixels);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, 0);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAX_LEVEL, 0);
         this.unBindTexture();

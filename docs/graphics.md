@@ -180,7 +180,7 @@ The engine supports compile-time shader constants.
 Example GLSL:
 
 ```glsl
-layout(std430, binding = 1) buffer IndirectBufferData {
+layout(std430, binding = 1) readonly restrict buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];

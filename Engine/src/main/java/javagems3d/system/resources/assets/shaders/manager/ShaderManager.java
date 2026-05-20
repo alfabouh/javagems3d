@@ -33,7 +33,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
     private ActiveShader activeShader;
     private ShaderHandler graphicShaderHandler;
     private ShaderHandler computingShaderHandler;
-    private Set<String> usedTexturesCache;
+    private final Set<String> usedTexturesCache;
 
     private boolean warns;
 

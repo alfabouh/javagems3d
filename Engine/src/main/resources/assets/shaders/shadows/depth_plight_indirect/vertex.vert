@@ -14,7 +14,7 @@ out flat uint ent_id;
 
 uniform mat4 projection_view_matrix;
 
-layout(std430, binding = 1) buffer IndirectBufferData {
+layout(std430, binding = 1) readonly restrict buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];

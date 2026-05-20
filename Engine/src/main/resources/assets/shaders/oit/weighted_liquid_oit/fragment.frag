@@ -13,7 +13,7 @@ layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
 layout (location = 2) out vec4 bright_color;
 
-layout (std430, binding = 0) buffer Timer {
+layout (std430, binding = 0) readonly restrict buffer Timer {
     float w_tick;
 };
 
@@ -26,12 +26,12 @@ const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 uniform float opacity;
 uniform vec4 diffuse_color;
-uniform vec3 emission_color;
+uniform vec3 emissive_color;
 uniform float metallic_factor;
 uniform float roughness_factor;
 uniform uvec2 diffuse_map;
 uniform uvec2 normals_map;
-uniform uvec2 emission_map;
+uniform uvec2 emissive_map;
 uniform uvec2 metallic_roughness_map;
 uniform int texturing_code;
 uniform vec2 texture_scaling;
@@ -71,14 +71,14 @@ void main()
 
     vec4 diffuse = vec4(diffuse_color);
     vec3 normals = vec3(modelview_vertex_normal);
-    vec3 emission = vec3(emission_color);
+    vec3 emission = vec3(emissive_color);
     vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
     if (useDiffuseTexture) {
         diffuse *= texture(sampler2D(diffuse_map), getScaledTexture(4.5));
     }
     if (useEmissionTexture) {
-        emission *= texture(sampler2D(emission_map), getScaledTexture(4.5)).rgb;
+        emission *= texture(sampler2D(emissive_map), getScaledTexture(4.5)).rgb;
     }
     if (useNormalsTexture) {
         normals = mix(normals, calc_normal_map(), 0.25);

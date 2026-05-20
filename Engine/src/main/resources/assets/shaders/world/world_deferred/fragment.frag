@@ -39,9 +39,7 @@ void main()
     world_position /= world_position.w;
 
     if (useCubeMap) {
-        vec4 model_normal_pos = vec4(normals, 1.0);
-        vec4 world_normal = inversed_view * model_normal_pos;
-        world_normal /= world_normal.w;
+        vec3 world_normal = mat3(inversed_view) * normals;
         vec3 refracted_color = refract_cubemap(-world_normal.xyz, 1.73, world_position);
         g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
@@ -59,7 +57,7 @@ void main()
     frag_color = calc_fog(frag_pos.xyz, frag_color, 1.);
 
     float brightness = dot(frag_color.rgb + emission, vec3(0.2126, 0.7152, 0.0722));
-    bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
+    bright_color = brightness >= 2.0 ? vec4(frag_color.rgb + emission, 1.) : vec4(0., 0., 0., 1.);
 
     if (showCascades) {
         int cascadeIndex = int(frag_pos.z < cascade_shadow_split_distance_0) + int(frag_pos.z < cascade_shadow_split_distance_1);

@@ -23,26 +23,29 @@ struct Properties {
 
 struct Material {
     vec4 diffuse_color;
-    vec3 emission_color;
+    vec3 emissive_color;
     float _padding000; //PADDING
+
     float metallic_factor;
     float roughness_factor;
     int diffuse_map_id;
+    float _padding001; //PADDING2
+
     int normals_map_id;
-    int emission_map_id;
+    int emissive_map_id;
     int metallic_roughness_map_id;
     int texturing_code;
 };
 
-layout(std430, binding = 2) buffer BindlessTextures {
+layout(std430, binding = 2) readonly restrict buffer BindlessTextures {
     uvec2 textures[CONST.MAX_BINDLESS_TEXTURES];
 };
 
-layout(std430, binding = 3) buffer MaterialsData {
+layout(std430, binding = 3) readonly restrict buffer MaterialsData {
     Material materials[CONST.MAX_INDIRECT_RENDERING_MATERIALS];
 };
 
-layout(std430, binding = 4) buffer RenderPropertiesData {
+layout(std430, binding = 4) readonly restrict buffer RenderPropertiesData {
     Properties properties[CONST.MAX_INDIRECT_RENDERING_PROPERIES];
 };
 
@@ -59,8 +62,7 @@ const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 #include "/assets/shaders/libs/light_fragment_calc"
 
 bool checkCode(int i1, int i2) {
-    int i3 = i1 & i2;
-    return bool(i3 != 0);
+    return bool((i1 & i2) != 0);
 }
 
 vec3 calc_normal_map(int normalsMapId) {
@@ -84,14 +86,14 @@ void main()
 
     vec4 diffuse = vec4(mat.diffuse_color);
     vec3 normals = vec3(modelview_vertex_normal);
-    vec3 emission = vec3(mat.emission_color);
+    vec3 emission = vec3(mat.emissive_color);
     vec2 metallic_roughness = vec2(mat.metallic_factor, mat.roughness_factor);
 
     if (useDiffuseTexture) {
         diffuse *= texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates);
     }
     if (useEmissionTexture) {
-        emission *= texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates).rgb;
+        emission *= texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map(mat.normals_map_id);

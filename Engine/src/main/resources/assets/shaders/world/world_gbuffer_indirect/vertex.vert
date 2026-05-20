@@ -10,7 +10,7 @@ layout (location=4) in vec3 aBitangent;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-layout(std430, binding = 1) buffer IndirectBufferData {
+layout(std430, binding = 1) readonly restrict buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
@@ -49,7 +49,6 @@ void main()
     vec4 bitanget = vec4(aBitangent, 0.0);
     perform_animation(position, normal, tangent, bitanget, aBoneIndexes, aBoneWeights, currAnimationOffset, currAnimationOffsetPrev, deltaFrame);
 
-    mat4 view = view_matrix;
     mat4 model_view_matrix = view_matrix * model;
     vec4 mv_pos = model_view_matrix * position;
     gl_Position = projection_matrix * mv_pos;

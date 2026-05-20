@@ -2,6 +2,7 @@ package javagems3d.system.service.files.json;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -58,6 +59,55 @@ public class JSONFileManaging {
                     float z = jsonObject.get("z").getAsFloat();
                     float w = jsonObject.get("w").getAsFloat();
                     return new Vector4f(x, y, z, w);
+                }
+        )));
+
+        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(RenderProperties.RenderPropVal.class, JSONFileManaging.createSerializationRules(
+                (object, context) -> {
+                    JsonObject jsonObject = new JsonObject();
+                    if (object instanceof RenderProperties.FloatValue floatValue) {
+                        jsonObject.addProperty("type", "float");
+                        jsonObject.addProperty("value", floatValue.value);
+                        jsonObject.addProperty("min", floatValue.min);
+                        jsonObject.addProperty("max", floatValue.max);
+                        return jsonObject;
+                    } else if (object instanceof RenderProperties.IntValue intValue) {
+                        jsonObject.addProperty("type", "int");
+                        jsonObject.addProperty("value", intValue.value);
+                        jsonObject.addProperty("min", intValue.min);
+                        jsonObject.addProperty("max", intValue.max);
+                        return jsonObject;
+                    } else if (object instanceof RenderProperties.BoolValue boolValue) {
+                        jsonObject.addProperty("type", "bool");
+                        jsonObject.addProperty("value", boolValue.value);
+                        return jsonObject;
+                    }
+                    return null;
+                },
+                (json, context) -> {
+                    JsonObject jsonObject = json.getAsJsonObject();
+                    if (jsonObject.has("type")) {
+                        String type = jsonObject.get("type").getAsString();
+                        switch (type) {
+                            case "bool": {
+                                boolean x = jsonObject.get("value").getAsBoolean();
+                                return new RenderProperties.BoolValue(x);
+                            }
+                            case "int": {
+                                int x = jsonObject.get("value").getAsInt();
+                                int y = jsonObject.get("min").getAsInt();
+                                int z = jsonObject.get("max").getAsInt();
+                                return new RenderProperties.IntValue(x, y, z);
+                            }
+                            case "float": {
+                                float x = jsonObject.get("value").getAsFloat();
+                                float y = jsonObject.get("min").getAsFloat();
+                                float z = jsonObject.get("max").getAsFloat();
+                                return new RenderProperties.FloatValue(x, y, z);
+                            }
+                        }
+                    }
+                    return null;
                 }
         )));
     }

@@ -4,7 +4,7 @@ layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
-layout(std430, binding = 1) buffer IndirectBufferData {
+layout(std430, binding = 1) readonly restrict buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];

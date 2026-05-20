@@ -54,8 +54,9 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         final GameResourceModelAsset modelAsset = WBench.get().getGameProjectManager().getGameResourcesManager().extractFromCacheModel(gameResourceWorldObjectAsset.getModelAssetRelativePath());
         final MeshGroup meshGroup = modelAsset == null ? null : modelAsset.meshGroup();
         final RenderAttributes renderAttributes = RenderAttributes.get(RenderTable.getDirect(), new WBenchRenderProperties()
-                .setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER) || gameResourceWorldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER))
-                .setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER)) ? 1.0f : gameResourceWorldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD))
+                .setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, !validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER) || gameResourceWorldObjectAsset.getRenderProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER, true))
+                .setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_SHADOW_CASTER)) ? 1.0f : gameResourceWorldObjectAsset.getRenderProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.7f))
+                .setValueInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, (!validProps || !gameResourceWorldObjectAsset.getRenderProperties().has(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID)) ? 0 : gameResourceWorldObjectAsset.getRenderProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0))
         );
         final TagsContainer tagsContainer = gameResourceWorldObjectAsset.getTagsContainer();
         if (doSomeTags != null) {
@@ -166,7 +167,7 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
         return switch (defaultMarker) {
             case CONE -> WBenchResourceManager.gameEditorModelAssets.markerDefault;
             case CURSOR_CONE -> WBenchResourceManager.gameEditorModelAssets.markerCursor;
-            case AABB_ZONE -> WBenchResourceManager.gameEditorModelAssets.markerAabb;
+            case AABB_ZONE, AABB_ZONE_NO_CNSTR -> WBenchResourceManager.gameEditorModelAssets.markerAabb;
             case POINT -> WBenchResourceManager.gameEditorModelAssets.markerCube;
             case POINT_DIR -> WBenchResourceManager.gameEditorModelAssets.markerCubeDir;
             default -> throw new JGemsRuntimeException("NULL: " + defaultMarker);

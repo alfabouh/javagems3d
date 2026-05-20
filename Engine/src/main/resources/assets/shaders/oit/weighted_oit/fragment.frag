@@ -22,12 +22,12 @@ const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
-uniform vec3 emission_color;
+uniform vec3 emissive_color;
 uniform float metallic_factor;
 uniform float roughness_factor;
 uniform uvec2 diffuse_map;
 uniform uvec2 normals_map;
-uniform uvec2 emission_map;
+uniform uvec2 emissive_map;
 uniform uvec2 metallic_roughness_map;
 uniform int texturing_code;
 
@@ -59,14 +59,14 @@ void main()
 
     vec4 diffuse = vec4(diffuse_color);
     vec3 normals = vec3(modelview_vertex_normal);
-    vec3 emission = vec3(emission_color);
+    vec3 emission = vec3(emissive_color);
     vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
     if (useDiffuseTexture) {
       diffuse *= texture(sampler2D(diffuse_map), uv_coordinates);
     }
     if (useEmissionTexture) {
-      emission *= texture(sampler2D(emission_map), uv_coordinates).rgb;
+      emission *= texture(sampler2D(emissive_map), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map();

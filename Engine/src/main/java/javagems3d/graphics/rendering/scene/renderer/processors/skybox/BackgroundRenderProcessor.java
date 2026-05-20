@@ -92,9 +92,8 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             final IRenderWorld sceneWorld = (IRenderWorld) this.getWorld();
             pair.first().performUniform(new UniformString(DefaultUniformDefinitions.VIEW_SCALING), UniformFunctions.FLOAT(skyBackground.getViewScaling()));
             JGemsHelper.render().performDefaultModelMaterialOnShader(sceneWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
-                    pair.second().getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
-                            (float) pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
-                            JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT
+                    pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT),
+                    pair.second().getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0)
             );
         };
 

@@ -10,6 +10,8 @@ public abstract class JGemsConfig {
         public static boolean FULL_BRIGHT;
         public static boolean FOG;
         public static boolean DISABLE_POINT_LIGHTS;
+        public static boolean DISABLE_DECALS;
+        public static boolean DISABLE_PARTICLES;
         public static boolean DISABLE_SPOT_LIGHTS;
         public static boolean SHOW_DEBUG_LINES;
         public static boolean WIREFRAME_RENDERING;
@@ -70,24 +72,26 @@ public abstract class JGemsConfig {
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 24);
 
         public static int INDIRECT_SSBO_SIZE_MUL = 1;
-        public static int INDIRECT_SCENE_OBJ_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
-        public static int INDIRECT_SCENE_OBJ_RENDERING_PROPERTIES_PACK_SIZE = 1;
+        public static int INDIRECT_SCENE_OBJ_RENDERING_MATERIALS_PACK_SIZE = 16;
+        public static int INDIRECT_SCENE_OBJ_RENDERING_PROPERTIES_PACK_SIZE = 2;
         public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_PROPERTIES = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_MATERIALS = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASET_PACK_SIZE = 16 + 4 + 1;
 
         public static int MAX_PARTICLES = 512;
+        public static int MAX_DECALS = 512;
 
         public static int INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE = 4 + 4 + 4 + 4;
         public static int MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES = SYSTEM.MAX_PARTICLES * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS = SYSTEM.MAX_PARTICLES * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_BINDLESS_TEXTURES = 2048;
 
-
         public static final float DEFAULT_ANIM_FPS = 24.0f;
         public static int ANIM_MAX_BONES = 64;
         public static int ANIM_MAX_WEIGHTS = 4;
 
+        public static float BLOOM_RES_DIV = 2.0f;
 
         public static float CAM_SENS = 0.0015f;
         public static float CAM_SPEED = 10.0f;

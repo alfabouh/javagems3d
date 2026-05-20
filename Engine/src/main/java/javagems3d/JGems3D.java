@@ -431,8 +431,10 @@ public final class JGems3D {
             public void onStderr(ByteBuffer buffer, boolean closed) {
                 if (!closed && buffer.hasRemaining()) {
                     byte[] bytes = new byte[buffer.remaining()];
-                    buffer.get(bytes);
-                    System.err.print(new String(bytes));
+                    if (bytes.length > 0) {
+                        buffer.get(bytes);
+                        System.err.print(new String(bytes));
+                    }
                 }
             }
         }

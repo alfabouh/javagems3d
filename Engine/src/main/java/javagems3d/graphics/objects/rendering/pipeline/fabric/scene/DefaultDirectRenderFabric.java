@@ -55,17 +55,16 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
                 shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
                 shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), viewMatrix);
                 this.renderMeshList3D(openGLRenderer, shaderManager, model, this.transparency ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER,
-                        renderedItem.getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
-                        (float) renderedItem.getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
-                        JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT);
+                        renderedItem.getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT),
+                        renderedItem.getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0));
             }
         }
     }
 
-    public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer, float alpha) {
+    public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer, float alpha, int decalLayerID) {
         MeshGroup meshGroup = model3D.getMeshStructureCast();
         for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), model3D.getPose(), openGLRenderer, meshGroup)) {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), alpha);
+            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), alpha, decalLayerID);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }
     }

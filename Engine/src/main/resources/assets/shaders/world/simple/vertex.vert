@@ -13,7 +13,7 @@ void main()
     mat4 modelViewMatrix = view_matrix * model_matrix;
 
     vec4 mv_pos = modelViewMatrix * vec4(aPosition, 1.0f);
-    frag_pos = mv_pos.xyz;
+    frag_pos = aPosition;
 
     gl_Position = projection_matrix * mv_pos;
     normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;

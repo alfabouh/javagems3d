@@ -7,7 +7,7 @@ in vec3 normal;
 
 void main()
 {
-    float dotFloat = !light ? max(dot(vec3(0.75, 1.0, 0.75), normal), 0.5) : 1.;
-    frag_color = ((vec4(color, 1.)) * dotFloat) + (vec4(normal * vec3(0.5), 0.0)) * (1. - float(light));
+    vec4 color = vec4(color, 1.);
+    frag_color = light ? color : mix(color, vec4(vec3(dot(vec3(0.25, 0.75, 0.5), normal)), 1.), 0.5);
     frag_color2 = frag_color  * float(light);
 }

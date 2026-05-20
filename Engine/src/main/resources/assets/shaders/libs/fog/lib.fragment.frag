@@ -2,7 +2,7 @@ struct Fog {
     vec3 color;
     float density;
 };
-layout (std430, binding = 7) buffer WorldFog {
+layout (std430, binding = 7) readonly restrict buffer WorldFog {
     Fog fog;
 };
 

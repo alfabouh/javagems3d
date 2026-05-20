@@ -55,6 +55,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager alpha_scanning;
     public JGemsShaderManager world_particle;
     public JGemsShaderManager world_particle_oit;
+    public JGemsShaderManager deferred_decals;
 
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
     public ShaderStorageBufferObject ParticleSceneIndirectBufferData;
@@ -96,6 +97,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderStaticConstants.createConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
         shaderStaticConstants.createConstant("MAX_SPOT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS));
         shaderStaticConstants.createConstant("MAX_SPOT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS_SHADOWS));
+        shaderStaticConstants.createConstant("MAX_DECALS", String.valueOf(JGemsConfig.SYSTEM.MAX_DECALS));
         shaderStaticConstants.createConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
 
         shaderStaticConstants.createConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
@@ -116,13 +118,14 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/oit", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting", ISource.Source.INSIDE_JAR));
         shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/lighting_simple", ISource.Source.INSIDE_JAR));
+        shaderLibrary.createLibrary(new JGemsPathSource("/assets/shaders/libs/deferred_decals_calc", ISource.Source.INSIDE_JAR));
     }
 
     protected void initObjects(ResourceCache resourceCache) {
         this.TimerData = new ShaderStorageBufferObject(0, Float.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.TimerData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.MainSceneIndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.MainSceneIndirectBufferData = new ShaderStorageBufferObject(1, (JGemsConfig.SYSTEM.INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASET_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS * Float.BYTES));
         ShaderStorageBufferProgram.createSSBOStorage(this.MainSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.BindlessTexturesData = new ShaderStorageBufferObject(2, Long.BYTES * JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES);
@@ -206,6 +209,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.depth_slight_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_slight_indirect"), ISource.Source.INSIDE_JAR));
         this.world_particle = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/world_indirect"), ISource.Source.INSIDE_JAR));
         this.world_particle_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "particles/oit_indirect"), ISource.Source.INSIDE_JAR));
+        this.deferred_decals = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/deferred_decals"), ISource.Source.INSIDE_JAR));
     }
 
     @Override

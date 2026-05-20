@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.decals.fx.DecalFX;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
@@ -14,18 +16,25 @@ import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefiniti
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
 public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager lightPassShader;
     private final FBOTexture2DProgram gBuffer;
     private final FBOTexture2DProgram ssaoBuffer;
+    private final DeferredDecalsRenderProcessor deferredDecalsRenderProcessor;
 
-    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @Nullable FBOTexture2DProgram gBuffer, @Nullable FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
+    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull JGemsShaderManager deferredDecalsShaderManager, @Nullable FBOTexture2DProgram gBuffer, @Nullable FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
         super(openGLRenderer);
+        this.deferredDecalsRenderProcessor = new DeferredDecalsRenderProcessor(deferredDecalsShaderManager);
         this.lightPassShader = lightPassShader;
         this.gBuffer = gBuffer;
         this.ssaoBuffer = ssaoBuffer;
+    }
+
+    public DeferredDecalsRenderProcessor getDeferredDecalsRenderProcessor() {
+        return this.deferredDecalsRenderProcessor;
     }
 
     @Override
@@ -84,5 +93,39 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
 
     public JGemsShaderManager getLightPassShader() {
         return this.lightPassShader;
+    }
+
+    public class DeferredDecalsRenderProcessor {
+        private final JGemsShaderManager deferredDecalsShaderManager;
+
+        public DeferredDecalsRenderProcessor(JGemsShaderManager deferredDecalsShaderManager) {
+            this.deferredDecalsShaderManager = deferredDecalsShaderManager;
+        }
+
+        public void renderDecals(IEnvironment environment) {
+            FBOTexture2DProgram gBuffer = DeferredColorRenderProcessor.this.getGBuffer();
+            JGemsShaderManager deferredShader = this.deferredDecalsShaderManager;
+
+            for (DecalFX decalFX : environment.getDecalsScene().getDecalFXCollection()) {
+                deferredShader.beginShading();
+                deferredShader.disableWarns();
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_INV_MODEL_MATRIX), UniformFunctions.MAT4F(decalFX.getInverseModelMatrix()));
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MAT_INVERTED), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_POSITIONS), gBuffer.getTextureByIndex(0));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_NORMALS), gBuffer.getTextureByIndex(1));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_TEXTURE), gBuffer.getTextureByIndex(2));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_OBJ_DECAL_LAYERS), gBuffer.getTextureByIndex(5));
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_DIFFUSE_COLOR), UniformFunctions.VEC4F(new Vector4f(decalFX.getMaterial().diffuseColor().color(), decalFX.getDecalTextureProperties().getTransparency())));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_EMISSION), gBuffer.getTextureByIndex(3));
+                deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.DECAL_DIFFUSE_MAP), decalFX.getMaterial().textureMap());
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.EMISSIVE_FACTOR), UniformFunctions.FLOAT(decalFX.getMaterial().emissionFactor()));
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_ENT_LAYER_ID), UniformFunctions.UINTEGER(decalFX.getTerrainLayerID()));
+                deferredShader.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+                JGemsHelper.render().renderModel2D(DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+                deferredShader.endShading();
+                deferredShader.enableWarns();
+            }
+
+        }
     }
 }

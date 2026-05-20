@@ -11,6 +11,8 @@ import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamer
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.decals.scene.IDecalsScene;
+import javagems3d.graphics.environment.decals.scene.JGemsDecalsScene;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
@@ -39,6 +41,7 @@ public class JGemsEnvironment implements IEnvironment {
     private final JGemsSkyBox skyBox;
     private final JGemsFogScene fogManager;
     private final JGemsParticlesScene particlesScene;
+    private final JGemsDecalsScene decalsScene;
     private final IWorld world;
 
     public JGemsEnvironment(IWorld world) {
@@ -47,6 +50,7 @@ public class JGemsEnvironment implements IEnvironment {
         this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData, JGemsResourceManager.globalShaderAssets.SpotLightsData,this);
         this.shadowScene = new JGemsShadowScene(this);
         this.particlesScene = new JGemsParticlesScene(this, new JGemsParticlesManager(this));
+        this.decalsScene = new JGemsDecalsScene(this);
         this.world = world;
     }
 
@@ -89,6 +93,7 @@ public class JGemsEnvironment implements IEnvironment {
             this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), this.getLightScene(), stack);
         }
         this.getParticlesScene().update(this.getWorld());
+        this.getDecalsScene().update(this.getWorld());
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.POST), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 
@@ -104,6 +109,11 @@ public class JGemsEnvironment implements IEnvironment {
     @Override
     public JGemsParticlesScene getParticlesScene() {
         return this.particlesScene;
+    }
+
+    @Override
+    public JGemsDecalsScene getDecalsScene() {
+        return this.decalsScene;
     }
 
     public JGemsShadowScene getShadowScene() {

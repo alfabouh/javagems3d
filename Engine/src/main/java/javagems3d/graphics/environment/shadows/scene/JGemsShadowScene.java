@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -134,11 +135,32 @@ public class JGemsShadowScene extends ShadowScene {
         return this;
     }
 
-    protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
+    @Override
+    protected void blurShadows() {
+        this.getSpotLightShadows().forEach(e -> {
+            try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(e.getShadowMapResolution()), 0)) {
+                final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
+                this.blurSpotLightShadow(e, screenModel, e.getSpotLightFBO(), blurring, 1.0f);
+            }
+        });
         try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
             final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-            this.blurSunShadow(screenModel, sunShadowFBO, blurring, 1.0f);
+            this.blurSunShadow(screenModel, this.getSunLightShadow().getSunShadowFBO(), blurring, 1.0f);
         }
+    }
+
+    private void blurSpotLightShadow(SpotLightShadow spotLightShadow, Model2D screenModel, FBOTexture2DProgram spotLightShadowFBO, final JGemsShaderManager blurring, float blurringConst) {
+        spotLightShadowFBO.bindFBO();
+        Vector2i resolution = spotLightShadow.getShadowMapResolution();
+        OpenGLRenderer.setViewPort(resolution);
+        blurring.beginShading();
+        blurring.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+        GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+        blurring.performUniform(new UniformString(DefaultUniformDefinitions.BLUR), UniformFunctions.FLOAT(blurringConst));
+        blurring.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), spotLightShadowFBO.getTextureByIndex(0));
+        JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
+        blurring.endShading();
+        spotLightShadowFBO.unBindFBO();
     }
 
     private void blurSunShadow(Model2D screenModel, FBOTexture2DProgram sunShadowFBO, final JGemsShaderManager blurring, float blurringConst) {

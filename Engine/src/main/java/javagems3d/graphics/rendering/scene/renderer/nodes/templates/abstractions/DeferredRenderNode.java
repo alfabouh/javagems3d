@@ -78,12 +78,12 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-       //for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
-       //    CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
-       //    if (cullingAABB != null) {
-       //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-       //    }
-       //}
+        //for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
+        //    CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
+        //    if (cullingAABB != null) {
+        //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+        //    }
+        //}
 
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
@@ -91,8 +91,8 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         }
         if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
-           this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-           this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
+            this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 //MODEL MATRIX PROBLEM
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
@@ -107,6 +107,15 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             this.getOutSSAOBuffer().bindFBO();
             this.getSSAORenderProcessor().runProcessorRendering(frameTicking);
             this.getOutSSAOBuffer().unBindFBO();
+        }
+
+        if (!JGemsConfig.DEBUG.DISABLE_DECALS) {
+            GL46.glDepthMask(false);
+            this.getOutGBuffer().bindFBO();
+            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+            this.getRawColorRenderProcessor().getDeferredDecalsRenderProcessor().renderDecals(this.getOpenGLRenderer().getWorld().getEnvironment());
+            this.getOutGBuffer().unBindFBO();
+            GL46.glDepthMask(true);
         }
 
         this.getOutColorBuffer().bindFBO();
@@ -127,30 +136,30 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
-            add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RG, GL46.GL_RG);
+            add(GL46.GL_COLOR_ATTACHMENT5, GL46.GL_RED, GL46.GL_RED);
         }};
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         if (this.getOutSSAOBuffer() != null) {
             T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
                 add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
             }};
-            this.getOutSSAOBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutSSAOBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
         }
-        this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(IRenderWorld renderWorld) {
         return (pair) -> {
             JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
-                    pair.second().getRenderAttributes().getProperties().has(JGemsRenderProperties.KEY_ALPHA_DISCARD) ?
-                            (float) pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD) :
-                            JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT
+                    pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT),
+                    pair.second().getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0)
             );
         };
     }
@@ -178,7 +187,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader(), this.getSsaoBlurring());
         }
-        this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), getDeferredRendererShader());
+        this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getDeferredDecalsShader(), this.getOutGBuffer(), this.getOutSSAOBuffer(), getDeferredRendererShader());
 
         if (this.getSSAORenderProcessor() != null) {
             this.getSSAORenderProcessor().createResources();
@@ -195,6 +204,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
     public abstract @Nullable JGemsShaderManager getSsaoShader();
     public abstract @NotNull JGemsShaderManager getSsaoBlurring();
     public abstract @NotNull JGemsShaderManager getDeferredRendererShader();
+    public abstract @NotNull JGemsShaderManager getDeferredDecalsShader();
 
     @Override
     public void destroyResources() {

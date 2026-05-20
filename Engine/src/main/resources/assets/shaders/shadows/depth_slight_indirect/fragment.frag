@@ -18,26 +18,29 @@ struct Properties {
 
 struct Material {
     vec4 diffuse_color;
-    vec3 emission_color;
+    vec3 emissive_color;
     float _padding000; //PADDING
+
     float metallic_factor;
     float roughness_factor;
     int diffuse_map_id;
+    float _padding001; //PADDING2
+
     int normals_map_id;
-    int emission_map_id;
+    int emissive_map_id;
     int metallic_roughness_map_id;
     int texturing_code;
 };
 
-layout(std430, binding = 2) buffer BindlessTextures {
+layout(std430, binding = 2) readonly restrict buffer BindlessTextures {
     uvec2 textures[CONST.MAX_BINDLESS_TEXTURES];
 };
 
-layout(std430, binding = 3) buffer MaterialsData {
+layout(std430, binding = 3) readonly restrict buffer MaterialsData {
     Material materials[CONST.MAX_INDIRECT_RENDERING_MATERIALS];
 };
 
-layout(std430, binding = 4) buffer RenderPropertiesData {
+layout(std430, binding = 4) readonly restrict buffer RenderPropertiesData {
     Properties properties[CONST.MAX_INDIRECT_RENDERING_PROPERIES];
 };
 

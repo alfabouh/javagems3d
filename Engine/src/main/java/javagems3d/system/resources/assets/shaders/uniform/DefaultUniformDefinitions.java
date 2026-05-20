@@ -32,6 +32,7 @@ public enum DefaultUniformDefinitions {
     G_POSITIONS("gPositions"),
     G_NORMALS("gNormals"),
     G_TEXTURE("gTexture"),
+    G_OBJ_DECAL_LAYERS("gObjLayersID"),
     G_EMISSION("gEmission"),
     G_METALLIC_ROUGHNESS("gMetallicRoughness"),
     TEXTURE_SCALING("texture_scaling"),
@@ -73,16 +74,25 @@ public enum DefaultUniformDefinitions {
     SKYBOX_FACE_HINT("skybox_faceHint"),
     DO_HINT("doHint"),
     OPACITY("opacity"),
-    EMISSION_COLOR("emission_color"),
+    EMISSIVE_COLOR("emissive_color"),
+    EMISSIVE_FACTOR("emissiveFactor"),
     METALLIC_FACTOR("metallic_factor"),
     ROUGHNESS_FACTOR("roughness_factor"),
-    EMISSION_MAP("emission_map"),
+    EMISSIVE_MAP("emissive_map"),
     NORMALS_MAP("normals_map"),
     METALLIC_ROUGHNESS_MAP("metallicRoughnessMap"),
     TEXTURING_CODE("texturing_code"),
     SUN_SHADOW_MAP("sun_shadow_map_"),
     POINT_LIGHT_CUBE_MAP("point_light_cubemap_"),
-    SPOT_LIGHT_SHADOW_MAP("spot_light_shadow_map_");
+    SPOT_LIGHT_SHADOW_MAP("spot_light_shadow_map_"),
+    DECAL_INV_MODEL_MATRIX("decal_invModelMatrix"),
+    DECAL_DIFFUSE_MAP("decal_diffuse_map"),
+    DECAL_EMISSIVE_MAP("decal_emissive_map"),
+    DECAL_DIFFUSE_COLOR("decal_diffuse_color"),
+    DECAL_ENT_LAYER_ID("decal_ent_layerID"),
+    DECAL_LAYER_ID("decalLayerID"),
+    DECAL_ALPHA_DISCARD("decal_alpha_discard"),
+    USE_EMISSIVE("useEmissive");
 
     private final String s;
 

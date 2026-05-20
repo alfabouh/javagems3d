@@ -40,10 +40,11 @@ public class JSRowMapObjectData {
         return new JSTagsContainer(this.data.getTagsContainer());
     }
 
-    @JSCodingFunctionOrMethod(description = "Get object render properties", paramNames = {})
-    public JSRenderProperties getRenderProperties() {
-        return new JSRenderProperties(this.data.getRenderProperties());
-    }
+    //TODO
+   // @JSCodingFunctionOrMethod(description = "Get object render properties", paramNames = {})
+   // public JSRenderProperties getRenderProperties() {
+   //     return new JSRenderProperties(this.data.getRenderProperties());
+   // }
 
     @JSCodingFunctionOrMethod(description = "Get object position", paramNames = {})
     public JSVector3f getPosition() {

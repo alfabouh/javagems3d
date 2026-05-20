@@ -34,7 +34,6 @@ public class MarkerSimpleTransparentRenderFabric extends DirectRenderFabric {
     @Override
     public void onRender(Pipeline pipeline, JGemsShaderManager shaderManager, OpenGLRenderer openGLRenderer, IRendered renderedItem, ArbitraryArguments metaData) {
         if (renderedItem instanceof WBenchMarkerObject modeled) {
-            WBenchMarkerObject markerObject = (WBenchMarkerObject) renderedItem;
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
                 Consumer<Pair<JGemsShaderManager, IRendered>> functionToHandleUniforms = metaData.getterFunc().getObject(0);
@@ -44,7 +43,7 @@ public class MarkerSimpleTransparentRenderFabric extends DirectRenderFabric {
                 shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
                 shaderManager.performModel3DMatrix(new UniformString(DefaultUniformDefinitions.MODEL_MATRIX), model);
                 shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(markerObject.getColor(), 0.5f)));
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(modeled.getColor(), 0.25f)));
                 JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }
         }

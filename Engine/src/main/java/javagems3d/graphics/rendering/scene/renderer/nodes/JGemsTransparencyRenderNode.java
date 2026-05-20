@@ -54,7 +54,7 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
 
     public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
         for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), model3D.getPose(), openGLRenderer, model3D.getMeshStructureCast())) {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), 1.0f);
+            JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), 1.0f, 0);
             JGemsHelper.render().performShadowsInfo(openGLRenderer.getWorld().getEnvironment(), shaderManager);
             JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
         }

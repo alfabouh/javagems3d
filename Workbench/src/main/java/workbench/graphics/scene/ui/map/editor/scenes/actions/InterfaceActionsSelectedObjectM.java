@@ -1,5 +1,6 @@
 package workbench.graphics.scene.ui.map.editor.scenes.actions;
 
+import api.application.workbench.resources.data.wbench.WBenchData;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
@@ -439,7 +440,9 @@ public class InterfaceActionsSelectedObjectM {
     private void showTags(@NotNull WBenchObject<?> selectedObject) {
         Set<Pair<Integer, SceneObject>> worldObjectsToViewInList = new TreeSet<>(Comparator.comparingInt(Pair::first));
         for (Map.Entry<Integer, WBenchObject<?>> entry : this.mapEditorInterface.getOpenGLRenderer().getWorld().getIdMap().entrySet()) {
-            worldObjectsToViewInList.add(new Pair<>(entry.getKey(), entry.getValue()));
+            if (!entry.getValue().objectType().equals(WBenchData.ObjectType.MARKER)) {
+                worldObjectsToViewInList.add(new Pair<>(entry.getKey(), entry.getValue()));
+            }
         }
 
         final TagsContainer tagsContainer = selectedObject.getTagsContainer();
@@ -479,7 +482,7 @@ public class InterfaceActionsSelectedObjectM {
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Transformation");
             ImGui.popStyleColor();
-            ImGui.indent();
+          //  ImGui.indent();
             if (manyObjects) {
                 if (selectedObject.hasTranslationConstraints()) {
                     int objectFlagTranslate = selectedObject.getTranslationConstraints().positionConstraints().getFlag();
@@ -520,30 +523,30 @@ public class InterfaceActionsSelectedObjectM {
             } else {
                 this.processTranslations("##transl_sngobj", Collections.singletonList(selectedObject), this.chooseGuizmoOperation(selectedObject.getTranslationConstraints(), true, true, true), true);
             }
-            ImGui.unindent();
+           // ImGui.unindent();
             ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
             ImGui.bulletText("Tags");
             ImGui.popStyleColor();
             {
-                ImGui.indent();
+               // ImGui.indent();
                 ImGui.beginChild("##ObjTags", ImGui.getColumnWidth(), 0, true, ImGuiWindowFlags.HorizontalScrollbar);
                 this.showTags(selectedObject);
                 ImGui.endChild();
-                ImGui.unindent();
+               // ImGui.unindent();
             }
             if (!(selectedObject instanceof WBenchMarkerObject)) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
                 ImGui.bulletText("Rendering");
                 ImGui.popStyleColor();
                 {
-                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 180, true, ImGuiWindowFlags.HorizontalScrollbar);
+                    ImGui.beginChild("##RenProps", ImGui.getColumnWidth(), 220, true, ImGuiWindowFlags.HorizontalScrollbar);
                     if (selectedObject.getRenderAttributes().getProperties() == null) {
                         selectedObject.getRenderAttributes().setRenderProperties(new WBenchRenderProperties());
                         Log.get().debug("Null renderProp. Created");
                     }
-                    ImGui.indent();
+                   // ImGui.indent();
                     ScenePreviewWorldObjectG.renderPropertiesEdit(selectedObject.getRenderAttributes().getProperties(), true);
-                    ImGui.unindent();
+                  //  ImGui.unindent();
                     ImGui.endChild();
                 }
             }

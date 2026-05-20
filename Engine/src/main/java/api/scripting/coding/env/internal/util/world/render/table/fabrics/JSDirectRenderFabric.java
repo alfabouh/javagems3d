@@ -40,13 +40,14 @@ public class JSDirectRenderFabric implements JSRenderFabricI {
         this.fabric.destroyResources(jsSceneObject.getJavaSceneObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Render all meshes of a 3D model at a given layer using the specified shader and renderer", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
-    public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
-        for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(jsModel.getJavaModel3D().<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), jsModel.getJavaModel3D().getPose(), jsRenderer.getJavaRenderer(), (MeshGroup) jsModel.getMesh().getJavaMeshStructure3D())) {
-            JGemsHelper.render().performDefaultModelMaterialOnShader(jsRenderer.getJavaRenderer().getWorld().getEnvironment(), jsShader.getJavaShaderManager(), meshNode3D.getMaterial(), discardAlphaLevel);
-            JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
-        }
-    }
+    //TODO
+    //@JSCodingFunctionOrMethod(description = "Render all meshes of a 3D model at a given layer using the specified shader and renderer", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
+    //public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
+    //    for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(jsModel.getJavaModel3D().<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), jsModel.getJavaModel3D().getPose(), jsRenderer.getJavaRenderer(), (MeshGroup) jsModel.getMesh().getJavaMeshStructure3D())) {
+    //        JGemsHelper.render().performDefaultModelMaterialOnShader(jsRenderer.getJavaRenderer().getWorld().getEnvironment(), jsShader.getJavaShaderManager(), meshNode3D.getMaterial(), discardAlphaLevel);
+    //        JGemsHelper.render().renderMeshNode(meshNode3D.getMeshData());
+    //    }
+    //}
 
     @JSHideFromDoc
     @Override

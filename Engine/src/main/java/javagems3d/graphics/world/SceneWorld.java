@@ -104,6 +104,7 @@ public final class SceneWorld implements IRenderWorld {
         this.getEnvironment().destroyEnvironment();
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         this.getEnvironment().getParticlesScene().getParticlesManager().clear();
+        this.getEnvironment().getDecalsScene().clear();
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
         this.clearAll();
     }

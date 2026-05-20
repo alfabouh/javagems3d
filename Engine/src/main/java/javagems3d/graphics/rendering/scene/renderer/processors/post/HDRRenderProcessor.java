@@ -11,18 +11,21 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 public class HDRRenderProcessor extends IRenderProcessor.Template {
+    private final FBOTexture2DProgram buffer;
     private final FBOTexture2DProgram inColor;
     private final FBOTexture2DProgram inBloomColor;
     private final JGemsShaderManager hdrShader;
     private boolean useHDR;
 
-    public HDRRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull FBOTexture2DProgram inBloomColor, @NotNull JGemsShaderManager hdrShader) {
+    public HDRRenderProcessor(@NotNull FBOTexture2DProgram buffer, @NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull FBOTexture2DProgram inBloomColor, @NotNull JGemsShaderManager hdrShader) {
         super(openGLRenderer);
         this.inColor = inSceneColor;
+        this.buffer = buffer;
         this.inBloomColor = inBloomColor;
         this.hdrShader = hdrShader;
         this.useHDR = true;
@@ -34,6 +37,10 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void destroyResources() {
+    }
+
+    public void prepare() {
+        this.getInColor().copyFBOtoFBOColor(this.buffer.getFrameBufferId(), new Pair[] {new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getOpenGLRenderer().getRenderingResolution(), this.getOpenGLRenderer().getRenderingResolution());
     }
 
     @Override

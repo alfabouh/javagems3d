@@ -77,7 +77,7 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
     }
 
     @Override
-    protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
+    protected void blurShadows() {
     }
 
     @Override

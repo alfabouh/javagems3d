@@ -21,10 +21,11 @@ public class JSRenderAttributes {
         this.renderAttributes = renderAttributes;
     }
 
-    @JSCodingConstructor(description = "Constructs JSRenderAttributes from JS wrappers")
-    public JSRenderAttributes(@NotNull JSRenderTable renderTableWrapper, @NotNull JSRenderProperties renderPropertiesWrapper) {
-        this.renderAttributes = new RenderAttributes(renderTableWrapper.getJavaTable(), renderPropertiesWrapper.getJavaProperties());
-    }
+    //TODO
+   // @JSCodingConstructor(description = "Constructs JSRenderAttributes from JS wrappers")
+   // public JSRenderAttributes(@NotNull JSRenderTable renderTableWrapper, @NotNull JSRenderProperties renderPropertiesWrapper) {
+   //     this.renderAttributes = new RenderAttributes(renderTableWrapper.getJavaTable(), renderPropertiesWrapper.getJavaProperties());
+   // }
 
     @JSCodingFunctionOrMethod(description = "Returns the underlying Java RenderAttributes")
     public RenderAttributes getJavaRenderAttributes() {
@@ -42,16 +43,18 @@ public class JSRenderAttributes {
         return this;
     }
 
-    @JSCodingFunctionOrMethod(description = "Gets the RenderProperties associated with this RenderAttributes")
-    public JSRenderProperties getRenderProperties() {
-        return new JSRenderProperties((JGemsRenderProperties) this.renderAttributes.getProperties());
-    }
+    //TODO
+   //@JSCodingFunctionOrMethod(description = "Gets the RenderProperties associated with this RenderAttributes")
+   //public JSRenderProperties getRenderProperties() {
+   //    return new JSRenderProperties((JGemsRenderProperties) this.renderAttributes.getProperties());
+   //}
 
-    @JSCodingFunctionOrMethod(description = "Sets the RenderProperties for this RenderAttributes", paramNames = {"renderProperties"})
-    public JSRenderAttributes setRenderProperties(@NotNull JSRenderProperties renderProperties) {
-        this.renderAttributes.setRenderProperties(renderProperties.getJavaProperties());
-        return this;
-    }
+    //TODO
+   // @JSCodingFunctionOrMethod(description = "Sets the RenderProperties for this RenderAttributes", paramNames = {"renderProperties"})
+   // public JSRenderAttributes setRenderProperties(@NotNull JSRenderProperties renderProperties) {
+   //     this.renderAttributes.setRenderProperties(renderProperties.getJavaProperties());
+   //     return this;
+   // }
 
     @JSCodingFunctionOrMethod(description = "Creates a copy of this JSRenderAttributes")
     public JSRenderAttributes copy() {

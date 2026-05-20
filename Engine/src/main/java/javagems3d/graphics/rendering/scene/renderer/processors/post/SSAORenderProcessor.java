@@ -41,12 +41,16 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     private float ssaoBias;
     private float ssaoRadius;
 
+    private boolean enabled;
+
     public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull JGemsShaderManager ssaoComputing, @NotNull JGemsShaderManager ssaoBlurring) {
         super(openGLRenderer);
         this.gBuffer = gBuffer;
         this.ssaoComputing = ssaoComputing;
         this.ssaoBlurring = ssaoBlurring;
         this.quality = 3;
+
+        this.enabled = true;
 
         this.ssaoRange = JGemsConfig.SYSTEM.SSAO_RANGE;
         this.ssaoBias =  JGemsConfig.SYSTEM.SSAO_BIAS;
@@ -88,7 +92,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (this.getSsaoBufferTexture() == null || !JGemsConfig.SYSTEM.USE_SSAO) {
+        if (this.getSsaoBufferTexture() == null || !JGemsConfig.SYSTEM.USE_SSAO || !this.isEnabled()) {
             GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -175,11 +179,20 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
     protected Vector3i getSSAOParams(Vector2i windowSize) {
         return switch (this.quality) {
-            case 1 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 3);
-            case 2 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 4);
-            case 3 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 6);
+            case 1 -> new Vector3i((int) (windowSize.x * 0.75f), (int) (windowSize.y * 0.5f), 3);
+            case 2 -> new Vector3i((int) (windowSize.x * 0.75f), (int) (windowSize.y * 0.75f), 4);
+            case 3 -> new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 5);
             default -> null;
         };
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public SSAORenderProcessor setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
     public float getSsaoRange() {

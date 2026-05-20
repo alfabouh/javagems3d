@@ -7,6 +7,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.GroupedSceneObjectsIndirectRenderer;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.joml.Matrix4f;
 
@@ -25,7 +26,8 @@ public class DefaultIndirectRenderFabric extends IndirectRenderFabric {
 
     @Override
     public void onFillBufferWithProperties(Pipeline pipeline, IRendered renderedItem, RenderAttributes defaultAttributes, ByteBuffer properties, ArbitraryArguments metaData) {
-        properties.putFloat((float) defaultAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD));
+        properties.putFloat(defaultAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        properties.putInt(defaultAttributes.getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0));
     }
 
     @Override

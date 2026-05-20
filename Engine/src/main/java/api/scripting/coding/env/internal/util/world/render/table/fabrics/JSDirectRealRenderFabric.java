@@ -37,9 +37,10 @@ public abstract class JSDirectRealRenderFabric extends JSDirectRenderFabric {
         this.fabric.onPostRender(pipeline.getJavaPipeline(), jsShader.getJavaShaderManager(), jsRenderer.getJavaRenderer(), jsSceneObject.getJavaSceneObject(), ArbitraryArguments.pass(functionToHandleUniforms));
     }
 
-    @JSCodingFunctionOrMethod(description = "Render the mesh list of a 3D model", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
-    @Override
-    public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
-        ((DefaultDirectRenderFabric) this.fabric).renderMeshList3D(jsRenderer.getJavaRenderer(), jsShader.getJavaShaderManager(), jsModel.getJavaModel3D(), layer, discardAlphaLevel);
-    }
+    //TODO
+    // @JSCodingFunctionOrMethod(description = "Render the mesh list of a 3D model", paramNames = {"jsRenderer", "jsShader", "jsModel", "layer"})
+    // @Override
+    // public void renderMeshList3D(JSOpenGLRenderer jsRenderer, JSShader jsShader, JSModel3D jsModel, float discardAlphaLevel, int layer) {
+    //     ((DefaultDirectRenderFabric) this.fabric).renderMeshList3D(jsRenderer.getJavaRenderer(), jsShader.getJavaShaderManager(), jsModel.getJavaModel3D(), layer, discardAlphaLevel);
+    // }
 }

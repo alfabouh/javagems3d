@@ -13,7 +13,7 @@ struct Sun {
     vec3 color;
     float ambient;
 };
-layout (std430, binding = 5) buffer SunLight {
+layout (std430, binding = 5) readonly restrict buffer SunLight {
     Sun sun;
 };
 
@@ -21,7 +21,7 @@ struct Fog {
     vec3 color;
     float density;
 };
-layout (std430, binding = 7) buffer WorldFog {
+layout (std430, binding = 7) readonly restrict buffer WorldFog {
     Fog fog;
 };
 

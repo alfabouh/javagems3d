@@ -64,4 +64,9 @@ public class WBenchDeferredRenderNode extends DeferredRenderNode {
     public @NotNull JGemsShaderManager getDeferredRendererShader() {
         return WBenchResourceManager.localShaderAssets.world_deferred;
     }
+
+    @Override
+    public @NotNull JGemsShaderManager getDeferredDecalsShader() {
+        return WBenchResourceManager.localShaderAssets.deferred_decals;
+    }
 }

@@ -556,7 +556,7 @@ public final class JGemsHelper {
             return code;
         }
 
-        public void performDefaultModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material, float discardAlphaLevel) {
+        public void performDefaultModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material, float discardAlphaLevel, int decalLayerID) {
             if (material == null) {
                 return;
             }
@@ -574,6 +574,10 @@ public final class JGemsHelper {
             float roughnessFactor = material.getRoughnessFactor();
 
             ICubeMapProgram cubeMapProgram = environment.getSkyBox().getTexture();
+
+            if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.DECAL_LAYER_ID))) {
+                shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_LAYER_ID), UniformFunctions.UINTEGER(decalLayerID));
+            }
 
             if (shaderManager.isUniformExist(new UniformString(DefaultUniformDefinitions.OPACITY))) {
                 shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.OPACITY), UniformFunctions.FLOAT(material.getOpacity()));
@@ -595,7 +599,7 @@ public final class JGemsHelper {
 
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ALPHA_DISCARD), UniformFunctions.FLOAT(discardAlphaLevel));
             shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.DIFFUSE_COLOR), diffuseColor);
-            shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_COLOR), emissionColor);
+            shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSIVE_COLOR), emissionColor);
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.METALLIC_FACTOR), UniformFunctions.FLOAT(metallicFactor));
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.ROUGHNESS_FACTOR), UniformFunctions.FLOAT(roughnessFactor));
 
@@ -604,7 +608,7 @@ public final class JGemsHelper {
             }
 
             if (emissionMap != null) {
-                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSION_MAP), emissionMap);
+                shaderManager.performUniformSample(new UniformString(DefaultUniformDefinitions.EMISSIVE_MAP), emissionMap);
             }
 
             if (normalsMap != null) {

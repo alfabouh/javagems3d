@@ -1,6 +1,7 @@
 package javagems3d.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.decals.scene.IDecalsScene;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.particles.scene.IParticlesScene;
@@ -38,6 +39,7 @@ public interface IEnvironment {
     }
 
     IParticlesScene getParticlesScene();
+    IDecalsScene getDecalsScene();
     IWorld getWorld();
     IShadowScene getShadowScene();
     ILightScene getLightScene();

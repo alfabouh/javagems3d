@@ -340,7 +340,7 @@ tess.tese
 <h1 id="static-constants">Static Constants</h1>
 <p>The engine supports compile-time shader constants.</p>
 <p>Example GLSL:</p>
-<pre><code class="language-glsl">layout(std430, binding = 1) buffer IndirectBufferData {
+<pre><code class="language-glsl">layout(std430, binding = 1) readonly restrict buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];

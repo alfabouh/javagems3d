@@ -112,7 +112,7 @@ public class InterfaceActionsSelectedTemplateM {
     public void render() {
         WBenchObjectTemplate selected = this.mapEditorInterface.getCurrentSelectedTemplate();
         if (selected != null && ImGui.collapsingHeader("Resource: " + selected.name(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.beginChild("##insideResourceTmpPreview", ImGui.getColumnWidth(), 480, true, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.beginChild("##insideResourceTmpPreview", ImGui.getColumnWidth(), 480, true);
             {
                 if (ImGui.beginPopup("GenAtPosition")) {
                     float[] coordinates = new float[]{0.0f, 0.0f, 0.0f};
@@ -156,7 +156,7 @@ public class InterfaceActionsSelectedTemplateM {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
                 ImGui.bulletText("Data");
                 ImGui.popStyleColor();
-                ImGui.indent();
+              //  ImGui.indent();
                 if (selected.getModelDef() == null || selected.getModelDef().equals("null")) {
                     ImGui.pushStyleColor(ImGuiCol.Text, 0xff4444ff);
                     ImGui.textWrapped("Model: NULL");
@@ -173,7 +173,7 @@ public class InterfaceActionsSelectedTemplateM {
                 ImGui.textWrapped("Translation-Position: " + selected.getTranslationConstraints().positionConstraints());
                 ImGui.textWrapped("Translation-Rotation: " + selected.getTranslationConstraints().rotationConstraints());
                 ImGui.textWrapped("Translation-Scaling: " + selected.getTranslationConstraints().scalingConstraints());
-                ImGui.unindent();
+              //  ImGui.unindent();
                 ImGui.spacing();
             }
             {
@@ -181,7 +181,7 @@ public class InterfaceActionsSelectedTemplateM {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xff99ff6e);
                 ImGui.text("Actions");
                 ImGui.popStyleColor();
-                ImGui.indent();
+               // ImGui.indent();
                 if (ImGui.button("Place")) {
                     WBenchObject<?> wBenchObject = selected.createObject(this.mapEditorInterface.getWorld(), null);
                     this.spawnInWorld(wBenchObject, null);
@@ -190,7 +190,7 @@ public class InterfaceActionsSelectedTemplateM {
                 if (ImGui.button("Place At...")) {
                     ImGui.openPopup("GenAtPosition");
                 }
-                ImGui.unindent();
+              //  ImGui.unindent();
             }
             ImGui.endChild();
         }

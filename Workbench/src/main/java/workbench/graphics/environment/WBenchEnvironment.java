@@ -2,6 +2,7 @@ package workbench.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.decals.scene.IDecalsScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.particles.ParticlesManager;
@@ -11,6 +12,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
 import org.lwjgl.system.MemoryStack;
 import workbench.graphics.environment.components.*;
+import workbench.graphics.environment.components.decals.WBenchDecalsScene;
 import workbench.graphics.environment.components.particles.WBenchParticlesManager;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
@@ -23,6 +25,7 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
     private final WBenchSkyBox skyBox;
     private final WBenchFogScene fogManager;
     private final WBenchParticlesScene particlesScene;
+    private final WBenchDecalsScene decalsScene;
     private final IWorld world;
 
     public WBenchEnvironment(IWorld world) {
@@ -31,6 +34,7 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
         this.lightManager = new WBenchLightScene(WBenchResourceManager.localShaderAssets.SunLightData, WBenchResourceManager.localShaderAssets.PointLightsData, WBenchResourceManager.localShaderAssets.SpotLightsData,this);
         this.shadowScene = new WBenchShadowScene(this);
         this.particlesScene = new WBenchParticlesScene(this, new WBenchParticlesManager(this));
+        this.decalsScene = new WBenchDecalsScene(this);
         this.world = world;
     }
 
@@ -58,6 +62,7 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
             this.getFogScene().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), this.getLightScene(), stack);
         }
         this.getParticlesScene().update(this.getWorld());
+        this.getDecalsScene().update(this.getWorld());
     }
 
     protected void updateLightsBuffer(IWorld world, HashMap<PointLight, Integer> pointLightIdxHashMap, HashMap<SpotLight, Integer> spotLightIntegerHashMap, MemoryStack stack) {
@@ -67,6 +72,11 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
     @Override
     public WBenchWorld getWorld() {
         return (WBenchWorld) this.world;
+    }
+
+    @Override
+    public WBenchDecalsScene getDecalsScene() {
+        return this.decalsScene;
     }
 
     public WBenchShadowScene getShadowScene() {

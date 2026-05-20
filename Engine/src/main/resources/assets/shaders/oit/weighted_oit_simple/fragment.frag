@@ -11,11 +11,7 @@ uniform vec4 color;
 
 void main()
 {
-    vec3 gPosition = modelview_vertex_pos;
-
-    vec4 frag_color = color;
-    float dotFloat = max(dot(vec3(0.75, 1.0, 0.75), normal), 0.5);
-
+    vec4 frag_color = mix(color, vec4(vec3(dot(vec3(0.25, 0.75, 0.5), normal)), color.a), 0.5);
     accumulated = calc_accumulated(frag_color);
     reveal = calc_alpha(frag_color);
     bright_color = vec4(0., 0., 0., 1.);

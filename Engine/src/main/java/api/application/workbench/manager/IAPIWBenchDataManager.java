@@ -11,6 +11,10 @@ import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.application.workbench.resources.data.wbench.ext.WBenchObjectInstanceExtension;
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.decals.DecalMaterial;
+import javagems3d.graphics.environment.decals.DecalTextureProperties;
+import javagems3d.graphics.environment.decals.fx.DecalFX;
+import javagems3d.graphics.environment.decals.fx.WorldDefaultDecalFX;
 import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
@@ -28,7 +32,9 @@ import javagems3d.system.external.mapping.tags.base.ColorMode;
 import javagems3d.system.external.mapping.tags.base.ResourceType;
 import javagems3d.system.external.mapping.tags.base.VectorMode;
 import javagems3d.system.external.mapping.tags.items.*;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
+import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -52,6 +58,7 @@ public interface IAPIWBenchDataManager {
     String PARTICLE_EMITTER = "particle_emitter";
     String POINT_LIGHT = "point_light";
     String SPOT_LIGHT = "spot_light";
+    String DECAL = "decal";
     String BOX_WATER = "aabb_water";
 
     void addResourceEntity(@Nullable String path, @NotNull ApiResourceEntity resourceEntity, @Nullable Function<WBenchObjectInstanceExtension.ContextData, WBenchObjectInstanceExtension> extCreator);
@@ -274,8 +281,166 @@ public interface IAPIWBenchDataManager {
                 return wBenchMarkerData;
             }, false, SpotLightObjectExtension::new);
         }
+        {
+            this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.DECAL, () -> {
+                final TagGameResourcesList textureResource = new TagGameResourcesList("", ResourceType.TEXTURE);
+                final TagObjectsList attachedTo = new TagObjectsList();
+
+                final TagInt layerID = new TagInt(0, 0, 255);
+
+                final Tag<TagGameResourcesList> tag_texture = new Tag<>(TagID.DEFAULT.TEXTURE_PATH, textureResource);
+                final Tag<TagFloat> tag_emissiveFactor = Tag.create(TagID.DEFAULT.EMISSIVE_FACTOR, new TagFloat(0.0f, 0.0f, 64.0f));
+
+                final Tag<TagInt> tag_layerID = new Tag<>(TagID.DEFAULT.DECAL_LAYER_ID, layerID);
+                final Tag<TagColor> tag_colorTag = Tag.create(TagID.DEFAULT.COLOR4, new TagColor(ColorMode.COLOR4, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
+                final Tag<TagObjectsList> tag_attachedTo = Tag.create(TagID.DEFAULT.OBJECT_LIST_ATTACHED, attachedTo);
+
+                final WBenchMarkerData wBenchMarkerData = new WBenchMarkerData(DefaultMarker.AABB_ZONE_NO_CNSTR, new Vector3f(0.7f, 1.0f, 0.7f), true);
+
+                wBenchMarkerData.addTags(
+                        tag_texture,
+                        tag_colorTag,
+                        tag_emissiveFactor,
+                        tag_attachedTo,
+                        tag_layerID
+                );
+                return wBenchMarkerData;
+            }, false, DecalObjectExtension::new);
+        }
         this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.BOX_WATER, () -> new WBenchMarkerData(DefaultMarker.AABB_ZONE, new Vector3f(0.0f, 0.0f, 3.0f), true), false);
         this.addResourceSkyCubeMap("SkyDay1", TextureAssetsInitializer.DEF_CUBE_MAP_TEXTURES);
+    }
+
+    class DecalObjectExtension extends WBenchObjectInstanceExtension {
+        private WorldDefaultDecalFX decalFX;
+
+        public DecalObjectExtension(@NotNull ContextData dataPack) {
+            super(dataPack);
+        }
+
+        @Override
+        public Vector3f textInMenuColor() {
+            return new Vector3f(0.5f, 1.0f, 0.5f);
+        }
+
+        @Override
+        public int orderInItemsList() {
+            return 4;
+        }
+
+        @Override
+        public boolean shouldMarkerBeFullLighted() {
+            return true;
+        }
+
+        private void refreshDecal(TagsContainer tagsContainer, SceneProp sceneProp) {
+            if (this.decalFX != null) {
+                this.decalFX.setDead();
+            }
+            if (this.texture2DProgram(tagsContainer) == null) {
+                return;
+            }
+            this.decalFX = sceneProp.getWorld().getEnvironment().getDecalsScene().createDefaultWorldDecal(
+                    this.getContextData().sceneProp().getPosition(),
+                    this.getContextData().sceneProp().getRotation(),
+                    this.getContextData().sceneProp().getScaling(),
+                    new DecalMaterial(this.texture2DProgram(tagsContainer), new Color3Texture(this.getColor(tagsContainer).xyz(new Vector3f())), this.getEmissiveFactor(tagsContainer)),
+                    new DecalTextureProperties(this.getColor(tagsContainer).w),
+                    sceneProp.getWorld().getEnvironment(),
+                    -1.0f,
+                    this.getLayerID(tagsContainer)
+            );
+            sceneProp.getWorld().getEnvironment().getDecalsScene().spawnDecalFX(this.decalFX);
+        }
+
+        @Override
+        public void onSpawnExt(IRenderWorld world) {
+            this.refreshDecal(this.getContextData().tagsContainer().get(), this.getContextData().sceneProp());
+        }
+
+        @Override
+        public void onDestroyExt(IRenderWorld world) {
+            if (this.decalFX != null) {
+                world.getEnvironment().getDecalsScene().destroyDecalFX(this.decalFX);
+            }
+        }
+
+        @Override
+        public void onUpdateExt(IRenderWorld world) {
+            if (this.decalFX != null) {
+                TagsContainer tagsContainer = this.getContextData().tagsContainer().get();
+                this.decalFX.setPosition(this.getContextData().sceneProp().getPosition());
+                this.decalFX.setRotation(this.getContextData().sceneProp().getRotation());
+                this.decalFX.setScale(this.getContextData().sceneProp().getScaling());
+            }
+        }
+
+        @Override
+        public void onTagsContainerAnyTagModified(TagsContainer tagsContainer, SceneProp sceneObject) {
+            this.refreshDecal(tagsContainer, this.getContextData().sceneProp());
+        }
+
+        @Override
+        public void onApplySnapshot(TagsContainer tagsContainer, SceneProp sceneObject) {
+            this.refreshDecal(tagsContainer, sceneObject);
+        }
+
+        public String getTexture(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.TEXTURE_PATH)) {
+                return "";
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.TEXTURE_PATH).<TagGameResourcesList>getTagItemUnsafeCast().getValue();
+        }
+
+        public String getTextureEmissive(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.TEXTURE_PATH)) {
+                return "";
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.TEXTURE_PATH).<TagGameResourcesList>getTagItemUnsafeCast().getValue();
+        }
+
+        public float getEmissiveFactor(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.EMISSIVE_FACTOR)) {
+                return 1.0f;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.EMISSIVE_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue();
+        }
+
+        public int getLayerID(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.DECAL_LAYER_ID)) {
+                return -1;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.DECAL_LAYER_ID).<TagInt>getTagItemUnsafeCast().getValue();
+        }
+
+        public Vector4f getColor(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.COLOR4)) {
+                return new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.COLOR4).<TagColor>getTagItemUnsafeCast().getColorVector();
+        }
+
+        public float getAlphaDiscard(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.ALPHA_DISCARD)) {
+                return 0.95f;
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.ALPHA_DISCARD).<TagFloat>getTagItemUnsafeCast().getValue();
+        }
+
+        public TagObjectsList getAttachedObjects(TagsContainer tagsContainer) {
+            if (!tagsContainer.hasTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED)) {
+                return new TagObjectsList();
+            }
+            return tagsContainer.getTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED).<TagObjectsList>getTagItemUnsafeCast();
+        }
+
+        public ImageTexture texture2DProgram(TagsContainer tagsContainer) {
+            GameResourceTextureAsset gameResourceTextureAsset = this.getContextData().utilityFunctions().extractTextureFromLocalCache().apply(this.getTexture(tagsContainer));
+            if (gameResourceTextureAsset != null && gameResourceTextureAsset.texture2DProgram() instanceof ImageTexture imageTexture) {
+                return imageTexture;
+            }
+            return null;
+        }
     }
 
     class SpotLightObjectExtension extends WBenchObjectInstanceExtension {
@@ -477,11 +642,6 @@ public interface IAPIWBenchDataManager {
         public boolean shouldMarkerBeFullLighted() {
             return false;
         }
-        
-        @Override
-        public void onTagsContainerAnyTagModified(TagsContainer tagsContainer, SceneProp sceneObject) {
-            this.refreshEmitter(tagsContainer, this.getContextData().sceneProp());
-        }
 
         private void refreshEmitter(TagsContainer tagsContainer, SceneProp sceneProp) {
             final IParticlesManager particlesManager = sceneProp.getWorld().getEnvironment().getParticlesScene().getParticlesManager();
@@ -529,6 +689,11 @@ public interface IAPIWBenchDataManager {
 
                     .setParticleEmissiveColor(this.getParticleEmissiveColor(tagsContainer))
                     .setParticleEmissiveFactorStrength(this.getParticleEmissiveFactorStrength(tagsContainer));
+        }
+
+        @Override
+        public void onTagsContainerAnyTagModified(TagsContainer tagsContainer, SceneProp sceneObject) {
+            this.refreshEmitter(tagsContainer, this.getContextData().sceneProp());
         }
 
         @Override

@@ -85,11 +85,12 @@ public class JSFrameBuffer2D implements JSRequiresClearResources {
         fbo.unBindTexture();
     }
 
-    @SuppressWarnings("all")
-    @JSCodingFunctionOrMethod(description = "Copy color buffers from this FBO to another FBO", paramNames = {"fboTo", "colorAttachments", "dimension"})
-    public void copyFBOtoFBOColor(int fboTo, JSPair<Integer, Integer>[] colorAttachments, JSVector2f dimension) {
-        fbo.copyFBOtoFBOColor(fboTo, (Pair<Integer, Integer>[]) Arrays.stream(colorAttachments).map(JSPair::getJavaPair).toArray(), new Vector2i((int) dimension.x(), (int) dimension.y()));
-    }
+    //TODO
+   //@SuppressWarnings("all")
+   //@JSCodingFunctionOrMethod(description = "Copy color buffers from this FBO to another FBO", paramNames = {"fboTo", "colorAttachments", "dimension"})
+   //public void copyFBOtoFBOColor(int fboTo, JSPair<Integer, Integer>[] colorAttachments, JSVector2f dimension) {
+   //    fbo.copyFBOtoFBOColor(fboTo, (Pair<Integer, Integer>[]) Arrays.stream(colorAttachments).map(JSPair::getJavaPair).toArray(), new Vector2i((int) dimension.x(), (int) dimension.y()));
+   //}
 
     @JSCodingFunctionOrMethod(description = "Copy depth buffer from this FBO to another FBO", paramNames = {"fboTo", "dimension"})
     public void copyFBOtoFBODepth(int fboTo, JSVector2f dimension) {

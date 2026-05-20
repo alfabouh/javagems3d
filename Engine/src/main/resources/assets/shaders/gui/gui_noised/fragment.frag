@@ -9,7 +9,7 @@ in vec2 uv_coordinates;
 uniform vec4 color;
 uniform sampler2D texture_map;
 
-layout (std430, binding = 0) buffer Timer {
+layout (std430, binding = 0) readonly restrict buffer Timer {
     float w_tick;
 };
 
