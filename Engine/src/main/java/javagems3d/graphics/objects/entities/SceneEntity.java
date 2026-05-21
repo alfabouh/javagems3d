@@ -67,6 +67,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
                 this.setModel(new Model3D(new Pose3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
+            this.updateModelTranslation();
         }
     }
 

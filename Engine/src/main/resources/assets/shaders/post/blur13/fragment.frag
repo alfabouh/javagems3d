@@ -20,6 +20,7 @@ vec4 blur(sampler2D txt, vec2 uv)
     color += texture(txt, uv - off3 * texel) * 0.010381362401148057;
     return color;
 }
+
 void main()
 {
     frag_color = blur(texture_map, uv_coordinates);

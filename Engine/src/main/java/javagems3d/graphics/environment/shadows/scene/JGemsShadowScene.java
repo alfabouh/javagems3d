@@ -33,7 +33,7 @@ public class JGemsShadowScene extends ShadowScene {
     private int spotLightShadowMapsBasicResolution;
 
     public JGemsShadowScene(IEnvironment environment) {
-        super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
+        super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES, JGemsResourceManager.globalShaderAssets.blur5, JGemsResourceManager.globalShaderAssets.blur5);
     }
 
     @Override
@@ -137,47 +137,18 @@ public class JGemsShadowScene extends ShadowScene {
 
     @Override
     protected void blurShadows() {
-        this.getSpotLightShadows().forEach(e -> {
-            try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(e.getShadowMapResolution()), 0)) {
-                final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-                this.blurSpotLightShadow(e, screenModel, e.getSpotLightFBO(), blurring, 1.0f);
-            }
-        });
+        if (true) {
+          //  return;
+        }
         try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
-            final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-            this.blurSunShadow(screenModel, this.getSunLightShadow().getSunShadowFBO(), blurring, 1.0f);
+            this.getSunLightShadow().blur(screenModel, JGemsConfig.SYSTEM.MAX_CASCADE_SUN_SHADOWS_TO_BLUR);
         }
-    }
 
-    private void blurSpotLightShadow(SpotLightShadow spotLightShadow, Model2D screenModel, FBOTexture2DProgram spotLightShadowFBO, final JGemsShaderManager blurring, float blurringConst) {
-        spotLightShadowFBO.bindFBO();
-        Vector2i resolution = spotLightShadow.getShadowMapResolution();
-        OpenGLRenderer.setViewPort(resolution);
-        blurring.beginShading();
-        blurring.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
-        GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
-        blurring.performUniform(new UniformString(DefaultUniformDefinitions.BLUR), UniformFunctions.FLOAT(blurringConst));
-        blurring.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), spotLightShadowFBO.getTextureByIndex(0));
-        JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
-        blurring.endShading();
-        spotLightShadowFBO.unBindFBO();
-    }
-
-    private void blurSunShadow(Model2D screenModel, FBOTexture2DProgram sunShadowFBO, final JGemsShaderManager blurring, float blurringConst) {
-        sunShadowFBO.bindFBO();
-        Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
-        OpenGLRenderer.setViewPort(resolution);
-        blurring.beginShading();
-        blurring.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
-        for (int i = 0; i < this.getSunLightShadow().getTotalCascades(); i++) {
-            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
-            sunShadowFBO.connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-            blurring.performUniform(new UniformString(DefaultUniformDefinitions.BLUR), UniformFunctions.FLOAT(blurringConst));
-            blurring.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), sunShadowFBO.getTextureByIndex(i));
-            JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
-        }
-        blurring.endShading();
-        sunShadowFBO.unBindFBO();
+       this.getSpotLightShadows().forEach(e -> {
+           try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(e.getShadowMapResolution()), 0)) {
+               e.blur(screenModel);
+           }
+       });
     }
 
     @Override

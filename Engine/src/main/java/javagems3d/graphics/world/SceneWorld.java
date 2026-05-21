@@ -201,8 +201,10 @@ public final class SceneWorld implements IRenderWorld {
         return true;
     }
 
-    public void addWorldItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
-        this.addObject(renderData.constructSceneObject(this, worldItem));
+    public SceneObject addWorldItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
+        final SceneObject sceneObject = renderData.constructSceneObject(this, worldItem);
+        this.addObject(sceneObject);
+        return sceneObject;
     }
 
     public void removeLight(Light light) {

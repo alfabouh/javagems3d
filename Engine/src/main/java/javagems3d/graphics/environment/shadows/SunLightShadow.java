@@ -1,33 +1,46 @@
 package javagems3d.graphics.environment.shadows;
 
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
-import org.joml.Matrix4f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import org.lwjgl.opengl.GL46;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SunLightShadow extends Shadow {
     private final FBOTexture2DProgram sunShadowFBO;
+    private final FBOTexture2DProgram buffer;
+
     private List<Cascade> cascades;
     private final int totalCascades;
     private final Vector3f cascadeSplits;
     private boolean enabled;
 
-    public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int totalCascades) {
+    private JGemsShaderManager blurShader;
+
+    public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int totalCascades, @Nullable JGemsShaderManager blurShader) {
         super(environment, shadowMapResolution);
         this.totalCascades = totalCascades;
         this.sunShadowFBO = new FBOTexture2DProgram(true, false);
+        this.buffer = new FBOTexture2DProgram(true, false);
         this.cascadeSplits = new Vector3f();
         this.enabled = true;
+        this.blurShader = blurShader;
         this.initCascades();
     }
 
@@ -182,6 +195,51 @@ public class SunLightShadow extends Shadow {
         }
     }
 
+    public void blur(Model2D screenModel, int maxCascadesToBlur) {
+        final JGemsShaderManager blurShader = this.blurShader;
+        if (blurShader == null) {
+            return;
+        }
+        Vector2i resolution = this.getShadowMapResolution();
+        final Matrix4f orthoMatrix = TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0));
+        OpenGLRenderer.setViewPort(resolution);
+        blurShader.beginShading();
+        blurShader.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), UniformFunctions.MAT4F(orthoMatrix));
+        for (int i = 0; i < maxCascadesToBlur; i++) {
+
+            this.buffer.bindFBO();
+            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+            blurShader.performUniform(new UniformString(DefaultUniformDefinitions.DIRECTION), UniformFunctions.VEC2F(new Vector2f(1.0f, 0.0f)));
+            blurShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getSunShadowFBO().getTextureByIndex(i));
+            JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
+            this.buffer.unBindFBO();
+
+            this.getSunShadowFBO().bindFBO();
+            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+            this.getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
+            blurShader.performUniform(new UniformString(DefaultUniformDefinitions.DIRECTION), UniformFunctions.VEC2F(new Vector2f(0.0f, 1.0f)));
+            blurShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.buffer.getTextureByIndex(0));
+            JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
+            this.getSunShadowFBO().unBindFBO();
+        }
+
+        blurShader.endShading();
+
+        //Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
+        //OpenGLRenderer.setViewPort(resolution);
+        //blurring.beginShading();
+        //blurring.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+        //for (int i = 0; i < this.getSunLightShadow().getTotalCascades(); i++) {
+        //    GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+        //    sunShadowFBO.connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
+        //    blurring.performUniform(new UniformString(DefaultUniformDefinitions.BLUR), UniformFunctions.FLOAT(blurringConst));
+        //    blurring.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), sunShadowFBO.getTextureByIndex(i));
+        //    JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
+        //}
+        //blurring.endShading();
+        //sunShadowFBO.unBindFBO();
+    }
+
     @Override
     public void createResources() {
         T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
@@ -190,15 +248,25 @@ public class SunLightShadow extends Shadow {
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
         }};
         this.getSunShadowFBO().createFrameBuffer2DTexture(this.getShadowMapResolution(), shadow, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+
+        T2DAttachmentContainer buffer = new T2DAttachmentContainer() {{
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
+        }};
+        this.buffer.createFrameBuffer2DTexture(this.getShadowMapResolution(), buffer, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
     public void destroyResources() {
         this.getSunShadowFBO().clearFBO();
+        this.buffer.clearFBO();
     }
 
     public void setDefaultCascadeSplits() {
         this.cascadeSplits.set(0.6f, 0.6f, 0.6f);
+    }
+
+    public JGemsShaderManager getBlurShader() {
+        return this.blurShader;
     }
 
     public void setCascadeSplits(Vector3f vector3f) {

@@ -28,6 +28,7 @@ public abstract class JGemsConfig {
     }
 
     public static abstract class SYSTEM {
+        public static final int MAX_CASCADE_SUN_SHADOWS_TO_BLUR = 1;
         public static int DEFAULT_SCREEN_WIDTH = 1280;
         public static int DEFAULT_SCREEN_HEIGHT = 720;
         public static boolean DISABLE_SOUNDS = false;

@@ -16,6 +16,7 @@ import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IObjectWithLights;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -69,6 +70,7 @@ import javagems3d.system.resources.localisation.LocalizationManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -389,9 +391,10 @@ public final class JGemsHelper {
             JGemsHelper.this.getPhysicsWorld().removeItem(worldItem);
         }
 
-        public void addWorldItem(WorldItem worldItem, EntityRenderData renderData) {
+        public Pair<WorldItem, SceneObject> addWorldItem(WorldItem worldItem, EntityRenderData renderData) {
             JGemsHelper.this.getPhysicsWorld().addObject(worldItem);
-            JGemsHelper.this.getSceneWorld().addWorldItem(worldItem, renderData);
+            SceneObject sceneObject = JGemsHelper.this.getSceneWorld().addWorldItem(worldItem, renderData);
+            return new Pair<>(worldItem, sceneObject);
         }
 
         public void removeWorldItem(WorldItem worldItem) {

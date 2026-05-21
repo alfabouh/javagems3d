@@ -36,14 +36,6 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
         this.isDead = false;
     }
 
-    protected void onAddLight(Light light) {
-        Log.get().trace("Added light to: " + this);
-    }
-
-    protected void onRemoveLight(Light light) {
-        Log.get().trace("Removed light from: " + this);
-    }
-
     public Vector3f getPosition() {
         return new Vector3f(this.getModel().getPose().getPosition());
     }
@@ -81,9 +73,9 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     public void onUpdate(IWorld iWorld) {
         final CullingAABB calcAABB = this.pickAABBDataFromMesh();
         this.setCullingData(calcAABB);
-        if (calcAABB != null && this.hasModel()) {
-            //this.getModel().getPose().setCenterOffset((this.getRenderAttributes() != null && this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_NORMALIZE_MODEL_CENTER)) ? calcAABB.getCenter() : new Vector3f());
-        }
+      // if (calcAABB != null && this.hasModel()) {
+      //     //this.getModel().getPose().setCenterOffset((this.getRenderAttributes() != null && this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_NORMALIZE_MODEL_CENTER)) ? calcAABB.getCenter() : new Vector3f());
+      // }
     }
 
     @Override

@@ -45,6 +45,7 @@ import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.service.collections.Pair;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class EventBus {
@@ -808,7 +809,7 @@ public abstract class EventBus {
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
         private final JGemsEntityData entityData;
-        private WorldItem result;
+        private Pair<WorldItem, JGemsEntityData > result;
 
         public MapEntityConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsEntityData entityData) {
             this.sceneWorld = sceneWorld;
@@ -822,8 +823,8 @@ public abstract class EventBus {
         public RowMapObjectData getTemplate() { return this.template; }
         public JGemsEntityData getEntityData() { return this.entityData; }
 
-        public WorldItem getResult() { return this.result; }
-        public void setResult(WorldItem result) { this.result = result; }
+        public Pair<WorldItem, JGemsEntityData> getResult() { return this.result; }
+        public void setResult(Pair<WorldItem, JGemsEntityData > result) { this.result = result; }
     }
 
     public static final class MapMarkerConvertEvent extends Cancellable implements IMapConvertEvent {
@@ -831,18 +832,35 @@ public abstract class EventBus {
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
         private final JGemsMarkerData markerData;
+        private final Map<Integer, IWorldObject> mainScene_idMap;
 
-        public MapMarkerConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsMarkerData markerData) {
+        public MapMarkerConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsMarkerData markerData, Map<Integer, IWorldObject> mainScene_idMap) {
             this.sceneWorld = sceneWorld;
             this.physicsWorld = physicsWorld;
             this.template = template;
             this.markerData = markerData;
+            this.mainScene_idMap = mainScene_idMap;
         }
 
-        public SceneWorld getSceneWorld() { return this.sceneWorld; }
-        public PhysicsWorld getPhysicsWorld() { return this.physicsWorld; }
-        public RowMapObjectData getTemplate() { return this.template; }
-        public JGemsMarkerData getMarkerData() { return this.markerData; }
+        public Map<Integer, IWorldObject> getMainScene_idMap() {
+            return this.mainScene_idMap;
+        }
+
+        public SceneWorld getSceneWorld() {
+            return this.sceneWorld;
+        }
+
+        public PhysicsWorld getPhysicsWorld() {
+            return this.physicsWorld;
+        }
+
+        public RowMapObjectData getTemplate() {
+            return this.template;
+        }
+
+        public JGemsMarkerData getMarkerData() {
+            return this.markerData;
+        }
     }
 
     public static final class MapSkySetupEvent extends Cancellable implements IEvent {

@@ -60,9 +60,7 @@ void main()
     if (useDiffuseTexture) {
         diffuse *= texture(sampler2D(diffuse_map), uv_coordinates);
     }
-    if (diffuse.a < alpha_discard) {
-        discard;
-    }
+
     if (useEmissionTexture) {
         emission *= texture(sampler2D(emissive_map), uv_coordinates).rgb;
     }

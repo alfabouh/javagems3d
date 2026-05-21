@@ -43,6 +43,8 @@ public abstract class JGemsAbstractDynamicBody extends JGemsBody {
     @Override
     public void setScaling(Vector3f vector3f) {
         super.setScaling(vector3f);
-        this.resetCCD(this.getPhysicsRigidBody());
+        if (this.getPhysicsRigidBody() != null) {
+            this.resetCCD(this.getPhysicsRigidBody());
+        }
     }
 }

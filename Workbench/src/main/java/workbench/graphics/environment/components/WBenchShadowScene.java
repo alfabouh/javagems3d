@@ -35,7 +35,7 @@ public class WBenchShadowScene extends ShadowScene implements ISnapshotCompatibl
     public int spotLightShadowMapResolution;
 
     public WBenchShadowScene(IEnvironment environment) {
-        super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES);
+        super(environment, JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES, null, null);
     }
 
     @Override

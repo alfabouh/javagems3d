@@ -24,6 +24,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     public JGemsBody(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scaling, String itemName) {
         super(world, pos, rot, scaling, itemName);
+        this.physicsRigidBody = null;
         this.entityState = new EntityState();
         this.canBeDestroyed = true;
     }
@@ -115,29 +116,50 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     @Override
     public Vector3f getScaling() {
+        if (this.getPhysicsRigidBody() == null) {
+            return new Vector3f(this.startScaling);
+        }
         return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
     }
 
     public void setScaling(Vector3f scaling) {
-        DynamicsUtils.scaleRigidBody(this.getPhysicsRigidBody(), scaling);
+        if (this.getPhysicsRigidBody() == null) {
+            this.startScaling.set(scaling);
+        } else {
+            DynamicsUtils.scaleRigidBody(this.getPhysicsRigidBody(), scaling);
+        }
     }
 
     @Override
     public Vector3f getPosition() {
+        if (this.getPhysicsRigidBody() == null) {
+            return new Vector3f(this.startPosition);
+        }
         return DynamicsUtils.getObjectBodyPos(this.getPhysicsRigidBody());
     }
 
-    public void setPosition(Vector3f vector3f) {
-        DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), vector3f);
+    public void setPosition(Vector3f position) {
+        if (this.getPhysicsRigidBody() == null) {
+            this.startPosition.set(position);
+        } else {
+            DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), position);
+        }
     }
 
     @Override
     public Vector3f getRotation() {
+        if (this.getPhysicsRigidBody() == null) {
+            return new Vector3f(this.startRotation);
+        }
         return DynamicsUtils.getObjectBodyRot(this.getPhysicsRigidBody());
     }
 
-    public void setRotation(Vector3f vector3f) {
-        DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), vector3f);
+    public void setRotation(Vector3f rotation) {
+        if (this.getPhysicsRigidBody() == null) {
+            this.startRotation.set(rotation);
+        } else {
+            DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), rotation);
+        }
     }
 
     public int getCollisionGroup() {

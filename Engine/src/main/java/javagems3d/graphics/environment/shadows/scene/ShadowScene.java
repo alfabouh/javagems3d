@@ -26,6 +26,7 @@ import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -48,12 +49,12 @@ public abstract class ShadowScene implements IShadowScene {
     private HashMap<SpotLight, Integer> spotLightIdsHashMap;
     // protected HashMap<PointLight, Integer> pointLightIdsHashMapCached;
 
-    public ShadowScene(IEnvironment environment, int totalCascades) {
+    public ShadowScene(IEnvironment environment, int totalCascades, @Nullable JGemsShaderManager sunBlurShader, @Nullable JGemsShaderManager spotLightBlurShader) {
         this.environment = environment;
         this.preInit();
         this.initPointLightShadows();
-        this.initSpotLightShadows();
-        this.initSunLightShadow(totalCascades);
+        this.initSpotLightShadows(spotLightBlurShader);
+        this.initSunLightShadow(totalCascades, sunBlurShader);
         this.pointLightIdsHashMap = new HashMap<>();
         this.spotLightIdsHashMap = new HashMap<>();
         //  this.pointLightIdsHashMapCached = new HashMap<>();
@@ -120,8 +121,8 @@ public abstract class ShadowScene implements IShadowScene {
         this.pointLightIdsHashMap = this.getSortedPointLightMapReadyToBind(((IRenderWorld) (this.getEnvironment().getWorld())).getCamera().getCamPosition(), lightScene.getPointLights());
     }
 
-    protected void initSunLightShadow(int totalCascades) {
-        this.sunLightShadow = new SunLightShadow(this.getEnvironment(), this.getSunShadowResolution(), totalCascades);
+    protected void initSunLightShadow(int totalCascades, @Nullable JGemsShaderManager blurShader) {
+        this.sunLightShadow = new SunLightShadow(this.getEnvironment(), this.getSunShadowResolution(), totalCascades, blurShader);
     }
 
     protected void initPointLightShadows() {
@@ -131,10 +132,10 @@ public abstract class ShadowScene implements IShadowScene {
         }
     }
 
-    protected void initSpotLightShadows() {
+    protected void initSpotLightShadows(@Nullable JGemsShaderManager blurShader) {
         this.spotLightShadows = new ArrayList<>(this.getMaxSpotLightShadows());
         for (int i = 0; i < this.getMaxSpotLightShadows(); i++) {
-            this.spotLightShadows.add(new SpotLightShadow(this.getEnvironment(), this.getSpotLightShadowResolution(), i));
+            this.spotLightShadows.add(new SpotLightShadow(this.getEnvironment(), this.getSpotLightShadowResolution(), i, blurShader));
         }
     }
 

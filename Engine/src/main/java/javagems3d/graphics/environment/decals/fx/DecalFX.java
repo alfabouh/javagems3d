@@ -44,7 +44,7 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked {
 
     public Matrix4f getModelMatrix() {
         if (this.attachedTo != null) {
-            Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(attachedTo).getModel().getPose());
+            Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(this.attachedTo).getModel().getPose());
             return mat.mul(this.localDecalMatrix);
         }
         return new Matrix4f().identity()

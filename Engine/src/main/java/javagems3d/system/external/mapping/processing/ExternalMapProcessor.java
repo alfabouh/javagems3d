@@ -46,6 +46,7 @@ import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
@@ -57,6 +58,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
+import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.external.gaming.JGemsGaming;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
@@ -167,8 +169,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
     protected abstract @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background);
     protected abstract @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract @Nullable Pair<WorldItem, SceneObject> onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap);
 
     protected abstract void preProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
@@ -191,6 +193,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getEntities();
         final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getMarkers();
 
+        final Map<Integer, IWorldObject> mainScene_idMap = new HashMap<>();
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
             EventBus.MapPropConvertEvent event = new EventBus.MapPropConvertEvent(true, sceneWorld, physicsWorld, template, data);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapPropConvertEvent(true, new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSPropData(data)), JavaToJsAPI.Target.Map));
@@ -198,8 +201,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 return;
             }
 
-            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessBackgroundProp(template, data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
+            if (event.getResult() != null) {
+                sceneWorld.getEnvironment().getSkyBox().getBackground().addObject(event.getResult());
+            } else {
+                this.onProcessBackgroundProp(template, data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
+            }
         });
+
         this.processMapObjects(propObjects, resourcePropMap, (template, data) -> {
             EventBus.MapPropConvertEvent event = new EventBus.MapPropConvertEvent(false, sceneWorld, physicsWorld, template, data);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapPropConvertEvent(false, new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSPropData(data)), JavaToJsAPI.Target.Map));
@@ -207,8 +215,15 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 return;
             }
 
-            SceneProp sceneProp = event.getResult() != null ? event.getResult() : this.onProcessProp(template, data, physicsWorld, sceneWorld);
+            SceneProp sceneProp = event.getResult();
+            if (sceneProp != null) {
+                sceneWorld.addObject(event.getResult());
+            } else {
+                sceneProp = this.onProcessProp(template, data, physicsWorld, sceneWorld);
+            }
+            mainScene_idMap.put(template.getId(), sceneProp);
         });
+
         this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> {
             EventBus.MapEntityConvertEvent event = new EventBus.MapEntityConvertEvent(sceneWorld, physicsWorld, template, data);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapEntityConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template), new JSEntityData(data)), JavaToJsAPI.Target.Map));
@@ -216,22 +231,31 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 return;
             }
 
-            WorldItem worldItem = event.getResult() != null ? event.getResult() : this.onProcessEntity(template, data, physicsWorld, sceneWorld);
+            WorldItem worldItem = event.getResult() == null ? null : event.getResult().first();
+            if (worldItem != null && event.getResult().second() != null) {
+                mainScene_idMap.put(template.getId(), JGemsHelper.world().addWorldItem(event.getResult().first(), event.getResult().second().entityRenderData()).second());
+            } else {
+                final Pair<WorldItem, SceneObject> pair = this.onProcessEntity(template, data, physicsWorld, sceneWorld);
+                if (pair != null) {
+                    mainScene_idMap.put(template.getId(), pair.second());
+                }
+            }
         });
+
         this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> {
-            this.processDefaultMarkers(template, physicsWorld, sceneWorld);
-            EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(sceneWorld, physicsWorld, template, data);
+            this.processDefaultMarkers(template, physicsWorld, sceneWorld, mainScene_idMap);
+            EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(sceneWorld, physicsWorld, template, data, mainScene_idMap);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapMarkerConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
             if (event.isCancelled()) {
                 return;
             }
 
-            this.onProcessMarker(template, data, physicsWorld, sceneWorld);
+            this.onProcessMarker(template, data, physicsWorld, sceneWorld, mainScene_idMap);
         });
-        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
+        //this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
     }
 
-    protected void processDefaultMarkers(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    protected void processDefaultMarkers(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap) {
         if (template.checkGroupName(IAPIWBenchDataManager.BOX_WATER, MapObjectsIdentifiers.MARKER + IAPIWBenchDataManager.BOX_WATER)) {
             Vector3f pos = template.getPosition();
             Vector3f scale = template.getScaling();
@@ -405,7 +429,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             Vector4f color = tags.hasTag(TagID.DEFAULT.COLOR4) ? tags.getTag(TagID.DEFAULT.COLOR4).<TagColor>getTagItemUnsafeCast().getColorVector() : new Vector4f(1.0f);
             float emissiveFactor = tags.hasTag(TagID.DEFAULT.EMISSIVE_FACTOR) ? tags.getTag(TagID.DEFAULT.EMISSIVE_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue() : 0.0f;
             int layerID = tags.hasTag(TagID.DEFAULT.DECAL_LAYER_ID) ? tags.getTag(TagID.DEFAULT.DECAL_LAYER_ID).<TagInt>getTagItemUnsafeCast().getValue() : 0;
-            TagObjectsList attachedObjects = tags.hasTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED) ? tags.getTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED).<TagObjectsList>getTagItemUnsafeCast() : new TagObjectsList();
+            TagObjectsList attachedObject = tags.hasTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED) ? tags.getTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED).getTagItemUnsafeCast() : new TagObjectsList();
             ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(new JGemsPathSource(new JGemsPath(JGemsGaming.getTexturesFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, true, false, false, false));
 
             if (!(texture2DProgram instanceof ImageTexture imageTexture)) {
@@ -420,6 +444,14 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     new DecalTextureProperties(color.w), sceneWorld.getEnvironment(), -1.0f, layerID);
             sceneWorld.getEnvironment().getDecalsScene().spawnDecalFX(decal);
 
+            final int toAttachID = attachedObject.getValue();
+            if (attachedObject.getValue() >= 0) {
+                if (mainScene_idMap.containsKey(toAttachID)) {
+                    if (mainScene_idMap.get(toAttachID) instanceof SceneObject sceneObject) {
+                        decal.setAttachedTo(sceneObject);
+                    }
+                }
+            }
           //if (!attachedObjects.getObjects().isEmpty()) {
           //    String attachedObjectId = attachedObjects.getObjects().getFirst();
 
@@ -643,7 +675,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         @Override
-        protected @Nullable WorldItem onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected @Nullable Pair<WorldItem, SceneObject> onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
             //if (true) {
             //    return null;
             //}
@@ -666,16 +698,15 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             } else {
                 jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(meshStructure3D), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDeleted(false);
             }
-            JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
+
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
-
-            return jGemsBody;
+            return JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
         }
 
         @Override
-        protected void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap) {
         }
 
         @Override

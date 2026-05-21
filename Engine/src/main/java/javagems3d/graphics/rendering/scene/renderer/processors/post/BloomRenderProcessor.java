@@ -43,16 +43,22 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void createResources() {
-        T2DAttachmentContainer clr = new T2DAttachmentContainer() {{ add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB); }};
-        this.buffer1 = new FBOTexture2DProgram(true, false);
-        this.buffer1.createFrameBuffer2DTexture(this.newDim(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        if (this.useBloom) {
+            T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
+                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
+            }};
+            this.buffer1 = new FBOTexture2DProgram(true, false);
+            this.buffer1.createFrameBuffer2DTexture(this.newDim(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
-        this.buffer2 = new FBOTexture2DProgram(true, false);
-        this.buffer2.createFrameBuffer2DTexture(this.newDim(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.buffer2 = new FBOTexture2DProgram(true, false);
+            this.buffer2.createFrameBuffer2DTexture(this.newDim(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        }
     }
 
     @Override
     public void destroyResources() {
+        this.buffer1.clearFBO();
+        this.buffer2.clearFBO();
     }
 
     @Override
