@@ -93,6 +93,8 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked {
         return this;
     }
 
+    public abstract boolean unDestructible();
+
     public Vector3f getPosition() {
         return new Vector3f(this.position);
     }

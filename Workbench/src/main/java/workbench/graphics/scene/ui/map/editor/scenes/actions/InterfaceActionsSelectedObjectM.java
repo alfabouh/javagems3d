@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.map.editor.scenes.actions;
 import api.application.workbench.resources.data.wbench.WBenchData;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import imgui.ImGui;
+import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import javagems3d.graphics.objects.SceneObject;
@@ -419,7 +420,7 @@ public class InterfaceActionsSelectedObjectM {
                 }
                 if (captScale) {
                     if (this.isOneDirScaling()) {
-                        SceneInterfaceComponentM.oneDirScaling(null, InterfaceActionsSelectedObjectM.scalingFlags, getFirst.getPosition(), getFirst, newScale, getFirst.getScaling());
+                        SceneInterfaceComponentM.oneDirScaling(Mode.LOCAL, null, InterfaceActionsSelectedObjectM.scalingFlags, getFirst.getRotation(), getFirst.getPosition(), getFirst, newScale, getFirst.getScaling());
                     } else {
                         getFirst.setScaling(new Vector3f(Math.max(newScale.x, 0.001f), Math.max(newScale.y, 0.001f), Math.max(newScale.z, 0.001f)));
                     }

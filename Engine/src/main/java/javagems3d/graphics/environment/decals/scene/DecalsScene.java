@@ -5,6 +5,7 @@ import javagems3d.graphics.environment.decals.fx.DecalFX;
 import javagems3d.graphics.environment.lights.scene.LightScene;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.world.IRenderWorld;
+import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.global.JGemsConfig;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -15,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class DecalsScene implements IDecalsScene {
     private final List<DecalFX> decalFXList;
@@ -44,6 +46,10 @@ public abstract class DecalsScene implements IDecalsScene {
     @Override
     public DecalFX spawnDecalFX(@NotNull DecalFX decalFX) {
         this.decalFXList.add(decalFX);
+        if (this.decalFXList.size() > JGemsConfig.SYSTEM.MAX_DECALS) {
+            Optional<DecalFX> optionalD = this.decalFXList.stream().filter(e -> !e.unDestructible()).findFirst();
+            optionalD.ifPresent(IWorldObject::setDead);
+        }
         return decalFX;
     }
 

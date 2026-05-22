@@ -2,6 +2,7 @@ package workbench.graphics.scene.ui.map;
 
 import api.system.JGemsAPI;
 import imgui.ImGui;
+import imgui.extension.imguizmo.flag.Mode;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
@@ -667,7 +668,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
                     } else {
                         Vector3f newScale = obj.getScaling().mul(scaleOffset);
                         if (this.isOneDirScaling()) {
-                            SceneInterfaceComponentM.oneDirScaling(MapEditorInterface.this.sceneComponent.guizmoPrevTranlate, SelectedObjectsManager.scalingFlags, this.getGroupPosition(), obj, newScale, obj.getScaling());
+                            SceneInterfaceComponentM.oneDirScaling(Mode.WORLD, MapEditorInterface.this.sceneComponent.guizmoPrevTranlate, SelectedObjectsManager.scalingFlags, null, this.getGroupPosition(), obj, newScale, obj.getScaling());
                         } else {
                             obj.setScaling(newScale);
                         }

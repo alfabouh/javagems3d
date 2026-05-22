@@ -13,6 +13,7 @@ public class WorldDefaultDecalFX extends DecalFX {
     private boolean dead;
     private final float lifeTime;
     private @Nullable JGemsTimedAction lifeTimer;
+    private boolean unDestructible;
 
     public WorldDefaultDecalFX(@NotNull DecalMaterial material, @NotNull DecalTextureProperties decalTextureProperties, float lifeTime, int terrainLayer) {
         super(material, decalTextureProperties, terrainLayer);
@@ -30,6 +31,11 @@ public class WorldDefaultDecalFX extends DecalFX {
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        if (this.lifeTimer != null) {
+            if (this.lifeTimer.resetTimerAfterReachedSeconds(this.lifeTime)) {
+                this.setDead();
+            }
+        }
     }
 
     @Override
@@ -51,9 +57,25 @@ public class WorldDefaultDecalFX extends DecalFX {
         return (WorldDefaultDecalFX) super.setScale(scale);
     }
 
+    public boolean isUnDestructible() {
+        return this.unDestructible;
+    }
+
+    public WorldDefaultDecalFX setUnDestructible(boolean unDestructible) {
+        this.unDestructible = unDestructible;
+        return this;
+    }
+
+    @Override
+    public boolean unDestructible() {
+        return this.unDestructible;
+    }
+
     @Override
     public void setDead() {
-        this.dead = true;
+        if (!this.unDestructible()) {
+            this.dead = true;
+        }
     }
 
     @Override

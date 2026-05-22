@@ -165,7 +165,42 @@ public class SceneInterfaceComponentM {
         return wBenchBindingManager.keyAlt.isPressed() || this.mapEditorInterface.getSelectedObjectsManager().isOneDirScaling();
     }
 
-    public static void oneDirScaling(@Nullable Vector3f prevGuizmoTranslate, Vector4i scalingFlags, Vector3f centPos, WBenchObject<?> wBenchObject, Vector3f scaleTo, Vector3f oldScale) {
+    private static Vector3f pickSidesToScale(CullingAABB aabb, int operation, Matrix4f projectionMatrix, Matrix4f viewMatrix, Vector3f centPos, Vector3f rotation) {
+        Vector4f stickXP = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+        Vector4f stickYP = new Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+        Vector4f stickZP = new Vector4f(0.0f, 0.0f, 1.0f, 1.0f);
+
+        Vector4f stickXM = new Vector4f(-1.0f, 0.0f, 0.0f, 1.0f);
+        Vector4f stickYM = new Vector4f(0.0f, -1.0f, 0.0f, 1.0f);
+        Vector4f stickZM = new Vector4f(0.0f, 0.0f, -1.0f, 1.0f);
+
+        Matrix4f basis = new Matrix4f().identity().translate(centPos);
+        if (operation == Mode.LOCAL) {
+            basis.rotateXYZ(rotation);
+        }
+        Matrix4f clipSpace = projectionMatrix.mul(viewMatrix).mul(basis);
+        stickYP.mul(clipSpace);
+        stickXP.mul(clipSpace);
+        stickZP.mul(clipSpace);
+        stickYM.mul(clipSpace);
+        stickXM.mul(clipSpace);
+        stickZM.mul(clipSpace);
+
+        Vector3f NDC_YP = stickYP.xyz(new Vector3f()).div(stickYP.w);
+        Vector3f NDC_XP = stickXP.xyz(new Vector3f()).div(stickXP.w);
+        Vector3f NDC_ZP = stickZP.xyz(new Vector3f()).div(stickZP.w);
+        Vector3f NDC_YM = stickYM.xyz(new Vector3f()).div(stickYM.w);
+        Vector3f NDC_XM = stickXM.xyz(new Vector3f()).div(stickXM.w);
+        Vector3f NDC_ZM = stickZM.xyz(new Vector3f()).div(stickZM.w);
+
+        return new Vector3f(
+                (NDC_XP.z <= NDC_XM.z) ? aabb.getAabbMin().x : aabb.getAabbMax().x,
+                (NDC_YP.z <= NDC_YM.z) ? aabb.getAabbMin().y : aabb.getAabbMax().y,
+                (NDC_ZP.z <= NDC_ZM.z) ? aabb.getAabbMin().z : aabb.getAabbMax().z
+        );
+    }
+
+    public static void oneDirScaling(int operation, @Nullable Vector3f prevGuizmoTranslate, Vector4i scalingFlags, Vector3f rotation, Vector3f centPos, WBenchObject<?> wBenchObject, Vector3f scaleTo, Vector3f oldScale) {
         Vector3f scaleRatio = new Vector3f(scaleTo).div(oldScale);
 
         boolean aX = scaleRatio.x != 1f;
@@ -211,7 +246,7 @@ public class SceneInterfaceComponentM {
             sideZ = scalingFlags.z == -1 ? aabb.getAabbMax().z : aabb.getAabbMin().z;
         }
 
-        sideBorder.set(sideX, sideY, sideZ);
+        sideBorder.set(SceneInterfaceComponentM.pickSidesToScale(aabb, operation, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), JGemsTransformManager.INSTANCE.getCameraViewMatrix(), centPos, rotation));
 
         Vector3f deltaPosScale = new Vector3f(wBenchObject.getPosition())
                 .sub(sideBorder)
@@ -246,7 +281,8 @@ public class SceneInterfaceComponentM {
             final boolean isRotate = (currentOperation & Operation.ROTATE) != 0;
             final boolean isScale = (currentOperation & Operation.SCALE) != 0;
 
-            ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, isScale ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
+            final int operation = isScale ? Mode.LOCAL : Mode.WORLD;
+            ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, operation, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
 
             if (!this.wasGuizmoUsed && UsedImGuizmo) {
                 WBenchUITrackingHelper.instantlyTrackAndPush();
@@ -273,7 +309,7 @@ public class SceneInterfaceComponentM {
                 }
                 if (isScale) {
                     if (this.isOneDirScaling()) {
-                        SceneInterfaceComponentM.oneDirScaling(this.guizmoPrevTranlate, SceneInterfaceComponentM.scalingFlags, wBenchObject.getPosition(), wBenchObject, newScale, wBenchObject.getScaling());
+                        SceneInterfaceComponentM.oneDirScaling(operation, this.guizmoPrevTranlate, SceneInterfaceComponentM.scalingFlags, wBenchObject.getRotation(), wBenchObject.getPosition(), wBenchObject, newScale, wBenchObject.getScaling());
                     } else {
                         wBenchObject.setScaling(scaling);
                     }
@@ -314,7 +350,7 @@ public class SceneInterfaceComponentM {
         final boolean isRotate = (currentOperation & Operation.ROTATE) != 0;
         final boolean isScale = (currentOperation & Operation.SCALE) != 0;
 
-        ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, isScale ? Mode.LOCAL : Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
+        ImGuizmo.manipulate(view, projection, modelMatrix, deltaMatrix, currentOperation, Mode.WORLD, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.0f, 0.0f, 0.0f});
         if (UsedImGuizmo && ImGui.isItemHovered()) {
             if (!this.wasGuizmoUsed) {
                 //this.getEditorInterface().getSelectedObjectsManager().beginGroupTransform();
