@@ -11,24 +11,20 @@ import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamer
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
 import api.scripting.JavaToJsAPI;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.decals.scene.IDecalsScene;
 import javagems3d.graphics.environment.decals.scene.JGemsDecalsScene;
 import javagems3d.graphics.environment.fog.JGemsFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.graphics.environment.particles.JGemsParticlesManager;
-import javagems3d.graphics.environment.particles.ParticlesManager;
 import javagems3d.graphics.environment.particles.scene.JGemsParticlesScene;
 import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.JGemsSkyBox;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
-import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -74,11 +70,12 @@ public class JGemsEnvironment implements IEnvironment {
         this.getParticlesScene().destroyResources();
     }
 
-    public void clearPointLightsBuffer() {
+    public void clearLightsBuffer() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightScene().clearPointLightsBuffer(stack, this.getLightScene().getPointLightsBuffer());
             this.getLightScene().clearSpotLightsBuffer(stack, this.getLightScene().getSpotLightsBuffer());
             this.getLightScene().getPointLights().clear();
+            this.getLightScene().getSpotLights().clear();
         }
     }
 

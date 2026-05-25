@@ -2,7 +2,7 @@ package workbench.resources.initialization.map;
 
 import api.application.workbench.manager.APIWBenchDataManager;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
@@ -19,7 +19,7 @@ public class WBenchMapEditorTextureAssetsInitializer implements IAssetsInitializ
     public static <E extends GameResourceSkyboxAsset> void parseTreeS(SystemResources systemResources, VirtualObjectsFolder<E> folder, MapObjectTemplatesManager manager) {
         for (E asset : folder.getObjectsThere()) {
             final String path = ((folder.getParent() == null ? "" : folder.getHierarchy() + "/") + asset.name());
-            ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(JGemsGaming.getTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), asset.getCmTextures()), new CubeMapTexture.Properties(true));
+            ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, new CubeMapsLoader.CubeMapTexturesContainer(JGemsGameInstance.getTexturesFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), asset.getCmTextures()), new CubeMapTexture.Properties(true));
             manager.addSkyBox(path, new MapObjectTemplatesManager.SkyBoxTemplate(path, asset.getCmTextures()).setCubeMapProgram(cubeMapProgram));
         }
         for (VirtualObjectsFolder<E> child : folder.getFoldersThere()) {

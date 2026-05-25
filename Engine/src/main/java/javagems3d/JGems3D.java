@@ -278,21 +278,15 @@ public final class JGems3D {
     }
 
     public JGemsSoundManager getSoundManager() {
-        synchronized (this.getCore().getSoundManager()) {
-            return this.getCore().getSoundManager();
-        }
+        return this.getCore().getSoundManager();
     }
 
     public JGemsCore getCore() {
-        synchronized (this) {
-            return this.core;
-        }
+        return this.core;
     }
 
     public JGemsLocalisation getLocalization() {
-        synchronized (this.getCore().getLocalization()) {
-            return this.core.getLocalization();
-        }
+        return this.getCore().getLocalization();
     }
 
     public boolean isCurrentGameMapValid() {

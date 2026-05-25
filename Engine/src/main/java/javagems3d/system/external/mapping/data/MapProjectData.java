@@ -1,6 +1,6 @@
 package javagems3d.system.external.mapping.data;
 
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.misc.GameResourceScriptAsset;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.service.files.JGemsPath;
@@ -28,11 +28,11 @@ public class MapProjectData {
     }
 
     public JGemsPath getPathToMainMapFile() {
-        return JGemsGaming.getPathToMainMapFile(this.getMapAbsolutePath(), this.getMapName());
+        return JGemsGameInstance.getPathToMainMapFile(this.getMapAbsolutePath(), this.getMapName());
     }
 
     public JGemsPath getPathToDataMapFile() {
-        return JGemsGaming.getPathToDataMapFile(this.getMapAbsolutePath(), this.getMapName());
+        return JGemsGameInstance.getPathToDataMapFile(this.getMapAbsolutePath(), this.getMapName());
     }
 
     public MapProjectData setMapDescription(String mapDescription) {

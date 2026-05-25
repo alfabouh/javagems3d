@@ -63,6 +63,8 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        //boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
+        //GL46.glDisable(GL46.GL_CULL_FACE);
         this.getInColorBuffer().copyFBOtoFBODepth(this.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
 
         GL46.glDepthMask(false);
@@ -84,6 +86,9 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
 
         GL46.glDisable(GL46.GL_BLEND);
         GL46.glDepthMask(true);
+        //if (oldV) {
+        //    GL46.glEnable(GL46.GL_CULL_FACE);
+        //}
     }
 
     protected void renderContent(FrameTicking frameTicking) {

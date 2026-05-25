@@ -49,8 +49,8 @@ public abstract class JGemsConfig {
         public static final int DEFAULT_MAX_SHADOW_RES = 2048;
         public static final float HDR_EXPOSURE_DEFAULT = 2.5f;
         public static final float HDR_GAMMA_DEFAULT = 0.3f;
-        public static final float SSAO_RADIUS = 0.25f;
-        public static final float SSAO_BIAS = 0.01f;
+        public static final float SSAO_RADIUS = 0.2f;
+        public static final float SSAO_BIAS = 0.025f;
         public static final float SSAO_RANGE = 1.25f;
 
         public static float _LIGHT_CONSTANT_ATT = 1.0f;

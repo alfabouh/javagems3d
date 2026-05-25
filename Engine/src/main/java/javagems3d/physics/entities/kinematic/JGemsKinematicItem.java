@@ -40,6 +40,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     private PhysicsRigidBody ghostBody;
     private PhysicsRigidBody physicsBody;
     protected boolean isOnGround;
+    protected boolean isOnGroundPrevTick;
     private EntityState entityState;
     private ConvexShape groundCheckShape;
 
@@ -196,7 +197,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 if (onGround) {
                     float deltaY = currPos.y - sweepDown.correctedPos().y;
                     if (deltaY > 0.01f && deltaY <= maxY) {
-                        return sweepDown.correctedPos();
+                        return new Vector3f(currPos.x, sweepDown.correctedPos().y, currPos.z);
                     }
                 }
             }
@@ -207,7 +208,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
     private Vector3f tryStepUp(Vector3f currPos, Vector3f motion, float height) {
         final float motionSpeed = motion.length();
-        Vector3f rawResult = this.tryStepInterval(currPos, motion, height);
+        Vector3f rawResult = this.tryStepInterval(currPos, motion, height, false);
 
         if (rawResult == null) {
             return null;
@@ -215,7 +216,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
         final float yGet = (rawResult.y - currPos.y) + 0.005f;
         Vector3f normalizedMotion = new Vector3f(motion.x, yGet, motion.z).normalize(motionSpeed).mul(1.0f, 0.0f, 1.0f);
-        Vector3f newAttempt = this.tryStepInterval(currPos, normalizedMotion, yGet);
+        Vector3f newAttempt = this.tryStepInterval(currPos, normalizedMotion, yGet, false);
 
         if (newAttempt != null) {
             return newAttempt;
@@ -224,7 +225,55 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         return rawResult;
     }
 
-    private Vector3f tryStepInterval(Vector3f currPos, Vector3f motion, float height) {
+    private Vector3f tryStepInterval(Vector3f currPos, Vector3f motion, float height, boolean correction) {
+        SweepResult sweepUp = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), currPos, new Vector3f(0.0f, height, 0.0f), new Vector3i(0, 1, 0));
+        Vector3f steppedUpPos = sweepUp.correctedPos();
+        final float motionS = motion.length();
+        //new Vector3f(motion).add(new Vector3f(0.0f, height, 0.0f)).normalize().mul(motionS);
+        Vector3f bumpMotion = new Vector3f(motion);
+        Vector3f bumpCorrectedPos = steppedUpPos;
+        final int bumps = 12;
+        for (int i = 0; i < bumps; i++) {
+            if (bumpMotion == null) {
+                break;
+            }
+            SweepResult sweepForward = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), bumpCorrectedPos, bumpMotion, new Vector3i(1));
+            if (i == 0) {
+                float movedDist1 = new Vector3f(sweepForward.correctedPos()).sub(steppedUpPos).length();
+                float movedDist2 = steppedUpPos.distance(currPos);
+                if (movedDist1 < 0.01f || movedDist2 < 0.01f) {
+                    return null;
+                }
+            }
+            bumpCorrectedPos = sweepForward.correctedPos();
+            bumpMotion = sweepForward.slideMotion();
+        }
+
+        SweepResult sweepDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), bumpCorrectedPos, new Vector3f(0.0f, -height, 0.0f), new Vector3i(0, 1, 0));
+        Vector3f landedPos = sweepDown.correctedPos();
+
+        //final boolean stepCheck = sweepDown.hitNormal() != null && this.checkDotAngle(this.up(), sweepDown.hitNormal(), this.getSlopeAngle(), true);
+
+       //if (stepCheck) {
+            final boolean onGround = this.checkIfOnGround(this.getGhostBody(), landedPos);
+            float deltaY = landedPos.y - currPos.y;
+            if (onGround && deltaY > 0.0f && deltaY <= height) {
+                // ???
+                if (!correction) {
+                    Vector3f totalDelta = new Vector3f(landedPos).sub(currPos);
+                    float totalDistance = totalDelta.length();
+                    float maxDistance = motion.length();
+                    if (totalDistance > maxDistance + 0.05f) {
+                        totalDelta.normalize().mul(maxDistance);
+                        return this.tryStepInterval(currPos, new Vector3f(totalDelta.x, motion.y, totalDelta.z), height + 0.05f, true);
+                    }
+                }
+
+                return landedPos;
+            }
+        //}
+
+        /*
         SweepResult sweepUp = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), currPos, new Vector3f(0.0f, height, 0.0f), new Vector3i(0, 1, 0));
         Vector3f steppedUpPos = sweepUp.correctedPos();
 
@@ -234,6 +283,13 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         float movedDist = new Vector3f(forwardPos).sub(steppedUpPos).length();
         if (movedDist < 0.01f) {
             return null;
+        }
+
+        if (sweepForward.slideMotion() != null && sweepForward.slideMotion().length() > 0.01f) {
+            SweepResult sweepForwardSLIDED = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), forwardPos, sweepForward.slideMotion(), new Vector3i(1));
+            if (sweepForwardSLIDED.correctedPos() != null && sweepForwardSLIDED.correctedPos().distance(forwardPos) > 0.01f) {
+                forwardPos = sweepForwardSLIDED.correctedPos();
+            }
         }
 
         SweepResult sweepDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.getGroundCheckShape(), forwardPos, new Vector3f(0.0f, -height, 0.0f), new Vector3i(0, 1, 0));
@@ -246,6 +302,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 return landedPos;
             }
         }
+*/
 
         return null;
     }
@@ -317,6 +374,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         this.jumpCooldownR -= 1;
+        this.isOnGroundPrevTick = this.isOnGround;
         this.isOnGround = this.checkIfOnGround(this.getGhostBody(), this.getPosition());
 
         final float walkSpeed = this.getWalkSpeed();
@@ -431,7 +489,8 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     }
 
     private void moveWithCollision(float waterJumpFactor, Vector3f motion) {
-        if (this.isOnGround()) {
+        final boolean checkStep = this.isOnGround();
+        if (this.isOnGroundPrevTick || checkStep) {
             Vector3f tryStepUp = this.tryStepUp(this.getPosition(), motion, this.getStepHeight());
             if (tryStepUp != null) {
                 this.setPosition(new Vector3f(tryStepUp.x, tryStepUp.y + 0.01f, tryStepUp.z));
@@ -440,7 +499,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         if (this.moveTestXYZ(motion) && !this.isInWater()) {
-            if (Math.abs(motion.y) <= 0.01f) {
+            if (checkStep && Math.abs(motion.y) <= 0.01f) {
                 Vector3f tryStepDown = this.tryStepDown(this.getPosition(), this.getStepHeight());
                 if (tryStepDown != null) {
                     this.setPosition(new Vector3f(tryStepDown.x, tryStepDown.y + 0.01f, tryStepDown.z));

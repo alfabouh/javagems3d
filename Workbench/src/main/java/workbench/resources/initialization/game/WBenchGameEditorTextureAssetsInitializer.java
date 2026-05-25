@@ -19,12 +19,12 @@ public class WBenchGameEditorTextureAssetsInitializer implements IAssetsInitiali
     public static ITexture2DProgram hintLEFT;
 
     public void load(SystemResources systemResources) {
-        WBenchGameEditorTextureAssetsInitializer.hintBACK = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/BACK.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
-        WBenchGameEditorTextureAssetsInitializer.hintUP = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/UP.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
-        WBenchGameEditorTextureAssetsInitializer.hintFRONT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/FRONT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
-        WBenchGameEditorTextureAssetsInitializer.hintBOTTOM = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/BOTTOM.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
-        WBenchGameEditorTextureAssetsInitializer.hintRIGHT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/RIGHT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
-        WBenchGameEditorTextureAssetsInitializer.hintLEFT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/LEFT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, true));
+        WBenchGameEditorTextureAssetsInitializer.hintBACK = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/BACK.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
+        WBenchGameEditorTextureAssetsInitializer.hintUP = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/UP.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
+        WBenchGameEditorTextureAssetsInitializer.hintFRONT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/FRONT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
+        WBenchGameEditorTextureAssetsInitializer.hintBOTTOM = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/BOTTOM.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
+        WBenchGameEditorTextureAssetsInitializer.hintRIGHT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/RIGHT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
+        WBenchGameEditorTextureAssetsInitializer.hintLEFT = systemResources.createTexture(new JGemsPathSource(new JGemsPath("/assets/wbench/textures/LEFT.png"), ISource.Source.INSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(true, false));
     }
 
     @Override

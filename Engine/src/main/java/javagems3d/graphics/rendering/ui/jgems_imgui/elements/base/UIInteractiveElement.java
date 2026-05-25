@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base;
 
+import javagems3d.help.JGemsHelper;
 import org.joml.Vector2f;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.base.IController;
@@ -48,9 +49,9 @@ public abstract class UIInteractiveElement extends UIElement {
                     this.onClicked(new Vector2f(mouseCoordinates));
                     this.wasClickedButton = true;
                     if (this.interruptMouseAfterClick()) {
-                        JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptLMB();
-                        JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptRMB();
-                        JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptMMB();
+                        ((MouseKeyboardController) this.getController()).getMouseAndKeyboard().forceInterruptLMB();
+                        ((MouseKeyboardController) this.getController()).getMouseAndKeyboard().forceInterruptRMB();
+                        ((MouseKeyboardController) this.getController()).getMouseAndKeyboard().forceInterruptMMB();
                     }
                 }
             } else if (this.wasClickedButton) {

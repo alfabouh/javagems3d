@@ -9,9 +9,10 @@ import api.scripting.JavaToJsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.core.transmitter.ThreadActionsTransmitter;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.mapping.IGameMap;
-import javagems3d.system.external.mapping.JGemsMapping;
+import javagems3d.system.external.mapping.JGemsMapInstance;
 import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.external.mapping.processing.callbacks.IMapActionCallback;
@@ -54,8 +55,8 @@ public final class JGemsCore implements ICore {
     private final EngineState engineState;
     private final RequestsFromThreads requestsFromThreads;
     private Thread systemThread;
-    private JGemsMapping mapping;
-    private JGemsGaming gaming;
+    private JGemsMapInstance mapInstance;
+    private JGemsGameInstance gameInstance;
     private final Set<Exception> exceptionsBuffer;
 
     public JGemsCore() {
@@ -78,13 +79,13 @@ public final class JGemsCore implements ICore {
     }
 
     private void createGamingObject(@NotNull String externalGamePath) {
-        this.gaming = new JGemsGaming();
-        this.gaming.loadExternalGameFiles(JGemsAPI.APIEditorResources().getEditorResourcesManager(), new JGemsPath(externalGamePath));
+        this.gameInstance = new JGemsGameInstance();
+        this.gameInstance.loadExternalGameFiles(JGemsAPI.APIEditorResources().getEditorResourcesManager(), new JGemsPath(externalGamePath));
         JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
     }
 
     private void createMappingObject() {
-        this.mapping = new JGemsMapping(this.getScreen().getScene().getSceneRenderer(), (SceneWorld) this.getScreen().getSceneWorld(), this.getPhysics().getPhysicsWorld(), this.getResourceManager());
+        this.mapInstance = new JGemsMapInstance(this.getScreen().getScene().getSceneRenderer(), (SceneWorld) this.getScreen().getSceneWorld(), this.getPhysics().getPhysicsWorld(), this.getResourceManager());
     }
 
     public void update() {
@@ -101,14 +102,14 @@ public final class JGemsCore implements ICore {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        if (this.getMapping() == null || !this.getMapping().isMapValid()) {
+        if (this.getMapInstance() == null || !this.getMapInstance().isMapValid()) {
             return;
         }
 
         this.pauseGame();
         this.getScreen().showGameLoadingScreen("Exiting world...");
 
-        this.getMapping().destroyMap((IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
+        this.getMapInstance().destroyMap((IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
 
         this.getSoundManager().stopAllSounds();
         this.getResourceManager().destroyResourcesDataCache();
@@ -128,21 +129,21 @@ public final class JGemsCore implements ICore {
     }
 
     public JGemsPath getMapPath(String relativePath) {
-        return this.gaming != null ? this.gaming.getMaps().get(relativePath) : new JGemsPath(relativePath);
+        return this.gameInstance != null ? this.gameInstance.getMaps().get(relativePath) : new JGemsPath(relativePath);
     }
 
     public void loadMap(@NotNull IMapProcessor mapProcessor) {
         if (!this.engineState().isEngineIsReady()) {
             throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
         }
-        if (this.getMapping().isMapValid()) {
+        if (this.getMapInstance().isMapValid()) {
             this.exitMap();
         } else {
             this.getSoundManager().stopAllSounds();
         }
         JGemsHelper.screen().getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
-
-        this.getMapping().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
+        ThreadActionsTransmitter.INSTANCE.clear();
+        this.getMapInstance().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
         JGems3D.GC();
         JGemsHelper.controller().setCursorInCenter();
 
@@ -203,7 +204,7 @@ public final class JGemsCore implements ICore {
                 JGemsAPI.APIAppData().preInit(this);
                 this.getLocalization().readLanguageMap(LocalizationManager.ENGLISH, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.LANG, "english.lang"), ISource.Source.INSIDE_JAR));
                 if (externalGamePath != null) {
-                    JGemsAPI.getAPIScriptingCore().initGame(JGemsGaming.getScriptsFolder(new JGemsPath(externalGamePath)));
+                    JGemsAPI.getAPIScriptingCore().initGame(JGemsGameInstance.getScriptsFolder(new JGemsPath(externalGamePath)));
                     JSScriptGlobalData.setAbsoluteSystemPath(new JGemsPath(externalGamePath));
                 }
                 {
@@ -239,6 +240,7 @@ public final class JGemsCore implements ICore {
                 try {
                     JGems3D.freeSync();
                     this.exitMap();
+                    ThreadActionsTransmitter.INSTANCE.clear();
                     JavaToJsAPI.ScriptEnd(JavaToJsAPI.Target.Game);
                     if (!this.getPhysics().waitForFullTermination()) {
                         Log.get().error("Waited for physics termination too long...");
@@ -274,55 +276,65 @@ public final class JGemsCore implements ICore {
     }
 
     public boolean isCurrentGameMapPlayerValid() {
-        return this.getMapping().isPlayerValid();
+        return this.getMapInstance().isPlayerValid();
     }
 
     public boolean isCurrentGameMapValid() {
-        return this.getMapping().isMapValid();
+        return this.getMapInstance().isMapValid();
     }
 
     public IPlayer getCurrentGameMapPlayer() {
-        return this.getMapping().getCurrentPlayer();
+        return this.getMapInstance().getCurrentPlayer();
     }
 
     public IGameMap getCurrentGameMap() {
-        return this.getMapping().getCurrentLoadedMap();
+        return this.getMapInstance().getCurrentLoadedMap();
     }
 
-    private JGemsMapping getMapping() {
-        return this.mapping;
+    private JGemsMapInstance getMapInstance() {
+        synchronized (this) {
+            return this.mapInstance;
+        }
     }
 
-    public JGemsGaming getGaming() {
-        return this.gaming;
+    public JGemsGameInstance getGameInstance() {
+        synchronized (this) {
+            return this.gameInstance;
+        }
     }
 
     private Set<Exception> getExceptionsBuffer() {
         return this.exceptionsBuffer;
     }
 
-    public JGemsSoundManager getSoundManager() {
-        return this.jGemsSoundManager;
-    }
-
     public JGemsScreen getScreen() {
-        return this.jGemsScreen;
+        synchronized (this.jGemsScreen) {
+            return this.jGemsScreen;
+        }
     }
 
     public JGemsPhysics getPhysics() {
-        return this.jGemsPhysics;
+        synchronized (this.jGemsPhysics) {
+            return this.jGemsPhysics;
+        }
+    }
+
+    public JGemsSoundManager getSoundManager() {
+        synchronized (this.jGemsSoundManager) {
+            return this.jGemsSoundManager;
+        }
     }
 
     public JGemsResourceManager getResourceManager() {
-        return this.resourceManager;
+        synchronized (this.resourceManager) {
+            return this.resourceManager;
+        }
     }
 
     public JGemsLocalisation getLocalization() {
-        return this.localisation;
-    }
-
-    public Thread getSystemThread() {
-        return this.systemThread;
+        synchronized (this.localisation) {
+            return this.localisation;
+        }
     }
 
     public static void printSystemInfo() {
@@ -386,7 +398,9 @@ public final class JGemsCore implements ICore {
 
     @Override
     public EngineState engineState() {
-        return this.engineState;
+        synchronized (this) {
+            return this.engineState;
+        }
     }
 
     private void createGraphics() {
@@ -445,7 +459,7 @@ public final class JGemsCore implements ICore {
         }
 
         public boolean isPaused() {
-            return !JGemsCore.this.getMapping().isMapValid() || this.paused;
+            return !JGemsCore.this.getMapInstance().isMapValid() || this.paused;
         }
     }
 }

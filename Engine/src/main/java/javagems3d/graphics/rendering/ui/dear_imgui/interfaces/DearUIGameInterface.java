@@ -141,15 +141,18 @@ public class DearUIGameInterface implements DearUIInterface {
                 JGemsConfig.SYSTEM.USE_SSAO = !JGemsConfig.SYSTEM.USE_SSAO;
             }
             if (ImGui.treeNode("SSAO Settings")) {
-                float[] radius = new float[]{JGemsConfig.SYSTEM.SSAO_RADIUS};
+                float[] radius = new float[]{sceneWorld.getEnvironment().getLightScene().getSsaoRadius()};
                 ImGui.sliderFloat("radius", radius, 0.0f, 5.0f);
+                sceneWorld.getEnvironment().getLightScene().setSsaoRadius(radius[0]);
                 //JGemsConfig.SYSTEM.SSAO_RADIUS = radius[0];
-                float[] bias = new float[]{JGemsConfig.SYSTEM.SSAO_BIAS};
+                float[] bias = new float[]{sceneWorld.getEnvironment().getLightScene().getSsaoBias()};
                 ImGui.sliderFloat("bias", bias, 0.0f, 0.1f);
                 //JGemsConfig.SYSTEM.SSAO_BIAS = bias[0];
-                float[] range = new float[]{JGemsConfig.SYSTEM.SSAO_RANGE};
+                sceneWorld.getEnvironment().getLightScene().setSsaoBias(bias[0]);
+                float[] range = new float[]{sceneWorld.getEnvironment().getLightScene().getSsaoRange()};
                 ImGui.sliderFloat("range", range, 1.0f, 10.0f);
                 //JGemsConfig.SYSTEM.SSAO_RANGE = range[0];
+                sceneWorld.getEnvironment().getLightScene().setSsaoRange(range[0]);
                 ImGui.treePop();
             }
 

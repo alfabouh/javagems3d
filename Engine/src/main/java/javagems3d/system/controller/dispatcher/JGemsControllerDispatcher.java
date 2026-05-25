@@ -14,7 +14,7 @@ import javagems3d.system.controller.base.IController;
 import javagems3d.system.controller.base.MouseKeyboardController;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
-    public static MouseKeyboardController mouseKeyboardController = null;
+    private static MouseKeyboardController mouseKeyboardController = null;
     private IController currentController;
     private IControllable currentControlledItem;
     private boolean lockController;

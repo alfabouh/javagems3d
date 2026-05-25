@@ -56,10 +56,10 @@ public final class DefaultBindings extends BindingManager {
                 if (JGems3D.get().isCurrentGameMapValid()) {
                     if (JGems3D.get().isPaused()) {
                         if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
-                            JGemsControllerDispatcher.mouseKeyboardController.setCursorInCenter();
-                            JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptLMB();
-                            JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptRMB();
-                            JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptMMB();
+                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).setCursorInCenter();
+                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptLMB();
+                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptRMB();
+                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptMMB();
                         }
                         JGemsHelper.state().resumeGame();
                         JGems3D.get().getScreen().getWindow().setFocus(true);

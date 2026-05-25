@@ -11,7 +11,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -231,7 +231,7 @@ public class ScriptEditorDrawerG {
 
     public void save() {
         if (this.canBeSaved()) {
-            this.scriptPreviewObject.getAsset().save(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), this.textEditor.getText());
+            this.scriptPreviewObject.getAsset().save(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), this.textEditor.getText());
             this.initText = this.textEditor.getText();
         }
     }

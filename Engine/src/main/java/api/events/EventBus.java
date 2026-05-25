@@ -36,6 +36,7 @@ import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.controller.base.IController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.IControllerDispatcher;
 import javagems3d.system.external.mapping.IGameMap;
@@ -158,6 +159,62 @@ public abstract class EventBus {
             return this.bindingManager;
         }
     }
+
+    /*
+    public static final class KeyboardActionEvent implements IEvent {
+        private final MouseKeyboardController mouseKeyboardController;
+        private final int keyCode;
+
+        public KeyboardActionEvent(MouseKeyboardController mouseKeyboardController, int keyCode) {
+            this.mouseKeyboardController = mouseKeyboardController;
+            this.keyCode = keyCode;
+        }
+
+        public MouseKeyboardController getMouseKeyboardController() {
+            return this.mouseKeyboardController;
+        }
+
+        public int getKeyCode() {
+            return this.keyCode;
+        }
+    }
+
+    public static final class MouseScrollActionEvent implements IEvent {
+        private final MouseKeyboardController mouseKeyboardController;
+        private final int vector;
+
+        public MouseScrollActionEvent(MouseKeyboardController mouseKeyboardController, int vector) {
+            this.mouseKeyboardController = mouseKeyboardController;
+            this.vector = vector;
+        }
+
+        public MouseKeyboardController getMouseKeyboardController() {
+            return this.mouseKeyboardController;
+        }
+
+        public int getVector() {
+            return this.vector;
+        }
+    }
+
+    public static final class MouseClickActionEvent implements IEvent {
+        private final MouseKeyboardController mouseKeyboardController;
+        private final int mouseKey;
+
+        public MouseClickActionEvent(MouseKeyboardController mouseKeyboardController, int mouseKey) {
+            this.mouseKeyboardController = mouseKeyboardController;
+            this.mouseKey = mouseKey;
+        }
+
+        public MouseKeyboardController getMouseKeyboardController() {
+            return this.mouseKeyboardController;
+        }
+
+        public int getMouseKey() {
+            return this.mouseKey;
+        }
+    }
+*/
 
     public static final class RenderIMGUIEvent implements IEvent {
         private final DearUIInterface dearUIInterface;

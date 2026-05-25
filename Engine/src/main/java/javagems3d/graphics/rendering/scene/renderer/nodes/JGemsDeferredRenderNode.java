@@ -24,9 +24,14 @@ public class JGemsDeferredRenderNode extends DeferredRenderNode {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking) {
+    protected void createProcessorInstances() {
+        super.createProcessorInstances();
         this.getSSAORenderProcessor().setEnabled(JGems3D.get().getGameSettings().ssao.getValue() != 0);
         this.getSSAORenderProcessor().setQuality(JGems3D.get().getGameSettings().ssao.getValue());
+    }
+
+    @Override
+    public void onRender(FrameTicking frameTicking) {
         this.getSSAORenderProcessor().setSsaoBias(this.getWorld().getEnvironment().getLightScene().getSsaoBias());
         this.getSSAORenderProcessor().setSsaoRange(this.getWorld().getEnvironment().getLightScene().getSsaoRange());
         this.getSSAORenderProcessor().setSsaoRadius(this.getWorld().getEnvironment().getLightScene().getSsaoRadius());

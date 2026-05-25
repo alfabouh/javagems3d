@@ -34,7 +34,6 @@ import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.decals.DecalMaterial;
 import javagems3d.graphics.environment.decals.DecalTextureProperties;
 import javagems3d.graphics.environment.decals.fx.DecalFX;
-import javagems3d.graphics.environment.decals.fx.WorldDefaultDecalFX;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
@@ -53,20 +52,18 @@ import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
-import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.MapProjectData;
 import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.processing.base.MapProcessor;
-import javagems3d.system.external.mapping.tags.Tag;
 import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.physics.colliders.MeshCollider;
@@ -102,7 +99,6 @@ import org.lwjgl.openal.AL10;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Math;
-import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -139,7 +135,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
-            JGemsAPI.getAPIScriptingCore().initMap(JGemsGaming.getScriptsFolder(pathToJG3DFile.getPath().getAbsolutePathDirectory()));
+            JGemsAPI.getAPIScriptingCore().initMap(JGemsGameInstance.getScriptsFolder(pathToJG3DFile.getPath().getAbsolutePathDirectory()));
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
@@ -284,12 +280,12 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             if (tag_volume != null && tag_pitch != null && tag_distance != null && tag_path != null) {
                try {
                    if (tag_distance.getValue() < 0.0f) {
-                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
+                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGameInstance.getSoundsFolder(JGems3D.get().getCore().getGameInstance().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_STEREO16);
                        if (soundBuffer != null) {
                            JGems3D.get().getSoundManager().playLocalSound(soundBuffer, SoundType.BACKGROUND_LOOP_SOUND, tag_pitch.getValue(), tag_volume.getValue());
                        }
                    } else {
-                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGaming.getSoundsFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
+                       final SoundBuffer soundBuffer = this.getLocalResources().createSoundBuffer(new JGemsPathSource(new JGemsPath(JGemsGameInstance.getSoundsFolder(JGems3D.get().getCore().getGameInstance().getPathToGameFolder()), tag_path.getValue()), ISource.Source.OUTSIDE_JAR), AL10.AL_FORMAT_MONO16);
                        if (soundBuffer != null) {
                            JGems3D.get().getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, tag_pitch.getValue(), tag_volume.getValue(), 1.0f, tag_distance.getValue(), template.getPosition());
                        }
@@ -371,7 +367,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             boolean fadeOut = !tags.hasTag(TagID.DEFAULT.PARTICLE_FADE_OUT) || tags.getTag(TagID.DEFAULT.PARTICLE_FADE_OUT).<TagCheckBoolean>getTagItemUnsafeCast().isFlag();
 
             ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(
-                    new JGemsPathSource(new JGemsPath(JGemsGaming.getTexturesFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR),
+                    new JGemsPathSource(new JGemsPath(JGemsGameInstance.getTexturesFolder(JGems3D.get().getCore().getGameInstance().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR),
                     ResourceManager.DEFAULT_TEXTURE(),
                     new ImageTexture.Properties(false, true, false, false, false)
             );
@@ -430,7 +426,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             float emissiveFactor = tags.hasTag(TagID.DEFAULT.EMISSIVE_FACTOR) ? tags.getTag(TagID.DEFAULT.EMISSIVE_FACTOR).<TagFloat>getTagItemUnsafeCast().getValue() : 0.0f;
             int layerID = tags.hasTag(TagID.DEFAULT.DECAL_LAYER_ID) ? tags.getTag(TagID.DEFAULT.DECAL_LAYER_ID).<TagInt>getTagItemUnsafeCast().getValue() : 0;
             TagObjectsList attachedObject = tags.hasTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED) ? tags.getTag(TagID.DEFAULT.OBJECT_LIST_ATTACHED).getTagItemUnsafeCast() : new TagObjectsList();
-            ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(new JGemsPathSource(new JGemsPath(JGemsGaming.getTexturesFolder(JGems3D.get().getCore().getGaming().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, true, false, false, false));
+            ITexture2DProgram texture2DProgram = this.getLocalResources().createTexture(new JGemsPathSource(new JGemsPath(JGemsGameInstance.getTexturesFolder(JGems3D.get().getCore().getGameInstance().getPathToGameFolder()), texturePath), ISource.Source.OUTSIDE_JAR), ResourceManager.DEFAULT_TEXTURE(), new ImageTexture.Properties(false, true, false, false, false));
 
             if (!(texture2DProgram instanceof ImageTexture imageTexture)) {
                 texture2DProgram = JGemsResourceManager.globalTextureAssets.defaultParticle;

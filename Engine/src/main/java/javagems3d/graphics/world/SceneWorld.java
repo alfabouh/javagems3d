@@ -18,9 +18,9 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.objects.IObjectWithLights;
-import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.core.transmitter.ThreadActionsTransmitter;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -80,6 +80,11 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
+        ThreadActionsTransmitter.INSTANCE.getActions__PHYSICS_TO_RENDER().forEach(
+                e -> e.action(this)
+        );
+        ThreadActionsTransmitter.INSTANCE.getActions__PHYSICS_TO_RENDER().clear();
+
         EventBus.SceneWorldUpdateEvent pre = new EventBus.SceneWorldUpdateEvent(this, EventBus.Run.PRE, this.ticks);
         EventLauncher.pushEvent(pre, new Pair<>(new JSSceneWorldUpdateEvent(new JSSceneWorld(this), JSEventRun.PRE, this.ticks), JavaToJsAPI.Target.Game));
         if (pre.isCancelled()) {
@@ -105,7 +110,8 @@ public final class SceneWorld implements IRenderWorld {
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         this.getEnvironment().getParticlesScene().getParticlesManager().clear();
         this.getEnvironment().getDecalsScene().clear();
-        ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
+        ((JGemsEnvironment) this.getEnvironment()).clearLightsBuffer();
+        ((JGemsEnvironment) this.getEnvironment()).clearLightsBuffer();
         this.clearAll();
     }
 

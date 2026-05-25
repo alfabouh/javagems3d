@@ -54,7 +54,7 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-    public float getScalarSpeed() {
+    public synchronized float getScalarSpeed() {
         return this.scalarSpeed;
     }
 

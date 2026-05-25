@@ -759,7 +759,9 @@ public final class JGemsHelper {
             //EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent(JGems3D.get().getResourceManager()));
             JGems3D.get().getScreen().showGameLoadingScreen("System01");
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
-            JGems3D.get().getScreen().refreshSceneResources();
+            if (JGemsHelper.map().isCurrentGameMapValid()) {
+                JGems3D.get().getScreen().refreshSceneResources();
+            }
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();
         }

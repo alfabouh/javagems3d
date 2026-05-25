@@ -16,21 +16,20 @@ import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class JGemsMapping {
+public final class JGemsMapInstance {
     private final JGemsResourceManager jGemsResourceManager;
     private final SceneWorld sceneWorld;
     private final PhysicsWorld physicsWorld;
     private final OpenGLRenderer openGLRenderer;
     private IGameMap currentLoadedMap;
 
-    public JGemsMapping(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld, PhysicsWorld physicsWorld, JGemsResourceManager jGemsResourceManager) {
+    public JGemsMapInstance(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld, PhysicsWorld physicsWorld, JGemsResourceManager jGemsResourceManager) {
         this.openGLRenderer = openGLRenderer;
         this.jGemsResourceManager = jGemsResourceManager;
         this.sceneWorld = sceneWorld;
@@ -110,7 +109,7 @@ public final class JGemsMapping {
             if (pair != null) {
                 player = pair.first();
                 JGemsHelper.world().addWorldItem((WorldItem) player, pair.second() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.second());
-                JGemsHelper.controller().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
+                JGemsHelper.controller().attachControllerTo(JGemsHelper.controller().getControllerDispatcher().getCurrentController(), player);
                 JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
                 flag = true;
             }
@@ -125,6 +124,7 @@ public final class JGemsMapping {
 
         this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
         this.getResourceManager().writeResourcesDataCache();
+        JGems3D.get().getScreen().refreshSceneResources();
         this.currentLoadedMap = new GameMap(player, processor.getMapName(), processor.getMapInformation());
         for (IMapActionCallback mapActionCallback : callbacks) {
             mapActionCallback.onLoaded(processor, this.getCurrentLoadedMap(), this.getResourceManager());

@@ -3,9 +3,8 @@ package workbench.project.managing;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.misc.*;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL10;
 import workbench.WBench;
-import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import workbench.project.managing.instances.WBenchResourceMapAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
@@ -87,7 +85,7 @@ public class WBenchProjectResourcesManager {
     public static void openSoundsFolder(JGemsPath pathToGameFolder) {
         SwingUtilities.invokeLater(() -> {
             try {
-                Desktop.getDesktop().open(JGemsGaming.getSoundsFolder(pathToGameFolder).toFile());
+                Desktop.getDesktop().open(JGemsGameInstance.getSoundsFolder(pathToGameFolder).toFile());
             } catch (Exception e) {
                 Log.get().exception(e);
             }
@@ -97,7 +95,7 @@ public class WBenchProjectResourcesManager {
     public static void openTexturesFolder(JGemsPath pathToGameFolder) {
         SwingUtilities.invokeLater(() -> {
             try {
-                Desktop.getDesktop().open(JGemsGaming.getTexturesFolder(pathToGameFolder).toFile());
+                Desktop.getDesktop().open(JGemsGameInstance.getTexturesFolder(pathToGameFolder).toFile());
             } catch (Exception e) {
                 Log.get().exception(e);
             }
@@ -107,7 +105,7 @@ public class WBenchProjectResourcesManager {
     public static void openModelsFolder(JGemsPath pathToGameFolder) {
         SwingUtilities.invokeLater(() -> {
             try {
-                Desktop.getDesktop().open(JGemsGaming.getModelsFolder(pathToGameFolder).toFile());
+                Desktop.getDesktop().open(JGemsGameInstance.getModelsFolder(pathToGameFolder).toFile());
             } catch (Exception e) {
                 Log.get().exception(e);
             }
@@ -117,7 +115,7 @@ public class WBenchProjectResourcesManager {
     public static void openMapsFolder(JGemsPath pathToGameFolder) {
         SwingUtilities.invokeLater(() -> {
             try {
-                Desktop.getDesktop().open(JGemsGaming.getMapsFolder(pathToGameFolder).toFile());
+                Desktop.getDesktop().open(JGemsGameInstance.getMapsFolder(pathToGameFolder).toFile());
             } catch (Exception e) {
                 Log.get().exception(e);
             }
@@ -127,7 +125,7 @@ public class WBenchProjectResourcesManager {
     public static void openScriptsFolder(JGemsPath pathToGameFolder) {
         SwingUtilities.invokeLater(() -> {
             try {
-                Desktop.getDesktop().open(JGemsGaming.getScriptsFolder(pathToGameFolder).toFile());
+                Desktop.getDesktop().open(JGemsGameInstance.getScriptsFolder(pathToGameFolder).toFile());
             } catch (Exception e) {
                 Log.get().exception(e);
             }
@@ -135,11 +133,11 @@ public class WBenchProjectResourcesManager {
     }
 
     public File[] createSystemFolders(File file) {
-        File dir1 = new File(file, JGemsGaming.SYS_ASSETS_FOLDER);
-        File dir2 = new File(file, JGemsGaming.SYS_MAPS_FOLDER);
-        File dir3 = new File(file, JGemsGaming.SYS_SCRIPTS_FOLDER);
+        File dir1 = new File(file, JGemsGameInstance.SYS_ASSETS_FOLDER);
+        File dir2 = new File(file, JGemsGameInstance.SYS_MAPS_FOLDER);
+        File dir3 = new File(file, JGemsGameInstance.SYS_SCRIPTS_FOLDER);
         {
-            for (String s : new String[]{JGemsGaming.MODEL_ASSETS_FOLDER, JGemsGaming.TEXTURE_ASSETS_FOLDER, JGemsGaming.OBJECT_ASSETS_FOLDER, JGemsGaming.SOUND_ASSETS_FOLDER}) {
+            for (String s : new String[]{JGemsGameInstance.MODEL_ASSETS_FOLDER, JGemsGameInstance.TEXTURE_ASSETS_FOLDER, JGemsGameInstance.OBJECT_ASSETS_FOLDER, JGemsGameInstance.SOUND_ASSETS_FOLDER}) {
                 File inFile = new File(dir1, s);
                 if (!inFile.exists()) {
                     if (inFile.mkdirs()) {
@@ -168,34 +166,34 @@ public class WBenchProjectResourcesManager {
     public void refreshSounds(JGemsPath pathToGameFolder) {
         {
             this.soundKeysCache.values().forEach(e -> {
-                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getSoundsFolder(pathToGameFolder), e.relativePath()));
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGameInstance.getSoundsFolder(pathToGameFolder), e.relativePath()));
             });
             this.soundKeysCache.clear();
         }
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.soundAssetsFolder = this.readSoundsFolder(JGemsGaming.getSoundsFolder(pathToGameFolder));
+        this.soundAssetsFolder = this.readSoundsFolder(JGemsGameInstance.getSoundsFolder(pathToGameFolder));
     }
 
     public void refreshTextures(JGemsPath pathToGameFolder) {
         {
             this.texturesKeysCache.values().forEach(e -> {
-                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getTexturesFolder(pathToGameFolder), e.relativePath()));
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGameInstance.getTexturesFolder(pathToGameFolder), e.relativePath()));
             });
             this.texturesKeysCache.clear();
         }
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.textureAssetsFolder = this.readTexturesFolder(JGemsGaming.getTexturesFolder(pathToGameFolder));
+        this.textureAssetsFolder = this.readTexturesFolder(JGemsGameInstance.getTexturesFolder(pathToGameFolder));
     }
 
     public void refreshModels(JGemsPath pathToGameFolder) {
         {
             this.modelsKeysCache.values().forEach(e -> {
-                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGaming.getModelsFolder(pathToGameFolder), e.relativePath() + MeshGroup.POSTFIX));
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGameInstance.getModelsFolder(pathToGameFolder), e.relativePath() + MeshGroup.POSTFIX));
             });
             this.modelsKeysCache.clear();
         }
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.modelAssetsFolder = this.readModelsFolder(JGemsGaming.getModelsFolder(pathToGameFolder));
+        this.modelAssetsFolder = this.readModelsFolder(JGemsGameInstance.getModelsFolder(pathToGameFolder));
 
         {
             VirtualObjectsFolder<GameResourceModelAsset> defaultModels = new VirtualObjectsFolder<>("defaults");
@@ -214,36 +212,36 @@ public class WBenchProjectResourcesManager {
 
     public void refreshMaps(JGemsPath pathToGameFolder) {
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.mapAssetsFolder = this.readMapsFolder(JGemsGaming.getMapsFolder(pathToGameFolder));
+        this.mapAssetsFolder = this.readMapsFolder(JGemsGameInstance.getMapsFolder(pathToGameFolder));
     }
 
     public void refreshScripts(JGemsPath pathToGameFolder) {
         this.createSystemFolders(pathToGameFolder.toFile());
-        this.scriptAssetsFolder = this.readScriptsFolder(JGemsGaming.getScriptsFolder(pathToGameFolder));
+        this.scriptAssetsFolder = this.readScriptsFolder(JGemsGameInstance.getScriptsFolder(pathToGameFolder));
     }
 
     public void saveCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
         if (assetsTarget.equals(AssetsTarget.SKYBOXES) || assetsTarget.equals(AssetsTarget.ALL)) {
-            JSONFileManaging.createSerializationRules().writeToFile(this.getSkyBoxesAssetsFolder(), new JGemsPath(JGemsGaming.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), null);
+            JSONFileManaging.createSerializationRules().writeToFile(this.getSkyBoxesAssetsFolder(), new JGemsPath(JGemsGameInstance.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), null);
         }
         if (assetsTarget.equals(AssetsTarget.PROPS) || assetsTarget.equals(AssetsTarget.ALL)) {
-            TagsContainer.createJSONFileManaging().writeToFile(this.getPropAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_props.json").toFile(), null);
+            TagsContainer.createJSONFileManaging().writeToFile(this.getPropAssetsFolder(), new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_props.json").toFile(), null);
         }
         if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
-            TagsContainer.createJSONFileManaging().writeToFile(this.getEntityAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_entities.json").toFile(), null);
+            TagsContainer.createJSONFileManaging().writeToFile(this.getEntityAssetsFolder(), new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_entities.json").toFile(), null);
         }
         if (assetsTarget.equals(AssetsTarget.MARKERS) || assetsTarget.equals(AssetsTarget.ALL)) {
-            TagsContainer.createJSONFileManaging().writeToFile(this.getMarkerAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_markers.json").toFile(), null);
+            TagsContainer.createJSONFileManaging().writeToFile(this.getMarkerAssetsFolder(), new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_markers.json").toFile(), null);
         }
         if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
-            TagsContainer.createJSONFileManaging().writeToFile(this.getTagAssetsFolder(), new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_tags.json").toFile(), null);
+            TagsContainer.createJSONFileManaging().writeToFile(this.getTagAssetsFolder(), new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_tags.json").toFile(), null);
         }
     }
 
     public void readCreatableResourceObjects(@NotNull AssetsTarget assetsTarget, JGemsPath folder) {
         if (assetsTarget.equals(AssetsTarget.PROPS) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<>() {
+                this.propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_props.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.propAssetsFolder.buildRelations();
             } catch (Exception e) {
@@ -254,7 +252,7 @@ public class WBenchProjectResourcesManager {
         }
         if (assetsTarget.equals(AssetsTarget.ENTITIES) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_entities.json").toFile(), new TypeToken<>() {
+                this.entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_entities.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.entityAssetsFolder.buildRelations();
             } catch (Exception e) {
@@ -265,7 +263,7 @@ public class WBenchProjectResourcesManager {
         }
         if (assetsTarget.equals(AssetsTarget.MARKERS) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.markerAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_markers.json").toFile(), new TypeToken<>() {
+                this.markerAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_markers.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.markerAssetsFolder.buildRelations();
             } catch (Exception e) {
@@ -276,7 +274,7 @@ public class WBenchProjectResourcesManager {
         }
         if (assetsTarget.equals(AssetsTarget.TAGS) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.tagAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<>() {
+                this.tagAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(folder), "_tags.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.tagAssetsFolder.buildRelations();
             } catch (Exception e) {
@@ -287,7 +285,7 @@ public class WBenchProjectResourcesManager {
         }
         if (assetsTarget.equals(AssetsTarget.SKYBOXES) || assetsTarget.equals(AssetsTarget.ALL)) {
             try {
-                this.skyBoxesAssetsFolder = JSONFileManaging.createSerializationRules().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), new TypeToken<>() {
+                this.skyBoxesAssetsFolder = JSONFileManaging.createSerializationRules().readFromFile(new JGemsPath(JGemsGameInstance.getEnvironmentFolder(folder), "_skyBoxes.json").toFile(), new TypeToken<>() {
                 }, null);
                 this.skyBoxesAssetsFolder.buildRelations();
             } catch (Exception e) {

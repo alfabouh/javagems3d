@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
 import javagems3d.graphics.environment.skybox.ISkyBox;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -9,6 +10,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
@@ -51,6 +53,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
             return;
         }
         skyShaderManager.beginShading();
+        boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         GL46.glDisable(GL46.GL_CULL_FACE);
         GL46.glDepthFunc(GL46.GL_LEQUAL);
         skyShaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
@@ -72,7 +75,9 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         JGemsHelper.render().renderMeshList3D(JGemsResourceManager.DEFAULT_CUBE_MESHGROUP().getNodes(0), GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);
-        GL46.glEnable(GL46.GL_CULL_FACE);
+        if (oldV) {
+            GL46.glEnable(GL46.GL_CULL_FACE);
+        }
     }
 
     public void setBackgroundTexture(ITexture2DProgram backgroundTexture) {

@@ -1,7 +1,7 @@
 package workbench.project.map;
 
 import javagems3d.JGems3D;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.misc.GameResourceScriptAsset;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.external.mapping.data.MapProjectData;
@@ -18,7 +18,7 @@ public class WBenchMapProject extends MapProjectData {
     }
 
     public JGemsPath getPathToScripts() {
-        return JGemsGaming.getScriptsFolder(this.getMapAbsolutePath());
+        return JGemsGameInstance.getScriptsFolder(this.getMapAbsolutePath());
     }
 
     public void refreshScriptFiles() {

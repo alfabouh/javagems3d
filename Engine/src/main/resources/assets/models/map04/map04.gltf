@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v5.1.19",
+		"generator":"Khronos glTF Blender I/O v5.1.20",
 		"version":"2.0"
 	},
 	"extensionsUsed":[
@@ -142,7 +142,8 @@
 				128,
 				129,
 				130,
-				131
+				131,
+				132
 			]
 		}
 	],
@@ -1659,7 +1660,7 @@
 			"scale":[
 				1,
 				1,
-				4.9476776123046875
+				4.947677135467529
 			],
 			"translation":[
 				26.097034454345703,
@@ -1739,22 +1740,42 @@
 		},
 		{
 			"mesh":131,
-			"name":"Plane.001",
+			"name":"Cube.001",
 			"rotation":[
 				0,
 				0,
-				-0.4924235939979553,
-				0.8703556656837463
+				0.1993679255247116,
+				0.9799246788024902
 			],
 			"scale":[
-				18.469999313354492,
-				8.129999160766602,
-				21.6299991607666
+				1,
+				11.210000991821289,
+				6.940000057220459
 			],
 			"translation":[
-				68.55999755859375,
-				0.7299999594688416,
-				-1.5299999713897705
+				62.07999801635742,
+				7.769999980926514,
+				-0.12999999523162842
+			]
+		},
+		{
+			"mesh":132,
+			"name":"Cube.113",
+			"rotation":[
+				0,
+				0,
+				0.1993679404258728,
+				0.9799246788024902
+			],
+			"scale":[
+				11.079999923706055,
+				11.359999656677246,
+				1.080000400543213
+			],
+			"translation":[
+				33.099998474121094,
+				7.769999980926514,
+				-0.12999999523162842
 			]
 		}
 	],
@@ -2464,6 +2485,19 @@
 		},
 		{
 			"doubleSided":true,
+			"name":"Material.003",
+			"pbrMetallicRoughness":{
+				"baseColorFactor":[
+					0,
+					0.6987143754959106,
+					0.8000229597091675,
+					1
+				],
+				"roughnessFactor":0
+			}
+		},
+		{
+			"doubleSided":true,
 			"name":"Material.001"
 		},
 		{
@@ -2491,8 +2525,7 @@
 					0,
 					1
 				],
-				"metallicFactor":0.45728641748428345,
-				"roughnessFactor":0.5
+				"metallicFactor":0.31658291816711426
 			}
 		}
 	],
@@ -4298,7 +4331,8 @@
 						"NORMAL":394,
 						"TEXCOORD_0":395
 					},
-					"indices":396
+					"indices":396,
+					"material":47
 				}
 			]
 		},
@@ -4312,7 +4346,7 @@
 						"TEXCOORD_0":399
 					},
 					"indices":400,
-					"material":47
+					"material":48
 				}
 			]
 		},
@@ -4326,12 +4360,12 @@
 						"TEXCOORD_0":403
 					},
 					"indices":15,
-					"material":48
+					"material":49
 				}
 			]
 		},
 		{
-			"name":"Plane.001",
+			"name":"Cube.006",
 			"primitives":[
 				{
 					"attributes":{
@@ -4339,8 +4373,22 @@
 						"NORMAL":405,
 						"TEXCOORD_0":406
 					},
-					"indices":400,
-					"material":49
+					"indices":396,
+					"material":47
+				}
+			]
+		},
+		{
+			"name":"Cube.114",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":407,
+						"NORMAL":408,
+						"TEXCOORD_0":409
+					},
+					"indices":396,
+					"material":50
 				}
 			]
 		}
@@ -8083,15 +8131,15 @@
 		{
 			"bufferView":404,
 			"componentType":5126,
-			"count":4,
+			"count":24,
 			"max":[
 				1,
-				0,
+				1,
 				1
 			],
 			"min":[
 				-1,
-				0,
+				-1,
 				-1
 			],
 			"type":"VEC3"
@@ -8099,13 +8147,41 @@
 		{
 			"bufferView":405,
 			"componentType":5126,
-			"count":4,
+			"count":24,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":406,
 			"componentType":5126,
-			"count":4,
+			"count":24,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":407,
+			"componentType":5126,
+			"count":24,
+			"max":[
+				1,
+				1,
+				1
+			],
+			"min":[
+				-1,
+				-1,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":408,
+			"componentType":5126,
+			"count":24,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":409,
+			"componentType":5126,
+			"count":24,
 			"type":"VEC2"
 		}
 	],
@@ -10536,26 +10612,44 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":48,
+			"byteLength":288,
 			"byteOffset":205956,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":48,
-			"byteOffset":206004,
+			"byteLength":288,
+			"byteOffset":206244,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":32,
-			"byteOffset":206052,
+			"byteLength":192,
+			"byteOffset":206532,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":288,
+			"byteOffset":206724,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":288,
+			"byteOffset":207012,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":192,
+			"byteOffset":207300,
 			"target":34962
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":206084,
+			"byteLength":207492,
 			"uri":"map04.bin"
 		}
 	]

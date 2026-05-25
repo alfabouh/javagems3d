@@ -167,6 +167,24 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
     @Override
     public void createResources() {
         this.initFBOs();
+        this.createProcessorInstances();
+
+        if (this.getSSAORenderProcessor() != null) {
+            this.getSSAORenderProcessor().createResources();
+        }
+        this.getDirectGeometryRenderProcessor().createResources();
+        this.getIndirectGeometryRenderProcessor().createResources();
+        this.getRawColorRenderProcessor().createResources();
+    }
+
+    protected void destroyProcessorInstances() {
+        this.directGeometryRenderProcessor = null;
+        this.indirectGeometryRenderProcessor = null;
+        this.ssaoRenderProcessor = null;
+        this.rawColorRenderProcessor = null;
+    }
+
+    protected void createProcessorInstances() {
         final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
@@ -182,19 +200,15 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         };
 
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
-        if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
-            this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader(), this.getSsaoBlurring());
-        }
-        this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getDeferredDecalsShader(), this.getOutGBuffer(), this.getOutSSAOBuffer(), getDeferredRendererShader());
 
-        if (this.getSSAORenderProcessor() != null) {
-            this.getSSAORenderProcessor().createResources();
+        {
+            this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
+            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
+            if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
+                this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getSsaoShader(), this.getSsaoBlurring());
+            }
+            this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getDeferredDecalsShader(), this.getOutGBuffer(), this.getOutSSAOBuffer(), getDeferredRendererShader());
         }
-        this.getDirectGeometryRenderProcessor().createResources();
-        this.getIndirectGeometryRenderProcessor().createResources();
-        this.getRawColorRenderProcessor().createResources();
     }
 
     public abstract boolean useSsao();
@@ -224,6 +238,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         if (this.getOutColorBuffer() != null) {
             this.getOutColorBuffer().clearFBO();
         }
+        this.destroyProcessorInstances();
     }
 
     public void setIndirectDeferredRenderingObjects(@NotNull Collection<SceneObject> indirectDeferredRenderingObjects) {

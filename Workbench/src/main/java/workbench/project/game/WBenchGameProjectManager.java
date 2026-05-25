@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -26,8 +26,8 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class WBenchGameProjectManager {
-    public static final String MAPS_PATH = JGemsGaming.SYS_MAPS_FOLDER;
-    public static final String TEMP_SETTINGS = "proj_sett" + JGemsGaming.TEMP_FILE;
+    public static final String MAPS_PATH = JGemsGameInstance.SYS_MAPS_FOLDER;
+    public static final String TEMP_SETTINGS = "proj_sett" + JGemsGameInstance.TEMP_FILE;
 
     public GameProjectSettings gameProjectSettings;
     private WBenchGameProject currentGameProject;

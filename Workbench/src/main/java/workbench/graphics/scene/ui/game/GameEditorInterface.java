@@ -2,9 +2,7 @@ package workbench.graphics.scene.ui.game;
 
 import api.system.JGemsAPI;
 import imgui.ImGui;
-import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImBoolean;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
@@ -12,13 +10,11 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
@@ -26,13 +22,10 @@ import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.game.editor.ActionsInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
-import workbench.project.map.WBenchMapProjectManager;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 
@@ -139,7 +132,7 @@ public class GameEditorInterface implements DearUIInterface {
                         this.copyRuntime(f);
                         File gameFiles = new File(f, "game_dir");
                         if (gameFiles.exists() || gameFiles.mkdir()) {
-                            JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles, JGemsGaming.TEMP_FILE);
+                            JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles, JGemsGameInstance.TEMP_FILE);
                         } else {
                             throw new JGemsIOException("Unable to create project folder " + gameFiles.getPath());
                         }

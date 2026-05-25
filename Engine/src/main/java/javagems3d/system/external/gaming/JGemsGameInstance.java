@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class JGemsGaming {
+public class JGemsGameInstance {
     public static String TEMP_FILE = ".temp";
     public static String SYS_SCRIPTS_FOLDER = "game_scripts";
     public static String SYS_ASSETS_FOLDER = "game_assets";
@@ -48,7 +48,7 @@ public class JGemsGaming {
     private final Map<String, JGemsPath> maps;
     private JGemsPath pathToGameFolder;
 
-    public JGemsGaming() {
+    public JGemsGameInstance() {
         this.maps = new HashMap<>();
     }
 
@@ -122,7 +122,7 @@ public class JGemsGaming {
     }
 
     private void readMapFolders(@NotNull JGemsPath absPath) {
-        File mapsFolder = JGemsGaming.getMapsFolder(absPath).toFile();
+        File mapsFolder = JGemsGameInstance.getMapsFolder(absPath).toFile();
         if (!mapsFolder.exists() || !mapsFolder.isDirectory()) {
             return;
         }
@@ -152,28 +152,28 @@ public class JGemsGaming {
     private void loadSkyBoxesInAPI(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull JGemsPath absolutePathToFiles) {
         GameResourceAssetsFolder<GameResourceSkyboxAsset> skyBoxesAsset = null;
         try {
-            skyBoxesAsset = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getEnvironmentFolder(absolutePathToFiles), "_skyBoxes.json").toFile(), new TypeToken<>() {
+            skyBoxesAsset = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getEnvironmentFolder(absolutePathToFiles), "_skyBoxes.json").toFile(), new TypeToken<>() {
             }, null);
             skyBoxesAsset.buildRelations();
         } catch (Exception e) {
             throw new JGemsIOException("Couldn't load file! ", e);
         }
         this.convertSkyBoxes(apiDataManager, skyBoxesAsset, e -> {
-            apiDataManager.addResourceSkyCubeMap(e.first().getHierarchy() + "/" + e.second().name(), new ICubeMapProgram.CMTextures(JGemsGaming.getTexturesFolder(absolutePathToFiles), e.second().getCmTextures()));
+            apiDataManager.addResourceSkyCubeMap(e.first().getHierarchy() + "/" + e.second().name(), new ICubeMapProgram.CMTextures(JGemsGameInstance.getTexturesFolder(absolutePathToFiles), e.second().getCmTextures()));
         });
     }
 
     private void loadEntityAssetsInAPI(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull JGemsPath absolutePathToFiles) {
         GameResourceAssetsFolder<GameResourceEntityObjectAsset> entityAssetsFolder = null;
         try {
-            entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(absolutePathToFiles), "_entities.json").toFile(), new TypeToken<>() {
+            entityAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(absolutePathToFiles), "_entities.json").toFile(), new TypeToken<>() {
             }, null);
             entityAssetsFolder.buildRelations();
         } catch (Exception e) {
             throw new JGemsIOException("Couldn't load file! ", e);
         }
         this.convertWorldObject(apiDataManager, entityAssetsFolder, e -> {
-            apiDataManager.addResourceEntity(e.first().getHierarchy(), e.second().getID(), e.second().getModelAssetRelativePath() == null ? null : new JGemsPathSource(new JGemsPath(JGemsGaming.getModelsFolder(absolutePathToFiles), e.second().getModelAssetRelativePath()), ISource.Source.OUTSIDE_JAR));
+            apiDataManager.addResourceEntity(e.first().getHierarchy(), e.second().getID(), e.second().getModelAssetRelativePath() == null ? null : new JGemsPathSource(new JGemsPath(JGemsGameInstance.getModelsFolder(absolutePathToFiles), e.second().getModelAssetRelativePath()), ISource.Source.OUTSIDE_JAR));
         });
     }
 
@@ -213,14 +213,14 @@ public class JGemsGaming {
     private void loadPropAssetsInAPI(@NotNull IAPIWBenchDataManager apiDataManager, @NotNull JGemsPath absolutePathToFiles) {
         GameResourceAssetsFolder<GameResourcePropObjectAsset> propAssetsFolder = null;
         try {
-            propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGaming.getObjectsFolder(absolutePathToFiles), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>() {
+            propAssetsFolder = TagsContainer.createJSONFileManaging().readFromFile(new JGemsPath(JGemsGameInstance.getObjectsFolder(absolutePathToFiles), "_props.json").toFile(), new TypeToken<GameResourceAssetsFolder<GameResourcePropObjectAsset>>() {
             }, null);
             propAssetsFolder.buildRelations();
         } catch (Exception e) {
             throw new JGemsIOException("Couldn't load file! ", e);
         }
         this.convertWorldObject(apiDataManager, propAssetsFolder, e -> {
-            apiDataManager.addResourceProp(e.first().getHierarchy(), e.second().getID(), e.second().getModelAssetRelativePath() == null ? null : new JGemsPathSource(new JGemsPath(JGemsGaming.getModelsFolder(absolutePathToFiles), e.second().getModelAssetRelativePath()), ISource.Source.OUTSIDE_JAR));
+            apiDataManager.addResourceProp(e.first().getHierarchy(), e.second().getID(), e.second().getModelAssetRelativePath() == null ? null : new JGemsPathSource(new JGemsPath(JGemsGameInstance.getModelsFolder(absolutePathToFiles), e.second().getModelAssetRelativePath()), ISource.Source.OUTSIDE_JAR));
         });
     }
 
@@ -230,7 +230,7 @@ public class JGemsGaming {
 
     @Override
     public String toString() {
-        return "JGemsGaming{" +
+        return "JGemsGameInstance{" +
                 "gameTitle='" + gameTitle + '\'' +
                 ", gameDescription='" + gameDescription + '\'' +
                 ", gameVersion='" + gameVersion + '\'' +

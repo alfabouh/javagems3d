@@ -7,7 +7,7 @@ import com.google.gson.*;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.JGems3D;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.IAsset;
 import javagems3d.system.external.gaming.def.misc.*;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
@@ -247,7 +247,7 @@ public class ResourcesInterfaceComponentG {
                 (e) -> {
                     final String name = e.second().getInputStrings().getFirst().get();
                     final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name, e.first().getHierarchy());
-                    final WBenchResourceMapAsset gameResourceMapAsset = new WBenchResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, JGemsGaming.getPathToMainMapFile(absPath, name), name));
+                    final WBenchResourceMapAsset gameResourceMapAsset = new WBenchResourceMapAsset(WBench.get().getMapProjectManager().createMapProject(absPath, JGemsGameInstance.getPathToMainMapFile(absPath, name), name));
                     final GameResourceAssetsFolder<WBenchResourceMapAsset> newFolder = new GameResourceAssetsFolder<>(name);
                     newFolder.putObjectThere(gameResourceMapAsset);
                     e.first().putFolderThere(newFolder);
@@ -283,21 +283,21 @@ public class ResourcesInterfaceComponentG {
                     final String sampleText = JGemsAPI.getAPIScriptingCore().getGlobalGameContext().getApiCodeEnvironmentController().getEntryPointClass().sampleCode().toString();
                     final String name = e.second().getInputStrings().getFirst().get() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.JS_SCRIPT_FILE;
                     final GameResourceScriptAsset gameResourceScriptAsset = new GameResourceScriptAsset(name, e.first().getHierarchy() + "/" + name, sampleText);
-                    gameResourceScriptAsset.save(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), sampleText);
+                    gameResourceScriptAsset.save(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), sampleText);
                     e.first().putObjectThere(gameResourceScriptAsset);
                     return gameResourceScriptAsset;
                 },
                 ScriptAssetPreview::new
         ).setAfterAssetDeleted((e) -> {
-            final JGemsPath absPath = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.first().getHierarchy());
+            final JGemsPath absPath = new JGemsPath(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.first().getHierarchy());
             if (absPath.toFile().exists()) {
                 absPath.toFile().delete();
             }
         }).setAfterFolderCreated((e) -> {
-            final JGemsPath absPath = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy());
+            final JGemsPath absPath = new JGemsPath(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy());
             absPath.toFile().mkdirs();
         }).setAfterFolderDeleted((e) -> {
-            new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy()).recursiveDelete();
+            new JGemsPath(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), e.getHierarchy()).recursiveDelete();
         }).setOnRefreshButton((e) -> {
             WBench.get().getGameProjectManager().refreshScripts(true);
         }).setOnItemSelection((e) -> {

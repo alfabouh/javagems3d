@@ -11,9 +11,6 @@ import com.jme3.util.BufferUtils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-/**
- * It is a utilitarian class that has functions for managing the state of physical Bullet entities.
- */
 public abstract class DynamicsUtils {
     public static Vector3f lerp(Vector3f a, Vector3f b, float t) {
         return new Vector3f(a).mul(1.0f - t).add(new Vector3f(b).mul(t));

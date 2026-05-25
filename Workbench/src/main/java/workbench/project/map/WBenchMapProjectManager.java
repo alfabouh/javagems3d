@@ -8,20 +8,18 @@ import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
-import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
-import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -45,9 +43,6 @@ import workbench.graphics.scene.ui.asnapshots.WBenchSnapshotsTrace;
 import workbench.graphics.scene.ui.asnapshots.instances.WBenchSnapshotsContainer;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
-import workbench.project.game.WBenchGameProject;
-import workbench.project.game.WBenchGameProjectManager;
-import workbench.project.game.settings.GameProjectSettings;
 import workbench.project.map.settings.MapProjectSettings;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
@@ -55,7 +50,6 @@ import workbench.settings.WBenchSettings;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +58,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class WBenchMapProjectManager {
-    public static final String TEMP_SETTINGS = "map_ed_sett" + JGemsGaming.TEMP_FILE;
+    public static final String TEMP_SETTINGS = "map_ed_sett" + JGemsGameInstance.TEMP_FILE;
     private final MapObjectTemplatesManager mapObjectTemplates;
     private WBenchMapProject currentMapProject;
     private WBenchWorld world;
@@ -455,7 +449,7 @@ public final class WBenchMapProjectManager {
         if (!path.toFile().exists()) {
             path.toFile().mkdirs();
         }
-        File scripts = JGemsGaming.getScriptsFolder(path).toFile();
+        File scripts = JGemsGameInstance.getScriptsFolder(path).toFile();
         if (!scripts.mkdirs()) {
             this.currentMapProject.refreshScriptFiles();
         }

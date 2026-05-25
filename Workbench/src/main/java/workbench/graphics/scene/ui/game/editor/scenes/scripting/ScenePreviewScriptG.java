@@ -2,7 +2,7 @@ package workbench.graphics.scene.ui.game.editor.scenes.scripting;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
-import javagems3d.system.external.gaming.JGemsGaming;
+import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.service.files.JGemsPath;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
@@ -25,7 +25,7 @@ public class ScenePreviewScriptG {
         if (previewScriptG != null && previewScriptG.getAsset() != null) {
             if (ImGui.collapsingHeader("Script: " + previewScriptG.getAsset().name(), ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.beginChild("##script_preview", ImGui.getColumnWidth(), 60, true);
-                final File fileG = new JGemsPath(JGemsGaming.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), previewScriptG.getAsset().relativePath()).toFile();
+                final File fileG = new JGemsPath(JGemsGameInstance.getScriptsFolder(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath()), previewScriptG.getAsset().relativePath()).toFile();
                 final String modifiedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(Instant.ofEpochMilli(fileG.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime());
                 ImGui.indent();
                 ImGui.bulletText(previewScriptG.getAsset().name());

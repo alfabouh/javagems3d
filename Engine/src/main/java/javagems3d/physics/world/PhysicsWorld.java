@@ -10,15 +10,13 @@ import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.physics.world.scans.PhysicsWorldHitScans;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
+import javagems3d.system.core.transmitter.ThreadActionsTransmitter;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.graph.Graph;
 
 import java.util.Optional;
-
-/**
- * In the physical world, the logic of the behavior of entities is being updated.
- */
 
 public final class PhysicsWorld implements IWorld {
     private final WorldObjectsContainer worldObjectsContainer;
@@ -40,6 +38,11 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldUpdate() {
+        ThreadActionsTransmitter.INSTANCE.getActions__RENDER_TO_PHYSICS().forEach(
+                e -> e.action(this)
+        );
+        ThreadActionsTransmitter.INSTANCE.getActions__RENDER_TO_PHYSICS().clear();
+
         EventBus.PhysicsWorldUpdateEvent preEvent = new EventBus.PhysicsWorldUpdateEvent(EventBus.Run.PRE, this);
         EventLauncher.pushEvent(preEvent, new Pair<>(new JSPhysicsWorldUpdateEvent(new JSPhysicsWorld(this), JSEventRun.PRE), JavaToJsAPI.Target.Game));
         if (!preEvent.isCancelled()) {
