@@ -1,11 +1,12 @@
 layout (location=0) in vec3 position;
-layout (location=1) in vec2 texture;
 
-out vec2 uv_coordinates;
-uniform mat4 projection_model_matrix;
+uniform mat4 projection_matrix;
+uniform mat4 model_view_matrix;
+
+out vec4 box_model_frag_pos;
 
 void main()
 {
-    gl_Position = projection_model_matrix * vec4(position, 1.0f);
-    uv_coordinates = texture;
+    gl_Position = projection_matrix * model_view_matrix * vec4(position, 1.0f);
+    box_model_frag_pos = gl_Position;
 }

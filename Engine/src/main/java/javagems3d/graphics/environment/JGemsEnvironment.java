@@ -76,6 +76,7 @@ public class JGemsEnvironment implements IEnvironment {
             this.getLightScene().clearSpotLightsBuffer(stack, this.getLightScene().getSpotLightsBuffer());
             this.getLightScene().getPointLights().clear();
             this.getLightScene().getSpotLights().clear();
+            //this.getDecalsScene().clearSSBO();
         }
     }
 
@@ -85,12 +86,13 @@ public class JGemsEnvironment implements IEnvironment {
         this.getLightScene().getSunLight().onUpdate(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld(), this.getWorld().getSceneObjects());
+        this.getParticlesScene().update(this.getWorld());
+        this.getDecalsScene().update(this.getWorld());
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), this.getShadowScene().getSpotLightIdsHashMap(), stack);
             this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), this.getLightScene(), stack);
+            //this.getDecalsScene().fillSSBO(stack);
         }
-        this.getParticlesScene().update(this.getWorld());
-        this.getDecalsScene().update(this.getWorld());
         EventLauncher.pushEvent(new EventBus.UpdateRenderEnvironmentEvent(this, camera, EventBus.Run.POST), new Pair<>(new JSUpdateRenderEnvironmentEvent(new JSEnvironment(this), new JSCamera(camera), JSEventRun.POST), JavaToJsAPI.Target.Game));
     }
 

@@ -317,7 +317,6 @@ public final class SceneWorld implements IRenderWorld {
 
     public void setCamera(ICamera camera) {
         this.camera = camera;
-
         EventLauncher.pushEvent(new EventBus.SceneCameraEvent(this, camera), new Pair<>(new JSSceneCameraEvent(new JSSceneWorld(this), new JSCamera(camera)), JavaToJsAPI.Target.Game));
     }
 
@@ -339,8 +338,8 @@ public final class SceneWorld implements IRenderWorld {
         return this.getObjectMap().get(worldItem.getItemId());
     }
 
-    public IAnimated getAnimatedObject(WorldItem worldItem) {
-        return this.getObjectMap().get(worldItem.getItemId());
+    public SceneObject getSceneObjectByWorldItemId(int id) {
+        return this.getObjectMap().get(id);
     }
 
     private Map<Integer, SceneEntity> getObjectMap() {

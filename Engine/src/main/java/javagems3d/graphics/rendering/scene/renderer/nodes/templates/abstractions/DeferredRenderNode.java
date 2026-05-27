@@ -3,6 +3,8 @@ package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstraction
 import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.decals.fx.DecalFX;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
@@ -54,6 +56,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     private Collection<SceneObject> indirectDeferredRenderingObjects;
     private Collection<SceneObject> directDeferredRenderingObjects;
+    private Collection<DecalFX> filteredDecalsToRender;
 
     public DeferredRenderNode(@NotNull FBOTexture2DProgram startColorFbo, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
@@ -110,12 +113,19 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         }
 
         if (!JGemsConfig.DEBUG.DISABLE_DECALS) {
-            GL46.glDepthMask(false);
-            this.getOutGBuffer().bindFBO();
-            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
-            this.getRawColorRenderProcessor().getDeferredDecalsRenderProcessor().renderDecals(this.getOpenGLRenderer().getWorld().getEnvironment());
-            this.getOutGBuffer().unBindFBO();
-            GL46.glDepthMask(true);
+            if (this.filteredDecalsToRender != null) {
+                GL46.glDepthMask(false);
+                this.getOutGBuffer().bindFBO();
+                {
+                    GL46.glEnable(GL46.GL_BLEND);
+                    GL46.glBlendFunci(2, GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+                    GL46.glBlendFunci(3, GL46.GL_ONE, GL46.GL_ONE);
+                    this.getRawColorRenderProcessor().getDeferredDecalsRenderProcessor().renderDecals(this.filteredDecalsToRender, this.getOpenGLRenderer().getWorld().getEnvironment());
+                    GL46.glDisable(GL46.GL_BLEND);
+                }
+                this.getOutGBuffer().unBindFBO();
+                GL46.glDepthMask(true);
+            }
         }
 
         this.getOutColorBuffer().bindFBO();
@@ -124,6 +134,11 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         this.getOutColorBuffer().unBindFBO();
 
         this.getOutGBuffer().copyFBOtoFBODepth(this.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
+    }
+
+    public DeferredRenderNode setFilteredDecalsToRender(Collection<DecalFX> filteredDecalsToRender) {
+        this.filteredDecalsToRender = filteredDecalsToRender;
+        return this;
     }
 
     public void initFBOs() {

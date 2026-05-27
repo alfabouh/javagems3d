@@ -85,16 +85,22 @@ public abstract class JGemsKinematicControlledItem extends JGemsKinematicItem im
 
     @Override
     public void setRotation(Vector3f vector3d) {
-        this.cameraRotation.set(vector3d);
+        synchronized (this) {
+            this.cameraRotation.set(vector3d);
+        }
     }
 
     @Override
     public Vector3f getRotation() {
-        return this.getCameraRotation();
+        synchronized (this) {
+            return this.getCameraRotation();
+        }
     }
 
     public Vector3f getCameraRotation() {
-        return this.cameraRotation;
+        synchronized (this) {
+            return this.cameraRotation;
+        }
     }
 
     private void clampCameraRotation() {

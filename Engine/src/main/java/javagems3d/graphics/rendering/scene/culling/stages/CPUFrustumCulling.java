@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.culling.stages;
 
+import javagems3d.graphics.environment.decals.fx.DecalFX;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
@@ -7,6 +8,7 @@ import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
 
     public boolean test(ICulled culled) {
         if (!culled.isCanBeCulled() || culled.getCullingRules().isIgnoreFrustumCulling()) {
-            return true;
+            return false;
         }
         return this.isInFrustum(culled.getCullingData());
     }

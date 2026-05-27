@@ -2,9 +2,10 @@ package workbench.graphics.environment.components.particles;
 
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.particles.ParticlesManager;
-import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
+import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.environment.particles.emitter.ParticleEmitter;
-import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.resources.WBenchResourceManager;
@@ -15,7 +16,15 @@ public class WBenchParticlesManager extends ParticlesManager {
     }
 
     @Override
-    public ParticleEmitter createDefaultWorldParticleEmitter(@NotNull Vector3f position, @NotNull ImageTexture particleTexture, @NotNull ParticleFXSpriteProperties particleFXSpriteProperties, IEnvironment environment, float lifeTime) {
-        return new ParticleEmitter(position, environment.getParticlesScene().getParticlesManager(), ParticleEmitter.DEFAULT_PARTICLE_WORLD(WBenchResourceManager.localShaderAssets.world_particle_oit, WBenchResourceManager.localShaderAssets.world_particle, particleTexture, particleFXSpriteProperties), lifeTime);
+    public ParticleEmitter createDefaultWorldParticleEmitter(@NotNull Vector3f position, @NotNull ParticleFXRenderConfig particleFXRenderConfig, float lifeTime) {
+        return new ParticleEmitter(position, this.getEnvironment().getParticlesScene().getParticlesManager(), ParticleEmitter.DEFAULT_PARTICLE_WORLD(particleFXRenderConfig), lifeTime);
+    }
+
+    public JGemsShaderManager DEFAULT_MAIN_SCENE_SHADER() {
+        return WBenchResourceManager.localShaderAssets.world_particle;
+    }
+
+    public JGemsShaderManager DEFAULT_TRANSPARENCY_SCENE_SHADER() {
+        return WBenchResourceManager.localShaderAssets.world_particle_oit;
     }
 }

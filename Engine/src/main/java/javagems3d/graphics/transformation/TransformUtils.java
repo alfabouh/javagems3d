@@ -65,6 +65,10 @@ public abstract class TransformUtils {
         return new Matrix4f().identity().translate(pose.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(pose.getScaling());
     }
 
+    public static Matrix4f getModelViewMatrix(Matrix4f modelMatrix, Matrix4f viewMatrix) {
+        return new Matrix4f(viewMatrix).mul(modelMatrix);
+    }
+
     public static Matrix4f getModelViewMatrix(Pose3D pose, Matrix4f viewMatrix) {
         if (pose.isOrientedToViewMatrix()) {
             return TransformUtils.getOrientedToViewModelViewMatrix(pose, viewMatrix);

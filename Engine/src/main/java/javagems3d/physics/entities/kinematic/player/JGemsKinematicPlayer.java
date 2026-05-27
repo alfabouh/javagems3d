@@ -44,7 +44,9 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
 
     @Override
     public Vector3f getMoveVector() {
-        return this.getControllerMoveMotion();
+        synchronized (this) {
+            return this.getControllerMoveMotion();
+        }
     }
 
     @Override

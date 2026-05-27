@@ -49,6 +49,8 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
     public WBenchShaderManager world_particle_oit;
     public WBenchShaderManager deferred_decals;
 
+   // public ShaderStorageBufferObject Decals;
+
     public ShaderStorageBufferObject MainSceneIndirectBufferData;
     public ShaderStorageBufferObject ParticleSceneIndirectBufferData;
     public ShaderStorageBufferObject ParticleScenePropertiesData;
@@ -143,6 +145,9 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
 
         this.ParticleScenePropertiesData = new ShaderStorageBufferObject(31, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES);
         ShaderStorageBufferProgram.createSSBOStorage(this.ParticleScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
+
+        //this.Decals = new ShaderStorageBufferObject(36, Integer.BYTES + (Integer.BYTES * JGemsConfig.SYSTEM.DECALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_DECALS));
+        //ShaderStorageBufferProgram.createSSBOStorage(this.Decals, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         //this.ShadowSceneIndirectBufferData = new ShaderStorageBufferObject(10, this.MainSceneIndirectBufferData.getBufferSize());
         //ShaderStorageBufferProgram.createSSBOStorage(this.ShadowSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);

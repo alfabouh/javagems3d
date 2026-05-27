@@ -1,9 +1,8 @@
 package javagems3d.graphics.environment.particles.fx;
 
-import javagems3d.graphics.environment.particles.data.ParticleFXRenderData;
+import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,21 +16,21 @@ public class WorldDefaultParticleFX extends ParticleFX {
     private @Nullable JGemsTimedAction lifeTimer;
     private float interpolationAccum = 0.0f;
 
-    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime) {
-        this(particleFXRenderData, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), new Vector3f(), new Vector3f(1.0f));
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderConfig particleFXRenderConfig, float lifeTime) {
+        this(particleFXRenderConfig, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), new Vector3f(), new Vector3f(1.0f));
     }
 
 
-    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f constantVelocity) {
-        this(particleFXRenderData, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), constantVelocity, new Vector3f(1.0f));
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderConfig particleFXRenderConfig, float lifeTime, Vector3f constantVelocity) {
+        this(particleFXRenderConfig, lifeTime, new Vector3f(0.0f, -10.0f, 0.0f), constantVelocity, new Vector3f(1.0f));
     }
 
-    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f gravity, Vector3f constantVelocity) {
-        this(particleFXRenderData, lifeTime, gravity, constantVelocity, new Vector3f(1.0f));
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderConfig particleFXRenderConfig, float lifeTime, Vector3f gravity, Vector3f constantVelocity) {
+        this(particleFXRenderConfig, lifeTime, gravity, constantVelocity, new Vector3f(1.0f));
     }
 
-    public WorldDefaultParticleFX(@NotNull ParticleFXRenderData particleFXRenderData, float lifeTime, Vector3f gravity, Vector3f constantVelocity, Vector3f constantAcceleration) {
-        super(particleFXRenderData);
+    public WorldDefaultParticleFX(@NotNull ParticleFXRenderConfig particleFXRenderConfig, float lifeTime, Vector3f gravity, Vector3f constantVelocity, Vector3f constantAcceleration) {
+        super(particleFXRenderConfig);
         this.lifeTime = lifeTime;
         this.constantVelocity = constantVelocity;
         this.constantAcceleration = constantAcceleration;
@@ -57,10 +56,10 @@ public class WorldDefaultParticleFX extends ParticleFX {
     }
 
     private float frameDeltaLimitToUpdateSpriteID() {
-        if (!this.getParticleFXRenderData().spriteProperties().loop() && this.lifeTime > 0.0f) {
-            return this.lifeTime / this.getParticleFXRenderData().spriteProperties().maxSprites();
+        if (!this.getParticleFXRenderConfig().isLoop() && this.lifeTime > 0.0f) {
+            return this.lifeTime / this.getParticleFXRenderConfig().getMaxSprites();
         }
-        return this.getParticleFXRenderData().spriteProperties().loopNextFrameInSecSpeed() / this.getParticleFXRenderData().spriteProperties().maxSprites();
+        return this.getParticleFXRenderConfig().getLoopSpeed() / this.getParticleFXRenderConfig().getMaxSprites();
     }
 
     private void strengthAffected(IWorld world, float frameDelta) {
@@ -73,12 +72,12 @@ public class WorldDefaultParticleFX extends ParticleFX {
     public void onUpdate(IWorld iWorld) {
         if (this.lifeTimer != null) {
             if (this.lifeTime > 0.0f) {
-                if (this.getParticleFXRenderData().spriteProperties().fadeOut()) {
+                if (this.getParticleFXRenderConfig().isFadeOut()) {
                     final float f1 = this.lifeTime * 0.5f;
                     if (this.lifeTimer.getAccumulatedTime() >= f1) {
                         final float f2 = (float) (f1 / this.lifeTimer.getAccumulatedTime());
-                        this.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().setColor(this.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().color().mul(1f, 1f, 1f, f2));
-                        this.getParticleFXRenderData().particleFXProperties().setEmissionStrength(this.getParticleFXRenderData().particleFXProperties().getEmissionStrength() * f2);
+                        this.getParticleFXRenderConfig().getDiffuseColor().setColor(this.getParticleFXRenderConfig().getDiffuseColor().color().mul(1f, 1f, 1f, f2));
+                        this.getParticleFXRenderConfig().setEmissionStrength(this.getParticleFXRenderConfig().getEmissionStrength() * f2);
                     }
                 }
                 if (this.lifeTimer.resetTimerAfterReachedSeconds(this.lifeTime)) {
@@ -87,9 +86,9 @@ public class WorldDefaultParticleFX extends ParticleFX {
             }
             this.interpolationAccum += this.lifeTimer.getDeltaTime() / this.frameDeltaLimitToUpdateSpriteID();
             if (this.interpolationAccum > 1.0f) {
-                if (this.getCurrentTextureID() < this.getParticleFXRenderData().spriteProperties().maxSprites() - 1) {
+                if (this.getCurrentTextureID() < this.getParticleFXRenderConfig().getMaxSprites() - 1) {
                     this.setCurrentTextureID(this.getCurrentTextureID() + 1);
-                } else if (this.getParticleFXRenderData().spriteProperties().loop()) {
+                } else if (this.getParticleFXRenderConfig().isLoop()) {
                     this.setCurrentTextureID(0);
                 }
                 this.interpolationAccum %= 1.0f;
@@ -101,8 +100,8 @@ public class WorldDefaultParticleFX extends ParticleFX {
     @Override
     public int getInterpolateWithTextureID() {
         int nextFrame = this.getCurrentTextureID() + 1;
-        if (nextFrame > this.getParticleFXRenderData().spriteProperties().maxSprites() - 1) {
-            if (this.getParticleFXRenderData().spriteProperties().loop()) {
+        if (nextFrame > this.getParticleFXRenderConfig().getMaxSprites() - 1) {
+            if (this.getParticleFXRenderConfig().isLoop()) {
                 nextFrame = 0;
             } else {
                 nextFrame = this.getCurrentTextureID();

@@ -2,22 +2,18 @@ package javagems3d.graphics.environment.particles.emitter;
 
 import javagems3d.JGemsRandom;
 import javagems3d.graphics.environment.particles.IParticlesManager;
-import javagems3d.graphics.environment.particles.data.ParticleFXRenderData;
-import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
+import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.environment.particles.fx.WorldDefaultParticleFX;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.help.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -53,8 +49,8 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         this.linkedParticles = new HashSet<>();
     }
 
-    public static Function<ParticleFXCreator, ParticleFX> DEFAULT_PARTICLE_WORLD(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull JGemsShaderManager mainSceneShaderManager, ImageTexture particleTexture, @NotNull ParticleFXSpriteProperties particleFXSpriteProperties) {
-        return (particleFXCreator -> new WorldDefaultParticleFX(ParticleFXRenderData.DEFAULT(transparencyShaderManager, mainSceneShaderManager, particleTexture, particleFXSpriteProperties), particleFXCreator.lifeTime(), particleFXCreator.gravity(), particleFXCreator.velocity(), particleFXCreator.acceleration())
+    public static Function<ParticleFXCreator, ParticleFX> DEFAULT_PARTICLE_WORLD(@NotNull ParticleFXRenderConfig particleFXRenderConfig) {
+        return (particleFXCreator -> new WorldDefaultParticleFX(particleFXRenderConfig.copy(), particleFXCreator.lifeTime(), particleFXCreator.gravity(), particleFXCreator.velocity(), particleFXCreator.acceleration())
                 .setScaling(particleFXCreator.scaling())
                 .setPosition(particleFXCreator.pos()));
     }
@@ -133,10 +129,10 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
                         new Vector3f(this.getEmitterProperties().getParticleBasicAcceleration())
                 )
         );
-        createdParticle.getParticleFXRenderData().particleFXMaterial().getDiffuseColor().setColor(new Vector4f(this.getEmitterProperties().getParticleColorMask(), this.getEmitterProperties().getParticleBlendingTransparency()));
-        createdParticle.getParticleFXRenderData().particleFXMaterial().getEmissionColor().setColor(new Vector3f(this.getEmitterProperties().getParticleEmissiveColor()));
-        createdParticle.getParticleFXRenderData().particleFXProperties().setEmissionStrength(this.getEmitterProperties().getParticleEmissiveFactorStrength());
-        createdParticle.getParticleFXRenderData().particleFXProperties().setAlphaDiscard(this.getEmitterProperties().getParticleAlphaDiscard());
+        createdParticle.getParticleFXRenderConfig().getDiffuseColor().setColor(new Vector4f(this.getEmitterProperties().getParticleColorMask(), this.getEmitterProperties().getParticleBlendingTransparency()));
+        createdParticle.getParticleFXRenderConfig().getEmissionColor().setColor(new Vector3f(this.getEmitterProperties().getParticleEmissiveColor()));
+        createdParticle.getParticleFXRenderConfig().setEmissionStrength(this.getEmitterProperties().getParticleEmissiveFactorStrength());
+        createdParticle.getParticleFXRenderConfig().setAlphaDiscard(this.getEmitterProperties().getParticleAlphaDiscard());
         this.particlesManager.spawnParticleFX(createdParticle);
         this.linkedParticles.add(createdParticle);
     }

@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -50,6 +51,7 @@ public abstract class DecalsScene implements IDecalsScene {
             Optional<DecalFX> optionalD = this.decalFXList.stream().filter(e -> !e.unDestructible()).findFirst();
             optionalD.ifPresent(IWorldObject::setDead);
         }
+        decalFX.onSpawn(this.getEnvironment().getWorld());
         return decalFX;
     }
 

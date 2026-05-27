@@ -12,6 +12,7 @@ import api.scripting.JavaToJsAPI;
 import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.decals.fx.DecalFX;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
@@ -231,11 +232,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         final Set<JSSceneObjectI> sceneObjectJS = toRenderObjects.stream().map(e -> (JSSceneObjectI) () -> e).collect(Collectors.toSet());
         final Set<JSSceneWorldLiquid> sceneWorldLiquidsJS = toRenderLiquids.stream().map(JSSceneWorldLiquid::new).collect(Collectors.toSet());
         final Set<ParticleFX> toRenderParticles = new HashSet<>(this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection());
+        final Set<DecalFX> toRenderDecals = new HashSet<>(this.getWorld().getEnvironment().getDecalsScene().getDecalFXCollection());
 
         this.getSceneCulling().updateFrustum(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
         if (!EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.PRE, toRenderObjects, toRenderLiquids, toRenderParticles), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.PRE, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game)).isCancelled()) {
-            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, toRenderParticles, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
-                @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids, toRenderParticles };
+            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, toRenderDecals, toRenderParticles, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+                @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids, toRenderParticles, toRenderDecals };
                 this.getSceneCulling().cull(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera(), collections);
             });
 
@@ -311,7 +313,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
     }
 
-    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRenderObjects, Collection<SceneWorldLiquid> toRenderLiquids, Set<ParticleFX> toRenderParticles, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
+    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRenderObjects, Collection<SceneWorldLiquid> toRenderLiquids, Set<DecalFX> toRenderDecals, Set<ParticleFX> toRenderParticles, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
         if (cullingFun != null) {
             cullingFun.accept(null);
         }
@@ -322,6 +324,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
         forwardRenderNode.setFilteredParticlesToRender(toRenderParticles);
+        deferredRenderNode.setFilteredDecalsToRender(toRenderDecals);
 
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, deferredRenderNode);
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, forwardRenderNode);

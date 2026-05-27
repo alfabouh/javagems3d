@@ -1,5 +1,6 @@
 package javagems3d.system.controller;
 
+import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.base.MouseKeyboardController;

@@ -9,15 +9,24 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
+
+import java.util.Collection;
 
 public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager lightPassShader;
@@ -95,6 +104,7 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         return this.lightPassShader;
     }
 
+
     public class DeferredDecalsRenderProcessor {
         private final JGemsShaderManager deferredDecalsShaderManager;
 
@@ -102,11 +112,22 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
             this.deferredDecalsShaderManager = deferredDecalsShaderManager;
         }
 
-        public void renderDecals(IEnvironment environment) {
+        public void renderDecals(Collection<DecalFX> filteredDecalsToRender, IEnvironment environment) {
             FBOTexture2DProgram gBuffer = DeferredColorRenderProcessor.this.getGBuffer();
             JGemsShaderManager deferredShader = this.deferredDecalsShaderManager;
 
-            for (DecalFX decalFX : environment.getDecalsScene().getDecalFXCollection()) {
+            Vector3f cam = ((IRenderWorld) environment.getWorld()).getCamera().getCamPosition();
+
+            boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
+            GL46.glDisable(GL46.GL_CULL_FACE);
+            for (DecalFX decalFX : filteredDecalsToRender) {
+                Vector3f min = decalFX.getCullingData().getAabbMin();
+                Vector3f max = decalFX.getCullingData().getAabbMax();
+                boolean cameraInside = cam.x >= min.x && cam.x <= max.x && cam.y >= min.y && cam.y <= max.y && cam.z >= min.z && cam.z <= max.z;
+                if (cameraInside) {
+                  //  GL46.glDisable(GL46.GL_CULL_FACE);
+                    GL46.glDisable(GL46.GL_DEPTH_TEST);
+                }
                 deferredShader.beginShading();
                 deferredShader.disableWarns();
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_INV_MODEL_MATRIX), UniformFunctions.MAT4F(decalFX.getInverseModelMatrix()));
@@ -118,14 +139,19 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_DIFFUSE_COLOR), UniformFunctions.VEC4F(new Vector4f(decalFX.getMaterial().diffuseColor().color(), decalFX.getDecalTextureProperties().getTransparency())));
                 deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_EMISSION), gBuffer.getTextureByIndex(3));
                 deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.DECAL_DIFFUSE_MAP), decalFX.getMaterial().textureMap());
-                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.EMISSIVE_FACTOR), UniformFunctions.FLOAT(decalFX.getMaterial().emissionFactor()));
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.EMISSIVE_FACTOR), UniformFunctions.FLOAT(decalFX.getMaterial().emissiveFactor()));
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_ENT_LAYER_ID), UniformFunctions.UINTEGER(decalFX.getTerrainLayerID()));
-                deferredShader.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-                JGemsHelper.render().renderModel2D(DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
+                deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelViewMatrix(decalFX.getModelMatrix(), JGemsTransformManager.INSTANCE.getCameraViewMatrix())));
+                //JGemsHelper.render().renderModel2D(DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+                JGemsHelper.render().renderMeshList3D(JGemsResourceManager.DEFAULT_CUBE_MESHGROUP().getAllNodes(), 0);
                 deferredShader.endShading();
                 deferredShader.enableWarns();
+                GL46.glEnable(GL46.GL_DEPTH_TEST);
             }
-
+            if (oldV) {
+                GL46.glEnable(GL46.GL_CULL_FACE);
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
@@ -18,7 +17,6 @@ import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.*;
@@ -36,7 +34,6 @@ import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.controller.base.IController;
-import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.IControllerDispatcher;
 import javagems3d.system.external.mapping.IGameMap;
@@ -44,6 +41,7 @@ import javagems3d.system.external.mapping.data.MapObjectsDataPack;
 import javagems3d.system.external.mapping.data.items.*;
 import javagems3d.system.external.mapping.data.templates.RowMapObjectData;
 import javagems3d.system.service.collections.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -839,13 +837,19 @@ public abstract class EventBus {
         private final JGemsPropData propData;
         private final boolean background;
         private SceneProp result;
+        private final String mapName;
 
-        public MapPropConvertEvent(boolean background, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsPropData propData) {
+        public MapPropConvertEvent(String mapName, boolean background, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsPropData propData) {
             this.background = background;
             this.sceneWorld = sceneWorld;
             this.physicsWorld = physicsWorld;
             this.template = template;
             this.propData = propData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public boolean isBackground() {
@@ -867,12 +871,18 @@ public abstract class EventBus {
         private final RowMapObjectData template;
         private final JGemsEntityData entityData;
         private Pair<WorldItem, JGemsEntityData > result;
+        private final String mapName;
 
-        public MapEntityConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsEntityData entityData) {
+        public MapEntityConvertEvent(String mapName, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsEntityData entityData) {
             this.sceneWorld = sceneWorld;
             this.physicsWorld = physicsWorld;
             this.template = template;
             this.entityData = entityData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public SceneWorld getSceneWorld() { return this.sceneWorld; }
@@ -890,13 +900,19 @@ public abstract class EventBus {
         private final RowMapObjectData template;
         private final JGemsMarkerData markerData;
         private final Map<Integer, IWorldObject> mainScene_idMap;
+        private final String mapName;
 
-        public MapMarkerConvertEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsMarkerData markerData, Map<Integer, IWorldObject> mainScene_idMap) {
+        public MapMarkerConvertEvent(String mapName, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsMarkerData markerData, Map<Integer, IWorldObject> mainScene_idMap) {
             this.sceneWorld = sceneWorld;
             this.physicsWorld = physicsWorld;
             this.template = template;
             this.markerData = markerData;
             this.mainScene_idMap = mainScene_idMap;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public Map<Integer, IWorldObject> getMainScene_idMap() {
@@ -926,13 +942,19 @@ public abstract class EventBus {
         private final ISkyBackground background;
         private final SunData sunData;
         private final SkyData skyData;
+        private final String mapName;
 
-        public MapSkySetupEvent(SceneWorld sceneWorld, ISkyBox skyBox, ISkyBackground background, SunData sunData, SkyData skyData) {
+        public MapSkySetupEvent(String mapName, SceneWorld sceneWorld, ISkyBox skyBox, ISkyBackground background, SunData sunData, SkyData skyData) {
             this.sceneWorld = sceneWorld;
             this.skyBox = skyBox;
             this.background = background;
             this.sunData = sunData;
             this.skyData = skyData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public SceneWorld getSceneWorld() { return this.sceneWorld; }
@@ -945,10 +967,16 @@ public abstract class EventBus {
     public static final class MapFogSetupEvent extends Cancellable implements IEvent {
         private final IFogScene fogScene;
         private final FogData fogData;
+        private final String mapName;
 
-        public MapFogSetupEvent(IFogScene fogScene, FogData fogData) {
+        public MapFogSetupEvent(String mapName, IFogScene fogScene, FogData fogData) {
             this.fogScene = fogScene;
             this.fogData = fogData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public IFogScene getFogScene() { return this.fogScene; }
@@ -958,10 +986,16 @@ public abstract class EventBus {
     public static final class MapShadowsSetupEvent extends Cancellable implements IEvent {
         private final IShadowScene shadowScene;
         private final ShadowsData shadowsData;
+        private final String mapName;
 
-        public MapShadowsSetupEvent(IShadowScene shadowScene, ShadowsData shadowsData) {
+        public MapShadowsSetupEvent(String mapName, IShadowScene shadowScene, ShadowsData shadowsData) {
             this.shadowScene = shadowScene;
             this.shadowsData = shadowsData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public IShadowScene getShadowScene() { return this.shadowScene; }
@@ -971,10 +1005,16 @@ public abstract class EventBus {
     public static final class MapLightingSetupEvent extends Cancellable implements IEvent {
         private final ILightScene lightScene;
         private final LightingData shadowsData;
+        private final String mapName;
 
-        public MapLightingSetupEvent(ILightScene lightScene, LightingData shadowsData) {
+        public MapLightingSetupEvent(String mapName, ILightScene lightScene, LightingData shadowsData) {
             this.lightScene = lightScene;
             this.shadowsData = shadowsData;
+            this.mapName = mapName;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public ILightScene getLightScene() {
@@ -991,12 +1031,18 @@ public abstract class EventBus {
         private final SceneWorld sceneWorld;
         private final MapObjectsDataPack dataPack;
         private final Run run;
+        private final String mapName;
 
-        public MapProcessingEvent(PhysicsWorld physicsWorld, SceneWorld sceneWorld, MapObjectsDataPack dataPack, Run run) {
+        public MapProcessingEvent(String mapName, PhysicsWorld physicsWorld, SceneWorld sceneWorld, MapObjectsDataPack dataPack, Run run) {
             this.physicsWorld = physicsWorld;
             this.sceneWorld = sceneWorld;
             this.dataPack = dataPack;
+            this.mapName = mapName;
             this.run = run;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public PhysicsWorld getPhysicsWorld() { return this.physicsWorld; }
@@ -1008,12 +1054,18 @@ public abstract class EventBus {
     public static final class PlayerConstructOnMapEvent extends Cancellable implements IEvent {
         private final PhysicsWorld world;
         private final Collection<IGameMap.SpawnPlayerData> spawnDataList;
-        public IPlayer player;
+        public @Nullable IPlayer newPlayerResult;
         public EntityRenderData renderData;
+        private final String mapName;
 
-        public PlayerConstructOnMapEvent(PhysicsWorld world, Collection<IGameMap.SpawnPlayerData> spawnDataList) {
+        public PlayerConstructOnMapEvent(String mapName, PhysicsWorld world, Collection<IGameMap.SpawnPlayerData> spawnDataList) {
             this.world = world;
+            this.mapName = mapName;
             this.spawnDataList = spawnDataList;
+        }
+
+        public String getMapName() {
+            return this.mapName;
         }
 
         public PhysicsWorld getWorld() {
@@ -1024,8 +1076,8 @@ public abstract class EventBus {
             return this.spawnDataList;
         }
 
-        public void setPlayer(IPlayer player) {
-            this.player = player;
+        public void setNewPlayerResult(@Nullable IPlayer newPlayerResult) {
+            this.newPlayerResult = newPlayerResult;
         }
 
         public void setRenderData(EntityRenderData renderData) {

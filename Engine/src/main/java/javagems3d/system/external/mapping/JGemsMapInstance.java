@@ -1,6 +1,12 @@
 package javagems3d.system.external.mapping;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import api.scripting.JavaToJsAPI;
+import api.scripting.coding.env.internal.map.events.mapping.JSPlayerConstructOnMapEvent;
+import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTranslateData;
+import api.scripting.coding.env.internal.util.math.JSVector3f;
+import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
@@ -21,6 +27,9 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public final class JGemsMapInstance {
     private final JGemsResourceManager jGemsResourceManager;
@@ -108,9 +117,31 @@ public final class JGemsMapInstance {
             Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = playerConstructor.constructPlayer(this.getPhysicsWorld(), processor.getSpawnPlayersSet());
             if (pair != null) {
                 player = pair.first();
-                JGemsHelper.world().addWorldItem((WorldItem) player, pair.second() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.second());
+                EntityRenderData renderData = pair.second() != null ? pair.second() : JGemsResourceManager.globalRenderDataAssets.defaultPlayer;
+
+                EventBus.PlayerConstructOnMapEvent event = new EventBus.PlayerConstructOnMapEvent(processor.getMapName(), physicsWorld, processor.getSpawnPlayersSet());
+                JSPlayerConstructOnMapEvent playerConstructOnMapEventJS = new JSPlayerConstructOnMapEvent(new JSPhysicsWorld(physicsWorld), processor.getSpawnPlayersSet() == null ? new ArrayList<>() : processor.getSpawnPlayersSet().stream().map(e -> new JSSpawnPlayerTranslateData(new JSVector3f(e.spawnPos()), new JSVector3f(e.spawnRot()))).collect(Collectors.toSet()));
+                EventLauncher.pushEvent(event, new Pair<>(playerConstructOnMapEventJS, JavaToJsAPI.Target.Map));
+
+                if (event.newPlayerResult != null) {
+                    player = event.newPlayerResult;
+                } else {
+                    if (playerConstructOnMapEventJS.getPlayer() != null) {
+                        player = playerConstructOnMapEventJS.getPlayer().getJavaPlayer();
+                    }
+                }
+
+                if (event.renderData != null) {
+                    renderData = event.renderData;
+                } else {
+                    if (playerConstructOnMapEventJS.getRenderData() != null) {
+                        renderData = playerConstructOnMapEventJS.getRenderData().getJavaEntityRenderData();
+                    }
+                }
+
+                JGemsHelper.world().addWorldItem((WorldItem) player, renderData);
                 JGemsHelper.controller().attachControllerTo(JGemsHelper.controller().getControllerDispatcher().getCurrentController(), player);
-                JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
+                JGemsHelper.camera().enableAttachedCamera((WorldItem) (player));
                 flag = true;
             }
         }

@@ -126,12 +126,6 @@ public class JSSceneWorld {
         return this.sceneWorld.contains(object.getJavaSceneObject());
     }
 
-    @JSCodingFunctionOrMethod(description = "Returns the animated object associated with a world item.", paramNames = {"item"})
-    public JSAnimatedObjectI getAnimatedObject(@NotNull JSWorldItem item) {
-        IAnimated obj = this.sceneWorld.getAnimatedObject(item.getJavaWorldObject());
-        return obj != null ? new JSSceneAnimatedObject(obj) : null;
-    }
-
     @JSCodingFunctionOrMethod(description = "Real java object.", paramNames = {""})
     public SceneWorld getJavaSceneWorld() {
         return this.sceneWorld;

@@ -1,6 +1,5 @@
 #extension GL_ARB_bindless_texture : require
-precision highp float;
-precision highp int;
+
 
 layout (location = 0) out vec4 frag_color0;
 layout (location = 1) out vec4 bright_color0;

@@ -14,9 +14,7 @@ public class MeshBoundingBoxData {
         this.cullingAABB = cullingAABB;
     }
 
-    public static CullingAABB transformAABB(CullingAABB aabb, Pose3D transform) {
-        Matrix4f modelMatrix = TransformUtils.getModelMatrix(transform);
-
+    public static CullingAABB transformAABB(CullingAABB aabb, Matrix4f modelMatrix) {
         Vector3f[] corners = new Vector3f[] {
                 new Vector3f(aabb.getAabbMin().x, aabb.getAabbMin().y, aabb.getAabbMin().z),
                 new Vector3f(aabb.getAabbMin().x, aabb.getAabbMin().y, aabb.getAabbMax().z),
@@ -41,8 +39,16 @@ public class MeshBoundingBoxData {
 
         return new CullingAABB(newMin, newMax);
     }
+
+    public static CullingAABB transformAABB(CullingAABB aabb, Pose3D transform) {
+        return MeshBoundingBoxData.transformAABB(aabb, TransformUtils.getModelMatrix(transform));
+    }
     
     public CullingAABB getNormalizedAABB(Pose3D pose) {
         return MeshBoundingBoxData.transformAABB(this.cullingAABB, pose);
+    }
+
+    public CullingAABB getNormalizedAABB(Matrix4f modelMatrix) {
+        return MeshBoundingBoxData.transformAABB(this.cullingAABB, modelMatrix);
     }
 }

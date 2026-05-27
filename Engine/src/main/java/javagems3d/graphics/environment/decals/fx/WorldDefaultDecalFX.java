@@ -80,6 +80,6 @@ public class WorldDefaultDecalFX extends DecalFX {
 
     @Override
     public boolean isDead() {
-        return this.dead;
+        return this.dead || (this.getAttachedTo() != null && this.getAttachedTo().isDead());
     }
 }

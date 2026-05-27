@@ -82,6 +82,7 @@ public abstract class JGemsConfig {
 
         public static int MAX_PARTICLES = 512;
         public static int MAX_DECALS = 512;
+        //public static int DECALS_PACK_SIZE = 16 + 4 + 4;
 
         public static int INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE = 4 + 4 + 4 + 4;
         public static int MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES = SYSTEM.MAX_PARTICLES * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;

@@ -89,11 +89,15 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getPrevPosition() {
-        return new Vector3f(this.prevPosition);
+        synchronized (this) {
+            return new Vector3f(this.prevPosition);
+        }
     }
 
     public void setPrevPosition(Vector3f vector3f) {
-        this.prevPosition.set(vector3f);
+        synchronized (this) {
+            this.prevPosition.set(vector3f);
+        }
     }
 
     public int getTicksExisted() {
@@ -101,27 +105,39 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getPosition() {
-        return new Vector3f(this.position);
+        synchronized (this) {
+            return new Vector3f(this.position);
+        }
     }
 
     public void setPosition(Vector3f vector3f) {
-        this.position.set(vector3f);
+        synchronized (this) {
+            this.position.set(vector3f);
+        }
     }
 
     public Vector3f getRotation() {
-        return new Vector3f(this.rotation);
+        synchronized (this) {
+            return new Vector3f(this.rotation);
+        }
     }
 
     public void setRotation(Vector3f vector3f) {
-        this.rotation.set(vector3f);
+        synchronized (this) {
+            this.rotation.set(vector3f);
+        }
     }
 
     public Vector3f getScaling() {
-        return new Vector3f(this.scaling);
+        synchronized (this) {
+            return new Vector3f(this.scaling);
+        }
     }
 
     public void setScaling(Vector3f scaling) {
-        this.scaling = scaling;
+        synchronized (this) {
+            this.scaling = scaling;
+        }
     }
 
     public boolean canBeDestroyed() {

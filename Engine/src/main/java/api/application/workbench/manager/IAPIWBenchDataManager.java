@@ -19,7 +19,7 @@ import javagems3d.graphics.environment.lights.ILightAttachable;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.lights.SpotLight;
 import javagems3d.graphics.environment.particles.IParticlesManager;
-import javagems3d.graphics.environment.particles.data.material.ParticleFXSpriteProperties;
+import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.environment.particles.emitter.ParticleEmitter;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
@@ -346,7 +346,6 @@ public interface IAPIWBenchDataManager {
                     this.getContextData().sceneProp().getScaling(),
                     new DecalMaterial(this.texture2DProgram(tagsContainer), new Color3Texture(this.getColor(tagsContainer).xyz(new Vector3f())), this.getEmissiveFactor(tagsContainer)),
                     new DecalTextureProperties(this.getColor(tagsContainer).w),
-                    sceneProp.getWorld().getEnvironment(),
                     -1.0f,
                     this.getLayerID(tagsContainer)
             );
@@ -651,19 +650,20 @@ public interface IAPIWBenchDataManager {
             if (this.texture2DProgram(tagsContainer) == null) {
                 return;
             }
-            this.particleEmitter = particlesManager.spawnParticleFXEmitter(
-                    particlesManager.createDefaultWorldParticleEmitter(
-                            this.getContextData().sceneProp().getPosition(),
-                            this.texture2DProgram(tagsContainer),
-                            new ParticleFXSpriteProperties(
-                                    new Vector2i(this.getCellsX(tagsContainer), this.getCellsY(tagsContainer)),
-                                    this.getMaxSprites(tagsContainer),
-                                    this.isParticleAnimationLooped(tagsContainer),
-                                    this.getParticleAnimationSpeed(tagsContainer),
-                                    this.isParticleFadeOutEnabled(tagsContainer),
-                                    this.isParticleNormalizedY(tagsContainer)),
-                            sceneProp.getWorld().getEnvironment(), -1.0f)
-            );
+            ParticleFXRenderConfig config = ParticleFXRenderConfig.builder(
+                    this.texture2DProgram(tagsContainer))
+                    .shaders(particlesManager.DEFAULT_TRANSPARENCY_SCENE_SHADER(), particlesManager.DEFAULT_MAIN_SCENE_SHADER())
+                    .sprite(
+                            this.getCellsX(tagsContainer),
+                            this.getCellsY(tagsContainer),
+                            this.getMaxSprites(tagsContainer)
+                    )
+                    .loop(this.isParticleAnimationLooped(tagsContainer))
+                    .loopSpeed(this.getParticleAnimationSpeed(tagsContainer))
+                    .fadeOut(this.isParticleFadeOutEnabled(tagsContainer))
+                    .normalizeY(this.isParticleNormalizedY(tagsContainer))
+                    .build();
+            this.particleEmitter = particlesManager.spawnParticleFXEmitter(particlesManager.createDefaultWorldParticleEmitter(this.getContextData().sceneProp().getPosition(), config, -1.0f));
             this.particleEmitter.getEmitterProperties()
                     .setSpawnPosOffset(this.getParticleSpawnPosOffset(tagsContainer))
                     .setParticleRandomSpawnPosOffsetRange(this.getParticleRandomSpawnPosOffsetRange(tagsContainer))

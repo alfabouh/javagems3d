@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.system.service.synchronizing.SyncManager;
 
@@ -164,33 +165,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void clearPointLightsBuffer(MemoryStack stack, ShaderStorageBufferObject pointLightsBuffer) {
-        final int sizeMainBuffer = JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE * (4);
-        ByteBuffer buffer = stack.malloc(sizeMainBuffer);
-        ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
-
-        for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS; i++) {
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-        }
-        buffer.flip();
-
-        buffer2.putInt(0);
-        buffer2.flip();
-
-        ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, 0L, buffer);
-        ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, sizeMainBuffer, buffer2);
+        ShaderStorageBufferProgram.clearBufferData(pointLightsBuffer, GL46.GL_R32UI, GL46.GL_RED_INTEGER, GL46.GL_UNSIGNED_INT, (ByteBuffer) null);
     }
 
     public void updateSpotLightsBuffer(HashMap<SpotLight, Integer> spotLightIdsHashMap, ShaderStorageBufferObject spotLightsBuffer, MemoryStack stack, Matrix4f viewMatrix) {
@@ -238,38 +213,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void clearSpotLightsBuffer(MemoryStack stack, ShaderStorageBufferObject spotLightsBuffer) {
-        final int sizeMainBuffer = JGemsConfig.SYSTEM.SPOT_LIGHT_BUFFER_PACK_SIZE * (4);
-        ByteBuffer buffer = stack.malloc(sizeMainBuffer);
-        ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
-
-        for (int i = 0; i < JGemsConfig.SYSTEM.MAX_SPOT_LIGHTS; i++) {
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putInt(0);
-
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-            buffer.putFloat(0.0f);
-        }
-        buffer.flip();
-
-        buffer2.putInt(0);
-        buffer2.flip();
-
-        ShaderStorageBufferProgram.updateSubDataSSBO(spotLightsBuffer, 0L, buffer);
-        ShaderStorageBufferProgram.updateSubDataSSBO(spotLightsBuffer, sizeMainBuffer, buffer2);
+        ShaderStorageBufferProgram.clearBufferData(spotLightsBuffer, GL46.GL_R32UI, GL46.GL_RED_INTEGER, GL46.GL_UNSIGNED_INT, (ByteBuffer) null);
     }
 
     public float getSsaoRange() {
@@ -329,6 +273,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     public abstract int getMaxPointLights();
+
     public abstract int getMaxSpotLights();
 
     @Override

@@ -52,7 +52,7 @@ public class SceneCulling implements ISceneCulling {
     public final void cull(@NotNull Matrix4f projectionMatrix, @NotNull ICamera camera, @NotNull Collection<? extends ICulled>[] objects) {
         for (Collection<? extends ICulled> collection : objects) {
             if (collection.isEmpty()) {
-                return;
+                continue;
             }
             if ((this.getModes() & SceneCulling.DISTANCE) != 0) {
                 this.getCpuDistanceCulling().setCamera(camera);

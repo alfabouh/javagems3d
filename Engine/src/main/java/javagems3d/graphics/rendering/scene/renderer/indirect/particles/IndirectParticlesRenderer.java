@@ -1,6 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.indirect.particles;
 
-import javagems3d.graphics.environment.particles.data.ParticleFXRenderData;
+import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
@@ -12,11 +12,12 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
-import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -68,7 +69,7 @@ public abstract class IndirectParticlesRenderer {
         while (iterator.hasNext()) {
             ParticleFX particleFX = iterator.next();
             if (pipeline.equals(Pipeline.SOLID_SCENE)) {
-                if (particleFX.getParticleFXRenderData().isTransparent()) {
+                if (particleFX.getParticleFXRenderConfig().getDiffuseColor().color().w < 1.0f) {
                     this.getRejected().add(particleFX);
                     iterator.remove();
                     continue;
@@ -109,37 +110,46 @@ public abstract class IndirectParticlesRenderer {
     }
 
     protected void passPropertiesInBuffer(ParticleFX particleFX, ByteBuffer properties) {
-        ParticleFXRenderData renderData = particleFX.getParticleFXRenderData();
+        ParticleFXRenderConfig config = particleFX.getParticleFXRenderConfig();
         {
-            properties.putFloat(renderData.particleFXMaterial().getDiffuseColor().color().x);
-            properties.putFloat(renderData.particleFXMaterial().getDiffuseColor().color().y);
-            properties.putFloat(renderData.particleFXMaterial().getDiffuseColor().color().z);
-            properties.putFloat(renderData.particleFXMaterial().getDiffuseColor().color().w);
+            Vector4f c = config.getDiffuseColor().color();
+            properties.putFloat(c.x);
+            properties.putFloat(c.y);
+            properties.putFloat(c.z);
+            properties.putFloat(c.w);
         }
+
         {
-            properties.putFloat(renderData.particleFXMaterial().getEmissionColor().color().x);
-            properties.putFloat(renderData.particleFXMaterial().getEmissionColor().color().y);
-            properties.putFloat(renderData.particleFXMaterial().getEmissionColor().color().z);
+            Vector3f e = config.getEmissionColor().color();
+            properties.putFloat(e.x);
+            properties.putFloat(e.y);
+            properties.putFloat(e.z);
         }
+
         {
             properties.putInt(particleFX.getCurrentTextureID());
         }
+
         {
-            properties.putFloat(renderData.particleFXProperties().getEmissionStrength());
-            properties.putFloat(renderData.particleFXProperties().getAlphaDiscard());
+            properties.putFloat(config.getEmissionStrength());
+            properties.putFloat(config.getAlphaDiscard());
         }
+
         {
-            final long descriptorImg = renderData.particleFXMaterial().getTextureMap().getBindingHandler();
-            properties.putInt((int)(descriptorImg & 0xFFFFFFFFL)); // low
-            properties.putInt((int)((descriptorImg >>> 32) & 0xFFFFFFFFL)); // high
+            long descriptor = config.getTexture().getBindingHandler();
+            properties.putInt((int) (descriptor & 0xFFFFFFFFL));
+            properties.putInt((int) ((descriptor >>> 32) & 0xFFFFFFFFL));
         }
+
         {
-            properties.putInt(particleFX.getParticleFXRenderData().spriteProperties().cellsXY().x);
-            properties.putInt(particleFX.getParticleFXRenderData().spriteProperties().cellsXY().y);
+            properties.putInt(config.getCellsXY().x);
+            properties.putInt(config.getCellsXY().y);
         }
+
         {
             properties.putFloat(particleFX.interpolationPoint());
         }
+
         {
             properties.putInt(particleFX.getInterpolateWithTextureID());
         }

@@ -7,7 +7,6 @@ import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommands
 import javagems3d.graphics.rendering.programs.indirect.commands.ParticleIndirectCommandsProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.scene_objects.IndirectSceneObjectsRenderer;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -49,6 +48,6 @@ public class GroupedParticlesIndirectRenderer extends IndirectParticlesRenderer 
     }
 
     protected Map<ShaderManager, Set<ParticleFX>> groupObjects(@NotNull Collection<ParticleFX> sceneObjects) {
-        return sceneObjects.stream().collect(Collectors.groupingBy(e -> this.getPipeline() == Pipeline.TRANSPARENCY ? e.getParticleFXRenderData().transparencyShaderManager() : e.getParticleFXRenderData().mainSceneShaderManager(), HashMap::new, Collectors.toSet()));
+        return sceneObjects.stream().collect(Collectors.groupingBy(e -> this.getPipeline() == Pipeline.TRANSPARENCY ? e.getParticleFXRenderConfig().getTransparencyShader() : e.getParticleFXRenderConfig().getMainSceneShader(), HashMap::new, Collectors.toSet()));
     }
 }

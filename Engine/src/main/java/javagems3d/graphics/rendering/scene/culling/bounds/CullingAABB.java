@@ -13,6 +13,11 @@ public class CullingAABB {
         this.check();
     }
 
+    public static CullingAABB getCubeCullingAABB(Vector3f pos, Vector3f scale) {
+        Vector3f sc = new Vector3f(scale).div(2.0f);
+        return new CullingAABB(new Vector3f(pos).sub(sc), new Vector3f(pos).add(sc));
+    }
+
     private void check() {
         if (this.aabbMax.x - this.aabbMin.x <= 1.0e-4f) {
             aabbMin.x += -0.001f;

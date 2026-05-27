@@ -1,5 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces;
 
+import javagems3d.graphics.environment.decals.fx.DecalFX;
+import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -14,6 +16,8 @@ public interface IDeferredRenderNode extends IRenderNode {
 
     void setIndirectDeferredRenderingObjects(@NotNull Collection<SceneObject> indirectDeferredRenderingObjects);
     void setDirectDeferredRenderingObjects(@NotNull Collection<SceneObject> directDeferredRenderingObjects);
+
+    IDeferredRenderNode setFilteredDecalsToRender(Collection<DecalFX> filteredDEcalsToRender);
 
     Collection<SceneObject> getIndirectDeferredRenderingObjects();
     Collection<SceneObject> getDirectDeferredRenderingObjects();

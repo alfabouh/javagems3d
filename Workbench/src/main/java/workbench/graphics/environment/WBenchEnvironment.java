@@ -60,6 +60,7 @@ public class WBenchEnvironment implements IEnvironment, ISnapshotCompatible<WBen
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.updateLightsBuffer(this.getWorld(), this.getShadowScene().getPointLightIdsHashMap(), this.getShadowScene().getSpotLightIdsHashMap(), stack);
             this.getFogScene().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), this.getLightScene(), stack);
+            //this.getDecalsScene().fillSSBO(stack);
         }
         this.getParticlesScene().update(this.getWorld());
         this.getDecalsScene().update(this.getWorld());

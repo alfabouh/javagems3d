@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.shaders.uniform;
 
 public enum DefaultUniformDefinitions {
     PROJECTION_MODEL_MATRIX("projection_model_matrix"),
+    ORTHO_PROJECTION_MODEL_MATRIX("ortho_projection_model_matrix"),
     PROJECTION_MATRIX("projection_matrix"),
     TEXTURE_MAP("texture_map"),
     BRIGHT_MAP("bright_map"),

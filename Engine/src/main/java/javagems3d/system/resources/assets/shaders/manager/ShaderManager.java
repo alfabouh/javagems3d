@@ -262,7 +262,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             this.graphicShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (gShaderProgram.createShader(this.getShadersContainer().getFragmentShader(), this.getShadersContainer().getVertexShader(), this.getShadersContainer().getGeometricShader(), this.getShadersContainer().getTesselationControlShader(), this.getShadersContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
-                    Log.get().info("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
+                    Log.get().info("G-Shader " + this + " linking... (program id=" + gShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in g-shader " + this);
                 }
@@ -274,7 +274,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             this.computingShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (cShaderProgram.createShader(this.getShadersContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
-                    Log.get().info("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
+                    Log.get().info("C-Shader " + this + " linking... (program id=" + cShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in c-shader " + this);
                 }

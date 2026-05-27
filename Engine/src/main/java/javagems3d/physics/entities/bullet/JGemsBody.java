@@ -105,6 +105,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
         this.getPhysicsRigidBody().setContactDamping(0.0f);
         this.getPhysicsRigidBody().setUserObject(this);
+        this.getPhysicsRigidBody().setUserIndex(this.getItemId());
         this.setCollisionFilter(CollisionType.UNIVERSAL);
         this.postInit(dynamicsSystem, this.getPhysicsRigidBody());
         DynamicsUtils.transformRigidBody(this.getPhysicsRigidBody(), this.startPosition, this.startRotation, this.startScaling);
@@ -116,49 +117,61 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     @Override
     public Vector3f getScaling() {
-        if (this.getPhysicsRigidBody() == null) {
-            return new Vector3f(this.startScaling);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                return new Vector3f(this.startScaling);
+            }
+            return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
         }
-        return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
     }
 
     public void setScaling(Vector3f scaling) {
-        if (this.getPhysicsRigidBody() == null) {
-            this.startScaling.set(scaling);
-        } else {
-            DynamicsUtils.scaleRigidBody(this.getPhysicsRigidBody(), scaling);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                this.startScaling.set(scaling);
+            } else {
+                DynamicsUtils.scaleRigidBody(this.getPhysicsRigidBody(), scaling);
+            }
         }
     }
 
     @Override
     public Vector3f getPosition() {
-        if (this.getPhysicsRigidBody() == null) {
-            return new Vector3f(this.startPosition);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                return new Vector3f(this.startPosition);
+            }
+            return DynamicsUtils.getObjectBodyPos(this.getPhysicsRigidBody());
         }
-        return DynamicsUtils.getObjectBodyPos(this.getPhysicsRigidBody());
     }
 
     public void setPosition(Vector3f position) {
-        if (this.getPhysicsRigidBody() == null) {
-            this.startPosition.set(position);
-        } else {
-            DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), position);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                this.startPosition.set(position);
+            } else {
+                DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), position);
+            }
         }
     }
 
     @Override
     public Vector3f getRotation() {
-        if (this.getPhysicsRigidBody() == null) {
-            return new Vector3f(this.startRotation);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                return new Vector3f(this.startRotation);
+            }
+            return DynamicsUtils.getObjectBodyRot(this.getPhysicsRigidBody());
         }
-        return DynamicsUtils.getObjectBodyRot(this.getPhysicsRigidBody());
     }
 
     public void setRotation(Vector3f rotation) {
-        if (this.getPhysicsRigidBody() == null) {
-            this.startRotation.set(rotation);
-        } else {
-            DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), rotation);
+        synchronized (this) {
+            if (this.getPhysicsRigidBody() == null) {
+                this.startRotation.set(rotation);
+            } else {
+                DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), rotation);
+            }
         }
     }
 

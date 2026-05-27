@@ -1,6 +1,5 @@
 #extension GL_ARB_bindless_texture : require
-precision highp float;
-precision highp int;
+
 
 in vec3 uv_coordinates_cube;
 

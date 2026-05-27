@@ -102,22 +102,22 @@ public final class JGemsAPIManager {
             for (Class<?> clazz : classSet) {
                 Method[] methods = clazz.getDeclaredMethods();
                 for (Method method : methods) {
-                    Class<?>[] parameters = method.getParameterTypes();
-                    if (parameters.length != 1) {
-                        Log.get().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName() + " - Skip");
-                        continue;
-                    }
-                    Class<?>[] interfaces = parameters[0].getInterfaces();
-                    if (interfaces.length != 1 || interfaces[0] != EventBus.IEvent.class) {
-                        Log.get().error("Method has wrong argument(? -> IEvent): " + method.getName());
-                        continue;
-                    }
-                    TreeSet<PriorityMethod> priorityMethods = this.eventMap.get(parameters[0]);
-                    if (priorityMethods == null) {
-                        Log.get().error("Couldn't find event with name: " + clazz.getName());
-                        continue;
-                    }
                     if (method.isAnnotationPresent(SubscribeEvent.class)) {
+                        Class<?>[] parameters = method.getParameterTypes();
+                        if (parameters.length != 1) {
+                            Log.get().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName() + " - Skip");
+                            continue;
+                        }
+                        Class<?>[] interfaces = parameters[0].getInterfaces();
+                        if (interfaces.length != 1 || interfaces[0] != EventBus.IEvent.class) {
+                            Log.get().error("Method has wrong argument(? -> IEvent): " + method.getName());
+                            continue;
+                        }
+                        TreeSet<PriorityMethod> priorityMethods = this.eventMap.get(parameters[0]);
+                        if (priorityMethods == null) {
+                            Log.get().error("Couldn't find event with name: " + clazz.getName());
+                            continue;
+                        }
                         SubscribeEvent subscribeEvent = method.getAnnotation(SubscribeEvent.class);
                         priorityMethods.add(new PriorityMethod(method, subscribeEvent.priority()));
                     }
