@@ -89,20 +89,7 @@ public abstract class SystemResources implements ISystemResources {
             if (modelPath == null) {
                 throw new JGemsNullException("Null model");
             }
-            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, false, keepTrianglesInMemory, buildSubMeshesAABBs));
-        } catch (Exception e) {
-            Log.get().exception(e);
-            Log.get().error("Returned default model");
-            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
-        }
-    }
-
-    public MeshGroup createMeshGroupWithBindlessBufferAttachment(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
-        try {
-            if (modelPath == null) {
-                throw new JGemsNullException("Null model");
-            }
-            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, true, keepTrianglesInMemory, buildSubMeshesAABBs));
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, keepTrianglesInMemory, buildSubMeshesAABBs));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
@@ -129,19 +116,6 @@ public abstract class SystemResources implements ISystemResources {
                 throw new JGemsNullException("Null model");
             }
             return this.createMeshGroup(modelPath, null, keepTrianglesInMemory, buildSubMeshesAABBs);
-        } catch (Exception e) {
-            Log.get().exception(e);
-            Log.get().error("Returned default model");
-            return ResourceManager.DEFAULT_CUBE_MESHGROUP();
-        }
-    }
-
-    public MeshGroup createMeshGroupWithBindlessBufferAttachment(JGemsPathSource modelPath, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
-        try {
-            if (modelPath == null) {
-                throw new JGemsNullException("Null model");
-            }
-            return this.createMeshGroupWithBindlessBufferAttachment(modelPath, null, keepTrianglesInMemory, buildSubMeshesAABBs);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");

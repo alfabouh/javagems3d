@@ -44,7 +44,7 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
 
     public boolean test(ICulled culled) {
         if (!culled.isCanBeCulled() || culled.getCullingRules().isIgnoreFrustumCulling()) {
-            return false;
+            return true;
         }
         return this.isInFrustum(culled.getCullingData());
     }
@@ -52,11 +52,11 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
     @Override
     public void filter(@NotNull Collection<? extends ICulled> sceneObjects) {
         sceneObjects.removeIf(e -> {
-            boolean flag = !this.test(e);
-            if (!flag) {
-                JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS++;
+            if (!this.test(e)) {
+                return true;
             }
-            return flag;
+            JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS++;
+            return false;
         });
     }
 }

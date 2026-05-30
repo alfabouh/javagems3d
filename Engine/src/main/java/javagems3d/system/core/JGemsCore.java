@@ -18,7 +18,7 @@ import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.system.external.mapping.processing.callbacks.IMapActionCallback;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.resources.localisation.JGemsLocalisation;
+import javagems3d.system.resources.localisation.JGemsLocalization;
 import javagems3d.system.resources.localisation.LocalizationManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.files.JGemsPath;
@@ -44,13 +44,13 @@ import java.util.*;
 public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "1.0b-dev build 15";
+    public static final String ENG_VER = "1.0b-dev build 16";
 
     private final JGemsSoundManager jGemsSoundManager;
     private final JGemsScreen jGemsScreen;
     private final JGemsPhysics jGemsPhysics;
     private final JGemsResourceManager resourceManager;
-    private final JGemsLocalisation localisation;
+    private final JGemsLocalization localisation;
 
     private final EngineState engineState;
     private final RequestsFromThreads requestsFromThreads;
@@ -67,7 +67,7 @@ public final class JGemsCore implements ICore {
             JavaToJsAPI.setJSScreen(this.jGemsScreen);
         }
         this.resourceManager = new JGemsResourceManager();
-        this.localisation = new JGemsLocalisation();
+        this.localisation = new JGemsLocalization();
 
         this.engineState = new EngineState();
         this.systemThread = null;
@@ -331,7 +331,7 @@ public final class JGemsCore implements ICore {
         }
     }
 
-    public JGemsLocalisation getLocalization() {
+    public JGemsLocalization getLocalization() {
         synchronized (this.localisation) {
             return this.localisation;
         }

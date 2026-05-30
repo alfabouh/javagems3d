@@ -14,6 +14,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public abstract class JGemsKinematicControlledItem extends JGemsKinematicItem implements IControllable {
+    private final Object cameraLock = new Object();
+    private final Object inputLock = new Object();
+
     private IController controller;
     private final Vector3f cameraRotation;
     private final Deque<Vector3f> inputMotion;
@@ -49,66 +52,90 @@ public abstract class JGemsKinematicControlledItem extends JGemsKinematicItem im
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (!isFocused) {
-            this.inputMotion.clear();
+            synchronized (this.inputLock) {
+                this.inputMotion.clear();
+            }
             return;
         }
-        this.getCameraRotation().add(new Vector3f(rotationInput, 0.0f));
-        if (this.inputMotion.size() < JGemsPhysics.TICKS_PER_SECOND) {
-            this.inputMotion.addFirst(new Vector3f(xyzInput));
+
+        synchronized (this.cameraLock) {
+            this.cameraRotation.add(new Vector3f(rotationInput, 0.0f));
+            this.clampCameraRotation();
         }
-        this.clampCameraRotation();
+
+        synchronized (this.inputLock) {
+            if (this.inputMotion.size() < JGemsPhysics.TICKS_PER_SECOND) {
+                this.inputMotion.addFirst(new Vector3f(xyzInput));
+            }
+        }
     }
 
     protected Vector3f getControllerMoveMotion() {
-        if (this.inputMotion.isEmpty()) {
-            return new Vector3f(0.0f);
+        Vector3f inputMotion;
+
+        synchronized (this.inputLock) {
+            if (this.inputMotion.isEmpty()) {
+                return new Vector3f(0.0f);
+            }
+            inputMotion = this.inputMotion.pop();
         }
+
         float[] motion = new float[3];
         float[] input = new float[3];
-        Vector3f inputMotion = this.inputMotion.pop();
+
         input[0] = inputMotion.x;
         input[1] = inputMotion.y;
         input[2] = inputMotion.z;
+
+        float rotY = this.getRotation().y;
+
         if (input[2] != 0) {
-            motion[0] += (float) Math.sin(this.getRotation().y) * -1.0f * input[2];
-            motion[2] += (float) Math.cos(this.getRotation().y) * input[2];
+            motion[0] += (float) Math.sin(rotY) * -1.0f * input[2];
+            motion[2] += (float) Math.cos(rotY) * input[2];
         }
+
         if (input[0] != 0) {
-            motion[0] += (float) Math.sin(this.getRotation().y - (Math.PI / 2.0f)) * -1.0f * input[0];
-            motion[2] += (float) Math.cos(this.getRotation().y - (Math.PI / 2.0f)) * input[0];
+            motion[0] += (float) Math.sin(rotY - (Math.PI / 2.0f)) * -1.0f * input[0];
+            motion[2] += (float) Math.cos(rotY - (Math.PI / 2.0f)) * input[0];
         }
+
         if (input[1] != 0) {
             motion[1] += input[1];
         }
+
         return new Vector3f(motion[0], motion[1], motion[2]);
     }
 
     @Override
-    public void setRotation(Vector3f vector3d) {
-        synchronized (this) {
-            this.cameraRotation.set(vector3d);
+    public void setRotation(Vector3f vector3f) {
+        synchronized (this.cameraLock) {
+            this.cameraRotation.set(vector3f);
         }
     }
 
     @Override
     public Vector3f getRotation() {
-        synchronized (this) {
-            return this.getCameraRotation();
+        synchronized (this.cameraLock) {
+            return new Vector3f(this.cameraRotation);
         }
     }
 
     public Vector3f getCameraRotation() {
-        synchronized (this) {
-            return this.cameraRotation;
+        synchronized (this.cameraLock) {
+            return new Vector3f(this.cameraRotation);
         }
     }
 
     private void clampCameraRotation() {
-        if (this.getRotation().x > Math.toRadians(90.0f)) {
-            this.getCameraRotation().set(new Vector3d(Math.toRadians(90.0f), this.getRotation().y, this.getRotation().z));
-        }
-        if (this.getRotation().x < -Math.toRadians(90.0f)) {
-            this.getCameraRotation().set(new Vector3d(-Math.toRadians(90.0f), this.getRotation().y, this.getRotation().z));
+        synchronized (this.cameraLock) {
+            float x = this.cameraRotation.x;
+            float max = (float) Math.toRadians(90.0f);
+            if (x > max) {
+                this.cameraRotation.x = max;
+            }
+            if (x < -max) {
+                this.cameraRotation.x = -max;
+            }
         }
     }
 }

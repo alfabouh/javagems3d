@@ -10,7 +10,6 @@ import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.scans.PhysicsWorldHitScans;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.core.transmitter.ThreadActionsTransmitter;
 import javagems3d.system.service.collections.Pair;
@@ -79,11 +78,13 @@ public final class PhysicsWorld implements IWorld {
     public void addObject(IWorldObject worldObject) {
         EventBus.PhysicsWorldObjectAddEvent event = new EventBus.PhysicsWorldObjectAddEvent(this, worldObject);
         EventLauncher.pushEvent(event, new Pair<>(new JSPhysicsWorldObjectAddEvent(new JSPhysicsWorld(this), () -> worldObject), JavaToJsAPI.Target.Game));
-        if (event.isCancelled()) { return; }
+        if (event.isCancelled()) {
+            return;
+        }
         this.getWorldObjectsContainer().addObjectInWorld(worldObject);
     }
 
-    public void removeItem(IWorldObject worldObject) {
+    public void removeObject(IWorldObject worldObject) {
         EventBus.PhysicsWorldObjectRemoveEvent event = new EventBus.PhysicsWorldObjectRemoveEvent(this, worldObject);
         EventLauncher.pushEvent(event, new Pair<>(new JSPhysicsWorldObjectRemoveEvent(new JSPhysicsWorld(this), () -> worldObject), JavaToJsAPI.Target.Game));
         if (event.isCancelled()) {

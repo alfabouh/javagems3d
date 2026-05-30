@@ -11,6 +11,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer {
+    private final Object transformLock = new Object();
+
     private float scalarSpeed;
 
     public JGemsKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
@@ -44,7 +46,7 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
 
     @Override
     public Vector3f getMoveVector() {
-        synchronized (this) {
+        synchronized (transformLock) {
             return this.getControllerMoveMotion();
         }
     }

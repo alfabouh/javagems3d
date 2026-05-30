@@ -1,9 +1,10 @@
 package javagems3d.graphics.rendering.scene.culling.bounds;
 
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class CullingAABB {
+public class CullingAABB implements ICopyable<CullingAABB> {
     private Vector3f aabbMin;
     private Vector3f aabbMax;
 
@@ -55,5 +56,10 @@ public class CullingAABB {
 
     public Vector3f getAabbMax() {
         return new Vector3f(this.aabbMax);
+    }
+
+    @Override
+    public CullingAABB copy() {
+        return new CullingAABB(this.getAabbMin(), this.getAabbMax());
     }
 }

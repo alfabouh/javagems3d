@@ -11,11 +11,11 @@ public class SettingChooseLanguage extends SettingSlot {
     }
 
     public int getMax() {
-        return JGemsHelper.localisation().getLocalisation().max() - 1;
+        return JGemsHelper.localisation().getLocalization().max() - 1;
     }
 
     public String getName(int i) {
-        return JGemsHelper.localisation().getLocalisation().getLangByID(i).lang();
+        return JGemsHelper.localisation().getLocalization().getLangByID(i).lang();
     }
 
     public String getCurrentName() {

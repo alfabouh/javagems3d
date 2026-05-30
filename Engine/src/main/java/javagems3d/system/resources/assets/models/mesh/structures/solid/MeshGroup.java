@@ -11,7 +11,6 @@ import java.util.List;
 
 public class MeshGroup extends MeshStructure3D<RenderMesh> {
     public static final String POSTFIX = "_group";
-    private MeshBuffer linkedMeshBuffer;
     private boolean hasSubMeshAABs;
 
     public MeshGroup(@Nullable List<MeshNode3D<RenderMesh>> meshNodes) {
@@ -34,12 +33,6 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
         this((List<MeshNode3D<RenderMesh>>) null);
     }
 
-    @SuppressWarnings("all")
-    public MeshGroup setLinkedMeshBuffer(MeshBuffer linkedMeshBuffer) {
-        this.linkedMeshBuffer = linkedMeshBuffer;
-        return this;
-    }
-
     public boolean isHasSubMeshAABs() {
         return this.hasSubMeshAABs;
     }
@@ -51,22 +44,11 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
 
     @Override
     public boolean canBeUsedInIndirectRendering() {
-        return this.getLinkedMeshBuffer() != null;
-    }
-
-    public void clearLinkedMeshBufferNodesData() {
-        if (this.canBeUsedInIndirectRendering()) {
-            this.getLinkedMeshBuffer().clearNodesData(false);
-        }
+        return false;
     }
 
     @Override
     public void clear() {
         super.clear();
-        this.clearLinkedMeshBufferNodesData();
-    }
-
-    public MeshBuffer getLinkedMeshBuffer() {
-        return this.linkedMeshBuffer;
     }
 }

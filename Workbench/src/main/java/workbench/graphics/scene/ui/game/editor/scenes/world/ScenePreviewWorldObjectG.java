@@ -211,7 +211,7 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
                         ImGui.text(k);
                         ImGui.sameLine();
                         ImGui.setNextItemWidth(60.0f);
-                        boolean changed = ImGui.dragInt("##" + k, value, 1.0f, i.min, i.max);
+                        boolean changed = ImGui.dragInt("##" + k, value, 0.2f, i.min, i.max);
                         if (withSnapshots) {
                             try (UITrackingHelper ignored = UITrackingHelper.create("TRACK_operationFlag_" + k, WBenchUITrackingHelper::INSTANCE)) {
                                 if (changed) {

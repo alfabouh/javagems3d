@@ -269,7 +269,6 @@ public abstract class ResourceManager {
         {
             ResourceManager.DEFAULT_CUBE_MESHBUFFER = IAssetsInitializer.createDefaultCube_MBuffer();
             ResourceManager.DEFAULT_CUBE_MESHGROUP = IAssetsInitializer.createDefaultCube_MGroup();
-            ResourceManager.DEFAULT_CUBE_MESHGROUP.setLinkedMeshBuffer(ResourceManager.DEFAULT_CUBE_MESHBUFFER);
         }
     }
 

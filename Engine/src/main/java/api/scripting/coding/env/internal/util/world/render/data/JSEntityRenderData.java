@@ -50,8 +50,8 @@ public class JSEntityRenderData {
     }
 
     @JSCodingFunctionOrMethod(description = "Set mesh structure for this entity", paramNames = {"meshStructure"})
-    public JSEntityRenderData setMeshDataGroup(JSMeshStructure3D meshStructure) {
-        this.entityRenderData.setMeshDataGroup(meshStructure != null ? meshStructure.getJavaMeshStructure3D() : null);
+    public JSEntityRenderData setMeshStructure(JSMeshStructure3D meshStructure) {
+        this.entityRenderData.setMeshStructure(meshStructure != null ? meshStructure.getJavaMeshStructure3D() : null);
         return this;
     }
 

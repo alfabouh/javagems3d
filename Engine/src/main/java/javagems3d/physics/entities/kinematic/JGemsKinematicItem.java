@@ -36,6 +36,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class JGemsKinematicItem extends WorldItem implements IWorldTicked, IJGemsBulletEntity {
+    private final Object transformLock = new Object();
+
     private final Vector3f bodyVelocity;
     private PhysicsRigidBody ghostBody;
     private PhysicsRigidBody physicsBody;
@@ -596,14 +598,14 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
     @Override
     public Vector3f getPosition() {
-        synchronized (this) {
+        synchronized (transformLock) {
             return DynamicsUtils.getObjectBodyPos(this.getGhostBody());
         }
     }
 
     @Override
     public void setPosition(Vector3f vector3d) {
-        synchronized (this) {
+        synchronized (transformLock) {
             this.getGhostBody().setPhysicsLocation(DynamicsUtils.convertV3F_JME(vector3d));
         }
     }

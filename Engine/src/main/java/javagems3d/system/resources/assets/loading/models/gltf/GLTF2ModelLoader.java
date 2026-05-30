@@ -58,10 +58,10 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         this.systemResources = systemResources;
     }
 
-    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean attachMeshBuffer, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
+    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
         GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile(), buildSubMeshesAABBs);
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
-        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, attachMeshBuffer, keepTrianglesInMemory).setHasSubMeshAABs((gltf2Scene.animations() == null || gltf2Scene.animations().isEmpty()) && buildSubMeshesAABBs);
+        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, keepTrianglesInMemory).setHasSubMeshAABs((gltf2Scene.animations() == null || gltf2Scene.animations().isEmpty()) && buildSubMeshesAABBs);
     }
 
     public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepTrianglesInMemory) {
@@ -78,22 +78,26 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         return path + postfix;
     }
 
-    private MeshGroup createMeshGroup(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric fabric, boolean attachMeshBuffer, boolean keepTrianglesInMemory) {
+    private MeshGroup createMeshGroup(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric collisionFabric, boolean keepTrianglesInMemory) {
         MeshGroup meshGroup = null;
-        String grString = this.getStr(MeshGroup.POSTFIX);
+        final String grString = this.getStr(MeshGroup.POSTFIX);
+        final String mString = this.getStr("metadata");
         if (this.getResourceCache().checkObjectInCache(grString, MeshGroup.class)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
-            meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), attachMeshBuffer, keepTrianglesInMemory);
-            JGemsHelper.JGemsResources.createMeshAABBData(meshGroup);
-            if (DynamicsSystem.VALID) {
-                JGemsHelper.JGemsResources.createMeshCollisionData(meshGroup, fabric);
-            }
+            meshGroup = this.processMeshGroup(gltf2Scene, this.getSystemResources(), keepTrianglesInMemory);
             this.getResourceCache().registerInCache(grString, meshGroup);
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while processing the model");
+        }
+        if (this.getResourceCache().checkObjectInCache(mString, MeshStructure3D.MetaData.class)) {
+            meshGroup.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshGroup));
+        } else {
+            if (JGemsHelper.JGemsResources.createMetaData(meshGroup, collisionFabric)) {
+                this.getResourceCache().registerInCache(mString, meshGroup.getMetaData());
+            }
         }
         meshGroup.clearNodesData(keepTrianglesInMemory);
         if (meshGroup.isAnimatedStructure()) {
@@ -102,22 +106,26 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         return meshGroup;
     }
 
-    private MeshBuffer createMeshBuffer(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric fabric, boolean keepTrianglesInMemory) {
-        String bffString = this.getStr(MeshBuffer.POSTFIX);
+    private MeshBuffer createMeshBuffer(GLTF2Scene gltf2Scene, @Nullable MeshCollisionData.Fabric collisionFabric, boolean keepTrianglesInMemory) {
+        final String bffString = this.getStr(MeshBuffer.POSTFIX);
+        final String mString = this.getStr("metadata");
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString, MeshBuffer.class)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
             Log.get().info("Mesh " + this.getPathToMainFile() + " picked from cache");
         } else {
             meshBuffer = this.processMeshBuffer(gltf2Scene, this.getSystemResources(), keepTrianglesInMemory);
-            JGemsHelper.JGemsResources.createMeshAABBData(meshBuffer);
-            if (DynamicsSystem.VALID) {
-                JGemsHelper.JGemsResources.createMeshCollisionData(meshBuffer, fabric);
-            }
             this.getResourceCache().registerInCache(bffString, meshBuffer);
         }
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while processing the model");
+        }
+        if (this.getResourceCache().checkObjectInCache(mString, MeshStructure3D.MetaData.class)) {
+            meshBuffer.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshBuffer));
+        } else {
+            if (JGemsHelper.JGemsResources.createMetaData(meshBuffer, collisionFabric)) {
+                this.getResourceCache().registerInCache(mString, meshBuffer.getMetaData());
+            }
         }
         if (meshBuffer.isAnimatedStructure()) {
             this.systemResources.getResourceArrays().getMeshesWithAnimation().add(meshBuffer);
@@ -125,27 +133,17 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         return meshBuffer;
     }
 
-    private MeshGroup processMeshGroup(GLTF2Scene scene, SystemResources systemResources, boolean attachMeshBuffer, boolean keepTrianglesInMemory) {
+    private MeshGroup processMeshGroup(GLTF2Scene scene, SystemResources systemResources, boolean keepTrianglesInMemory) {
         MeshGroup group = new MeshGroup();
-        MeshBuffer buffer = attachMeshBuffer ? new MeshBuffer() : null;
 
         try {
             List<Animation> animations = this.readAnimations(scene);
             List<Material> materials = this.readMaterials(scene, systemResources);
             systemResources.processMessage("Building Mesh Group...", 0x00ff00, SystemResources.ResLoadSysMessageType.LOG);
-            this.processNodes(scene.nodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), buffer != null ? node -> buffer.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node) : null);
+            this.processNodes(scene.nodes(), materials, node -> group.putNode(MeshStructure3D.chooseLayer(node.getMaterial()), node), null);
 
             if (animations != null) {
                 group.loadAnimations(animations);
-                if (buffer != null) {
-                    buffer.loadAnimations(animations);
-                }
-            }
-
-            if (buffer != null) {
-                group.setLinkedMeshBuffer(buffer);
-                buffer.setKeepTrianglesInMemory(keepTrianglesInMemory);
-                systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(buffer);
             }
 
             Log.get().info("Mesh " + this.getPathToMainFile() + " successfully created");

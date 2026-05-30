@@ -1,6 +1,7 @@
 package javagems3d.audio.sound;
 
 import javagems3d.system.settings.JGemsSettings;
+import logger.Log;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
@@ -11,6 +12,10 @@ import javagems3d.audio.JGemsSoundManager;
 public class SoundListener {
     public static void updateOrientationAndPosition(Matrix4f cameraMatrix, Vector3f position) {
         if (ALC10.alcGetCurrentContext() == MemoryUtil.NULL) {
+            return;
+        }
+        if (!position.isFinite() || !cameraMatrix.isFinite()) {
+            Log.get().warn("Tried to update sound listener, invalid data!");
             return;
         }
         AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);

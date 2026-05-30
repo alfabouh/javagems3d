@@ -3,11 +3,12 @@ package javagems3d.system.resources.assets.models.mesh.data;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public class MeshBoundingBoxData {
+public class MeshBoundingBoxData implements ICopyable<MeshBoundingBoxData> {
     private final CullingAABB cullingAABB;
 
     public MeshBoundingBoxData(CullingAABB cullingAABB) {
@@ -50,5 +51,10 @@ public class MeshBoundingBoxData {
 
     public CullingAABB getNormalizedAABB(Matrix4f modelMatrix) {
         return MeshBoundingBoxData.transformAABB(this.cullingAABB, modelMatrix);
+    }
+
+    @Override
+    public MeshBoundingBoxData copy() {
+        return new MeshBoundingBoxData(this.cullingAABB.copy());
     }
 }

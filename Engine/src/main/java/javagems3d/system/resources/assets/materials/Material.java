@@ -114,6 +114,7 @@ public class Material {
             this.hasTransparentPixels = false;
         }
 
+        @Deprecated
         public static boolean scanForAlphaPixels(@NotNull JGemsShaderManager computing, ITexture2DProgram imageTexture) {
             int texWidth = imageTexture.getSize().x;
             int texHeight = imageTexture.getSize().y;

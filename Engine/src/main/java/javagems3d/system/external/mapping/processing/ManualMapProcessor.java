@@ -60,11 +60,11 @@ public abstract class ManualMapProcessor extends MapProcessor {
             MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), ISource.Source.INSIDE_JAR), false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDeleted(false);
-            JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
+            JGemsHelper.world().addWorldObjectInBothWorlds(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
             worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
             Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
-            JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+            JGemsHelper.world().addLiquidInBothWorlds(water, JGemsResourceManager.globalRenderDataAssets.water);
 
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();

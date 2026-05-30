@@ -18,6 +18,8 @@ import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.physics.world.triggers.ITriggerAction;
 
 public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity, IWorldTicked {
+    private final Object transformLock = new Object();
+
     private EntityState entityState;
     private boolean canBeDestroyed;
     private JGemsPhysicsRigidBody physicsRigidBody;
@@ -117,7 +119,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     @Override
     public Vector3f getScaling() {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 return new Vector3f(this.startScaling);
             }
@@ -125,8 +127,9 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         }
     }
 
+    @Override
     public void setScaling(Vector3f scaling) {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 this.startScaling.set(scaling);
             } else {
@@ -137,7 +140,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     @Override
     public Vector3f getPosition() {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 return new Vector3f(this.startPosition);
             }
@@ -146,7 +149,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     }
 
     public void setPosition(Vector3f position) {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 this.startPosition.set(position);
             } else {
@@ -157,7 +160,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     @Override
     public Vector3f getRotation() {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 return new Vector3f(this.startRotation);
             }
@@ -166,7 +169,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     }
 
     public void setRotation(Vector3f rotation) {
-        synchronized (this) {
+        synchronized (this.transformLock) {
             if (this.getPhysicsRigidBody() == null) {
                 this.startRotation.set(rotation);
             } else {
@@ -213,7 +216,9 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     }
 
     public JGemsPhysicsRigidBody getPhysicsRigidBody() {
+        synchronized (this) {
         return this.physicsRigidBody;
+        }
     }
 
     public static class JGemsPhysicsRigidBody extends PhysicsRigidBody {
@@ -285,6 +290,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
             this.setMass(this.calcMass(material.m_density()));
             this.setLinearDamping(material.l_damping());
             this.setAngularDamping(material.a_damping());
+            this.setRestitution(material.restitution());
             this.saveDensity = material.m_density();
         }
 

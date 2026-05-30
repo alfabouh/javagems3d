@@ -6,18 +6,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ThreadActionsTransmitter {
     public static final ThreadActionsTransmitter INSTANCE = new ThreadActionsTransmitter();
-    public static final Object monitor = new Object();
+   // public static final Object monitor = new Object();
 
-
-    private final List<Physics_Render__Action> actions__PHYSICS_TO_RENDER;
-    private final List<Render_Physics__Action> actions__RENDER_TO_PHYSICS;
+    private final Queue<Physics_Render__Action> actions__PHYSICS_TO_RENDER;
+    private final Queue<Render_Physics__Action> actions__RENDER_TO_PHYSICS;
 
     private ThreadActionsTransmitter() {
-        this.actions__PHYSICS_TO_RENDER = new ArrayList<>();
-        this.actions__RENDER_TO_PHYSICS = new ArrayList<>();
+        this.actions__PHYSICS_TO_RENDER = new ConcurrentLinkedQueue<>();
+        this.actions__RENDER_TO_PHYSICS = new ConcurrentLinkedQueue<>();
     }
 
     public void clear() {
@@ -26,26 +27,26 @@ public final class ThreadActionsTransmitter {
     }
 
     public void TRANSMIT_ACTION__RENDER_PHYS(@NotNull Render_Physics__Action action) {
-        synchronized (ThreadActionsTransmitter.monitor) {
+        //synchronized (ThreadActionsTransmitter.monitor) {
             this.actions__RENDER_TO_PHYSICS.add(action);
-        }
+        //}
     }
 
     public void TRANSMIT_ACTION__PHYS_RENDER(@NotNull Physics_Render__Action action) {
-        synchronized (ThreadActionsTransmitter.monitor) {
+        //synchronized (ThreadActionsTransmitter.monitor) {
             this.actions__PHYSICS_TO_RENDER.add(action);
-        }
+        //}
     }
 
-    public List<Physics_Render__Action> getActions__PHYSICS_TO_RENDER() {
-        synchronized (ThreadActionsTransmitter.monitor) {
+    public Queue<Physics_Render__Action> getActions__PHYSICS_TO_RENDER() {
+        //synchronized (ThreadActionsTransmitter.monitor) {
             return this.actions__PHYSICS_TO_RENDER;
-        }
+        //}
     }
 
-    public List<Render_Physics__Action> getActions__RENDER_TO_PHYSICS() {
-        synchronized (ThreadActionsTransmitter.monitor) {
+    public Queue<Render_Physics__Action> getActions__RENDER_TO_PHYSICS() {
+        //synchronized (ThreadActionsTransmitter.monitor) {
             return this.actions__RENDER_TO_PHYSICS;
-        }
+        //}
     }
 }

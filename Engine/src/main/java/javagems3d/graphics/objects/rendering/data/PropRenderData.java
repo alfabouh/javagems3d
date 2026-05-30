@@ -66,7 +66,7 @@ public class PropRenderData {
         return this;
     }
 
-    public PropRenderData setMeshDataGroup(MeshStructure3D<?> meshStructure) {
+    public PropRenderData setMeshStructure(MeshStructure3D<?> meshStructure) {
         this.meshStructure = meshStructure;
         this.propModelConstructor = null;
         return this;
@@ -98,7 +98,7 @@ public class PropRenderData {
 
     public PropRenderData copyObject() {
         PropRenderData entityRenderData = new PropRenderData(this.getSceneObjectConstructor(), this.getObjectRenderAttributes() == null ? null : this.getObjectRenderAttributes().copy());
-        entityRenderData.setMeshDataGroup(this.getMeshDataGroup());
+        entityRenderData.setMeshStructure(this.getMeshDataGroup());
         entityRenderData.setPropModelConstructor(this.getPropModelConstructor());
         return entityRenderData;
     }

@@ -68,6 +68,9 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
             this.updateModelTranslation();
+            if (this.getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, -1) < 0) {
+                this.getRenderAttributes().getProperties().setValueInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, worldItem.getItemId() + Short.MAX_VALUE);
+            }
         }
     }
 

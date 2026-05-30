@@ -17,9 +17,7 @@ import api.events.EventLauncher;
 import api.scripting.coding.env.internal.map.events.mapping.*;
 import api.scripting.coding.env.internal.map.events.mapping.data.JSEntityData;
 import api.scripting.coding.env.internal.map.events.mapping.data.JSPropData;
-import api.scripting.coding.env.internal.util.mapping.player.JSSpawnPlayerTranslateData;
 import api.scripting.coding.env.internal.util.mapping.row.JSRowMapObjectData;
-import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
@@ -70,7 +68,6 @@ import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
-import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
@@ -102,7 +99,6 @@ import java.lang.Math;
 import java.util.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
     private final JGemsPathSource pathToJG3DFile;
@@ -229,7 +225,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
             WorldItem worldItem = event.getResult() == null ? null : event.getResult().first();
             if (worldItem != null && event.getResult().second() != null) {
-                mainScene_idMap.put(template.getId(), JGemsHelper.world().addWorldItem(event.getResult().first(), event.getResult().second().entityRenderData()).second());
+                mainScene_idMap.put(template.getId(), JGemsHelper.world().addWorldObjectInBothWorlds(event.getResult().first(), event.getResult().second().entityRenderData()).second());
             } else {
                 final Pair<WorldItem, SceneObject> pair = this.onProcessEntity(template, data, physicsWorld, sceneWorld);
                 if (pair != null) {
@@ -256,7 +252,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             Vector3f pos = template.getPosition();
             Vector3f scale = template.getScaling();
             Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
-            JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+            JGemsHelper.world().addLiquidInBothWorlds(water, JGemsResourceManager.globalRenderDataAssets.water);
             Log.get().debug("Processed marker: water");
         }
 
@@ -692,7 +688,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
-            return JGemsHelper.world().addWorldItem(jGemsBody, entityRenderData);
+            return JGemsHelper.world().addWorldObjectInBothWorlds(jGemsBody, entityRenderData);
         }
 
         @Override

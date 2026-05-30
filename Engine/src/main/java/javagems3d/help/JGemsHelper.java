@@ -34,6 +34,7 @@ import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.IWorldObject;
+import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.external.mapping.IGameMap;
 import javagems3d.system.external.mapping.processing.base.IMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
@@ -65,7 +66,7 @@ import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefiniti
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
-import javagems3d.system.resources.localisation.JGemsLocalisation;
+import javagems3d.system.resources.localisation.JGemsLocalization;
 import javagems3d.system.resources.localisation.LocalizationManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
@@ -120,7 +121,7 @@ public final class JGemsHelper {
     private final JGemsResources resources;
     private final Render render;
     private final UI ui;
-    private final Localisation localisation;
+    private final Localization localization;
     private final World world;
     private final Screen screen;
     private final Map map;
@@ -134,7 +135,7 @@ public final class JGemsHelper {
         this.resources = new JGemsResources();
         this.render = new Render();
         this.ui = new UI();
-        this.localisation = new Localisation();
+        this.localization = new Localization();
         this.world = new World();
         this.screen = new Screen();
         this.map = new Map();
@@ -163,8 +164,8 @@ public final class JGemsHelper {
         return JGemsHelper.get().ui;
     }
 
-    public static Localisation localisation() {
-        return JGemsHelper.get().localisation;
+    public static Localization localisation() {
+        return JGemsHelper.get().localization;
     }
 
     public static World world() {
@@ -388,26 +389,26 @@ public final class JGemsHelper {
         }
 
         public void removeWorldObject(IWorldObject worldItem) {
-            JGemsHelper.this.getPhysicsWorld().removeItem(worldItem);
+            JGemsHelper.this.getPhysicsWorld().removeObject(worldItem);
         }
 
-        public Pair<WorldItem, SceneObject> addWorldItem(WorldItem worldItem, EntityRenderData renderData) {
+        public Pair<WorldItem, SceneObject> addWorldObjectInBothWorlds(WorldItem worldItem, EntityRenderData renderData) {
             JGemsHelper.this.getPhysicsWorld().addObject(worldItem);
-            SceneObject sceneObject = JGemsHelper.this.getSceneWorld().addWorldItem(worldItem, renderData);
+            SceneObject sceneObject = JGemsHelper.this.getSceneWorld().addWorldObject(worldItem, renderData);
             return new Pair<>(worldItem, sceneObject);
         }
 
         public void removeWorldItem(WorldItem worldItem) {
-            JGemsHelper.this.getPhysicsWorld().removeItem(worldItem);
+            JGemsHelper.this.getPhysicsWorld().removeObject(worldItem);
         }
 
-        public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
+        public void addLiquidInBothWorlds(Liquid liquid, LiquidRenderData liquidRenderData) {
             JGemsHelper.this.getPhysicsWorld().addObject(liquid);
             JGemsHelper.this.getSceneWorld().addLiquid(liquid, liquidRenderData);
         }
 
         public void removeLiquid(Liquid liquid) {
-            JGemsHelper.this.getPhysicsWorld().removeItem(liquid);
+            JGemsHelper.this.getPhysicsWorld().removeObject(liquid);
         }
 
         public void removeLight(Light light) {
@@ -427,25 +428,25 @@ public final class JGemsHelper {
         }
     }
 
-    public static final class Localisation {
-        public JGemsLocalisation getLocalisation() {
+    public static final class Localization {
+        public JGemsLocalization getLocalization() {
             return JGems3D.get().getLocalization();
         }
 
         public void readLanguageMap(LocalizationManager.Lang lang, @NotNull JGemsPathSource path) throws IOException {
-            this.getLocalisation().readLanguageMap(lang, path);
+            this.getLocalization().readLanguageMap(lang, path);
         }
 
         public LocalizationManager.Lang getCurrentLanguage() {
-            return this.getLocalisation().getCurrentLang();
+            return this.getLocalization().getCurrentLang();
         }
 
         public void setCurrentLanguage(LocalizationManager.Lang lang) {
-            this.getLocalisation().setCurrentLang(lang);
+            this.getLocalization().setCurrentLang(lang);
         }
 
         public String format(String key, Object... args) {
-            return this.getLocalisation().format(key, args);
+            return this.getLocalization().format(key, args);
         }
     }
 
@@ -680,6 +681,18 @@ public final class JGemsHelper {
 
     public final class JGemsResources {
         @SuppressWarnings("all")
+        public static boolean createMetaData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric collisionFabric) {
+            boolean created = false;
+            created = JGemsResources.createMeshAABBData(meshStructure);
+            if (DynamicsSystem.VALID) {
+                if (JGemsHelper.JGemsResources.createMeshCollisionData(meshStructure, collisionFabric)) {
+                    created = true;
+                }
+            }
+            return created;
+        }
+
+        @SuppressWarnings("all")
         public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
             int optimalThreads = Runtime.getRuntime().availableProcessors();
             if (meshStructure != null) {
@@ -695,15 +708,10 @@ public final class JGemsHelper {
         }
 
         @SuppressWarnings("all")
-        public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric fabric) {
+        public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric collisionFabric) {
             if (meshStructure != null) {
-                final MeshCollisionData meshCollisionData = new MeshCollisionData(meshStructure, fabric == null ? new MeshCollisionData.DefaultFabric() : fabric);
-                if (MeshCollisionData.GLOBAL_CACHE.containsKey(meshStructure)) {
-                    meshStructure.setMeshCollisionData(MeshCollisionData.GLOBAL_CACHE.get(meshStructure));
-                } else {
-                    meshStructure.setMeshCollisionData(meshCollisionData);
-                    MeshCollisionData.GLOBAL_CACHE.put(meshStructure, meshCollisionData);
-                }
+                final MeshCollisionData meshCollisionData = new MeshCollisionData(meshStructure, collisionFabric == null ? new MeshCollisionData.DefaultFabric() : collisionFabric);
+                meshStructure.setMeshCollisionData(meshCollisionData);
                 return true;
             }
             return false;

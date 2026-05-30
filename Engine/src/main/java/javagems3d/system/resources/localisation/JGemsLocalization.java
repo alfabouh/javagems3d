@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class JGemsLocalisation {
+public class JGemsLocalization {
     private LocalizationManager.Lang currentLang;
     private final LocalizationManager localizationManager;
 
-    public JGemsLocalisation() {
+    public JGemsLocalization() {
         this.localizationManager = new LocalizationManager();
         this.currentLang = LocalizationManager.ENGLISH;
     }

@@ -6,7 +6,7 @@ import com.zaxxer.nuprocess.NuProcessBuilder;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
-import javagems3d.system.resources.localisation.JGemsLocalisation;
+import javagems3d.system.resources.localisation.JGemsLocalization;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
@@ -230,7 +230,7 @@ public final class JGems3D {
 
     public String I18n(String key, Object... objects) {
         if (this.getLocalization() == null) {
-            Log.get().warn("Tried to get localised name from NULL Localisation Manager");
+            Log.get().warn("Tried to get localised name from NULL Localization Manager");
             return key;
         }
         return String.format(this.getLocalization().format(key), objects);
@@ -285,7 +285,7 @@ public final class JGems3D {
         return this.core;
     }
 
-    public JGemsLocalisation getLocalization() {
+    public JGemsLocalization getLocalization() {
         return this.getCore().getLocalization();
     }
 

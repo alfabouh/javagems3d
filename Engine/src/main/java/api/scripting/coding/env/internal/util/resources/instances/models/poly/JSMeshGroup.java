@@ -48,21 +48,6 @@ public class JSMeshGroup implements JSCanBeCachedInMemory, JSMeshStructure3D {
         this.meshGroup.loadAnimations(animations.stream().map(JSAnimation::getJavaAnimation).toList());
     }
 
-    @JSCodingFunctionOrMethod(description = "Set a linked mesh buffer for this mesh group.")
-    public void setLinkedMeshBuffer(JSMeshBuffer linkedMeshBuffer) {
-        this.meshGroup.setLinkedMeshBuffer(linkedMeshBuffer.getJavaMeshBuffer());
-    }
-
-    @JSCodingFunctionOrMethod(description = "Clear nodes data of the linked mesh buffer.")
-    public void clearLinkedMeshBufferNodesData() {
-        this.meshGroup.clearLinkedMeshBufferNodesData();
-    }
-
-    @JSCodingFunctionOrMethod(description = "Get the linked mesh buffer.")
-    public JSMeshBuffer getLinkedMeshBuffer() {
-        return new JSMeshBuffer(this.meshGroup.getLinkedMeshBuffer());
-    }
-
     @JSCodingFunctionOrMethod(description = "Check if this mesh group can be used with indirect rendering.")
     public boolean canBeUsedInIndirectRendering() {
         return this.meshGroup.canBeUsedInIndirectRendering();

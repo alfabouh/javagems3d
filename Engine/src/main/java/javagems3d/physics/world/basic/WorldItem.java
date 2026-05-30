@@ -9,21 +9,28 @@ import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 
-/**
- * World Item is the main class from which all objects of the physical world are inherited.
- */
 public abstract class WorldItem implements IWorldObject {
     private static int globalId;
+
+    private final Object positionLock = new Object();
+    private final Object rotationLock = new Object();
+    private final Object scalingLock = new Object();
+    private final Object prevPositionLock = new Object();
+    private final Object stateLock = new Object();
+
     private final Vector3f position;
     private final Vector3f rotation;
     private final PhysicsWorld world;
     private final Vector3f prevPosition;
     private final String itemName;
     private final int itemId;
+
     protected Vector3f startPosition;
     protected Vector3f startRotation;
     protected Vector3f startScaling;
+
     private Vector3f scaling;
+
     private int spawnTick;
     private boolean isDead;
     private boolean spawned;
@@ -58,14 +65,22 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void setStartTransformations(@Nullable Vector3f position, @Nullable Vector3f rotation, @Nullable Vector3f scaling) {
-        if (position != null) {
-            this.startPosition = new Vector3f(position);
+        synchronized (this.positionLock) {
+            if (position != null) {
+                this.startPosition = new Vector3f(position);
+            }
         }
-        if (rotation != null) {
-            this.startRotation = new Vector3f(rotation);
+
+        synchronized (this.rotationLock) {
+            if (rotation != null) {
+                this.startRotation = new Vector3f(rotation);
+            }
         }
-        if (scaling != null) {
-            this.startScaling = new Vector3f(scaling);
+
+        synchronized (this.scalingLock) {
+            if (scaling != null) {
+                this.startScaling = new Vector3f(scaling);
+            }
         }
     }
 
@@ -76,8 +91,11 @@ public abstract class WorldItem implements IWorldObject {
 
     public void onSpawn(IWorld iWorld) {
         Log.get().trace("Added entity in world - [ " + this + " ]");
-        this.spawnTick = iWorld.getTicks();
-        this.spawned = true;
+
+        synchronized (this.stateLock) {
+            this.spawnTick = iWorld.getTicks();
+            this.spawned = true;
+        }
     }
 
     public void onDestroy(IWorld iWorld) {
@@ -85,57 +103,61 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public boolean isSpawned() {
-        return this.spawned;
+        synchronized (this.stateLock) {
+            return this.spawned;
+        }
     }
 
     public Vector3f getPrevPosition() {
-        synchronized (this) {
+        synchronized (this.prevPositionLock) {
             return new Vector3f(this.prevPosition);
         }
     }
 
     public void setPrevPosition(Vector3f vector3f) {
-        synchronized (this) {
+        synchronized (this.prevPositionLock) {
             this.prevPosition.set(vector3f);
         }
     }
 
     public int getTicksExisted() {
-        return this.getWorld().getTicks() - this.spawnTick;
+        synchronized (this.stateLock) {
+            return this.getWorld().getTicks() - this.spawnTick;
+        }
     }
 
     public Vector3f getPosition() {
-        synchronized (this) {
+        synchronized (this.positionLock) {
             return new Vector3f(this.position);
         }
     }
 
     public void setPosition(Vector3f vector3f) {
-        synchronized (this) {
+        synchronized (this.positionLock) {
             this.position.set(vector3f);
         }
     }
 
     public Vector3f getRotation() {
-        synchronized (this) {
+        synchronized (this.rotationLock) {
             return new Vector3f(this.rotation);
         }
     }
 
     public void setRotation(Vector3f vector3f) {
-        synchronized (this) {
+        synchronized (this.rotationLock) {
             this.rotation.set(vector3f);
         }
     }
 
     public Vector3f getScaling() {
-        synchronized (this) {
+        synchronized (this.scalingLock) {
             return new Vector3f(this.scaling);
         }
     }
 
     public void setScaling(Vector3f scaling) {
-        synchronized (this) {
+        synchronized (this.scalingLock) {
             this.scaling = scaling;
         }
     }
@@ -155,8 +177,10 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void destroy() {
-        this.isDead = true;
-        this.getWorld().removeItem(this);
+        synchronized (this.stateLock) {
+            this.isDead = true;
+            this.getWorld().removeObject(this);
+        }
     }
 
     public boolean isRemoteControlled() {
@@ -164,7 +188,9 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public boolean isDead() {
-        return this.isDead;
+        synchronized (this.stateLock) {
+            return this.isDead;
+        }
     }
 
     public PhysicsWorld getWorld() {

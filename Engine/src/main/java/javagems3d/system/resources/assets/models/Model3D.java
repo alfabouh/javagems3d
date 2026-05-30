@@ -23,14 +23,6 @@ public class Model3D extends Model<Pose3D, MeshStructure3D<? extends IMesh>> {
         super(model, pose);
     }
 
-    @Nullable
-    public MeshBuffer getMeshBufferForIndirectRendering() {
-        if (this.getMeshStructure() instanceof MeshBuffer) {
-            return (MeshBuffer) this.getMeshStructure();
-        }
-        return ((MeshGroup) this.getMeshStructure()).getLinkedMeshBuffer();
-    }
-
     @SuppressWarnings("all")
     public <R extends MeshStructure3D<? extends IMesh>> R getMeshStructureCast() {
         try {

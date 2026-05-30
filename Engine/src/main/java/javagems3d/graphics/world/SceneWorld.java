@@ -26,7 +26,6 @@ import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
@@ -207,7 +206,7 @@ public final class SceneWorld implements IRenderWorld {
         return true;
     }
 
-    public SceneObject addWorldItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
+    public SceneObject addWorldObject(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
         final SceneObject sceneObject = renderData.constructSceneObject(this, worldItem);
         this.addObject(sceneObject);
         return sceneObject;

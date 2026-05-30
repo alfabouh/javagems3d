@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class MeshCollisionData {
-    public static final Map<@NotNull MeshStructure3D<?>, MeshCollisionData> GLOBAL_CACHE = new HashMap<>();
+    //public static final Map<@NotNull MeshStructure3D<?>, MeshCollisionData> GLOBAL_CACHE = new HashMap<>();
 
     private final List<IndexedMesh> indexedMeshList;
     private final Pair<float[], int[]> dataPair;
@@ -29,6 +29,17 @@ public class MeshCollisionData {
         this.dataPair = this.pickData(meshStructure, indexedMeshList);
         this.meshStructure = meshStructure;
         this.fabric = fabric;
+    }
+
+    private MeshCollisionData(List<IndexedMesh> indexedMeshList, Pair<float[], int[]> dataPair, Fabric fabric, MeshStructure3D<?> meshStructure) {
+        this.indexedMeshList = indexedMeshList;
+        this.dataPair = dataPair;
+        this.fabric = fabric;
+        this.meshStructure = meshStructure;
+    }
+
+    public MeshCollisionData copyFor(MeshStructure3D<?> meshStructure) {
+        return new MeshCollisionData(this.indexedMeshList, this.dataPair, this.fabric, meshStructure);
     }
 
     /*
@@ -151,19 +162,50 @@ public class MeshCollisionData {
     }
 
     public static class DefaultFabric implements Fabric {
+        private final StaticShape staticShape;
+        private final DynamicShape dynamicShape;
+
+        public DefaultFabric() {
+            this(StaticShape.Mesh, DynamicShape.MeshHull);
+        }
+
+        public DefaultFabric(StaticShape staticShape, DynamicShape dynamicShape) {
+            this.staticShape = staticShape;
+            this.dynamicShape = dynamicShape;
+        }
+
         @Override
         public CollisionShape createStaticShape(MeshStructure3D<?> meshStructure, float[] positions, int[] indexes, List<IndexedMesh> indexedMeshList) {
-            return new MeshCollisionShape(true, indexedMeshList);
+            return switch (this.staticShape) {
+                case Mesh -> new MeshCollisionShape(true, indexedMeshList);
+            };
         }
 
         @Override
         public CollisionShape createDynamicShape(MeshStructure3D<?> meshStructure, float[] positions, int[] indexes, List<IndexedMesh> indexedMeshList) {
-            if (positions.length / 3 <= 512) {
-                return new HullCollisionShape(positions);
-            } else {
-                final CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                return this.createSimpleShape(cullingAABB);
-            }
+            return switch (this.dynamicShape) {
+                case MeshHull -> {
+                    //if (positions.length / 3 <= 512) {
+                        yield new HullCollisionShape(positions);
+                    //}
+                    //CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
+                    //yield this.createBoxShape(cullingAABB);
+                }
+                case Box -> {
+                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
+                    yield this.createBoxShape(cullingAABB);
+                }
+
+                case Capsule -> {
+                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
+                    yield this.createCapsuleShape(cullingAABB);
+                }
+
+                case Sphere -> {
+                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
+                    yield this.createSphereShape(cullingAABB);
+                }
+            };
         }
 
         @Override
@@ -171,23 +213,64 @@ public class MeshCollisionData {
             List<CollisionShape> collisionShapes = new ArrayList<>();
             for (Animation animation : meshStructure.getAnimationsList()) {
                 CullingAABB cullingAABB = meshStructure.getMeshAABBDataForAnimation(animation).getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                collisionShapes.add(this.createSimpleShape(cullingAABB));
+                collisionShapes.add(this.createDynamicShapeForAABB(cullingAABB, positions));
             }
             return collisionShapes;
         }
 
-        protected CollisionShape createSimpleShape(CullingAABB cullingAABB) {
+        protected CollisionShape createDynamicShapeForAABB(CullingAABB cullingAABB, float[] positions) {
+            return switch (this.dynamicShape) {
+                case MeshHull -> {
+                    //if (positions.length / 3 <= 512) {
+                        yield new HullCollisionShape(positions);
+                    //}
+                    //yield this.createBoxShape(cullingAABB);
+                }
+                case Box -> this.createBoxShape(cullingAABB);
+                case Capsule -> this.createCapsuleShape(cullingAABB);
+                case Sphere -> this.createSphereShape(cullingAABB);
+            };
+        }
+
+        protected CollisionShape createBoxShape(CullingAABB cullingAABB) {
             Vector3f min = cullingAABB.getAabbMin();
             Vector3f max = cullingAABB.getAabbMax();
             float xExtent = (max.x - min.x) * 0.5f;
             float yExtent = (max.y - min.y) * 0.5f;
             float zExtent = (max.z - min.z) * 0.5f;
-            Vector3f center = new Vector3f((max.x + min.x) * 0.5f, (max.y + min.y) * 0.5f, (max.z + min.z) * 0.5f);
-            CompoundCollisionShape compound = new CompoundCollisionShape();
-            BoxCollisionShape box = new BoxCollisionShape(xExtent, yExtent, zExtent);
-            compound.addChildShape(box, DynamicsUtils.convertV3F_JME(center));
-            compound.translate(DynamicsUtils.convertV3F_JME(center));
             return new BoxCollisionShape(xExtent, yExtent, zExtent);
+        }
+
+        protected CollisionShape createCapsuleShape(CullingAABB cullingAABB) {
+            Vector3f min = cullingAABB.getAabbMin();
+            Vector3f max = cullingAABB.getAabbMax();
+            float width = max.x - min.x;
+            float height = max.y - min.y;
+            float depth = max.z - min.z;
+            float radius = Math.max(width, depth) * 0.5f;
+            float capsuleHeight = Math.max(0.0f, height - (radius * 2.0f));
+            return new CapsuleCollisionShape(radius, capsuleHeight);
+        }
+
+        protected CollisionShape createSphereShape(CullingAABB cullingAABB) {
+            Vector3f min = cullingAABB.getAabbMin();
+            Vector3f max = cullingAABB.getAabbMax();
+            float width = max.x - min.x;
+            float height = max.y - min.y;
+            float depth = max.z - min.z;
+            float radius = Math.max(width, Math.max(height, depth)) * 0.5f;
+            return new SphereCollisionShape(radius);
+        }
+
+        public enum StaticShape {
+            Mesh
+        }
+
+        public enum DynamicShape {
+            Box,
+            MeshHull,
+            Capsule,
+            Sphere
         }
     }
 

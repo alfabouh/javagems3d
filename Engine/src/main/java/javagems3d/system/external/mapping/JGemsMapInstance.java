@@ -139,7 +139,7 @@ public final class JGemsMapInstance {
                     }
                 }
 
-                JGemsHelper.world().addWorldItem((WorldItem) player, renderData);
+                JGemsHelper.world().addWorldObjectInBothWorlds((WorldItem) player, renderData);
                 JGemsHelper.controller().attachControllerTo(JGemsHelper.controller().getControllerDispatcher().getCurrentController(), player);
                 JGemsHelper.camera().enableAttachedCamera((WorldItem) (player));
                 flag = true;

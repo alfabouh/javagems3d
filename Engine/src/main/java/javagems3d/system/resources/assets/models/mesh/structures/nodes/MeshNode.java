@@ -27,7 +27,7 @@ public abstract class MeshNode<T extends IMesh> {
         return this.meshData;
     }
 
-    public void setMeshData(T meshData) {
+    public void setMeshStructure(T meshData) {
         this.meshData = meshData;
     }
 }

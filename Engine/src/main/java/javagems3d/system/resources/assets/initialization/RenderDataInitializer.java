@@ -66,7 +66,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
         final Material waterMat = new Material.Builder().diffuseMap(JGemsResourceManager.globalTextureAssets.waterTexture).normalsMap(JGemsResourceManager.globalTextureAssets.waterNormals).roughnessFactor(1.0f).metallicFactor(1.0f).build();
         this.water = new LiquidRenderData(waterMat.setOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
+        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())).setMeshStructure(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
 

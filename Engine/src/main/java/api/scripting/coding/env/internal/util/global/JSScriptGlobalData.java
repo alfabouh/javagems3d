@@ -201,7 +201,7 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
 
     @JSCodingFunctionOrMethod(description = "Add world item with render data.", paramNames = {"worldItem", "renderData"})
     public void addWorldItem(JSWorldItemI worldItem, JSEntityRenderData renderData) {
-        JGemsHelper.world().addWorldItem(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
+        JGemsHelper.world().addWorldObjectInBothWorlds(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
     }
 
     @JSCodingFunctionOrMethod(description = "Remove world item.", paramNames = {"worldItem"})
@@ -211,7 +211,7 @@ public final class JSScriptGlobalData implements JSGlobalVarFactory<JSScriptGlob
 
     @JSCodingFunctionOrMethod(description = "Add liquid to world.", paramNames = {"liquid", "liquidRenderData"})
     public void addLiquid(JSLiquid liquid, JSLiquidRenderData liquidRenderData) {
-        JGemsHelper.world().addLiquid(liquid.getJavaLiquid(), liquidRenderData.getJavaLiquidRenderData());
+        JGemsHelper.world().addLiquidInBothWorlds(liquid.getJavaLiquid(), liquidRenderData.getJavaLiquidRenderData());
     }
 
     @JSCodingFunctionOrMethod(description = "Remove liquid from world.", paramNames = {"liquid"})

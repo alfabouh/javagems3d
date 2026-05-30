@@ -11,6 +11,8 @@ import api.events.EventLauncher;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -45,6 +47,7 @@ public class DynamicsSystem {
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));
+        ResourceManager.CREATE_PHYS_FOR_DEFAULT_MODELS();
     }
 
     public void collideTest() {

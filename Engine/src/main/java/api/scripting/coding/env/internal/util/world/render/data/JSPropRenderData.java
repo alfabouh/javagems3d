@@ -42,8 +42,8 @@ public class JSPropRenderData {
     }
 
     @JSCodingFunctionOrMethod(description = "Set mesh structure for this prop", paramNames = {"meshStructure"})
-    public JSPropRenderData setMeshDataGroup(JSMeshStructure3D meshStructure) {
-        this.propRenderData.setMeshDataGroup(
+    public JSPropRenderData setMeshStructure(JSMeshStructure3D meshStructure) {
+        this.propRenderData.setMeshStructure(
                 meshStructure != null ? meshStructure.getJavaMeshStructure3D() : null
         );
         return this;

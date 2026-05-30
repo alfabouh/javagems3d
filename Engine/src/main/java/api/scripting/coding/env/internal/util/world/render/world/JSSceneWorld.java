@@ -14,10 +14,8 @@ import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCamer
 import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCameraBasic;
 import api.scripting.coding.env.internal.util.world.render.screen.camera.JSCameraI;
 import api.scripting.coding.env.internal.util.world.render.world.environment.JSEnvironment;
-import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneAnimatedObject;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneEntity;
 import api.scripting.coding.env.internal.util.world.render.world.instances.JSSceneWorldLiquid;
-import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSAnimatedObjectI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectI;
 import api.scripting.coding.env.internal.util.world.render.world.instances.interfaces.JSSceneObjectWithLightsI;
 import javagems3d.graphics.camera.AttachedCamera;
@@ -25,7 +23,6 @@ import javagems3d.graphics.camera.base.CameraBase;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttachable;
-import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.world.SceneWorld;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,7 +65,7 @@ public class JSSceneWorld {
 
     @JSCodingFunctionOrMethod(description = "Adds a world item to the scene with its render data.", paramNames = {"worldItem", "renderData"})
     public void addWorldItem(@NotNull JSWorldItem worldItem, @NotNull JSEntityRenderData renderData) {
-        this.sceneWorld.addWorldItem(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
+        this.sceneWorld.addWorldObject(worldItem.getJavaWorldObject(), renderData.getJavaEntityRenderData());
     }
 
     @JSCodingFunctionOrMethod(description = "Attaches an existing camera to a scene entity.", paramNames = {"item", "camera"})

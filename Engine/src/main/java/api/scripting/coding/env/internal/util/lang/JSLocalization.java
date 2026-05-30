@@ -4,17 +4,17 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.management.JSPath;
-import javagems3d.system.resources.localisation.JGemsLocalisation;
+import javagems3d.system.resources.localisation.JGemsLocalization;
 import javagems3d.system.service.files.source.ISource;
 import javagems3d.system.service.files.source.JGemsPathSource;
 
 @JSCodingClass(binding = "JSLocalization", description = "Main localisation API for scripts.")
 public class JSLocalization {
     @JSHideFromDoc
-    private final JGemsLocalisation localisation;
+    private final JGemsLocalization localisation;
 
     @JSHideFromDoc
-    public JSLocalization(JGemsLocalisation localisation) {
+    public JSLocalization(JGemsLocalization localisation) {
         this.localisation = localisation;
     }
 
@@ -49,7 +49,7 @@ public class JSLocalization {
     }
 
     @JSCodingFunctionOrMethod(description = "Real java object")
-    public JGemsLocalisation getLocalisation() {
+    public JGemsLocalization getLocalisation() {
         return this.localisation;
     }
 }

@@ -40,7 +40,7 @@ public class JSPhysicsWorld {
 
     @JSCodingFunctionOrMethod(description = "Remove object from the world", paramNames = {"worldItem"})
     public void removeObject(JSWorldObjectI worldItem) {
-        this.physicsWorld.removeItem(worldItem.getJavaWorldObject());
+        this.physicsWorld.removeObject(worldItem.getJavaWorldObject());
     }
 
     @JSCodingFunctionOrMethod(description = "Check if world contains given object", paramNames = {"worldItem"})

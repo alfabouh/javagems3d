@@ -54,12 +54,6 @@ public class JSModel3D implements JSRequiresClearResources {
         return null;
     }
 
-    @JSCodingFunctionOrMethod(description = "Get mesh buffer for indirect rendering")
-    public JSMeshBuffer getMeshBufferForIndirect() {
-        MeshBuffer buffer = this.model3D.getMeshBufferForIndirectRendering();
-        return buffer != null ? new JSMeshBuffer(buffer) : null;
-    }
-
     @JSCodingFunctionOrMethod(description = "Copy model")
     public JSModel3D copy() {
         return new JSModel3D(this);

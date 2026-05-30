@@ -68,7 +68,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public EntityRenderData setMeshDataGroup(MeshStructure3D<?> meshStructure) {
+    public EntityRenderData setMeshStructure(MeshStructure3D<?> meshStructure) {
         this.meshStructure = meshStructure;
         this.entityModelConstructor = null;
         return this;
@@ -100,7 +100,7 @@ public class EntityRenderData {
 
     public EntityRenderData copyObject() {
         EntityRenderData entityRenderData = new EntityRenderData(this.getSceneObjectConstructor(), this.getObjectRenderAttributes() == null ? null : this.getObjectRenderAttributes().copy());
-        entityRenderData.setMeshDataGroup(this.getMeshStructure());
+        entityRenderData.setMeshStructure(this.getMeshStructure());
         entityRenderData.setEntityModelConstructor(this.getEntityModelConstructor());
         return entityRenderData;
     }

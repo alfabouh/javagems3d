@@ -5,7 +5,11 @@ import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
+import javagems3d.system.resources.cache.ICached;
+import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,16 +21,11 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     public static final int TRANSPARENCY_LAYER = 1;
     private final List<Animation> animationsList;
 
-    private MeshCollisionData meshCollisionData;
-    private MeshBoundingBoxData meshBoundingBox;
-    private final Map<Animation, MeshBoundingBoxData> animationsBoundingBoxes;
+    private MetaData metaData;
 
     public MeshStructure3D() {
         this.animationsList = new ArrayList<>();
-
-        this.meshBoundingBox = null;
-        this.meshCollisionData = null;
-        this.animationsBoundingBoxes = new HashMap<>();
+        this.metaData = new MetaData();
     }
 
     public abstract boolean canBeUsedInIndirectRendering();
@@ -79,7 +78,7 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
 
     public void clear() {
         super.clear();
-        this.animationsBoundingBoxes.clear();
+        this.metaData.clear();
         this.getAnimationsList().forEach(Animation::clear);
         this.getAnimationsList().clear();
     }
@@ -100,28 +99,41 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         return null;
     }
 
+    public MeshStructure3D<T> setMetaData(@NotNull MetaData metaData) {
+        this.metaData = metaData;
+        return this;
+    }
+
+    public void copyMetaData(MeshStructure3D<?> from) {
+        this.metaData = new MetaData(this, from.metaData);
+    }
+
     public void setMeshAABBDataForAnimationFrame(Animation animation, MeshBoundingBoxData meshBoundingBoxData) {
-        this.animationsBoundingBoxes.put(animation, meshBoundingBoxData);
+        this.getMetaData().animationsBoundingBoxes.put(animation, meshBoundingBoxData);
     }
 
     public MeshBoundingBoxData getMeshAABBDataForAnimation(Animation animation) {
-        return this.animationsBoundingBoxes.get(animation);
+        return this.getMetaData().animationsBoundingBoxes.get(animation);
     }
 
     public void setMeshAABBData(MeshBoundingBoxData meshBoundingBoxData) {
-        this.meshBoundingBox = meshBoundingBoxData;
+        this.getMetaData().setMeshBoundingBox(meshBoundingBoxData);
     }
 
     public void setMeshCollisionData(MeshCollisionData meshCollisionData) {
-        this.meshCollisionData = meshCollisionData;
+        this.getMetaData().setMeshCollisionData(meshCollisionData);
+    }
+
+    public @NotNull MetaData getMetaData() {
+        return this.metaData;
     }
 
     public MeshCollisionData getMeshCollisionData() {
-        return this.meshCollisionData;
+        return this.getMetaData().getMeshCollisionData();
     }
 
     public MeshBoundingBoxData getMeshAABBData() {
-        return this.meshBoundingBox;
+        return this.getMetaData().getMeshBoundingBox();
     }
 
     public boolean isAnimatedStructure() {
@@ -138,5 +150,78 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
 
     public List<Animation> getAnimationsList() {
         return this.animationsList;
+    }
+
+    public static class MetaData implements ICached {
+        private MeshCollisionData meshCollisionData;
+        private MeshBoundingBoxData meshBoundingBox;
+        private Map<Animation, MeshBoundingBoxData> animationsBoundingBoxes;
+
+        public MetaData() {
+            this.meshBoundingBox = null;
+            this.meshCollisionData = null;
+            this.animationsBoundingBoxes = new HashMap<>();
+        }
+
+        public MetaData(@NotNull MeshStructure3D<?> copyFor, @NotNull MetaData copy) {
+            this.meshBoundingBox = copy.meshBoundingBox.copy();
+            if (copy.meshCollisionData != null) {
+                this.meshCollisionData = copy.meshCollisionData.copyFor(copyFor);
+            }
+            this.animationsBoundingBoxes = new HashMap<>();
+            copy.animationsBoundingBoxes.forEach((key, value) -> {
+               this.animationsBoundingBoxes.put(key, value.copy());
+            });
+        }
+
+        public MetaData copyFor(MeshStructure3D<?> copyFor) {
+            return new MetaData(copyFor, this);
+        }
+
+        public void clear() {
+            this.meshBoundingBox = null;
+            this.meshCollisionData = null;
+            this.animationsBoundingBoxes = null;
+        }
+
+        public @Nullable MeshCollisionData getMeshCollisionData() {
+            return this.meshCollisionData;
+        }
+
+        public MetaData setMeshCollisionData(MeshCollisionData meshCollisionData) {
+            this.meshCollisionData = meshCollisionData;
+            return this;
+        }
+
+        public MeshBoundingBoxData getMeshBoundingBox() {
+            return this.meshBoundingBox;
+        }
+
+        public MetaData setMeshBoundingBox(MeshBoundingBoxData meshBoundingBox) {
+            this.meshBoundingBox = meshBoundingBox;
+            return this;
+        }
+
+        public Map<Animation, MeshBoundingBoxData> getAnimationsBoundingBoxes() {
+            return this.animationsBoundingBoxes;
+        }
+
+        public MeshBoundingBoxData getMeshAABBDataForAnimation(Animation animation) {
+            return this.animationsBoundingBoxes.get(animation);
+        }
+
+        public void setMeshAABBDataForAnimationFrame(Animation animation, MeshBoundingBoxData meshBoundingBoxData) {
+            this.animationsBoundingBoxes.put(animation, meshBoundingBoxData);
+        }
+
+        public MetaData setAnimationsBoundingBoxes(Map<Animation, MeshBoundingBoxData> animationsBoundingBoxes) {
+            this.animationsBoundingBoxes = animationsBoundingBoxes;
+            return this;
+        }
+
+        @Override
+        public void onClearingCache(ResourceCache resourceCache) {
+            this.clear();
+        }
     }
 }
