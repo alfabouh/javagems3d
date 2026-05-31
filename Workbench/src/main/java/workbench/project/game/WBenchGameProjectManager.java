@@ -15,6 +15,8 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.game.GameEditorInterface;
+import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
 import workbench.project.game.settings.GameProjectSettings;
 import workbench.project.managing.WBenchProjectResourcesManager;
 import workbench.project.map.WBenchMapProjectManager;
@@ -92,6 +94,7 @@ public class WBenchGameProjectManager {
 
     public void closeGameProject() {
         if (this.getGameProject() != null) {
+            WindowInterfaceComponentG.clearSection();
             Log.get().info("Closing project " + this.getGameProject());
             this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
             this.currentGameProject = null;
@@ -215,7 +218,7 @@ public class WBenchGameProjectManager {
             this.initLocalGameResources();
             LoadingInterfaceSwing.setResource("JSON Processing...");
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
-
+            ((GameEditorInterface) WBenchOpenGLRenderer.getGameEditorInterface()).clear();
             return true;
         } catch (JGemsIOException e) {
             this.currentGameProject = null;

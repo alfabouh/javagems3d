@@ -35,7 +35,7 @@ public class WindowInterfaceComponentG {
     private final ActionsInterfaceComponentG actionsInterfaceComponentG;
     private final FBOTexture2DProgram modelScenePreview;
     private Vector2f previewRotation;
-    private WindowSection<?> currentSection = null;
+    private static WindowSection<?> currentSection = null;
 
     private final ScriptEditorDrawerG scenePreviewScriptG;
 
@@ -51,6 +51,10 @@ public class WindowInterfaceComponentG {
         this.reset();
     }
 
+    public static void clearSection() {
+        WindowInterfaceComponentG.currentSection = null;
+    }
+
     public void windowContent() {
         WindowSection<?>[] sections = new WindowSection[] {
                 new WindowSection<>(WindowSection.SectionType.MODEL, () -> this.resourcesInterfaceComponentG.getModelAssetsTreeDrawer().getPreviewWrapperObject(), this::renderModelPreview, "Model"),
@@ -59,23 +63,23 @@ public class WindowInterfaceComponentG {
                 new WindowSection<>(WindowSection.SectionType.SCRIPT, () -> this.resourcesInterfaceComponentG.getScriptResourceTreeDrawer().getPreviewWrapperObject(), this::renderScriptCode, "Script")
         };
         List<WindowSection<?>> actualSections = Arrays.stream(sections).filter(WindowSection::check).toList();
-        if (this.currentSection == null) {
+        if (WindowInterfaceComponentG.currentSection == null) {
             if (!actualSections.isEmpty()) {
-                this.currentSection = actualSections.getFirst();
+                WindowInterfaceComponentG.currentSection = actualSections.getFirst();
             }
         } else {
-            if (!this.currentSection.check()) {
-                this.currentSection = null;
+            if (!WindowInterfaceComponentG.currentSection.check()) {
+                WindowInterfaceComponentG.currentSection = null;
             } else {
-                this.currentSection.render();
+                WindowInterfaceComponentG.currentSection.render();
             }
         }
 
         if (!actualSections.isEmpty()) {
             if (ImGui.beginMenuBar()) {
                 for (WindowSection<?> windowSection : actualSections) {
-                    if (ImGui.menuItem(windowSection.id, "##" + windowSection.id, this.currentSection != null && this.currentSection.id.equals(windowSection.id))) {
-                        this.currentSection = windowSection;
+                    if (ImGui.menuItem(windowSection.id, "##" + windowSection.id, WindowInterfaceComponentG.currentSection != null && WindowInterfaceComponentG.currentSection.id.equals(windowSection.id))) {
+                        WindowInterfaceComponentG.currentSection = windowSection;
                         this.reset();
                     }
                 }

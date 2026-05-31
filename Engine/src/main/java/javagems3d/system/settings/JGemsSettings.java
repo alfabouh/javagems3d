@@ -25,7 +25,7 @@ public class JGemsSettings extends Settings {
 
     public JGemsSettings(File file) {
         super(file);
-        this.soundGain = new SettingFloatBar("sound_gain", 0.5f);
+        this.soundGain = new SettingFloatBar("sound_gain", 0.0f);
 
         this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
         this.shadowQuality = new SettingIntSlots("shadowQuality", 0, 0, 2);
@@ -38,8 +38,6 @@ public class JGemsSettings extends Settings {
         this.texturesFiltering = new SettingIntSlots("texturesFiltering", 0, 0, 1);
 
         this.language = new SettingChooseLanguage("lang", LocalizationManager.ENGLISH);
-
-        this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
 
         this.texturesFiltering.addArticle(0, "settings.off", true);
         this.texturesFiltering.addArticle(1, "settings.on", true);

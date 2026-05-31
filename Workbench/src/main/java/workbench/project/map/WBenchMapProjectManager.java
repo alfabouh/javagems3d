@@ -41,6 +41,7 @@ import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.asnapshots.WBenchSnapshotsTrace;
 import workbench.graphics.scene.ui.asnapshots.instances.WBenchSnapshotsContainer;
+import workbench.graphics.scene.ui.game.editor.WindowInterfaceComponentG;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.project.map.settings.MapProjectSettings;
@@ -457,6 +458,7 @@ public final class WBenchMapProjectManager {
 
     public void closeMapProject(boolean save) {
         if (this.getCurrentMapProject() != null) {
+            WindowInterfaceComponentG.clearSection();
             Log.get().info("Closing project " + this.getCurrentMapProject());
             if (save) {
                 this.saveMapProject(true);

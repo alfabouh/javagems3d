@@ -313,6 +313,16 @@ public class ResourcesInterfaceComponentG {
     }
 
     public void clear() {
+       this.modelAssetsTreeDrawer.setPreviewWrapperObject(null);
+       this.soundAssetsTreeDrawer.setPreviewWrapperObject(null);
+       this.textureAssetsTreeDrawer.setPreviewWrapperObject(null);
+       this.propResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.entityResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.markerResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.tagResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.mapResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.scriptResourceTreeDrawer.setPreviewWrapperObject(null);
+       this.skyBoxResourceTreeDrawer.setPreviewWrapperObject(null);
     }
 
     public CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> getSkyBoxResourceTreeDrawer() {
