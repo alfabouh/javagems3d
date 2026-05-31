@@ -76,5 +76,5 @@ void main()
     gColor = diffuse;
     gEmission = emission;
     gMetallicRoughness = vec2(metallic_roughness.x, 1. - metallic_roughness.y);
-    gDecal_layerID = float(decalLayerID / 255.);
+    gDecal_layerID = float(decalLayerID / 65535.);
 }

@@ -3,6 +3,7 @@ package javagems3d.physics.entities.kinematic.player;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
@@ -28,10 +29,10 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-
     protected void createObject() {
         super.createObject();
         this.startPosition.y += this.getPlayerHeight();
+        this.setCollisionGroup(CollisionType.PLAYER);
     }
 
     @Override

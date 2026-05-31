@@ -61,7 +61,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     @Override
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
-        Log.get().trace("[ " + this + " ]" + " - PreRender");
+        Log.get().debug("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getEntityModelConstructor() != null) {
                 this.setModel(new Model3D(new Pose3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
@@ -77,7 +77,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     @Override
     public void onDestroy(IWorld iWorld) {
         super.onDestroy(iWorld);
-        Log.get().trace("[ " + this + " ]" + " - PostRender");
+        Log.get().debug("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }

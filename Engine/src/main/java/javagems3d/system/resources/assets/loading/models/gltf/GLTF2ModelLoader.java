@@ -58,16 +58,16 @@ public class GLTF2ModelLoader implements ILoadingHelper {
         this.systemResources = systemResources;
     }
 
-    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
+    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepMeshInMemoryAfterProcessing, boolean buildSubMeshesAABBs) {
         GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile(), buildSubMeshesAABBs);
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
-        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, keepTrianglesInMemory).setHasSubMeshAABs((gltf2Scene.animations() == null || gltf2Scene.animations().isEmpty()) && buildSubMeshesAABBs);
+        return this.createMeshGroup(gltf2Scene, meshCollisionDataFabric, keepMeshInMemoryAfterProcessing).setHasSubMeshAABs((gltf2Scene.animations() == null || gltf2Scene.animations().isEmpty()) && buildSubMeshesAABBs);
     }
 
-    public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepTrianglesInMemory) {
+    public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric meshCollisionDataFabric, boolean keepMeshInMemoryAfterProcessing) {
         GLTF2RawData gltf2RawData = GLTF2Parser.parse(this.getPathToMainFile(), false);
         GLTF2Scene gltf2Scene = gltf2RawData.getGltf2Scene();
-        return this.createMeshBuffer(gltf2Scene, meshCollisionDataFabric, keepTrianglesInMemory);
+        return this.createMeshBuffer(gltf2Scene, meshCollisionDataFabric, keepMeshInMemoryAfterProcessing);
     }
 
     public String getStr(String postfix) {
@@ -93,7 +93,8 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while processing the model");
         }
         if (this.getResourceCache().checkObjectInCache(mString, MeshStructure3D.MetaData.class)) {
-            meshGroup.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshGroup));
+            meshGroup.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshGroup, collisionFabric));
+            Log.get().info("Mesh-MetaData" + this.getPathToMainFile() + " picked from cache");
         } else {
             if (JGemsHelper.JGemsResources.createMetaData(meshGroup, collisionFabric)) {
                 this.getResourceCache().registerInCache(mString, meshGroup.getMetaData());
@@ -121,7 +122,8 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while processing the model");
         }
         if (this.getResourceCache().checkObjectInCache(mString, MeshStructure3D.MetaData.class)) {
-            meshBuffer.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshBuffer));
+            meshBuffer.setMetaData(this.getResourceCache().<MeshStructure3D.MetaData>getCachedObjectUnSafeCast(mString).copyFor(meshBuffer, collisionFabric));
+            Log.get().info("Mesh-MetaData" + this.getPathToMainFile() + " picked from cache");
         } else {
             if (JGemsHelper.JGemsResources.createMetaData(meshBuffer, collisionFabric)) {
                 this.getResourceCache().registerInCache(mString, meshBuffer.getMetaData());

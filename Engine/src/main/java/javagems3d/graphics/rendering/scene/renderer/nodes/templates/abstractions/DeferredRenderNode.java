@@ -43,6 +43,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class DeferredRenderNode extends IRenderNode.Template implements IDeferredRenderNode {
     private final FBOTexture2DProgram startColorFBO;
@@ -89,6 +90,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         //}
 
         this.getOutGBuffer().bindFBO();
+        //GL46.glDisable(GL46.GL_DITHER);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
@@ -104,6 +106,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         if (JGemsConfig.DEBUG.WIREFRAME_RENDERING) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
         }
+       // GL46.glEnable(GL46.GL_DITHER);
         this.getOutGBuffer().unBindFBO();
 
         if (this.getOutSSAOBuffer() != null) {
@@ -116,13 +119,17 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             if (this.filteredDecalsToRender != null) {
                 GL46.glDepthMask(false);
                 this.getOutGBuffer().bindFBO();
+                //GL46.glDisable(GL46.GL_DITHER);
                 {
+                    //GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT5, GL46.GL_TEXTURE_2D, 0, 0);
                     GL46.glEnable(GL46.GL_BLEND);
                     GL46.glBlendFunci(2, GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
                     GL46.glBlendFunci(3, GL46.GL_ONE, GL46.GL_ONE);
                     this.getRawColorRenderProcessor().getDeferredDecalsRenderProcessor().renderDecals(this.filteredDecalsToRender, this.getOpenGLRenderer().getWorld().getEnvironment());
                     GL46.glDisable(GL46.GL_BLEND);
+                    //GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT5, GL46.GL_TEXTURE_2D, this.getOutGBuffer().getTextureIDByIndex(5), 0);
                 }
+               // GL46.glEnable(GL46.GL_DITHER);
                 this.getOutGBuffer().unBindFBO();
                 GL46.glDepthMask(true);
             }
@@ -153,7 +160,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RG, GL46.GL_RG);
-            add(GL46.GL_COLOR_ATTACHMENT5, GL46.GL_RED, GL46.GL_RED);
+            add(GL46.GL_COLOR_ATTACHMENT5, GL46.GL_R16, GL46.GL_RED);
         }};
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
@@ -170,8 +177,11 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
-    public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(IRenderWorld renderWorld) {
+    public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(Supplier<ITexture2DProgram> animations, IRenderWorld renderWorld) {
         return (pair) -> {
+            pair.first().disableWarns();
+            pair.first().performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), animations.get());
+            pair.first().enableWarns();
             JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
                     pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT),
                     pair.second().getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0)
@@ -214,8 +224,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), this.getAnimationsTexture());
         };
 
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
-
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this::getAnimationsTexture, this.getWorld());
         {
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SOLID_SCENE, this.getOpenGLRenderer());
             this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SOLID_SCENE, this.getOpenGLRenderer());

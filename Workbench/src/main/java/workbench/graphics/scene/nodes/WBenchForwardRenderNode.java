@@ -2,6 +2,7 @@ package workbench.graphics.scene.nodes;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -54,6 +55,11 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
             GL46.glDisable(GL46.GL_BLEND);
             this.getOutColorBuffer().unBindFBO();
         }
+    }
+
+    @Override
+    public @NotNull ITexture2DProgram getAnimationsTexture() {
+        return WBenchResourceManager.getAnimationsTextureBuffer();
     }
 
     @Override

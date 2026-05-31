@@ -53,9 +53,9 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
     public void filter(@NotNull Collection<? extends ICulled> sceneObjects) {
         sceneObjects.removeIf(e -> {
             if (!this.test(e)) {
+                JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS++;
                 return true;
             }
-            JGemsOpenGLRenderer.DEBUG_CULLED_OBJECTS++;
             return false;
         });
     }

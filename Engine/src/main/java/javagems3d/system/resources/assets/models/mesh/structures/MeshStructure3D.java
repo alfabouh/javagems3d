@@ -104,8 +104,8 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         return this;
     }
 
-    public void copyMetaData(MeshStructure3D<?> from) {
-        this.metaData = new MetaData(this, from.metaData);
+    public void copyMetaData(MeshStructure3D<?> from, @Nullable MeshCollisionData.Fabric newCollisionFabric) {
+        this.metaData = new MetaData(this, from.metaData, newCollisionFabric);
     }
 
     public void setMeshAABBDataForAnimationFrame(Animation animation, MeshBoundingBoxData meshBoundingBoxData) {
@@ -163,10 +163,10 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
             this.animationsBoundingBoxes = new HashMap<>();
         }
 
-        public MetaData(@NotNull MeshStructure3D<?> copyFor, @NotNull MetaData copy) {
+        public MetaData(@NotNull MeshStructure3D<?> copyFor, @NotNull MetaData copy, @Nullable MeshCollisionData.Fabric newCollisionFabric) {
             this.meshBoundingBox = copy.meshBoundingBox.copy();
             if (copy.meshCollisionData != null) {
-                this.meshCollisionData = copy.meshCollisionData.copyFor(copyFor);
+                this.meshCollisionData = copy.meshCollisionData.copyFor(copyFor, newCollisionFabric);
             }
             this.animationsBoundingBoxes = new HashMap<>();
             copy.animationsBoundingBoxes.forEach((key, value) -> {
@@ -174,8 +174,8 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
             });
         }
 
-        public MetaData copyFor(MeshStructure3D<?> copyFor) {
-            return new MetaData(copyFor, this);
+        public MetaData copyFor(MeshStructure3D<?> copyFor, @Nullable MeshCollisionData.Fabric newCollisionFabric) {
+            return new MetaData(copyFor, this, newCollisionFabric);
         }
 
         public void clear() {

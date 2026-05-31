@@ -86,9 +86,10 @@ public class DataMesh implements IMesh {
     @Override
     public void clearData(boolean keepTrianglesInMemory) {
         this.setSkeletonData(null);
-        if (keepTrianglesInMemory) {
-            this.getBufferMap().keySet().removeIf(e -> e != DefaultAttributePointers.ATTR_POSITIONS.getPointer());
-        } else {
+       //if (keepTrianglesInMemory) {
+       //    //this.getBufferMap().keySet().removeIf(e -> e != DefaultAttributePointers.ATTR_POSITIONS.getPointer());
+       //} else {
+        if (!keepTrianglesInMemory) {
             this.getIndexesBuffer().values().clear();
             this.getBufferMap().values().forEach(e -> e.values().clear());
             this.getBufferMap().clear();

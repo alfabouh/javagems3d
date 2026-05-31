@@ -47,9 +47,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * The SystemResources class contains a cache, as well as tools for processing resources
- */
 public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
@@ -71,12 +68,12 @@ public abstract class SystemResources implements ISystemResources {
         return SoundBuffer.createSoundBuffer(soundPath, this.getResourceCache(), soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepTrianglesInMemory) {
+    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepMeshInMemoryAfterProcessing) {
         try {
             if (modelPath == null) {
                 throw new JGemsNullException("Null model");
             }
-            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshBuffer(fabric, keepTrianglesInMemory));
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshBuffer(fabric, keepMeshInMemoryAfterProcessing));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
@@ -84,12 +81,12 @@ public abstract class SystemResources implements ISystemResources {
         }
     }
 
-    public MeshGroup createMeshGroup(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
+    public MeshGroup createMeshGroup(JGemsPathSource modelPath, @Nullable MeshCollisionData.Fabric fabric, boolean keepMeshInMemoryAfterProcessing, boolean buildSubMeshesAABBs) {
         try {
             if (modelPath == null) {
                 throw new JGemsNullException("Null model");
             }
-            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, keepTrianglesInMemory, buildSubMeshesAABBs));
+            return this.loadModel(modelPath, () -> new GLTF2ModelLoader(modelPath, this).createMeshGroup(fabric, keepMeshInMemoryAfterProcessing, buildSubMeshesAABBs));
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
@@ -97,12 +94,12 @@ public abstract class SystemResources implements ISystemResources {
         }
     }
 
-    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, boolean keepTrianglesInMemory) {
+    public MeshBuffer createMeshBuffer(JGemsPathSource modelPath, boolean keepMeshInMemoryAfterProcessing) {
         try {
             if (modelPath == null) {
                 throw new JGemsNullException("Null model");
             }
-            return this.createMeshBuffer(modelPath, null, keepTrianglesInMemory);
+            return this.createMeshBuffer(modelPath, null, keepMeshInMemoryAfterProcessing);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");
@@ -110,12 +107,12 @@ public abstract class SystemResources implements ISystemResources {
         }
     }
 
-    public MeshGroup createMeshGroup(JGemsPathSource modelPath, boolean keepTrianglesInMemory, boolean buildSubMeshesAABBs) {
+    public MeshGroup createMeshGroup(JGemsPathSource modelPath, boolean keepMeshInMemoryAfterProcessing, boolean buildSubMeshesAABBs) {
         try {
             if (modelPath == null) {
                 throw new JGemsNullException("Null model");
             }
-            return this.createMeshGroup(modelPath, null, keepTrianglesInMemory, buildSubMeshesAABBs);
+            return this.createMeshGroup(modelPath, null, keepMeshInMemoryAfterProcessing, buildSubMeshesAABBs);
         } catch (Exception e) {
             Log.get().exception(e);
             Log.get().error("Returned default model");

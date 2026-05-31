@@ -20,11 +20,15 @@ void main()
     vec4 g_texture = texture(gTexture, uv_coordinates);
     vec3 emission = texture(gEmission, uv_coordinates).rgb;
     vec3 normal = texture(gNormals, uv_coordinates).rgb;
-    float objLayer = texture(gObjLayersID, uv_coordinates).r;
+    ivec2 tex_size = textureSize(gObjLayersID, 0);
+    ivec2 texel_coord = ivec2(uv_coordinates * vec2(tex_size));
+    texel_coord = clamp(texel_coord, ivec2(0), tex_size - 1);
+    float objLayer = texelFetch(gObjLayersID, texel_coord, 0).r;
 
-    gColorOut = g_texture;
-    gEmissionOut = emission;
-    if (int(objLayer * 255.) * min(decal_ent_layerID, 1) == decal_ent_layerID) {
+    gColorOut = vec4(0.);
+    gEmissionOut = vec3(0.);
+    if (objLayer * min(decal_ent_layerID, 1) == float(decal_ent_layerID / 65535.))
+    {
         vec3 localDecalCoord = calcDecalCoord(frag_pos);
        // if (abs(localDecalCoord.x) > 1.) {
        //     discard;

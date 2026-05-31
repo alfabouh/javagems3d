@@ -2,7 +2,7 @@
   <configuration default="false" name="RunGame" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="launcher.bootstrap.Bootstrap" />
     <module name="Launcher" />
-    <option name="PROGRAM_PARAMETERS" value="debug=true external_def=&quot;C:\Users\ded\Desktop\testProj\DEV1&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="debug=true external_def=&quot;C:\Users\ded\Documents\Example&quot;" />
     <option name="VM_PARAMETERS" value="-Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector" />
     <method v="2">
       <option name="Make" enabled="true" />

@@ -61,7 +61,6 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
     public void clear() {
         super.clear();
         this.nodesLayers.clear();
-        this.meshPassData.clear();
         this.initPassDataLayers();
     }
 

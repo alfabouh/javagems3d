@@ -20,7 +20,7 @@ public class JGemsRenderProperties extends RenderProperties {
     }
 
     protected void setDefaults() {
-        this.setValueInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, -1, -1, 128000);
+        this.setValueInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, -1, -1, Short.MAX_VALUE * 2);
         this.setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, -1.0f, -1.0f, 1024.0f);
         this.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.0f, 0.0f, 1.0f);
         this.setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, true);

@@ -1,13 +1,18 @@
 package javagems3d.physics.world.thread.dynamics;
 
 import api.events.EventBus;
+import api.scripting.JavaToJsAPI;
+import api.scripting.coding.env.internal.game.init.events.rendering.ogl.JSStopRendererOGLEvent;
+import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRenderer;
 import com.jme3.bullet.CollisionConfiguration;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.SolverMode;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
@@ -44,12 +49,20 @@ public class DynamicsSystem {
                 throw new JGemsRuntimeException(e);
             }
         }
+        EventBus.InitDynamicBulletSpaceEvent dynamicBulletSpaceEvent = new EventBus.InitDynamicBulletSpaceEvent(this, this.physicsSpace);
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));
+        this.physicsSpace.setMaxSubSteps(JGemsPhysics.SUBSTEPS);
+        EventLauncher.pushEvent(dynamicBulletSpaceEvent, null);
+        if (dynamicBulletSpaceEvent.getNewPhysicsSpace() != null) {
+            this.physicsSpace.destroy();
+            this.physicsSpace = dynamicBulletSpaceEvent.getNewPhysicsSpace();
+        }
         ResourceManager.CREATE_PHYS_FOR_DEFAULT_MODELS();
     }
 
+    //TODO
     public void collideTest() {
         Set<Pair<IHasCollisionTrigger, Object>> triggerPairs = new HashSet<>();
         for (PhysicsCollisionObject physicsCollisionObject : this.getObjectsWithCollideTriggers()) {

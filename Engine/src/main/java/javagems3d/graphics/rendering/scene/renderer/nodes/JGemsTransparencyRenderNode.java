@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.scene.DefaultDirectRenderFabric;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.TransparencyRenderNode;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -38,6 +39,11 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
         for (SceneWorldLiquid sceneWorldLiquid : this.worldLiquid) {
             this.renderLiquid(sceneWorldLiquid);
         }
+    }
+
+    @Override
+    public @NotNull ITexture2DProgram getAnimationsTexture() {
+        return JGemsHelper.resources().getAnimationsTextureBuffer();
     }
 
     protected void renderLiquid(SceneWorldLiquid sceneWorldLiquid) {

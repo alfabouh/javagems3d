@@ -30,6 +30,11 @@ public final class ResourcesDataArrays {
         this.getMeshesWithAnimation().clear();
     }
 
+    public void clearMeshContainers() {
+        this.getMeshBuffersDataArray().clear();
+        this.getMeshesWithAnimation().clear();
+    }
+
     public MeshBuffersDataArray getMeshBuffersDataArray() {
         return this.meshBuffersDataArray;
     }

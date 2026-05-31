@@ -121,13 +121,13 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
             boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
             GL46.glDisable(GL46.GL_CULL_FACE);
             for (DecalFX decalFX : filteredDecalsToRender) {
-                Vector3f min = decalFX.getCullingData().getAabbMin();
-                Vector3f max = decalFX.getCullingData().getAabbMax();
-                boolean cameraInside = cam.x >= min.x && cam.x <= max.x && cam.y >= min.y && cam.y <= max.y && cam.z >= min.z && cam.z <= max.z;
-                if (cameraInside) {
+                //Vector3f min = decalFX.getCullingData().getAabbMin();
+                //Vector3f max = decalFX.getCullingData().getAabbMax();
+                //boolean cameraInside = cam.x >= min.x && cam.x <= max.x && cam.y >= min.y && cam.y <= max.y && cam.z >= min.z && cam.z <= max.z;
+                //if (cameraInside) {
                   //  GL46.glDisable(GL46.GL_CULL_FACE);
                     GL46.glDisable(GL46.GL_DEPTH_TEST);
-                }
+                //}
                 deferredShader.beginShading();
                 deferredShader.disableWarns();
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_INV_MODEL_MATRIX), UniformFunctions.MAT4F(decalFX.getInverseModelMatrix()));

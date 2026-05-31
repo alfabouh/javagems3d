@@ -3,6 +3,7 @@ package api.events;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
+import com.jme3.bullet.PhysicsSpace;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
@@ -30,6 +31,7 @@ import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
@@ -255,6 +257,35 @@ public abstract class EventBus {
 
         public OpenGLRenderer getOpenGLRenderer() {
             return this.openGLRenderer;
+        }
+    }
+
+    public static final class InitDynamicBulletSpaceEvent implements IEvent {
+        private PhysicsSpace newPhysicsSpace;
+        private final DynamicsSystem dynamicsSystem;
+        private final PhysicsSpace physicsSpace;
+
+        public InitDynamicBulletSpaceEvent(DynamicsSystem dynamicsSystem, PhysicsSpace physicsSpace) {
+            this.dynamicsSystem = dynamicsSystem;
+            this.physicsSpace = physicsSpace;
+            this.newPhysicsSpace = null;
+        }
+
+        public PhysicsSpace getNewPhysicsSpace() {
+            return this.newPhysicsSpace;
+        }
+
+        public InitDynamicBulletSpaceEvent setNewPhysicsSpace(PhysicsSpace newPhysicsSpace) {
+            this.newPhysicsSpace = newPhysicsSpace;
+            return this;
+        }
+
+        public DynamicsSystem getDynamicsSystem() {
+            return this.dynamicsSystem;
+        }
+
+        public PhysicsSpace getPhysicsSpace() {
+            return this.physicsSpace;
         }
     }
 

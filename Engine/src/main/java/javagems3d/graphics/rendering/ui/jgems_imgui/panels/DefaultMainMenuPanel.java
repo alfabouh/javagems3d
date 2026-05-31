@@ -70,7 +70,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
         ui.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath("DemoMap"), ExternalMapProcessor.Default.getDefaultPlayerConstructor()));
+                    JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath("ArcticDemo"), ExternalMapProcessor.Default.getDefaultPlayerConstructor()));
                     ui.setUiPanel(new DefaultGamePanel(null));
                 });
 

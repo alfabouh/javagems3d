@@ -107,7 +107,6 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.physicsBody = new PhysicsRigidBody(this.createDefaultPhysicsShape());
         this.groundCheckShape = this.createDefaultGhostShapeShapeForGroundCheck();
         this.setShapeAfterInit();
-        this.setCollisionGroup(CollisionType.PLAYER);
         this.setCollisionFilter(CollisionType.UNIVERSAL);
         this.getGhostBody().setUserObject(this);
         this.getGhostBody().setKinematic(true);

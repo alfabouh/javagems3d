@@ -40,8 +40,8 @@ public class MeshCollider implements IColliderConstructor {
             collisionShape = meshCollisionData.getDynamicCollision();
         } else {
             collisionShape = meshCollisionData.getStaticCollision();
+            collisionShape.setMargin(this.margin());
         }
-        collisionShape.setMargin(this.margin());
         return collisionShape;
     }
 

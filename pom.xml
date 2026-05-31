@@ -10,8 +10,8 @@
         <imgui.artifactId>imgui-java-natives-windows</imgui.artifactId>
         <lwjgl.natives>natives-windows</lwjgl.natives>
         <bullet.artifactId>Libbulletjme-Windows64</bullet.artifactId>
-        <bullet.version>22.0.3</bullet.version>
-        <bullet.classifier>SpDebug</bullet.classifier>
+        <bullet.version>23.0.0</bullet.version>
+        <bullet.classifier>DpRelease</bullet.classifier>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>

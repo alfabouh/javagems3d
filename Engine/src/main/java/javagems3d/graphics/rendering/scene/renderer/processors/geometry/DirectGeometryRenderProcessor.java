@@ -5,12 +5,16 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;

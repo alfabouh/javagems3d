@@ -5,6 +5,7 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.physics.world.PhysicsWorld;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -34,8 +35,8 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                 if (JGems3D.get().getCore().engineState().isEngineIsReady() && !JGems3D.get().getCore().engineState().isPaused()) {
                     synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
-                        this.dynamicsSystem.step(time, 0);
-                        this.dynamicsSystem.collideTest();
+                        this.dynamicsSystem.step(time, JGemsPhysics.SUBSTEPS);
+                      //  this.dynamicsSystem.collideTest();
                     }
                 }
                 PhysicsProcessor.TPS += 1;

@@ -10,7 +10,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 
 public abstract class WorldItem implements IWorldObject {
-    private static int globalId;
+    public static int globalId;
 
     private final Object positionLock = new Object();
     private final Object rotationLock = new Object();

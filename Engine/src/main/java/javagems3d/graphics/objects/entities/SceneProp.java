@@ -50,7 +50,7 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        Log.get().trace("[ " + this + " ]" + " - PreRender");
+        Log.get().debug("[ " + this + " ]" + " - PreRender");
         super.onSpawn(iWorld);
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getPropModelConstructor() != null) {
@@ -62,7 +62,7 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        Log.get().trace("[ " + this + " ]" + " - PostRender");
+        Log.get().debug("[ " + this + " ]" + " - PostRender");
         super.onDestroy(iWorld);
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));

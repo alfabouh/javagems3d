@@ -10,6 +10,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class MeshCollisionData {
         this.meshStructure = meshStructure;
     }
 
-    public MeshCollisionData copyFor(MeshStructure3D<?> meshStructure) {
-        return new MeshCollisionData(this.indexedMeshList, this.dataPair, this.fabric, meshStructure);
+    public MeshCollisionData copyFor(MeshStructure3D<?> meshStructure, @Nullable Fabric fabric) {
+        return new MeshCollisionData(this.indexedMeshList, this.dataPair, fabric == null ? this.fabric : fabric, meshStructure);
     }
 
     /*
@@ -183,28 +184,12 @@ public class MeshCollisionData {
 
         @Override
         public CollisionShape createDynamicShape(MeshStructure3D<?> meshStructure, float[] positions, int[] indexes, List<IndexedMesh> indexedMeshList) {
+            final CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
             return switch (this.dynamicShape) {
-                case MeshHull -> {
-                    //if (positions.length / 3 <= 512) {
-                        yield new HullCollisionShape(positions);
-                    //}
-                    //CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                    //yield this.createBoxShape(cullingAABB);
-                }
-                case Box -> {
-                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                    yield this.createBoxShape(cullingAABB);
-                }
-
-                case Capsule -> {
-                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                    yield this.createCapsuleShape(cullingAABB);
-                }
-
-                case Sphere -> {
-                    CullingAABB cullingAABB = meshStructure.getMeshAABBData().getNormalizedAABB(new Pose3D(new Vector3f(0.0f)));
-                    yield this.createSphereShape(cullingAABB);
-                }
+                case MeshHull -> new HullCollisionShape(positions);
+                case Box -> this.createBoxShape(cullingAABB);
+                case Capsule -> this.createCapsuleShape(cullingAABB);
+                case Sphere -> this.createSphereShape(cullingAABB);
             };
         }
 

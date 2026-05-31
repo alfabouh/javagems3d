@@ -24,6 +24,6 @@ public abstract class JGemsAbstractStaticBody extends JGemsBody {
     protected void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody) {
         this.makeStatic();
         this.setCollisionGroup(CollisionType.ST_BODY);
-        this.setCollisionFilterNegative(CollisionType.LIQUID, CollisionType.GHOST);
+        this.setCollisionFilterNegative(CollisionType.LIQUID, CollisionType.GHOST, CollisionType.ST_BODY);
     }
 }

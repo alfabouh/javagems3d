@@ -286,7 +286,7 @@ public interface IAPIWBenchDataManager {
                 final TagGameResourcesList textureResource = new TagGameResourcesList("", ResourceType.TEXTURE);
                 final TagObjectsList attachedTo = new TagObjectsList();
 
-                final TagInt layerID = new TagInt(0, 0, 255);
+                final TagInt layerID = new TagInt(0, 0, Short.MAX_VALUE);
 
                 final Tag<TagGameResourcesList> tag_texture = new Tag<>(TagID.DEFAULT.TEXTURE_PATH, textureResource);
                 final Tag<TagFloat> tag_emissiveFactor = Tag.create(TagID.DEFAULT.EMISSIVE_FACTOR, new TagFloat(0.0f, 0.0f, 64.0f));

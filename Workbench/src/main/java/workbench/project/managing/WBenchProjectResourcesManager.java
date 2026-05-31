@@ -187,7 +187,9 @@ public class WBenchProjectResourcesManager {
 
     public void refreshModels(JGemsPath pathToGameFolder) {
         {
+            this.systemResources.getResourceArrays().clearMeshContainers();
             this.modelsKeysCache.values().forEach(e -> {
+                this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGameInstance.getModelsFolder(pathToGameFolder), e.relativePath() + "metadata"));
                 this.systemResources.getResourceCache().clearObjectFromCache(new JGemsPath(JGemsGameInstance.getModelsFolder(pathToGameFolder), e.relativePath() + MeshGroup.POSTFIX));
             });
             this.modelsKeysCache.clear();

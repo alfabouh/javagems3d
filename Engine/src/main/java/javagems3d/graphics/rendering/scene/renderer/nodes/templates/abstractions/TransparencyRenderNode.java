@@ -16,6 +16,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -132,9 +133,10 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
             }
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
+            shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), this.getAnimationsTexture());
             JGemsHelper.render().performShadowsInfo(this.getWorld().getEnvironment(), shaderManager);
         };
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this::getAnimationsTexture, this.getWorld());
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
         this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
@@ -142,6 +144,7 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         this.getIndirectGeometryRenderProcessor().createResources();
     }
 
+    public abstract @NotNull ITexture2DProgram getAnimationsTexture();
     public abstract @NotNull ShaderStorageBufferObject getIndirectBufferData();
     public abstract @NotNull ShaderStorageBufferObject getPropertiesData();
 

@@ -37,6 +37,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     public void makeDynamic() {
         this.getPhysicsRigidBody().makeDynamic(PhysMaterial.createDefaultMaterial());
+        this.getPhysicsRigidBody().setEnableSleep(true);
     }
 
     public void makeDynamic(PhysMaterial material) {
@@ -104,8 +105,8 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     protected void init(DynamicsSystem dynamicsSystem) {
         this.physicsRigidBody = new JGemsPhysicsRigidBody(this.getColliderConstructor().execute());
-        this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
-        this.getPhysicsRigidBody().setContactDamping(0.0f);
+        //this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
+        //this.getPhysicsRigidBody().setContactDamping(0.05f);
         this.getPhysicsRigidBody().setUserObject(this);
         this.getPhysicsRigidBody().setUserIndex(this.getItemId());
         this.setCollisionFilter(CollisionType.UNIVERSAL);

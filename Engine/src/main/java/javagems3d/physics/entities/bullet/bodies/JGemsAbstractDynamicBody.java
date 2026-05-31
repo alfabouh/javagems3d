@@ -29,15 +29,19 @@ public abstract class JGemsAbstractDynamicBody extends JGemsBody {
 
     @Override
     protected void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody) {
-        jGemsPhysicsRigidBody.setCcdMotionThreshold(1.0e-4f);
         this.resetCCD(jGemsPhysicsRigidBody);
-
         this.makeDynamic();
         this.setCollisionGroup(CollisionType.DN_BODY);
     }
 
+    protected void disableCcd(PhysicsRigidBody physicsRigidBody) {
+        physicsRigidBody.setCcdMotionThreshold(Float.POSITIVE_INFINITY);
+        physicsRigidBody.setCcdSweptSphereRadius(0);
+    }
+
     protected void resetCCD(PhysicsRigidBody physicsRigidBody) {
-        physicsRigidBody.setCcdSweptSphereRadius(physicsRigidBody.getCollisionShape().maxRadius() / 10.0f);
+        physicsRigidBody.setCcdMotionThreshold(physicsRigidBody.getCollisionShape().maxRadius() / 4.0f);
+        physicsRigidBody.setCcdSweptSphereRadius(physicsRigidBody.getCollisionShape().maxRadius());
     }
 
     @Override

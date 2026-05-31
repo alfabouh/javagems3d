@@ -39,6 +39,7 @@ public final class WorldObjectsContainer {
         this.getWorldObjects().forEach(e -> e.onDestroy(this.getWorld()));
         this.getWorldObjects().clear();
         this.getWorldTickedObjects().clear();
+        WorldItem.globalId = 0;
     }
 
     public void addObjectInWorld(IWorldObject worldObject) {

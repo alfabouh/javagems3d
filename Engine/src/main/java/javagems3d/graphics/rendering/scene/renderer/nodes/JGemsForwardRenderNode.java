@@ -1,8 +1,10 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -13,6 +15,11 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
 
     public JGemsForwardRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
         super(inColor, openGLRenderer);
+    }
+
+    @Override
+    public @NotNull ITexture2DProgram getAnimationsTexture() {
+        return JGemsHelper.resources().getAnimationsTextureBuffer();
     }
 
     @Override
