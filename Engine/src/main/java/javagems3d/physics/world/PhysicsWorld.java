@@ -12,6 +12,8 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.core.transmitter.ThreadActionsTransmitter;
+import javagems3d.system.core.transmitter.actions.Physics_Render__Action;
+import javagems3d.system.core.transmitter.actions.Render_Physics__Action;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.graph.Graph;
 
@@ -37,19 +39,22 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldUpdate() {
-        ThreadActionsTransmitter.INSTANCE.getActions__RENDER_TO_PHYSICS().forEach(
-                e -> e.action(this)
-        );
-        ThreadActionsTransmitter.INSTANCE.getActions__RENDER_TO_PHYSICS().clear();
-
-        EventBus.PhysicsWorldUpdateEvent preEvent = new EventBus.PhysicsWorldUpdateEvent(EventBus.Run.PRE, this);
-        EventLauncher.pushEvent(preEvent, new Pair<>(new JSPhysicsWorldUpdateEvent(new JSPhysicsWorld(this), JSEventRun.PRE), JavaToJsAPI.Target.Game));
-        if (!preEvent.isCancelled()) {
-            this.getWorldObjectsContainer().onUpdate();
-            this.ticks += 1;
+        {
+            Render_Physics__Action action;
+            while ((action = ThreadActionsTransmitter.INSTANCE.getActions__RENDER_TO_PHYSICS().poll()) != null) {
+                action.action(this);
+            }
         }
-        EventBus.PhysicsWorldUpdateEvent postEvent = new EventBus.PhysicsWorldUpdateEvent(EventBus.Run.POST, this);
-        EventLauncher.pushEvent(postEvent, new Pair<>(new JSPhysicsWorldUpdateEvent(new JSPhysicsWorld(this), JSEventRun.POST), JavaToJsAPI.Target.Game));
+        {
+            EventBus.PhysicsWorldUpdateEvent preEvent = new EventBus.PhysicsWorldUpdateEvent(EventBus.Run.PRE, this);
+            EventLauncher.pushEvent(preEvent, new Pair<>(new JSPhysicsWorldUpdateEvent(new JSPhysicsWorld(this), JSEventRun.PRE), JavaToJsAPI.Target.Game));
+            if (!preEvent.isCancelled()) {
+                this.getWorldObjectsContainer().onUpdate();
+                this.ticks += 1;
+            }
+            EventBus.PhysicsWorldUpdateEvent postEvent = new EventBus.PhysicsWorldUpdateEvent(EventBus.Run.POST, this);
+            EventLauncher.pushEvent(postEvent, new Pair<>(new JSPhysicsWorldUpdateEvent(new JSPhysicsWorld(this), JSEventRun.POST), JavaToJsAPI.Target.Game));
+        }
     }
 
     public void onWorldEnd() {

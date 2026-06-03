@@ -5,6 +5,7 @@ import javagems3d.graphics.environment.particles.IParticlesManager;
 import javagems3d.graphics.environment.particles.data.ParticleFXRenderConfig;
 import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.environment.particles.fx.WorldDefaultParticleFX;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.screen.timer.JGemsTimedAction;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.IWorld;
@@ -13,6 +14,7 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -29,6 +31,8 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
     private final float lifeTime;
     private final Function<ParticleFXCreator, ParticleFX> particleCreator;
     private EmitterProperties emitterProperties;
+
+    private SceneObject linkEmitterPosTo;
 
     private Vector3f emitterPosition;
 
@@ -47,6 +51,7 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         this.particlesManager = particlesManager;
         this.emitterPosition = emitterPosition;
         this.linkedParticles = new HashSet<>();
+        this.linkEmitterPosTo = null;
     }
 
     public static Function<ParticleFXCreator, ParticleFX> DEFAULT_PARTICLE_WORLD(@NotNull ParticleFXRenderConfig particleFXRenderConfig) {
@@ -88,6 +93,11 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
     public void onUpdate(IWorld iWorld) {
         if (!this.isEnabled()) {
             return;
+        }
+        if (this.getLinkEmitterPosTo() != null) {
+            if (this.getLinkEmitterPosTo().hasModel()) {
+                this.setEmitterPosition(this.getLinkEmitterPosTo().getModel().getPose().getPosition());
+            }
         }
         if (this.emitterLifeTime != null) {
             if (this.lifeTime > 0.0f && this.emitterLifeTime.resetTimerAfterReachedSeconds(this.lifeTime)) {
@@ -151,10 +161,21 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
     }
 
     public void invalidate() {
-        if (this.linkedParticles != null) {
-            this.linkedParticles.forEach(ParticleFX::setDead);
-            this.linkedParticles.clear();
+        if (this.getEmitterProperties().isDestroyParticlesFromThatEmitterThenInvalidated()) {
+            if (this.linkedParticles != null) {
+                this.linkedParticles.forEach(ParticleFX::setDead);
+                this.linkedParticles.clear();
+            }
         }
+    }
+
+    public @Nullable SceneObject getLinkEmitterPosTo() {
+        return this.linkEmitterPosTo;
+    }
+
+    public ParticleEmitter setLinkEmitterPosTo(@Nullable SceneObject linkEmitterPosTo) {
+        this.linkEmitterPosTo = linkEmitterPosTo;
+        return this;
     }
 
     public Vector3f getEmitterPosition() {
@@ -202,6 +223,8 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         private Vector3f particleEmissiveColor;
         private float particleEmissiveFactorStrength;
 
+        private boolean destroyParticlesFromThatEmitterThenInvalidated;
+
         public EmitterProperties() {
             this.particleRespawnTime = 0.1f;
             this.particleRespawnTimeRandomOffsetRange = 0.0f;
@@ -211,6 +234,8 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
             this.particleRandomSpawnPosOffsetRange = new Vector3f(0.0f, 0.0f, 0.0f);
             this.particleRandomSpawnScalingOffsetRange = 0.0f;
+
+            this.destroyParticlesFromThatEmitterThenInvalidated = true;
 
             this.spawnPosOffset = new Vector3f(0.0f);
 
@@ -227,6 +252,15 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
             this.particleEmissiveColor = new Vector3f(0.0f, 0.0f, 0.0f);
             this.particleEmissiveFactorStrength = 0.0f;
+        }
+
+        public boolean isDestroyParticlesFromThatEmitterThenInvalidated() {
+            return this.destroyParticlesFromThatEmitterThenInvalidated;
+        }
+
+        public EmitterProperties setDestroyParticlesFromThatEmitterThenInvalidated(boolean destroyParticlesFromThatEmitterThenInvalidated) {
+            this.destroyParticlesFromThatEmitterThenInvalidated = destroyParticlesFromThatEmitterThenInvalidated;
+            return this;
         }
 
         public Vector3f getSpawnPosOffset() {

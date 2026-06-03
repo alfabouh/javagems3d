@@ -63,8 +63,8 @@ public class WorldDefaultParticleFX extends ParticleFX {
     }
 
     private void strengthAffected(IWorld world, float frameDelta) {
-        Vector3f velocity = new Vector3f(this.constantVelocity).mul(this.constantAcceleration);
-        this.setPosition(this.getPosition().add(velocity.mul(frameDelta)));
+        Vector3f velocity = new Vector3f(this.constantVelocity).mul(frameDelta).mul(this.constantAcceleration);
+        this.setPosition(this.getPosition().add(velocity));
         this.constantVelocity.add(new Vector3f(this.gravity).mul(frameDelta));
     }
 

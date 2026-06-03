@@ -133,7 +133,9 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
             }
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), UniformFunctions.MAT4F(cameraMatrix));
+            shaderManager.disableWarns();
             shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), this.getAnimationsTexture());
+            shaderManager.enableWarns();
             JGemsHelper.render().performShadowsInfo(this.getWorld().getEnvironment(), shaderManager);
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this::getAnimationsTexture, this.getWorld());

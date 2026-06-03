@@ -12,6 +12,7 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
+import javagems3d.physics.world.scans.PhysicsWorldHitScans;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
@@ -60,6 +61,7 @@ public class DynamicsSystem {
             this.physicsSpace = dynamicBulletSpaceEvent.getNewPhysicsSpace();
         }
         ResourceManager.CREATE_PHYS_FOR_DEFAULT_MODELS();
+        PhysicsWorldHitScans.createGhost();
     }
 
     //TODO
@@ -93,6 +95,7 @@ public class DynamicsSystem {
     }
 
     public void destroy() {
+        PhysicsWorldHitScans.destroyGhost();
         this.getPhysicsSpace().destroy();
     }
 

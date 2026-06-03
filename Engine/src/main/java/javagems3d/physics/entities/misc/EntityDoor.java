@@ -21,7 +21,7 @@ public class EntityDoor extends WorldItem implements IWorldTicked {
         this.reversedOpening = reversedOpening;
 
         this.doorTriggerZone = new SimpleTriggerZone(new Zone(new Vector3f(this.getPosition()).add(0.0f, 1.0f, 0.0f), new Vector3f(3.0f)));
-        this.doorTriggerZone.setCollisionFilter(CollisionType.PLAYER);
+        this.doorTriggerZone.setCollideWithGroups(CollisionType.PLAYER);
         this.doorTriggerZone.setTriggerAction((e) -> {
             this.opened = true;
         });

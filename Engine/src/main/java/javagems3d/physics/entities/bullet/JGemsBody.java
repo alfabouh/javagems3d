@@ -109,7 +109,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         //this.getPhysicsRigidBody().setContactDamping(0.05f);
         this.getPhysicsRigidBody().setUserObject(this);
         this.getPhysicsRigidBody().setUserIndex(this.getItemId());
-        this.setCollisionFilter(CollisionType.UNIVERSAL);
+        this.setCollideWithGroups(CollisionType.WORLD);
         this.postInit(dynamicsSystem, this.getPhysicsRigidBody());
         DynamicsUtils.transformRigidBody(this.getPhysicsRigidBody(), this.startPosition, this.startRotation, this.startScaling);
     }
@@ -121,7 +121,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     @Override
     public Vector3f getScaling() {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 return new Vector3f(this.startScaling);
             }
             return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
@@ -131,7 +131,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     @Override
     public void setScaling(Vector3f scaling) {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 this.startScaling.set(scaling);
             } else {
                 DynamicsUtils.scaleRigidBody(this.getPhysicsRigidBody(), scaling);
@@ -142,7 +142,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     @Override
     public Vector3f getPosition() {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 return new Vector3f(this.startPosition);
             }
             return DynamicsUtils.getObjectBodyPos(this.getPhysicsRigidBody());
@@ -151,7 +151,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     public void setPosition(Vector3f position) {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 this.startPosition.set(position);
             } else {
                 DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), position);
@@ -162,7 +162,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     @Override
     public Vector3f getRotation() {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 return new Vector3f(this.startRotation);
             }
             return DynamicsUtils.getObjectBodyRot(this.getPhysicsRigidBody());
@@ -171,7 +171,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     public void setRotation(Vector3f rotation) {
         synchronized (this.transformLock) {
-            if (this.getPhysicsRigidBody() == null) {
+            if (this.getPhysicsRigidBody() == null || !this.getPhysicsRigidBody().isInWorld()) {
                 this.startRotation.set(rotation);
             } else {
                 DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), rotation);
@@ -191,11 +191,11 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         this.getPhysicsRigidBody().setCollisionGroup(i);
     }
 
-    public int getCollisionFilter() {
+    public int getCollisideWithGroups() {
         return this.getPhysicsRigidBody().getCollideWithGroups();
     }
 
-    public void setCollisionFilter(CollisionType... collisionTypes) {
+    public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
             i |= collisionType.getMask();
@@ -232,6 +232,8 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
         public JGemsPhysicsRigidBody(CollisionShape shape, float mass) {
             super(shape, mass);
         }
+
+
 
         public void slowDownLinearVelocity(float val) {
             com.jme3.math.Vector3f vector3f1 = new com.jme3.math.Vector3f();

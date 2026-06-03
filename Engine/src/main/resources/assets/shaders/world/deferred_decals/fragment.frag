@@ -2,8 +2,6 @@ layout (location = 2) out vec4 gColorOut;
 layout (location = 3) out vec3 gEmissionOut;
 
 uniform sampler2D gPositions;
-uniform sampler2D gTexture;
-uniform sampler2D gEmission;
 uniform sampler2D gNormals;
 uniform sampler2D gObjLayersID;
 
@@ -17,8 +15,6 @@ void main()
     vec2 uv_coordinates = ndc.xy * 0.5 + 0.5;
 
     vec4 frag_pos = texture(gPositions, uv_coordinates);
-    vec4 g_texture = texture(gTexture, uv_coordinates);
-    vec3 emission = texture(gEmission, uv_coordinates).rgb;
     vec3 normal = texture(gNormals, uv_coordinates).rgb;
     ivec2 tex_size = textureSize(gObjLayersID, 0);
     ivec2 texel_coord = ivec2(uv_coordinates * vec2(tex_size));

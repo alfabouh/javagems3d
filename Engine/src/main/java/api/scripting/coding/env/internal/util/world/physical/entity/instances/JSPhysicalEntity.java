@@ -92,7 +92,7 @@ public class JSPhysicalEntity extends JSWorldItem {
     public void setCollisionFilter(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
         for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
-        this.body.setCollisionFilter(arr);
+        this.body.setCollideWithGroups(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Exclude collision types", paramNames = {"types"})

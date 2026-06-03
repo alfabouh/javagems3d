@@ -13,7 +13,6 @@ import org.joml.Vector3f;
 
 public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer {
     private final Object transformLock = new Object();
-
     private float scalarSpeed;
 
     public JGemsKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
@@ -64,7 +63,7 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-    public float getPlayerHeight() {
+    public synchronized float getPlayerHeight() {
         BoundingBox boundingBox = new BoundingBox();
         this.getGhostBody().boundingBox(boundingBox);
         return boundingBox.getYExtent() * 2.0f;

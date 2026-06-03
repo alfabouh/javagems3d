@@ -1,6 +1,5 @@
 #extension GL_ARB_bindless_texture : require
 
-
 in vec2 uv_coordinates;
 
 layout (location = 0) out vec4 frag_color;

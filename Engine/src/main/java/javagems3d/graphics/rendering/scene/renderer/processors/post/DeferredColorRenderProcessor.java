@@ -118,15 +118,18 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
 
             Vector3f cam = ((IRenderWorld) environment.getWorld()).getCamera().getCamPosition();
 
-            boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
-            GL46.glDisable(GL46.GL_CULL_FACE);
+            //boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
+            //GL46.glDisable(GL46.GL_CULL_FACE);
+            GL46.glCullFace(GL46.GL_FRONT);
+            GL46.glDisable(GL46.GL_DEPTH_TEST);
             for (DecalFX decalFX : filteredDecalsToRender) {
                 //Vector3f min = decalFX.getCullingData().getAabbMin();
                 //Vector3f max = decalFX.getCullingData().getAabbMax();
                 //boolean cameraInside = cam.x >= min.x && cam.x <= max.x && cam.y >= min.y && cam.y <= max.y && cam.z >= min.z && cam.z <= max.z;
                 //if (cameraInside) {
-                  //  GL46.glDisable(GL46.GL_CULL_FACE);
-                    GL46.glDisable(GL46.GL_DEPTH_TEST);
+               // GL46.glCullFace(GL46.GL_FRONT);
+               //     GL46.glEnable(GL46.GL_CULL_FACE);
+               //     GL46.glDisable(GL46.GL_DEPTH_TEST);
                 //}
                 deferredShader.beginShading();
                 deferredShader.disableWarns();
@@ -147,11 +150,12 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
                 JGemsHelper.render().renderMeshList3D(JGemsResourceManager.DEFAULT_CUBE_MESHGROUP().getAllNodes(), 0);
                 deferredShader.endShading();
                 deferredShader.enableWarns();
-                GL46.glEnable(GL46.GL_DEPTH_TEST);
             }
-            if (oldV) {
-                GL46.glEnable(GL46.GL_CULL_FACE);
-            }
+            GL46.glEnable(GL46.GL_DEPTH_TEST);
+            GL46.glCullFace(GL46.GL_BACK);
+            //if (oldV) {
+            //    GL46.glEnable(GL46.GL_CULL_FACE);
+            //}
         }
     }
 }

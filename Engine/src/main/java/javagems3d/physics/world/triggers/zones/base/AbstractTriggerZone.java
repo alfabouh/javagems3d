@@ -24,7 +24,7 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         this.getGhostObject().setPhysicsLocation(DynamicsUtils.convertV3F_JME(zone.location()));
         this.getGhostObject().setUserObject(this);
 
-        this.setCollisionFilter(CollisionType.DN_BODY, CollisionType.PLAYER);
+        this.setCollideWithGroups(CollisionType.DN_BODY, CollisionType.PLAYER);
         this.setCollisionGroup(CollisionType.GHOST);
     }
 
@@ -61,11 +61,11 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         this.getGhostObject().setCollisionGroup(i);
     }
 
-    public int getCollisionFilter() {
+    public int getCollisideWithGroups() {
         return this.getGhostObject().getCollideWithGroups();
     }
 
-    public void setCollisionFilter(CollisionType... collisionTypes) {
+    public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
             i |= collisionType.getMask();

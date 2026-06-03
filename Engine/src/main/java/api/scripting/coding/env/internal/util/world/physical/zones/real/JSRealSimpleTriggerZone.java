@@ -64,7 +64,7 @@ public abstract class JSRealSimpleTriggerZone extends SimpleTriggerZone implemen
         for (int i = 0; i < types.length; i++) {
             arr[i] = types[i].getJavaType();
         }
-        super.setCollisionFilter(arr);
+        super.setCollideWithGroups(arr);
     }
 
     @Override

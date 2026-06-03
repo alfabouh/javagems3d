@@ -8,6 +8,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.managing.ResourceManager;
@@ -43,7 +44,7 @@ public abstract class ParticleFX implements ICulled, IWorldObject, IWorldTicked 
 
     @Override
     public CullingAABB getCullingData() {
-        return ResourceManager.DEFAULT_CUBE_MESHGROUP().getMeshAABBData().getNormalizedAABB(this.getMatrix());
+        return ParticleFX.getParticlesMeshBuffer().getMeshAABBData().getNormalizedAABB(this.getMatrix());
     }
 
     public Matrix4f getMatrix() {

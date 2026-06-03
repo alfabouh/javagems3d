@@ -12,7 +12,7 @@ out vec4 frag_pos;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
-layout(std430, binding = 30) readonly restrict buffer IndirectBufferData {
+layout(std430, binding = 14) readonly restrict buffer IndirectBufferData {
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
 

@@ -60,7 +60,7 @@ public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone impleme
         for (int i = 0; i < types.length; i++) {
             arr[i] = types[i].getJavaType();
         }
-        super.setCollisionFilter(arr);
+        super.setCollideWithGroups(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Check if trigger is active")

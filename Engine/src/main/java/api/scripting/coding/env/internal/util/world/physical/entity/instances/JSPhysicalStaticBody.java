@@ -4,7 +4,6 @@ import api.scripting.coding.env.def.*;
 import api.scripting.coding.env.internal.util.math.JSVector3f;
 import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldItemI;
-import api.scripting.coding.env.internal.util.world.physical.entity.JSWorldObjectI;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSColliderConstructor;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSCollisionType;
 import api.scripting.coding.env.internal.util.world.physical.entity.properties.JSEntityState;
@@ -94,7 +93,7 @@ public class JSPhysicalStaticBody implements JSWorldItemI {
     public void setCollisionFilter(JSCollisionType... types) {
         CollisionType[] arr = new CollisionType[types.length];
         for (int i = 0; i < types.length; i++) arr[i] = types[i].getJavaType();
-        this.staticBody.setCollisionFilter(arr);
+        this.staticBody.setCollideWithGroups(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Get entity state")

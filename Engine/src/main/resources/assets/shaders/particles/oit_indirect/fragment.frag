@@ -22,7 +22,7 @@ struct RenderData {
     int nextFrameId;
 };
 
-layout(std430, binding = 31) readonly restrict buffer ParticleRenderDataArray {
+layout(std430, binding = 13) readonly restrict buffer ParticleRenderDataArray {
     RenderData renderData[CONST.MAX_PARTICLE_INDIRECT_RENDERING_DATA];
 };
 
@@ -48,7 +48,7 @@ void main()
     vec4 diffuseInterpolated = mix(textureDiffuse, textureDiffuseInterpolation, enRenderData.interpolation);
 
     vec3 color = diffuseInterpolated.rgb * enRenderData.diffuse_color.xyz;
-    color *= (lightFactor * (1. - enRenderData.emissionStrength) + enRenderData.emissionStrength);
+    color *= (lightFactor * (1. - min(enRenderData.emissionStrength, 1.)) + enRenderData.emissionStrength);
 
     vec4 frag_color0 = vec4(color, diffuseInterpolated.a * enRenderData.diffuse_color.a);
     frag_color0 = calc_fog(frag_pos.xyz, frag_color0, 1.);
@@ -57,9 +57,8 @@ void main()
     reveal = calc_alpha(frag_color0);
     reveal = calc_fog_float(frag_pos.xyz, frag_color0.a);
 
-    float brightness = dot(frag_color0.rgb, vec3(0.2126, 0.7152, 0.0722));
-    bright_color = (brightness >= 1.75 ? vec4(frag_color0.xyz, 1.) : vec4(vec3(frag_color0.xyz * enRenderData.emissive_color) * enRenderData.emissionStrength * calc_fog_float(frag_pos.xyz, 1.), 1.));
-    if (textureDiffuse.a < 0.1) {
-        bright_color = vec4(0.);
-    }
+    float emissionConst = 1.75 - min(enRenderData.emissionStrength, 0.75);
+    float brightness = dot(vec3(frag_color0.xyz * textureDiffuse.a), vec3(0.2126, 0.7152, 0.0722));
+    bright_color = (brightness >= emissionConst ? vec4(frag_color0.xyz, textureDiffuse.a) : vec4(vec3(0.), textureDiffuse.a));
+    bright_color.rgb = bright_color.rgb * enRenderData.emissionStrength * calc_fog_float(frag_pos.xyz, 1.);
 }

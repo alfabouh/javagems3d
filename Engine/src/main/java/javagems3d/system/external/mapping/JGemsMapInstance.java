@@ -174,12 +174,12 @@ public final class JGemsMapInstance {
         PlaneCollisionShape planeShape5 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, 1), -worldSize));
         PlaneCollisionShape planeShape6 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, -1), -worldSize));
 
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape1, 0), "border_wall1"));
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape2, 0), "border_wall2"));
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape3, 0), "border_wall3"));
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape4, 0), "border_wall4"));
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape5, 0), "border_wall5"));
-        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape6, 0), "border_wall6"));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape1, 0), "border_wall1").setCanBeDestroyed(false));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape2, 0), "border_wall2").setCanBeDestroyed(false));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape3, 0), "border_wall3").setCanBeDestroyed(false));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape4, 0), "border_wall4").setCanBeDestroyed(false));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape5, 0), "border_wall5").setCanBeDestroyed(false));
+        physicsWorld.addObject(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape6, 0), "border_wall6").setCanBeDestroyed(false));
     }
 
     public boolean isMapValid() {

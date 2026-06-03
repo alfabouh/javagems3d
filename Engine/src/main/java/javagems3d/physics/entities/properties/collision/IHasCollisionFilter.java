@@ -5,7 +5,7 @@ public interface IHasCollisionFilter {
 
     void setCollisionGroup(CollisionType... collisionTypes);
 
-    int getCollisionFilter();
+    int getCollisideWithGroups();
 
-    void setCollisionFilter(CollisionType... collisionTypes);
+    void setCollideWithGroups(CollisionType... collisionTypes);
 }

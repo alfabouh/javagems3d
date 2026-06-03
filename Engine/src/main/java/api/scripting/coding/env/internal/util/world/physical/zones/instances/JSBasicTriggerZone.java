@@ -50,7 +50,7 @@ public class JSBasicTriggerZone implements JSWorldObjectI {
         for (int i = 0; i < types.length; i++) {
             arr[i] = types[i].getJavaType();
         }
-        this.zone.setCollisionFilter(arr);
+        this.zone.setCollideWithGroups(arr);
     }
 
     @JSCodingFunctionOrMethod(description = "Get trigger action")

@@ -501,6 +501,11 @@ public final class JGemsHelper {
             });
         }
 
+        public void renderModelAABBDebug(DebugLinesDrawer debugLinesDrawer, CullingAABB cullingAABB, Matrix4f matrixModel, Vector3f color) {
+            final CullingAABB globalAABB = MeshBoundingBoxData.transformAABB(cullingAABB, matrixModel);
+            debugLinesDrawer.addRequest(DebugLinesDrawer.BoxRequest(globalAABB.getAabbMin(), globalAABB.getAabbMax(), color, DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+        }
+
         private List<CullingAABB> getLocalAABBs(DebugLinesDrawer debugLinesDrawer, MeshStructure3D<?> meshStructure3D, Pose3D pose3D) {
             List<CullingAABB> aabbs = new ArrayList<>();
             for (MeshNode3D<?> meshNode : meshStructure3D.getAllNodes()) {

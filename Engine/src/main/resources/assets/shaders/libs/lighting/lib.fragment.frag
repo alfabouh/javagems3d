@@ -33,7 +33,7 @@ struct SpotLight
     vec3 color;
     float cutOff;
 };
-layout (std430, binding = 16) readonly restrict buffer SpotLights {
+layout (std430, binding = 15) readonly restrict buffer SpotLights {
     SpotLight s_l[CONST.MAX_SPOT_LIGHTS];
     int total_slights;
 };

@@ -177,11 +177,11 @@ public final class ParticleFXRenderConfig {
 
         private final ImageTexture texture;
         private Color4Texture diffuseColor = new Color4Texture(1f, 1f, 1f, 0.99f);
-        private Color3Texture emissionColor = new Color3Texture(new Vector3f());
+        private Color3Texture emissionColor = new Color3Texture(new Vector3f(1.0f));
 
         private Vector2i cellsXY = new Vector2i(1, 1);
         private int maxSprites = 1;
-        private boolean loop = true;
+        private boolean loop = false;
         private float loopSpeed = 5.0f;
         private boolean fadeOut = true;
         private boolean normalizeY = false;

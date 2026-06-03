@@ -132,12 +132,12 @@ public class JSKinematicPlayer implements JSWorldObjectI, JSControllableItem, JS
         for (int i = 0; i < types.length; i++) {
             javaTypes[i] = types[i].getJavaType();
         }
-        this.player.setCollisionFilter(javaTypes);
+        this.player.setCollideWithGroups(javaTypes);
     }
 
     @JSCodingFunctionOrMethod(description = "Get collision filter mask")
     public int getCollisionFilter() {
-        return this.player.getCollisionFilter();
+        return this.player.getCollisideWithGroups();
     }
 
     @JSCodingFunctionOrMethod(description = "Set slope angle for movement", paramNames = {"angle"})

@@ -107,7 +107,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.physicsBody = new PhysicsRigidBody(this.createDefaultPhysicsShape());
         this.groundCheckShape = this.createDefaultGhostShapeShapeForGroundCheck();
         this.setShapeAfterInit();
-        this.setCollisionFilter(CollisionType.UNIVERSAL);
+        this.setCollideWithGroups(CollisionType.WORLD);
         this.getGhostBody().setUserObject(this);
         this.getGhostBody().setKinematic(true);
 
@@ -219,11 +219,15 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         Vector3f normalizedMotion = new Vector3f(motion.x, yGet, motion.z).normalize(motionSpeed).mul(1.0f, 0.0f, 1.0f);
         Vector3f newAttempt = this.tryStepInterval(currPos, normalizedMotion, yGet, false);
 
+        Vector3f result = rawResult;
         if (newAttempt != null) {
-            return newAttempt;
+            result = newAttempt;
         }
 
-        return rawResult;
+        if (result.y - currPos.y <= 0.01f) {
+            return null;
+        }
+        return result;
     }
 
     private Vector3f tryStepInterval(Vector3f currPos, Vector3f motion, float height, boolean correction) {
@@ -495,6 +499,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
             Vector3f tryStepUp = this.tryStepUp(this.getPosition(), motion, this.getStepHeight());
             if (tryStepUp != null) {
                 this.setPosition(new Vector3f(tryStepUp.x, tryStepUp.y + 0.01f, tryStepUp.z));
+               // System.out.println("F");
                 return;
             }
         }
@@ -563,11 +568,11 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.getPhysicsBody().setCollisionGroup(i);
     }
 
-    public int getCollisionFilter() {
+    public int getCollisideWithGroups() {
         return this.getGhostBody().getCollideWithGroups();
     }
 
-    public void setCollisionFilter(CollisionType... collisionTypes) {
+    public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
             i |= collisionType.getMask();
@@ -711,10 +716,11 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     if ((e.getCollisionObject().collisionFlags() & CollisionFlag.NO_CONTACT_RESPONSE) != 0) {
                         return true;
                     }
-                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0;
+                    //|| (e.getCollisionObject().getCollideWithGroups() & ghostObject.getCollisionGroup()) == 0
+                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0 ;
                 });
                 if (!rayTest.isEmpty()) {
-                    PhysicsRayTestResult physicsSweepTestResult1 = rayTest.get(0);
+                    PhysicsRayTestResult physicsSweepTestResult1 = rayTest.getFirst();
                     float distanceToHit = physicsSweepTestResult1.getHitFraction();
                     Vector3f corrected = DynamicsUtils.lerp(posFrom, posTo, 1.0f - distanceToHit);
 
@@ -763,7 +769,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 });
                 sweepTestResultList.sort(Comparator.comparingDouble(PhysicsSweepTestResult::getHitFraction));
                 if (!sweepTestResultList.isEmpty()) {
-                    PhysicsSweepTestResult physicsSweepTestResult1 = sweepTestResultList.get(0);
+                    PhysicsSweepTestResult physicsSweepTestResult1 = sweepTestResultList.getFirst();
                     float distanceToHit = physicsSweepTestResult1.getHitFraction();
                     Vector3f corrected = DynamicsUtils.lerp(posFrom, moveTo1, distanceToHit);
 

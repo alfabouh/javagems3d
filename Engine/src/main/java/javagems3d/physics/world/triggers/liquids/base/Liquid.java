@@ -28,7 +28,7 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
     protected void init() {
         this.getSimpleTriggerZone().setTriggerAction(this::onEntityEnteredLiquid);
         this.getSimpleTriggerZone().setCollisionGroup(CollisionType.LIQUID);
-        this.getSimpleTriggerZone().setCollisionFilter(CollisionType.PLAYER, CollisionType.DN_BODY);
+        this.getSimpleTriggerZone().setCollideWithGroups(CollisionType.PLAYER, CollisionType.DN_BODY);
     }
 
     protected abstract void onEntityEnteredLiquid(Object e);

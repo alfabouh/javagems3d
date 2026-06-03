@@ -10,6 +10,7 @@ import org.joml.Vector3f;
 
 public class BulletBody extends WorldItem {
     private final PhysicsRigidBody physicsRigidBody;
+    private boolean canBeDestroyed;
 
     public BulletBody(PhysicsWorld world, @NotNull PhysicsRigidBody physicsRigidBody, String itemName) {
         super(world, DynamicsUtils.getObjectBodyPos(physicsRigidBody), DynamicsUtils.getObjectBodyRot(physicsRigidBody), DynamicsUtils.getObjectBodyScaling(physicsRigidBody), itemName);
@@ -32,6 +33,16 @@ public class BulletBody extends WorldItem {
         PhysicsWorld world = (PhysicsWorld) iWorld;
         super.onDestroy(iWorld);
         world.getDynamics().removeCollisionObject(this.getPhysicsRigidBody());
+    }
+
+    public BulletBody setCanBeDestroyed(boolean canBeDestroyed) {
+        this.canBeDestroyed = canBeDestroyed;
+        return this;
+    }
+
+    @Override
+    public boolean canBeDestroyed() {
+        return this.canBeDestroyed;
     }
 
     @Override

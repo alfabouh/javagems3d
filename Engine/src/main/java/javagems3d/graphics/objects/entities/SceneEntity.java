@@ -125,10 +125,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
             } else {
-                Vector3f newRotation = new Vector3f();
-                Quaternionf result = this.getQuaternionInterpolated(this.getCurrentRotState(), physicsSyncTicks);
-                result.getEulerAnglesXYZ(newRotation);
-                this.renderRotation.set(new Vector3f(newRotation.x, newRotation.y, newRotation.z));
+               //Vector3f newRotation = new Vector3f();
+               //Quaternionf result = this.getQuaternionInterpolated(this.getCurrentRotState(), physicsSyncTicks);
+               //result.getEulerAnglesXYZ(newRotation);
+               //this.renderRotation.set(new Vector3f(newRotation.x, newRotation.y, newRotation.z));
+                this.renderRotation.set(this.getAngleSlerp(this.getCurrentRotState(), physicsSyncTicks));
             }
         } else {
             this.renderPosition.set(pos);
@@ -144,6 +145,25 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         Quaternionf res = new Quaternionf();
         start.slerp(end, physicsSyncTicks, res);
         return res;
+    }
+
+    private Vector3f getAngleSlerp(InterpolationPoints rotation, float physicsSyncTicks) {
+        return new Vector3f(
+                this.lerpAngle(rotation.startPoint().x, rotation.endPoint().x, physicsSyncTicks),
+                this.lerpAngle(rotation.startPoint().y, rotation.endPoint().y, physicsSyncTicks),
+                this.lerpAngle(rotation.startPoint().z, rotation.endPoint().z, physicsSyncTicks)
+        );
+    }
+
+    private float lerpAngle(float a, float b, float t) {
+        float diff = b - a;
+        while (diff > Math.PI) {
+            diff -= (float) (Math.PI * 2.0f);
+        }
+        while (diff < -Math.PI) {
+            diff += (float) (Math.PI * 2.0f);
+        }
+        return a + diff * t;
     }
 
     @Override

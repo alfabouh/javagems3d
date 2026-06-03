@@ -19,11 +19,13 @@ public interface IAssetsInitializer {
     LaunchMode loadMode();
     LoadPriority loadPriority();
 
+    float PART_MSH_SCL = 0.5f;
+
     float[] ParticleModelPos = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f
+            -IAssetsInitializer.PART_MSH_SCL, -IAssetsInitializer.PART_MSH_SCL, 0.0f,
+            IAssetsInitializer.PART_MSH_SCL, -IAssetsInitializer.PART_MSH_SCL, 0.0f,
+            IAssetsInitializer.PART_MSH_SCL,  IAssetsInitializer.PART_MSH_SCL, 0.0f,
+            -IAssetsInitializer.PART_MSH_SCL,  IAssetsInitializer.PART_MSH_SCL, 0.0f
     };
 
     float[] ParticleUV = {

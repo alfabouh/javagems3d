@@ -36,7 +36,7 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                     synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
                         this.dynamicsSystem.step(time, JGemsPhysics.SUBSTEPS);
-                      //  this.dynamicsSystem.collideTest();
+                        this.dynamicsSystem.collideTest();
                     }
                 }
                 PhysicsProcessor.TPS += 1;

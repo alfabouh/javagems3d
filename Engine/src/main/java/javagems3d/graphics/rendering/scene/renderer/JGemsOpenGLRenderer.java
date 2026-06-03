@@ -67,10 +67,7 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 
@@ -250,7 +247,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
             uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, uiRenderNode);
-            JGemsOpenGLRenderer.renderDebug(this.getWorld().getSceneObjects(), this.getWorld().getLiquids(), this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection());
+            JGemsOpenGLRenderer.renderDebug(
+                    this.getWorld().getSceneObjects(),
+                    this.getWorld().getLiquids(),
+                    this.getWorld().getEnvironment().getParticlesScene().getParticlesManager().getParticlesFXCollection(),
+                    this.getWorld().getEnvironment().getDecalsScene().getDecalFXCollection()
+            );
             EventLauncher.pushEvent(new EventBus.RenderOGLSceneEvent(this, frameTicking, EventBus.Run.POST, toRenderObjects, toRenderLiquids, toRenderParticles), new Pair<>(new JSRenderOGLSceneEvent(new JSOpenGLRenderer(this), new JSFrameTicking(frameTicking), JSEventRun.POST, sceneObjectJS, sceneWorldLiquidsJS), JavaToJsAPI.Target.Game));
         }
 
@@ -270,7 +272,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
     }
 
-    public static void renderDebug(Collection<SceneObject> sceneObjects, Collection<SceneWorldLiquid> liquids, Collection<ParticleFX> particleFXSet) {
+    public static void renderDebug(Collection<SceneObject> sceneObjects, Collection<SceneWorldLiquid> liquids, Collection<ParticleFX> particleFXSet, Collection<DecalFX> decalFXSet) {
         if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
             // for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
             //     CullingAABB cullingAABB = sceneObject.getCullingData();
@@ -280,6 +282,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             // }
             for (ParticleFX particleFX : particleFXSet) {
                 JGemsHelper.render().renderModelAABBDebug(JGemsOpenGLRenderer.DebugLinesDrawer(), particleFX.getCullingData());
+            }
+            for (DecalFX decalFX : decalFXSet) {
+                JGemsHelper.render().renderModelAABBDebug(JGemsOpenGLRenderer.DebugLinesDrawer(), decalFX.getCullingData(), new Matrix4f(), new Vector3f(1.0f, 1.0f, 0.0f));
             }
             for (SceneObject sceneObject : sceneObjects) {
                 if (sceneObject.getModel() != null) {

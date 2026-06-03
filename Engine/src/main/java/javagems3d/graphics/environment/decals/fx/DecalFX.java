@@ -51,22 +51,31 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
         return this.getModelMatrix().invert();
     }
 
+    private Matrix4f getOrigModelMatrix() {
+        return new Matrix4f().identity().translate(this.getPosition()).rotateXYZ(this.getRotation().negate()).scale(this.getScale());
+    }
+
+    private Matrix4f getMatrixTransformedMatrix(Matrix4f origin) {
+        if (this.getBasis() == null) {
+            return origin;
+        }
+        Matrix4f basis = new Matrix4f()
+                .translate(this.getPosition())
+                .mul(this.getBasis())
+                .translate(this.getPosition().negate());
+        return basis.mul(origin);
+    }
+
     public Matrix4f getModelMatrix() {
         if (this.attachedTo != null) {
-            Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(this.attachedTo).getModel().getPose()).mul(this.localDecalMatrix);
-            if (this.getBasis() != null) {
-                return mat.mul(this.getBasis());
-            }
-            return mat;
+            Matrix4f modelMat = TransformUtils.getModelMatrix(Objects.requireNonNull(this.attachedTo).getModel().getPose());
+            return this.getMatrixTransformedMatrix((modelMat.mul(this.localDecalMatrix)));
         }
         Matrix4f mat = new Matrix4f().identity()
                 .translate(this.getPosition())
                 .rotateXYZ(this.getRotation().negate())
                 .scale(this.getScale());
-        if (this.getBasis() != null) {
-            return mat.mul(this.getBasis());
-        }
-        return mat;
+        return this.getMatrixTransformedMatrix(mat);
     }
 
     @Override
@@ -151,7 +160,7 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
             this.localDecalMatrix = null;
         }
         Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(attachedTo).getModel().getPose());
-        this.localDecalMatrix = new Matrix4f(mat.invert().mul(this.getModelMatrix()));
+        this.localDecalMatrix = new Matrix4f(mat.invert().mul(this.getOrigModelMatrix()));
         this.attachedTo = attachedTo;
         return this;
     }

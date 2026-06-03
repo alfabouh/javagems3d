@@ -116,30 +116,33 @@ public class GameEditorInterface implements DearUIInterface {
             if (ImGui.menuItem("Compile")) {
                 String pathToSafe = JGemsHelper.files().openFolderViewChooser("");
                 if (pathToSafe != null && !pathToSafe.isEmpty()) {
+                    boolean err = false;
                     if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath).exists()) {
                         LoggingManager.showWindowWarn("Core " + WBench.get().getGameProjectManager().gameProjectSettings.compileCorePath + " doesn't exist");
-                        return;
+                        err = true;
                     }
                     if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath).exists()) {
                         LoggingManager.showWindowWarn("Launcher " + WBench.get().getGameProjectManager().gameProjectSettings.compileLauncherPath + " doesn't exist");
-                        return;
+                        err = true;
                     } if (!new File(WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath).exists()) {
                         LoggingManager.showWindowWarn("Workbench " + WBench.get().getGameProjectManager().gameProjectSettings.compileWorkbenchPath + " doesn't exist");
-                        return;
+                        err = true;
                     }
-                    File f = new File(pathToSafe, WBench.get().getGameProjectManager().getGameProject().getGameTitle());
-                    if (f.exists() || f.mkdir()) {
-                        this.copyRuntime(f);
-                        File gameFiles = new File(f, "game_dir");
-                        if (gameFiles.exists() || gameFiles.mkdir()) {
-                            JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles, JGemsGameInstance.TEMP_FILE);
+                    if (!err) {
+                        File f = new File(pathToSafe, WBench.get().getGameProjectManager().getGameProject().getGameTitle());
+                        if (f.exists() || f.mkdir()) {
+                            this.copyRuntime(f);
+                            File gameFiles = new File(f, "game_dir");
+                            if (gameFiles.exists() || gameFiles.mkdir()) {
+                                JGemsHelper.files().copyDirectory(WBench.get().getGameProjectManager().getGameProject().getProjectAbsolutePath().toFile(), gameFiles, JGemsGameInstance.TEMP_FILE);
+                            } else {
+                                throw new JGemsIOException("Unable to create project folder " + gameFiles.getPath());
+                            }
+                            this.createBatSh(f);
+                            LoggingManager.showWindowInfo("Success!");
                         } else {
-                            throw new JGemsIOException("Unable to create project folder " + gameFiles.getPath());
+                            throw new JGemsIOException("Unable to create project folder " + f.getPath());
                         }
-                        this.createBatSh(f);
-                        LoggingManager.showWindowInfo("Success!");
-                    } else {
-                        throw new JGemsIOException("Unable to create project folder " + f.getPath());
                     }
                 }
             }

@@ -133,17 +133,17 @@ public final class WBenchLocalShadersInitializer extends ShadersInitializer<WBen
         this.PointLightsData = new ShaderStorageBufferObject(6, 4 * JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE + Integer.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.PointLightsData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.SpotLightsData = new ShaderStorageBufferObject(16, 4 * JGemsConfig.SYSTEM.SPOT_LIGHT_BUFFER_PACK_SIZE + Integer.BYTES);
+        this.SpotLightsData = new ShaderStorageBufferObject(15, 4 * JGemsConfig.SYSTEM.SPOT_LIGHT_BUFFER_PACK_SIZE + Integer.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.SpotLightsData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.ParticleSceneIndirectBufferData = new ShaderStorageBufferObject(30,
+        this.ParticleSceneIndirectBufferData = new ShaderStorageBufferObject(14,
                 (JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBOStorage(this.ParticleSceneIndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.ParticleScenePropertiesData = new ShaderStorageBufferObject(31, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES);
+        this.ParticleScenePropertiesData = new ShaderStorageBufferObject(13, Integer.BYTES * JGemsConfig.SYSTEM.INDIRECT_PARTICLES_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_PARTICLES_RENDERING_MESH_PROPERTIES);
         ShaderStorageBufferProgram.createSSBOStorage(this.ParticleScenePropertiesData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         //this.Decals = new ShaderStorageBufferObject(36, Integer.BYTES + (Integer.BYTES * JGemsConfig.SYSTEM.DECALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_DECALS));
