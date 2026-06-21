@@ -1,4 +1,4 @@
-package javagems3d.audio.sound.loaders;
+package javagems3d.audio.loaders;
 
 import java.nio.Buffer;
 

@@ -35,6 +35,7 @@ import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.service.files.JGemsPath;
 import javagems3d.system.service.files.source.ISource;
@@ -140,7 +141,7 @@ public interface IAPIWBenchDataManager {
     }
 
     default void SET_DEFAULTS() {
-        final Tag<TagRadioBoolean> TAG_PHYSICS = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
+        final Tag<TagRadioBoolean> TAG_PHYSICS = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
         final JGemsPathSource cube = new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ISource.Source.INSIDE_JAR);
         this.addResourceProp(IAPIWBenchDataManager.GENERIC_PROP, IAPIWBenchDataManager.DEFAULT_CUBE_OBJ, () -> new WBenchObjectData(cube), () -> new JGemsPropData(cube));
         this.addResourceEntity(IAPIWBenchDataManager.GENERIC_ENTITY, IAPIWBenchDataManager.DEFAULT_CUBE_OBJ, () -> new WBenchObjectData(cube).addTag(TAG_PHYSICS), () -> new JGemsEntityData(cube));
@@ -661,6 +662,10 @@ public interface IAPIWBenchDataManager {
                     .loop(this.isParticleAnimationLooped(tagsContainer))
                     .loopSpeed(this.getParticleAnimationSpeed(tagsContainer))
                     .fadeOut(this.isParticleFadeOutEnabled(tagsContainer))
+                    .alphaDiscard(this.getParticleAlphaDiscard(tagsContainer))
+                    .diffuse(new Color4Texture(new Vector4f(this.getParticleColorMask(tagsContainer), this.getParticleBlendingTransparency(tagsContainer))))
+                    .emission(this.getParticleEmissiveFactorStrength(tagsContainer))
+                    .emissionColor(new Color3Texture(this.getParticleEmissiveColor(tagsContainer)))
                     .normalizeY(this.isParticleNormalizedY(tagsContainer))
                     .build();
             this.particleEmitter = particlesManager.spawnParticleFXEmitter(particlesManager.createDefaultWorldParticleEmitter(this.getContextData().sceneProp().getPosition(), config, -1.0f));
@@ -675,20 +680,12 @@ public interface IAPIWBenchDataManager {
                     .setParticleRespawnTime(this.getParticleRespawnTime(tagsContainer))
                     .setParticleRespawnTimeRandomOffsetRange(this.getParticleRespawnTimeRandomOffsetRange(tagsContainer))
 
-                    .setParticleAlphaDiscard(this.getParticleAlphaDiscard(tagsContainer))
-                    .setParticleBlendingTransparency(this.getParticleBlendingTransparency(tagsContainer))
-
                     .setParticleBaseScale(this.getParticleBaseScale(tagsContainer))
-                    .setParticleColorMask(this.getParticleColorMask(tagsContainer))
-
                     .setParticleBasicVelocity(this.getParticleBasicVelocity(tagsContainer))
                     .setParticleBasicVelocityRandomOffsetRange(this.getParticleBasicVelocityRandomOffsetRange(tagsContainer))
                     .setParticleBasicAcceleration(this.getParticleBasicAcceleration(tagsContainer))
 
-                    .setParticleGravity(this.getParticleGravity(tagsContainer))
-
-                    .setParticleEmissiveColor(this.getParticleEmissiveColor(tagsContainer))
-                    .setParticleEmissiveFactorStrength(this.getParticleEmissiveFactorStrength(tagsContainer));
+                    .setParticleGravity(this.getParticleGravity(tagsContainer));
         }
 
         @Override

@@ -71,7 +71,7 @@ public final class TagID {
     }
 
     public String getNormalName() {
-        return this.normalName;
+        return this.normalName == null || this.normalName.isEmpty() ? this.getId() : this.normalName;
     }
 
     public static class DEFAULT {

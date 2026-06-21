@@ -95,6 +95,10 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
             return;
         }
         if (this.getLinkEmitterPosTo() != null) {
+            if (this.getLinkEmitterPosTo().isDead()) {
+                this.invalidate();
+                return;
+            }
             if (this.getLinkEmitterPosTo().hasModel()) {
                 this.setEmitterPosition(this.getLinkEmitterPosTo().getModel().getPose().getPosition());
             }
@@ -113,7 +117,7 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
                 }
             } else {
                 if (this.linkedParticles.size() > 1) {
-                    this.invalidate();
+                    this.setDead();
                 } else if (this.linkedParticles.isEmpty()) {
                     this.spawnParticle();
                 } else {
@@ -139,10 +143,6 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
                         new Vector3f(this.getEmitterProperties().getParticleBasicAcceleration())
                 )
         );
-        createdParticle.getParticleFXRenderConfig().getDiffuseColor().setColor(new Vector4f(this.getEmitterProperties().getParticleColorMask(), this.getEmitterProperties().getParticleBlendingTransparency()));
-        createdParticle.getParticleFXRenderConfig().getEmissionColor().setColor(new Vector3f(this.getEmitterProperties().getParticleEmissiveColor()));
-        createdParticle.getParticleFXRenderConfig().setEmissionStrength(this.getEmitterProperties().getParticleEmissiveFactorStrength());
-        createdParticle.getParticleFXRenderConfig().setAlphaDiscard(this.getEmitterProperties().getParticleAlphaDiscard());
         this.particlesManager.spawnParticleFX(createdParticle);
         this.linkedParticles.add(createdParticle);
     }
@@ -216,13 +216,6 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
         private Vector3f particleRandomSpawnPosOffsetRange;
         private float particleRandomSpawnScalingOffsetRange;
 
-        private Vector3f particleColorMask;
-        private float particleBlendingTransparency;
-        private float particleAlphaDiscard;
-
-        private Vector3f particleEmissiveColor;
-        private float particleEmissiveFactorStrength;
-
         private boolean destroyParticlesFromThatEmitterThenInvalidated;
 
         public EmitterProperties() {
@@ -230,7 +223,7 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
             this.particleRespawnTimeRandomOffsetRange = 0.0f;
 
             this.particleLifeTime = 3.0f;
-            this.particleLifeTimeRandomOffsetRange = 3.0f;
+            this.particleLifeTimeRandomOffsetRange = 0.0f;
 
             this.particleRandomSpawnPosOffsetRange = new Vector3f(0.0f, 0.0f, 0.0f);
             this.particleRandomSpawnScalingOffsetRange = 0.0f;
@@ -245,13 +238,6 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
             this.particleGravity = new Vector3f(0.0f);
             this.particleBaseScale = new Vector2f(1.0f);
-            this.particleColorMask = new Vector3f(1.0f);
-
-            this.particleBlendingTransparency = 0.5f;
-            this.particleAlphaDiscard = 0.1f;
-
-            this.particleEmissiveColor = new Vector3f(0.0f, 0.0f, 0.0f);
-            this.particleEmissiveFactorStrength = 0.0f;
         }
 
         public boolean isDestroyParticlesFromThatEmitterThenInvalidated() {
@@ -368,51 +354,6 @@ public class ParticleEmitter implements IWorldObject, IWorldTicked {
 
         public EmitterProperties setParticleRandomSpawnScalingOffsetRange(float particleRandomSpawnScalingOffsetRange) {
             this.particleRandomSpawnScalingOffsetRange = particleRandomSpawnScalingOffsetRange;
-            return this;
-        }
-
-        public Vector3f getParticleColorMask() {
-            return this.particleColorMask;
-        }
-
-        public EmitterProperties setParticleColorMask(Vector3f particleColorMask) {
-            this.particleColorMask = particleColorMask;
-            return this;
-        }
-
-        public float getParticleBlendingTransparency() {
-            return this.particleBlendingTransparency;
-        }
-
-        public EmitterProperties setParticleBlendingTransparency(float particleBlendingTransparency) {
-            this.particleBlendingTransparency = particleBlendingTransparency;
-            return this;
-        }
-
-        public float getParticleAlphaDiscard() {
-            return this.particleAlphaDiscard;
-        }
-
-        public EmitterProperties setParticleAlphaDiscard(float particleAlphaDiscard) {
-            this.particleAlphaDiscard = particleAlphaDiscard;
-            return this;
-        }
-
-        public Vector3f getParticleEmissiveColor() {
-            return this.particleEmissiveColor;
-        }
-
-        public EmitterProperties setParticleEmissiveColor(Vector3f particleEmissiveColor) {
-            this.particleEmissiveColor = particleEmissiveColor;
-            return this;
-        }
-
-        public float getParticleEmissiveFactorStrength() {
-            return this.particleEmissiveFactorStrength;
-        }
-
-        public EmitterProperties setParticleEmissiveFactorStrength(float particleEmissiveFactorStrength) {
-            this.particleEmissiveFactorStrength = particleEmissiveFactorStrength;
             return this;
         }
     }

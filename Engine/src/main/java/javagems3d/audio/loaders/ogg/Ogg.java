@@ -1,4 +1,4 @@
-package javagems3d.audio.sound.loaders.ogg;
+package javagems3d.audio.loaders.ogg;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -6,7 +6,7 @@ import org.lwjgl.stb.STBVorbis;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.audio.sound.loaders.ISoundCodec;
+import javagems3d.audio.loaders.ISoundCodec;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 

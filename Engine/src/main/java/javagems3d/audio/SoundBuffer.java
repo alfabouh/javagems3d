@@ -1,16 +1,13 @@
-package javagems3d.audio.sound;
+package javagems3d.audio;
 
 import javagems3d.system.service.files.source.JGemsPathSource;
-import javagems3d.system.service.files.source.JGemsStringSource;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
-import javagems3d.audio.JGemsSoundManager;
-import javagems3d.audio.sound.loaders.ogg.Ogg;
+import javagems3d.audio.loaders.ogg.Ogg;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.service.files.JGemsPath;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;

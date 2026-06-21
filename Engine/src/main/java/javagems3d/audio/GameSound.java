@@ -1,12 +1,13 @@
-package javagems3d.audio.sound;
+package javagems3d.audio;
 
 import javagems3d.system.global.JGemsConfig;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
-import javagems3d.audio.JGemsSoundManager;
-import javagems3d.audio.sound.data.SoundType;
+import javagems3d.audio.data.SoundType;
 import javagems3d.physics.world.basic.WorldItem;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
@@ -48,6 +49,9 @@ public class GameSound {
     }
 
     private void setupSound() {
+        if (ALC10.alcGetCurrentContext() == MemoryUtil.NULL || ALC10.alcGetContextsDevice(ALC10.alcGetCurrentContext()) == 0) {
+            return;
+        }
         this.source = AL10.alGenSources();
 
         JGemsSoundManager.checkALonErrors();
@@ -67,7 +71,7 @@ public class GameSound {
         JGemsSoundManager.checkALonErrors();
         this.updateParams();
         JGemsSoundManager.checkALonErrors();
-        JGemsSoundManager.sounds.add(this);
+        JGemsSoundManager.register(this);
     }
 
     private void updateParams() {
@@ -185,6 +189,7 @@ public class GameSound {
 
     public void clear() {
         if (this.isValid()) {
+            AL10.alSourceStop(this.source);
             int bufferProcessed = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
             while (bufferProcessed-- > 0) {
                 IntBuffer buffer = IntBuffer.allocate(1);

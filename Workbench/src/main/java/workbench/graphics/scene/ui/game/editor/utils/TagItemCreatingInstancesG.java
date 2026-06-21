@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 
+import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import java.util.*;
 
@@ -313,6 +314,28 @@ public class TagItemCreatingInstancesG {
                 @Override
                 public @NotNull TagVector create() {
                     return new TagVector(vectorMode, new Vector4f(vector), min, max);
+                }
+            };
+
+    public static Supplier<TagItemCreatingInstancesG.TagItemClassResolver<TagStringOptionsList>> stringOptionsListResolver = () -> new TagItemCreatingInstancesG.TagItemClassResolver<>() {
+                private final ImString value = new ImString(256);
+                private final ImString optionsText = new ImString(4096);
+
+                @Override
+                public void renderUI(@NotNull ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
+                    ImGui.bulletText("Options:");
+                    ImGui.indent();
+                    ImGui.inputTextMultiline("##options", optionsText, 400, 120);
+                    ImGui.unindent();
+                    ImGui.bulletText("Default value:");
+                    ImGui.indent();
+                    ImGui.inputText("##defaultValue", value);
+                    ImGui.unindent();
+                }
+                @Override
+                public @NotNull TagStringOptionsList create() {
+                    List<String> options = Arrays.stream(optionsText.get().split("\\R")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+                    return new TagStringOptionsList(value.get(), options);
                 }
             };
 

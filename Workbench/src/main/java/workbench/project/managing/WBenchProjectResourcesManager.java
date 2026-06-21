@@ -2,7 +2,7 @@ package workbench.project.managing;
 
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.SoundBuffer;
+import javagems3d.audio.SoundBuffer;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.misc.*;

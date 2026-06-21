@@ -3,7 +3,6 @@ package javagems3d.system.resources.managing.resources;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
-import javagems3d.system.external.mapping.processing.ExternalMapProcessor;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
@@ -24,7 +23,7 @@ import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.SoundBuffer;
+import javagems3d.audio.SoundBuffer;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;

@@ -11,9 +11,12 @@ import javagems3d.system.external.gaming.JGemsGameInstance;
 import javagems3d.system.external.gaming.def.IAsset;
 import javagems3d.system.external.gaming.def.misc.*;
 import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
+import javagems3d.system.external.mapping.tags.Tag;
+import javagems3d.system.external.mapping.tags.TagID;
 import javagems3d.system.external.mapping.tags.TagsContainer;
 import javagems3d.system.external.mapping.tags.base.AxisConstraints;
 import javagems3d.system.external.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.external.mapping.tags.items.TagRadioBoolean;
 import javagems3d.system.service.files.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
@@ -104,6 +107,7 @@ public class ResourcesInterfaceComponentG {
         }).setAfterFolderDeleted((e) -> {
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setAfterAssetCreated((e) -> {
+            ResourcesInterfaceComponentG.DEFAULT_TAGS_PROP(e.second());
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
         }).setAfterAssetDeleted((e) -> {
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.PROPS);
@@ -139,6 +143,7 @@ public class ResourcesInterfaceComponentG {
         }).setAfterFolderDeleted((e) -> {
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setAfterAssetCreated((e) -> {
+            ResourcesInterfaceComponentG.DEFAULT_TAGS_ENTITY(e.second());
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
         }).setAfterAssetDeleted((e) -> {
             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.ENTITIES);
@@ -323,6 +328,29 @@ public class ResourcesInterfaceComponentG {
        this.mapResourceTreeDrawer.setPreviewWrapperObject(null);
        this.scriptResourceTreeDrawer.setPreviewWrapperObject(null);
        this.skyBoxResourceTreeDrawer.setPreviewWrapperObject(null);
+    }
+
+    public static List<GameResourceObjectTagData> DEFAULT_TAGS() {
+        List<GameResourceObjectTagData> gameResourceObjectTagData = new ArrayList<>();
+        {
+            final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
+            final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+            gameResourceObjectTagData.add(new GameResourceObjectTagData("Physical", new TagsContainer().addTag(physical)));
+            gameResourceObjectTagData.add(new GameResourceObjectTagData("Rendering", new TagsContainer().addTag(directIndirect)));
+        }
+        return gameResourceObjectTagData;
+    }
+
+    private static void DEFAULT_TAGS_PROP(GameResourcePropObjectAsset propObjectAsset) {
+        final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+        propObjectAsset.getTagsContainer().addTag(directIndirect);
+    }
+
+    private static void DEFAULT_TAGS_ENTITY(GameResourceEntityObjectAsset entityObjectAsset) {
+        final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
+        final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+        entityObjectAsset.getTagsContainer().addTag(physical);
+        entityObjectAsset.getTagsContainer().addTag(directIndirect);
     }
 
     public CreatableResourcesTreeDrawerG<GameResourceSkyboxAsset, SkyBoxAssetPreview> getSkyBoxResourceTreeDrawer() {

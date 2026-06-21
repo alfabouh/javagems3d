@@ -3,13 +3,11 @@ package workbench.graphics.scene.ui.game.editor.scenes.misc;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.audio.sound.GameSound;
-import javagems3d.audio.sound.data.SoundType;
-import org.joml.Vector2i;
+import javagems3d.audio.GameSound;
+import javagems3d.audio.data.SoundType;
 import workbench.WBench;
 import workbench.graphics.scene.ui.game.editor.ResourcesInterfaceComponentG;
 import workbench.graphics.scene.ui.game.editor.instances.misc.SoundAssetPreview;
-import workbench.graphics.scene.ui.game.editor.instances.misc.TextureAssetPreview;
 
 public class ScenePreviewSoundG {
     private final ResourcesInterfaceComponentG resourcesInterfaceComponentG;

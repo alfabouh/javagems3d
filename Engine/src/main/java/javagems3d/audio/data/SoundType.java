@@ -1,4 +1,4 @@
-package javagems3d.audio.sound.data;
+package javagems3d.audio.data;
 
 public enum SoundType {
     WORLD_AMBIENT_SOUND(new SoundData(true, true)),

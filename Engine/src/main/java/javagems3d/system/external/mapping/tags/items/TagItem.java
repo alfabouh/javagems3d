@@ -31,6 +31,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagItem.putTypeToken(TagObjectsList.TYPE_STRING, new TypeToken<TagObjectsList>() {});
         TagItem.putTypeToken(TagVector.TYPE_STRING, new TypeToken<TagVector>() {});
         TagItem.putTypeToken(TagGameResourcesList.TYPE_STRING, new TypeToken<TagGameResourcesList>() {});
+        TagItem.putTypeToken(TagStringOptionsList.TYPE_STRING, new TypeToken<TagStringOptionsList>() {});
     }
 
     public static void putTypeToken(String typeString, TypeToken<? extends TagItem> token) {

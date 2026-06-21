@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
-import com.google.common.base.Objects;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
@@ -12,7 +11,7 @@ import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.data.SoundType;
+import javagems3d.audio.data.SoundType;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;

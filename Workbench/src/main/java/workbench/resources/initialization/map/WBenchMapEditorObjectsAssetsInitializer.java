@@ -137,27 +137,27 @@ public class WBenchMapEditorObjectsAssetsInitializer implements IAssetsInitializ
 
         {
             this.copyPlusConvertFolder(propAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.PROP, path, e, tagsContainer -> {
-                final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
-                tagsContainer.addTag(directIndirect);
+             //   final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+             //   tagsContainer.addTag(directIndirect);
             }));
             this.copyPlusConvertFolder(entityAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromGameSource(MapObjectsIdentifiers.ENTITY, path, e, tagsContainer -> {
-                final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
-                final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
-                tagsContainer.addTag(physical);
-                tagsContainer.addTag(directIndirect);
+              //  final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
+              //  final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+              //  tagsContainer.addTag(physical);
+              //  tagsContainer.addTag(directIndirect);
             }));
             this.copyPlusConvertFolder(markerAssetsFolder, WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), (path, e) -> this.createMapMarkerTemplateFromGameSource(MapObjectsIdentifiers.MARKER, path, e));
         }
         {
             this.copyPlusConvertFolder(apiProps, WBench.get().getMapProjectManager().getMapObjectTemplates().getProps(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e, tagsContainer -> {
-                final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
-                tagsContainer.addTag(directIndirect);
+              // final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+              // tagsContainer.addTag(directIndirect);
             }));
             this.copyPlusConvertFolder(apiEntities, WBench.get().getMapProjectManager().getMapObjectTemplates().getEntities(), (path, e) -> this.createMapObjectTemplateFromApiPropSource(systemResources, path, e, tagsContainer -> {
-                final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
-                final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
-                tagsContainer.addTag(physical);
-                tagsContainer.addTag(directIndirect);
+             //  final Tag<TagRadioBoolean> physical = Tag.create(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Dynamic", false), new TagRadioBoolean.Info("Static", true)));
+             //  final Tag<TagRadioBoolean> directIndirect = Tag.create(TagID.DEFAULT.DIRECT_INDIRECT_RENDERING, new TagRadioBoolean(new TagRadioBoolean.Info("Direct", true), new TagRadioBoolean.Info("Indirect", false)));
+             //  tagsContainer.addTag(physical);
+             //  tagsContainer.addTag(directIndirect);
             }));
             this.copyPlusConvertFolder(apiMarkers, WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkers(), (path, e) -> this.createMapObjectTemplateFromApiMarkerSource(systemResources, path, e));
         }

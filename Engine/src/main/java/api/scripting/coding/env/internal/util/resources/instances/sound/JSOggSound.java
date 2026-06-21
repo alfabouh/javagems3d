@@ -4,7 +4,7 @@ import api.scripting.coding.env.def.JSCodingClass;
 import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.resources.JSCanBeCachedInMemory;
-import javagems3d.audio.sound.SoundBuffer;
+import javagems3d.audio.SoundBuffer;
 
 @JSCodingClass(binding = "JSOggSound", description = "Represents an OGG audio resource.")
 public class JSOggSound implements JSCanBeCachedInMemory {

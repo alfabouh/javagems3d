@@ -105,6 +105,9 @@ public class ScenePreviewWorldObjectG <T extends GameResourceWorldObjectAsset> {
         ImGui.bulletText("Tags");
         final List<Pair<String, GameResourceObjectTagData>> allTagsAsset = new ArrayList<>();
         AssetsChooseCombo.parseTreeS(WBench.get().getGameProjectManager().getGameResourcesManager().getTagAssetsFolder(), allTagsAsset);
+        ResourcesInterfaceComponentG.DEFAULT_TAGS().forEach(e -> {
+            allTagsAsset.add(new Pair<>(e.name(), e));
+        });
         String[] listForTagCombo = allTagsAsset.stream().map(Pair::first).toList().toArray(new String[]{});
         ImInt imInt = new ImInt(-1);
         if (ImGui.combo("+ Tags", imInt, listForTagCombo)) {

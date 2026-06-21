@@ -6,7 +6,7 @@ public record PhysMaterial(float friction, float l_damping, float a_damping, flo
     public static final float DEFAULT_FRICTION = 1.5f;
     public static final float DEFAULT_L_DAMPING = 0.5f;
     public static final float DEFAULT_A_DAMPING = 0.5f;
-    public static final float DEFAULT_MASS_DENSITY = 8.0f;
+    public static final float DEFAULT_MASS_DENSITY = 3.0f;
     public static final float DEFAULT_RESTITUTION = 0.25f;
 
     public static PhysMaterial createDefaultMaterial() {

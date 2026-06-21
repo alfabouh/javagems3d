@@ -80,6 +80,7 @@ public abstract class JGemsConfig {
         public static int MAX_INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASETS = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int INDIRECT_SCENE_OBJ_RENDERING_MESH_DATASET_PACK_SIZE = 16 + 4 + 1;
 
+        public static int MAX_SOUND_BUFFERS = 192;
         public static int MAX_PARTICLES = 512;
         public static int MAX_DECALS = 512;
         //public static int DECALS_PACK_SIZE = 16 + 4 + 4;

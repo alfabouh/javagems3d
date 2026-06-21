@@ -1,8 +1,8 @@
-package javagems3d.audio.sound.loaders.wave;
+package javagems3d.audio.loaders.wave;
 
 import logger.Log;
 import org.lwjgl.openal.AL10;
-import javagems3d.audio.sound.loaders.ISoundCodec;
+import javagems3d.audio.loaders.ISoundCodec;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

@@ -7,7 +7,7 @@ public enum CollisionType {
     GHOST(1 << 5),
     LIQUID(1 << 6),
     NOTHING(0x0),
-    WORLD(ST_BODY.getMask() | DN_BODY.getMask() | LIQUID.getMask()),
+    WORLD(ST_BODY.getMask() | DN_BODY.getMask() | LIQUID.getMask() | PLAYER.getMask()),
     UNIVERSAL(0xffff);
 
     private final int mask;

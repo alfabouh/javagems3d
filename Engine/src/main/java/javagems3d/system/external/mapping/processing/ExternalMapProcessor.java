@@ -25,8 +25,8 @@ import api.system.JGemsAPI;
 import api.scripting.JavaToJsAPI;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.audio.sound.data.SoundType;
+import javagems3d.audio.SoundBuffer;
+import javagems3d.audio.data.SoundType;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.decals.DecalMaterial;
@@ -77,6 +77,7 @@ import javagems3d.system.external.mapping.tags.items.*;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -376,6 +377,10 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     .loop(looped)
                     .loopSpeed(animSpeed)
                     .fadeOut(fadeOut)
+                    .alphaDiscard(alphaDiscard)
+                    .diffuse(new Color4Texture(new Vector4f(colorMask, transparency)))
+                    .emission(emissiveStrength)
+                    .emissionColor(new Color3Texture(emissiveColor))
                     .normalizeY(normalizeY)
                     .build();
             ParticleEmitter particleEmitter = particlesManager.spawnParticleFXEmitter(
@@ -393,20 +398,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
                     .setParticleRespawnTime(respawnTime)
                     .setParticleRespawnTimeRandomOffsetRange(respawnTimeRand)
 
-                    .setParticleAlphaDiscard(alphaDiscard)
-                    .setParticleBlendingTransparency(transparency)
-
                     .setParticleBaseScale(baseScale)
-                    .setParticleColorMask(colorMask)
 
                     .setParticleBasicVelocity(velocity)
                     .setParticleBasicVelocityRandomOffsetRange(velocityRand)
                     .setParticleBasicAcceleration(acceleration)
 
-                    .setParticleGravity(gravity)
-
-                    .setParticleEmissiveColor(emissiveColor)
-                    .setParticleEmissiveFactorStrength(emissiveStrength);
+                    .setParticleGravity(gravity);
         }
 
         if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.DECAL)) {
@@ -434,7 +432,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             if (attachedObject.getValue() >= 0) {
                 if (mainScene_idMap.containsKey(toAttachID)) {
                     if (mainScene_idMap.get(toAttachID) instanceof SceneObject sceneObject) {
-                        decal.setAttachedTo(sceneObject);
+                        decal.updateBasis(null, sceneObject);
                     }
                 }
             }

@@ -52,7 +52,13 @@ public class DynamicsSystem {
         }
         EventBus.InitDynamicBulletSpaceEvent dynamicBulletSpaceEvent = new EventBus.InitDynamicBulletSpaceEvent(this, this.physicsSpace);
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
-        this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
+        this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration) {
+            @Override
+            public boolean needsCollision(PhysicsCollisionObject pcoA, PhysicsCollisionObject pcoB) {
+                return (pcoA.getCollisionGroup() & pcoB.getCollideWithGroups()) != 0 &&
+                        (pcoB.getCollideWithGroups() & pcoA.getCollisionGroup()) != 0;
+            }
+        };
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));
         this.physicsSpace.setMaxSubSteps(JGemsPhysics.SUBSTEPS);
         EventLauncher.pushEvent(dynamicBulletSpaceEvent, null);

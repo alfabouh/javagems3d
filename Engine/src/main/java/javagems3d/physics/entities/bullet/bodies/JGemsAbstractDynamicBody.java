@@ -1,5 +1,8 @@
 package javagems3d.physics.entities.bullet.bodies;
 
+import com.jme3.bullet.collision.ContactListener;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.properties.collision.CollisionType;
@@ -40,8 +43,8 @@ public abstract class JGemsAbstractDynamicBody extends JGemsBody {
     }
 
     protected void resetCCD(PhysicsRigidBody physicsRigidBody) {
-        physicsRigidBody.setCcdMotionThreshold(physicsRigidBody.getCollisionShape().maxRadius() / 4.0f);
-        physicsRigidBody.setCcdSweptSphereRadius(physicsRigidBody.getCollisionShape().maxRadius());
+        physicsRigidBody.setCcdMotionThreshold(0.05f);
+        physicsRigidBody.setCcdSweptSphereRadius(physicsRigidBody.getCollisionShape().maxRadius() * 0.25f);
     }
 
     @Override

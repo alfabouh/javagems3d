@@ -21,7 +21,7 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.SoundListener;
+import javagems3d.audio.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;

@@ -118,19 +118,9 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
 
             Vector3f cam = ((IRenderWorld) environment.getWorld()).getCamera().getCamPosition();
 
-            //boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
-            //GL46.glDisable(GL46.GL_CULL_FACE);
             GL46.glCullFace(GL46.GL_FRONT);
             GL46.glDisable(GL46.GL_DEPTH_TEST);
             for (DecalFX decalFX : filteredDecalsToRender) {
-                //Vector3f min = decalFX.getCullingData().getAabbMin();
-                //Vector3f max = decalFX.getCullingData().getAabbMax();
-                //boolean cameraInside = cam.x >= min.x && cam.x <= max.x && cam.y >= min.y && cam.y <= max.y && cam.z >= min.z && cam.z <= max.z;
-                //if (cameraInside) {
-               // GL46.glCullFace(GL46.GL_FRONT);
-               //     GL46.glEnable(GL46.GL_CULL_FACE);
-               //     GL46.glDisable(GL46.GL_DEPTH_TEST);
-                //}
                 deferredShader.beginShading();
                 deferredShader.disableWarns();
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_INV_MODEL_MATRIX), UniformFunctions.MAT4F(decalFX.getInverseModelMatrix()));
@@ -146,16 +136,12 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.DECAL_ENT_LAYER_ID), UniformFunctions.UINTEGER(decalFX.getTerrainLayerID()));
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.PROJECTION_MATRIX), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
                 deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.MODEL_VIEW_MATRIX), UniformFunctions.MAT4F(TransformUtils.getModelViewMatrix(decalFX.getModelMatrix(), JGemsTransformManager.INSTANCE.getCameraViewMatrix())));
-                //JGemsHelper.render().renderModel2D(DeferredColorRenderProcessor.this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
                 JGemsHelper.render().renderMeshList3D(JGemsResourceManager.DEFAULT_CUBE_MESHGROUP().getAllNodes(), 0);
                 deferredShader.endShading();
                 deferredShader.enableWarns();
             }
             GL46.glEnable(GL46.GL_DEPTH_TEST);
             GL46.glCullFace(GL46.GL_BACK);
-            //if (oldV) {
-            //    GL46.glEnable(GL46.GL_CULL_FACE);
-            //}
         }
     }
 }

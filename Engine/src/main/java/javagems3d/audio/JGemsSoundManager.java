@@ -1,12 +1,11 @@
 package javagems3d.audio;
 
+import javagems3d.system.global.JGemsConfig;
 import logger.Log;
 import org.joml.Vector3f;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.audio.sound.GameSound;
-import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.audio.sound.data.SoundType;
+import javagems3d.audio.data.SoundType;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -14,10 +13,11 @@ import javagems3d.system.service.synchronizing.SyncManager;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 public final class JGemsSoundManager {
-    public static final Set<GameSound> sounds = SyncManager.createSyncronisedSet();
+    private static final Set<GameSound> sounds = SyncManager.createSyncronisedSet();
     private final Set<GameSound> tempSet;
     private boolean isSystemCreated;
     private long device;
@@ -112,6 +112,21 @@ public final class JGemsSoundManager {
         ALC.destroy();
     }
 
+    static void register(GameSound gameSound) {
+        JGemsSoundManager.sounds.add(gameSound);
+        checkSet();
+    }
+
+    private static void checkSet() {
+        if (JGemsSoundManager.sounds.size() >= JGemsConfig.SYSTEM.MAX_SOUND_BUFFERS) {
+            Optional<GameSound> random = JGemsSoundManager.sounds.stream().filter(e -> !e.getSoundType().getSoundData().isLooped() && e.isValid()).findAny();
+            if (random.isPresent()) {
+                random.get().clear();
+                Log.get().warn("Got max sound buffers! Killed random.");
+            }
+        }
+    }
+
     public GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance) {
         if (!this.isSystemCreated()) {
             return null;
@@ -154,6 +169,12 @@ public final class JGemsSoundManager {
         Iterator<GameSound> gameSoundIterator = JGemsSoundManager.sounds.iterator();
         while (gameSoundIterator.hasNext()) {
             GameSound gameSound = gameSoundIterator.next();
+          //if (i++ >= JGemsConfig.SYSTEM.MAX_SOUND_BUFFERS) {
+          //    Log.get().warn("Got max sound buffers! Rejected.");
+          //    gameSound.clear();
+          //    gameSoundIterator.remove();
+          //    continue;
+          //}
             if (gameSound.isValid()) {
                 if (!gameSound.isStopped()) {
                     gameSound.updateSound();

@@ -2,7 +2,6 @@ package javagems3d.graphics.environment.decals.fx;
 
 import javagems3d.graphics.environment.decals.DecalMaterial;
 import javagems3d.graphics.environment.decals.DecalTextureProperties;
-import javagems3d.graphics.environment.particles.fx.ParticleFX;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
@@ -11,7 +10,6 @@ import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.managing.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +30,7 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
     private SceneObject attachedTo;
 
     private Matrix4f localDecalMatrix;
-    private Matrix4f basis;
+    private Matrix4f orientationMatrix;
 
     public DecalFX(@NotNull DecalMaterial material, @NotNull DecalTextureProperties decalTextureProperties, int terrainLayerID) {
         this.position = new Vector3f();
@@ -44,7 +42,10 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
         this.terrainLayerID = terrainLayerID;
         this.attachedTo = null;
         this.localDecalMatrix = null;
-        this.basis = null;
+    }
+
+    private Matrix4f buildLocalModelMatrix() {
+        return new Matrix4f().translate(this.position).rotateXYZ(-this.rotation.x, -this.rotation.y, -this.rotation.z).scale(this.scale);
     }
 
     public Matrix4f getInverseModelMatrix() {
@@ -52,30 +53,19 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
     }
 
     private Matrix4f getOrigModelMatrix() {
-        return new Matrix4f().identity().translate(this.getPosition()).rotateXYZ(this.getRotation().negate()).scale(this.getScale());
-    }
-
-    private Matrix4f getMatrixTransformedMatrix(Matrix4f origin) {
-        if (this.getBasis() == null) {
-            return origin;
-        }
-        Matrix4f basis = new Matrix4f()
-                .translate(this.getPosition())
-                .mul(this.getBasis())
-                .translate(this.getPosition().negate());
-        return basis.mul(origin);
+        return this.buildLocalModelMatrix();
     }
 
     public Matrix4f getModelMatrix() {
         if (this.attachedTo != null) {
             Matrix4f modelMat = TransformUtils.getModelMatrix(Objects.requireNonNull(this.attachedTo).getModel().getPose());
-            return this.getMatrixTransformedMatrix((modelMat.mul(this.localDecalMatrix)));
+            return modelMat.mul(this.localDecalMatrix);
         }
-        Matrix4f mat = new Matrix4f().identity()
-                .translate(this.getPosition())
-                .rotateXYZ(this.getRotation().negate())
-                .scale(this.getScale());
-        return this.getMatrixTransformedMatrix(mat);
+        Matrix4f orientation = this.getOrientationMatrix();
+        if (orientation == null) {
+            return this.getOrigModelMatrix();
+        }
+        return new Matrix4f(orientation).mul(this.getOrigModelMatrix());
     }
 
     @Override
@@ -128,15 +118,6 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
         return this;
     }
 
-    public @Nullable Matrix4f getBasis() {
-        return this.basis == null ? null : new Matrix4f(this.basis);
-    }
-
-    public DecalFX setBasis(Matrix4f basis) {
-        this.basis = basis;
-        return this;
-    }
-
     public abstract boolean unDestructible();
 
     public Vector3f getPosition() {
@@ -155,13 +136,29 @@ public abstract class DecalFX implements IWorldObject, IWorldTicked, ICulled {
         return this.attachedTo;
     }
 
-    public DecalFX setAttachedTo(SceneObject attachedTo) {
-        if (attachedTo == null || !attachedTo.hasModel()) {
+    public Matrix4f getOrientationMatrix() {
+        return this.orientationMatrix == null ? null :
+                new Matrix4f(this.orientationMatrix).identity()
+                        .translate(this.getPosition())
+                        .mul(this.orientationMatrix)
+                        .translate(this.getPosition().negate());
+    }
+
+    public DecalFX updateBasis(@Nullable Matrix4f orientationMatrix, @Nullable SceneObject attachOnObject) {
+        this.orientationMatrix = orientationMatrix;
+        if (attachOnObject == null || !attachOnObject.hasModel()) {
+            this.attachedTo = null;
             this.localDecalMatrix = null;
+            return this;
         }
-        Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(attachedTo).getModel().getPose());
-        this.localDecalMatrix = new Matrix4f(mat.invert().mul(this.getOrigModelMatrix()));
-        this.attachedTo = attachedTo;
+        final Matrix4f mat = TransformUtils.getModelMatrix(Objects.requireNonNull(attachOnObject).getModel().getPose());
+        this.attachedTo = attachOnObject;
+        if (orientationMatrix == null) {
+            this.localDecalMatrix = new Matrix4f(mat.invert().mul(this.getOrigModelMatrix()));
+            return this;
+        }
+        final Matrix4f basisOnPoint = new Matrix4f().identity().translate(this.getPosition()).mul(orientationMatrix).translate(this.getPosition().negate());
+        this.localDecalMatrix = new Matrix4f(mat.invert().mul(basisOnPoint.mul(this.getOrigModelMatrix())));
         return this;
     }
 }

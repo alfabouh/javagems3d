@@ -108,8 +108,16 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.groundCheckShape = this.createDefaultGhostShapeShapeForGroundCheck();
         this.setShapeAfterInit();
         this.setCollideWithGroups(CollisionType.WORLD);
-        this.getGhostBody().setUserObject(this);
+        {
+            this.getPhysicsBody().setUserObject(this);
+            this.getGhostBody().setUserObject(this);
+            this.getPhysicsBody().setUserIndex(this.getItemId());
+            this.getGhostBody().setUserIndex(this.getItemId());
+        }
         this.getGhostBody().setKinematic(true);
+
+        this.getGhostBody().ignores(this.getPhysicsBody());
+        this.getPhysicsBody().ignores(this.getGhostBody());
 
         this.getPhysicsBody().setKinematic(true);
         this.getPhysicsBody().setMass(25.0f);
@@ -716,8 +724,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     if ((e.getCollisionObject().collisionFlags() & CollisionFlag.NO_CONTACT_RESPONSE) != 0) {
                         return true;
                     }
-                    //|| (e.getCollisionObject().getCollideWithGroups() & ghostObject.getCollisionGroup()) == 0
-                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0 ;
+                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0 || (e.getCollisionObject().getCollideWithGroups() & ghostObject.getCollisionGroup()) == 0;
                 });
                 if (!rayTest.isEmpty()) {
                     PhysicsRayTestResult physicsSweepTestResult1 = rayTest.getFirst();
@@ -765,7 +772,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     if ((e.getCollisionObject().collisionFlags() & CollisionFlag.NO_CONTACT_RESPONSE) != 0) {
                         return true;
                     }
-                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0;
+                    return (e.getCollisionObject().getCollisionGroup() & ghostObject.getCollideWithGroups()) == 0 || (e.getCollisionObject().getCollideWithGroups() & ghostObject.getCollisionGroup()) == 0;
                 });
                 sweepTestResultList.sort(Comparator.comparingDouble(PhysicsSweepTestResult::getHitFraction));
                 if (!sweepTestResultList.isEmpty()) {

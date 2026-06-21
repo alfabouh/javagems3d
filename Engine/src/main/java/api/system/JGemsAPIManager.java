@@ -80,7 +80,7 @@ public final class JGemsAPIManager {
             Class<?>[] eventClasses = APIEventsClass.getClasses();
             for (Class<?> cl : eventClasses) {
                 Class<?>[] interfaces = cl.getInterfaces();
-                if (interfaces.length == 1 && interfaces[0] == EventBus.IEvent.class && !cl.isInterface()) {
+                if (interfaces.length == 1 && EventBus.IEvent.class.isAssignableFrom(interfaces[0])) {
                     if (!Modifier.isFinal(cl.getModifiers())) {
                         Log.get().error(cl.getName() + " should be final class");
                         continue;
@@ -108,14 +108,13 @@ public final class JGemsAPIManager {
                             Log.get().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName() + " - Skip");
                             continue;
                         }
-                        Class<?>[] interfaces = parameters[0].getInterfaces();
-                        if (interfaces.length != 1 || interfaces[0] != EventBus.IEvent.class) {
+                        if (parameters.length != 1 || !EventBus.IEvent.class.isAssignableFrom(parameters[0])) {
                             Log.get().error("Method has wrong argument(? -> IEvent): " + method.getName());
                             continue;
                         }
                         TreeSet<PriorityMethod> priorityMethods = this.eventMap.get(parameters[0]);
                         if (priorityMethods == null) {
-                            Log.get().error("Couldn't find event with name: " + clazz.getName());
+                            Log.get().error("Couldn't find event in class: " + clazz.getName());
                             continue;
                         }
                         SubscribeEvent subscribeEvent = method.getAnnotation(SubscribeEvent.class);

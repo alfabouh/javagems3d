@@ -23,11 +23,11 @@ public class ScenePreviewTagG {
     private Map<String, TagItemCreatingInstancesG.TagItemClassResolver<?>> tagItemRows;
 
     private ImString uniqueID;
-    private ImString description;
+    private ImString normal_name;
     private ImString tip;
     private ImInt comboBoxSelection;
 
-    private ImString edit_description;
+    private ImString edit_normal_name;
     private ImString edit_tip;
 
     public ScenePreviewTagG(ResourcesInterfaceComponentG resourcesInterfaceComponentG) {
@@ -46,6 +46,7 @@ public class ScenePreviewTagG {
         final TagItemCreatingInstancesG.TagItemClassResolver<TagVector> vectorTagItemClassResolver = TagItemCreatingInstancesG.vectorTagItemResolver.get();
         final TagItemCreatingInstancesG.TagItemClassResolver<TagObjectsList> objectListTagItemClassResolver = TagItemCreatingInstancesG.objectListTagItemResolver.get();
         final TagItemCreatingInstancesG.TagItemClassResolver<TagGameResourcesList> gameResourcesListTagItemClassResolver = TagItemCreatingInstancesG.gameResourcesListTagItemResolver.get();
+        final TagItemCreatingInstancesG.TagItemClassResolver<TagStringOptionsList> tagStringOptionsListTagItemClassResolver = TagItemCreatingInstancesG.stringOptionsListResolver.get();
 
         {
             map.put("None", null);
@@ -58,6 +59,7 @@ public class ScenePreviewTagG {
             map.put("Vector", vectorTagItemClassResolver);
             map.put("Scene Objects List", objectListTagItemClassResolver);
             map.put("Game Resources List", gameResourcesListTagItemClassResolver);
+            map.put("Strings List", tagStringOptionsListTagItemClassResolver);
         }
         return map;
     }
@@ -65,9 +67,9 @@ public class ScenePreviewTagG {
     public void reset() {
         this.tagItemRows = this.initTagItemRows();
         this.uniqueID = new ImString();
-        this.description = new ImString();
+        this.normal_name = new ImString();
         this.tip = new ImString();
-        this.edit_description = new ImString();
+        this.edit_normal_name = new ImString();
         this.edit_tip = new ImString();
         this.comboBoxSelection = new ImInt(0);
     }
@@ -92,7 +94,7 @@ public class ScenePreviewTagG {
                     ImGui.inputText("Unique ID", this.uniqueID);
                     {
                         ImGui.pushStyleColor(ImGuiCol.Text, 0xff8a8a8a);
-                        ImGui.inputText("Info", this.description);
+                        ImGui.inputText("Normal Name", this.normal_name);
                         ImGui.inputText("Tip", this.tip);
                         ImGui.popStyleColor();
                     }
@@ -127,7 +129,7 @@ public class ScenePreviewTagG {
                     {
                         ImGui.beginDisabled(this.uniqueID.isEmpty() || tagsContainer.tags().containsKey(new TagID(this.uniqueID.get())) || tagItemClassResolver == null);
                         if (ImGui.button("+ Create")) {
-                            tagsContainer.addTag(new Tag<>(new TagID(this.uniqueID.get(), this.description.get(), this.tip.get()), Objects.requireNonNull(tagItemClassResolver).create()));
+                            tagsContainer.addTag(new Tag<>(new TagID(this.uniqueID.get(), this.normal_name.get(), this.tip.get()), Objects.requireNonNull(tagItemClassResolver).create()));
                             this.reset();
                             WBench.get().getGameProjectManager().saveResourceObjectFiles(WBenchProjectResourcesManager.AssetsTarget.TAGS);
                         }
@@ -160,11 +162,11 @@ public class ScenePreviewTagG {
                                 ImGui.textWrapped("Unique ID: " + tagItem.getKey().getId());
                                 {
                                     {
-                                        ImGui.text("Description:");
+                                        ImGui.text("Normal Name:");
                                         ImGui.sameLine();
-                                        this.edit_description.set(tagItem.getKey().getNormalName());
-                                        if (ImGui.inputTextMultiline("##desc1", this.edit_description, ImGui.getColumnWidth(), 18)) {
-                                            tagItem.getKey().setNormalName(this.edit_description.get());
+                                        this.edit_normal_name.set(tagItem.getKey().getNormalName());
+                                        if (ImGui.inputTextMultiline("##desc1", this.edit_normal_name, ImGui.getColumnWidth(), 18)) {
+                                            tagItem.getKey().setNormalName(this.edit_normal_name.get());
                                         }
                                     }
                                     {

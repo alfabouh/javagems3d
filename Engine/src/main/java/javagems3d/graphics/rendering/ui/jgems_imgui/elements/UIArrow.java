@@ -1,11 +1,10 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
-import javagems3d.audio.sound.data.SoundType;
+import javagems3d.audio.data.SoundType;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.settings.objects.SettingSlot;
