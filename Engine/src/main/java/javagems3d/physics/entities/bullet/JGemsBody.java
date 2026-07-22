@@ -55,9 +55,9 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     public void setCollisionFilterNegative(CollisionType... noCheckCollisionTypes) {
         int i = 0;
         for (CollisionType collisionType : noCheckCollisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
-        this.getPhysicsRigidBody().setCollideWithGroups(CollisionType.UNIVERSAL.getMask() & ~i);
+        this.getPhysicsRigidBody().setCollideWithGroups(CollisionType.UNIVERSAL.mask() & ~i);
     }
 
     public JGemsBody setCanBeDeleted(boolean flag) {
@@ -66,7 +66,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     }
 
     @Override
-    public ITriggerAction onColliding() {
+    public ITriggerAction collisionTriggerFunc() {
         return null;
     }
 
@@ -186,7 +186,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     public void setCollisionGroup(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getPhysicsRigidBody().setCollisionGroup(i);
     }
@@ -198,7 +198,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getPhysicsRigidBody().setCollideWithGroups(i);
     }

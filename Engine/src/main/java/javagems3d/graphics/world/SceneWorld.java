@@ -35,7 +35,7 @@ import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;

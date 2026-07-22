@@ -1,26 +1,16 @@
 package javagems3d.physics.entities.properties.collision;
 
-public enum CollisionType {
-    PLAYER(1 << 2),
-    ST_BODY(1 << 3),
-    DN_BODY(1 << 4),
-    GHOST(1 << 5),
-    LIQUID(1 << 6),
-    NOTHING(0x0),
-    WORLD(ST_BODY.getMask() | DN_BODY.getMask() | LIQUID.getMask() | PLAYER.getMask()),
-    UNIVERSAL(0xffff);
-
-    private final int mask;
-
-    CollisionType(int mask) {
-        this.mask = mask;
-    }
+public record CollisionType(int mask) {
+    public static final CollisionType PLAYER = new CollisionType(1 << 2);
+    public static final CollisionType ST_BODY = new CollisionType(1 << 3);
+    public static final CollisionType DN_BODY = new CollisionType(1 << 4);
+    public static final CollisionType GHOST = new CollisionType(1 << 5);
+    public static final CollisionType LIQUID = new CollisionType(1 << 6);
+    public static final CollisionType NOTHING = new CollisionType(0x0);
+    public static final CollisionType WORLD = new CollisionType(ST_BODY.mask() | DN_BODY.mask() | LIQUID.mask() | PLAYER.mask());
+    public static final CollisionType UNIVERSAL = new CollisionType(0xffff);
 
     public boolean matchMask(int mask) {
-        return (mask & this.getMask()) != 0;
-    }
-
-    public int getMask() {
-        return this.mask;
+        return (mask & this.mask()) != 0;
     }
 }

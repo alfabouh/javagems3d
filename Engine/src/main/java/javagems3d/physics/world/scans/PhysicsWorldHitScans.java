@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public final class PhysicsWorldHitScans {
@@ -30,7 +29,7 @@ public final class PhysicsWorldHitScans {
 
     public static void createGhost() {
         PhysicsWorldHitScans.ghost = new PhysicsGhostObject(new EmptyShape(true));
-        PhysicsWorldHitScans.ghost.setCollideWithGroups(CollisionType.UNIVERSAL.getMask());
+        PhysicsWorldHitScans.ghost.setCollideWithGroups(CollisionType.UNIVERSAL.mask());
         PhysicsWorldHitScans.physicsSpace().addCollisionObject(ghost);
     }
 

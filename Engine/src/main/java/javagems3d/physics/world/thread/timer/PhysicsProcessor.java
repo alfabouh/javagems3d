@@ -1,9 +1,7 @@
 package javagems3d.physics.world.thread.timer;
 
-import api.events.EventBus;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.JGems3D;
-import api.events.EventLauncher;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -36,7 +34,7 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                     synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
                         this.dynamicsSystem.step(time, JGemsPhysics.SUBSTEPS);
-                        this.dynamicsSystem.collideTest();
+                        //this.dynamicsSystem.collideTest();
                     }
                 }
                 PhysicsProcessor.TPS += 1;

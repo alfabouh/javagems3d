@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor2;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
@@ -41,6 +42,10 @@ public class JGemsShaderManager extends ShaderManager {
                 this.performUniformTextureBindless(uniform, textureProgram);
             }
         }
+    }
+
+    public void performOrthographicMatrix(UniformString uniform, Pose2D pose2D, Matrix4f orthographicMatrix) {
+        this.performUniform(uniform, UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(pose2D, orthographicMatrix)));
     }
 
     public void performOrthographicMatrix(UniformString uniform, Model2D model, Matrix4f orthographicMatrix) {

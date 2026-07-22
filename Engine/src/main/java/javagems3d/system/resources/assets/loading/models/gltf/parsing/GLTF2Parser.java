@@ -167,7 +167,7 @@ public abstract class GLTF2Parser {
             final JsonArray children = node.getAsJsonArray("children");
 
             GLTF2Mesh gltf2Mesh = meshIndex != -1 ? GLTF2Parser.readMesh(buffersList, rootObject, meshIndex) : null;
-            GLTF2Node gltf2Node = new GLTF2Node(nodeName, gltf2Mesh);
+            GLTF2Node gltf2Node = new GLTF2Node(i, nodeName, gltf2Mesh);
 
             gltf2Node.setLocalTransform(new Matrix4f(localTransform));
             gltf2Node.setSkin(skin);
@@ -302,40 +302,56 @@ public abstract class GLTF2Parser {
             if (skeletonRootIndex >= 0) {
                 gltf2Skin.getSkeletonRoots().add(nodes.get(skeletonRootIndex));
             } else {
+                Set<Integer> joints = new HashSet<>(jointIndices);
                 for (int jointIndex : jointIndices) {
-                    if (nodes.get(jointIndex).getParent() == null) {
-                        gltf2Skin.getSkeletonRoots().add(nodes.get(jointIndex));
+                    GLTF2Node node = nodes.get(jointIndex);
+                    GLTF2Node parent = node.getParent();
+                    if (parent == null || !joints.contains(parent.getId())) {
+                        gltf2Skin.getSkeletonRoots().add(node);
                     }
                 }
             }
 
             if (gltf2Skin.getSkeletonRoots().isEmpty()) {
-                throw new JGemsIOException("Couldn't find root skeleton nodes in the model");
+                Log.get().warn("Couldn't find root skeleton nodes in the model");
+                gltf2Skin.getSkeletonRoots().add(nodes.get(jointIndices.getFirst()));
             }
 
-            //final int inverseBindingMatrixId = skinObj.get("inverseBindMatrices").getAsInt();
-            //JsonArray accessors = rootObject.getAsJsonArray("accessors");
-            //JsonArray bufferViews = rootObject.getAsJsonArray("bufferViews");
-            //GLTF2AccessorData AD = GLTF2Parser.readAccessorData(accessors.get(82).getAsJsonObject());
-            //GLTF2BufferView BV = GLTF2Parser.readBufferView(bufferViews.get(AD.getBufferView()).getAsJsonObject());
-            //GLTF2Accessor<Float> inverseBindingMatrices = GLTF2Parser.readAccessor(BV, AD, buffersList);
-            //List<Float> matrixData = inverseBindingMatrices.getObjects();
-            //for (int i = 0; i < matrixData.size(); i += 16) {
-            //    Matrix4f mat = new Matrix4f(
-            //            matrixData.get(i + 0), matrixData.get(i + 4), matrixData.get(i + 8), matrixData.get(i + 12),
-            //            matrixData.get(i + 1), matrixData.get(i + 5), matrixData.get(i + 9), matrixData.get(i + 13),
-            //            matrixData.get(i + 2), matrixData.get(i + 6), matrixData.get(i + 10), matrixData.get(i + 14),
-            //            matrixData.get(i + 3), matrixData.get(i + 7), matrixData.get(i + 11), matrixData.get(i + 15)
-            //    );
-            //    gltf2Skin.getInverseBindingMatrices().add(mat);
-            //}
+           // final int inverseBindingMatrixId = skinObj.get("inverseBindMatrices").getAsInt();
+           // JsonArray accessors = rootObject.getAsJsonArray("accessors");
+           // JsonArray bufferViews = rootObject.getAsJsonArray("bufferViews");
+           // GLTF2AccessorData AD = GLTF2Parser.readAccessorData(accessors.get(inverseBindingMatrixId).getAsJsonObject());
+           // GLTF2BufferView BV = GLTF2Parser.readBufferView(bufferViews.get(AD.bufferView()).getAsJsonObject());
+           // GLTF2Accessor<Float> inverseBindingMatrices = GLTF2Parser.readAccessor(BV, AD, buffersList);
+           // List<Float> matrixData = inverseBindingMatrices.objects();
+           // for (int i = 0; i < matrixData.size(); i += 16) {
+           //     Matrix4f mat = new Matrix4f(
+           //             matrixData.get(i + 0),
+           //             matrixData.get(i + 1),
+           //             matrixData.get(i + 2),
+           //             matrixData.get(i + 3),
+           //             matrixData.get(i + 4),
+           //             matrixData.get(i + 5),
+           //             matrixData.get(i + 6),
+           //             matrixData.get(i + 7),
+           //             matrixData.get(i + 8),
+           //             matrixData.get(i + 9),
+           //             matrixData.get(i + 10),
+           //             matrixData.get(i + 11),
+           //             matrixData.get(i + 12),
+           //             matrixData.get(i + 13),
+           //             matrixData.get(i + 14),
+           //             matrixData.get(i + 15)
+           //     ).transpose();
+           //     gltf2Skin.getInverseBindingMatrices().add(mat);
+           // }
 
-            for (int jointId : jointIndices) {
-                GLTF2Node node = nodes.get(jointId);
-                final Matrix4f ibm = node.computeMeshTransform().invert();
-                Matrix4f translate = new Matrix4f().translate(modelCenterOffset);
-                gltf2Skin.getInverseBindingMatrices().add(ibm.mul(translate));
-            }
+           for (int jointId : jointIndices) {
+               GLTF2Node node = nodes.get(jointId);
+               final Matrix4f ibm = node.computeMeshTransform().invert();
+               Matrix4f translate = new Matrix4f().translate(modelCenterOffset);
+               gltf2Skin.getInverseBindingMatrices().add(ibm.mul(translate));
+           }
 
             skinList.add(gltf2Skin);
         }
@@ -780,7 +796,11 @@ public abstract class GLTF2Parser {
             float deltaUV2x = uv2.x - uv0.x;
             float deltaUV2y = uv2.y - uv0.y;
 
-            float r = 1.0f / (deltaUV1x * deltaUV2y - deltaUV1y * deltaUV2x);
+            float det = deltaUV1x * deltaUV2y - deltaUV1y * deltaUV2x;
+            if (Math.abs(det) < 1e-8f) {
+                continue;
+            }
+            float r = 1.0f / det;
 
             Vector3f tangent = new Vector3f((deltaPos1.x * deltaUV2y - deltaPos2.x * deltaUV1y) * r, (deltaPos1.y * deltaUV2y - deltaPos2.y * deltaUV1y) * r, (deltaPos1.z * deltaUV2y - deltaPos2.z * deltaUV1y) * r);
             Vector3f biTangent = new Vector3f((deltaPos2.x * deltaUV1x - deltaPos1.x * deltaUV2x) * r, (deltaPos2.y * deltaUV1x - deltaPos1.y * deltaUV2x) * r, (deltaPos2.z * deltaUV1x - deltaPos1.z * deltaUV2x) * r);
@@ -796,10 +816,14 @@ public abstract class GLTF2Parser {
 
         for (int i = 0; i < totalVertices; i++) {
             Vector3f t = tan1[i];
-            t.normalize();
+            if (t.lengthSquared() > 0.0f) {
+                t.normalize();
+            }
 
             Vector3f b = tan2[i];
-            b.normalize();
+            if (b.lengthSquared() > 0.0f) {
+                b.normalize();
+            }
 
             tangents.add(t.x);
             tangents.add(t.y);

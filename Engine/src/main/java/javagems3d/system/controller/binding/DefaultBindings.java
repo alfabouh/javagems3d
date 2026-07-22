@@ -1,5 +1,12 @@
 package javagems3d.system.controller.binding;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
+import api.scripting.JavaToJsAPI;
+import api.scripting.coding.env.internal.game.init.events.rendering.world.JSSceneWorldObjectsUpdateEvent;
+import api.scripting.coding.env.internal.util.events.JSEventRun;
+import api.scripting.coding.env.internal.util.misc.JSFrameTicking;
+import api.scripting.coding.env.internal.util.world.render.world.JSSceneWorld;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultGamePanel;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultPausePanel;
@@ -10,6 +17,7 @@ import javagems3d.system.controller.components.Key;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.service.collections.Pair;
 import org.lwjgl.glfw.GLFW;
 
 public final class DefaultBindings extends BindingManager {
@@ -20,9 +28,6 @@ public final class DefaultBindings extends BindingManager {
     public final Key keyX;
     public final Key keyUp;
     public final Key keyDown;
-    public final Key keyBlock1;
-    public final Key keyBlock2;
-    public final Key keyBlock3;
     public final Key keyClear;
     public final Key keyEsc;
     public final Key keyV;
@@ -38,9 +43,6 @@ public final class DefaultBindings extends BindingManager {
         this.keyS = new Key(GLFW.GLFW_KEY_S);
         this.keyUp = new Key(GLFW.GLFW_KEY_SPACE);
         this.keyDown = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
-        this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
-        this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
-        this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
         this.keyClear = new FunctionalKey(e -> JGemsHelper.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
         this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
@@ -55,19 +57,21 @@ public final class DefaultBindings extends BindingManager {
             if (e == IKeyAction.KeyAction.CLICK) {
                 if (JGems3D.get().isCurrentGameMapValid()) {
                     if (JGems3D.get().isPaused()) {
-                        if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
-                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).setCursorInCenter();
-                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptLMB();
-                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptRMB();
-                            ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptMMB();
+                        if (!EventLauncher.pushEvent(new EventBus.OnUnPauseFromButtonPressEvent(JGemsHelper.get().getSceneWorld(), JGemsHelper.get().getPhysicsWorld()), null).isCancelled()) {
+                            if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
+                                ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).setCursorInCenter();
+                                ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptLMB();
+                                ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptRMB();
+                                ((MouseKeyboardController) JGemsHelper.controller().getControllerDispatcher().getCurrentController()).getMouseAndKeyboard().forceInterruptMMB();
+                            }
+                            JGemsHelper.state().resumeGame();
+                            JGems3D.get().getScreen().getWindow().setFocus(true);
                         }
-                        JGemsHelper.state().resumeGame();
-                        JGems3D.get().getScreen().getWindow().setFocus(true);
-                        JGemsHelper.ui().openPanel(new DefaultGamePanel(null));
                     } else {
-                        JGemsHelper.state().pauseGame(true);
-                        JGems3D.get().getScreen().getWindow().setFocus(false);
-                        JGemsHelper.ui().openPanel(new DefaultPausePanel(null));
+                        if (!EventLauncher.pushEvent(new EventBus.OnPauseFromButtonPressEvent(JGemsHelper.get().getSceneWorld(), JGemsHelper.get().getPhysicsWorld()), null).isCancelled()) {
+                            JGemsHelper.state().pauseGame(true);
+                            JGems3D.get().getScreen().getWindow().setFocus(false);
+                        }
                     }
                 }
             }
@@ -95,9 +99,6 @@ public final class DefaultBindings extends BindingManager {
             this.addBinding(this.keyV);
             this.addBinding(this.keyT);
             this.addBinding(this.keyClear);
-            this.addBinding(this.keyBlock1);
-            this.addBinding(this.keyBlock2);
-            this.addBinding(this.keyBlock3);
             this.addBinding(this.keyF2);
         }
 

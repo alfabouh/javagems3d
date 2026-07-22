@@ -1,9 +1,10 @@
-package javagems3d.physics.world.triggers.liquids.base;
+package javagems3d.physics.world.triggers.liquids;
 
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
+import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 
@@ -26,12 +27,25 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
     }
 
     protected void init() {
-        this.getSimpleTriggerZone().setTriggerAction(this::onEntityEnteredLiquid);
+        this.getSimpleTriggerZone().setTriggerAction(new ITriggerAction() {
+            @Override
+            public void contactContinue(Object userObject, long pointId) {
+                Liquid.this.onEntityCollideLiquid(userObject, pointId);
+            }
+
+            @Override
+            public void contactStarted(Object userObject, long manifoldId) {
+            }
+
+            @Override
+            public void contactEnded(Object userObject, long manifoldId) {
+            }
+        });
         this.getSimpleTriggerZone().setCollisionGroup(CollisionType.LIQUID);
         this.getSimpleTriggerZone().setCollideWithGroups(CollisionType.PLAYER, CollisionType.DN_BODY);
     }
 
-    protected abstract void onEntityEnteredLiquid(Object e);
+    protected abstract void onEntityCollideLiquid(Object e, long pointId);
 
     public Zone getZone() {
         return this.getSimpleTriggerZone().getZone();

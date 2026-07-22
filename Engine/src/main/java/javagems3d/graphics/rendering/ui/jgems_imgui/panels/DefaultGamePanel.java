@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.screen.window.IWindow;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
@@ -65,6 +66,6 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         int crossSize = 32;
-        ui.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
+        ui.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2f(windowW / 2f - crossSize / 2f, windowH / 2f - crossSize / 2f), new Vector2f(32f), 0.5f);
     }
 }

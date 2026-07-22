@@ -4,6 +4,7 @@ import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
@@ -32,9 +33,7 @@ import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
-import javagems3d.physics.world.triggers.IHasCollisionTrigger;
-import javagems3d.physics.world.triggers.ITriggerAction;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 import javagems3d.system.controller.base.IController;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.IControllerDispatcher;
@@ -100,21 +99,64 @@ public abstract class EventBus {
 
     // NEW
 
-    public static final class CollisionTriggered extends Cancellable implements IEvent {
-        private final IHasCollisionTrigger object;
-        private final ITriggerAction triggerAction;
+    public static final class BulletNeedCollisionEvent extends Cancellable implements IEvent {
+        private final PhysicsCollisionObject objectA;
+        private final PhysicsCollisionObject objectB;
 
-        public CollisionTriggered(IHasCollisionTrigger object, ITriggerAction triggerAction) {
-            this.object = object;
-            this.triggerAction = triggerAction;
+        public BulletNeedCollisionEvent(PhysicsCollisionObject objectA, PhysicsCollisionObject objectB) {
+            this.objectA = objectA;
+            this.objectB = objectB;
         }
 
-        public IHasCollisionTrigger getObject() {
-            return this.object;
+        public PhysicsCollisionObject getObjectA() {
+            return this.objectA;
         }
 
-        public ITriggerAction getTriggerAction() {
-            return this.triggerAction;
+        public PhysicsCollisionObject getObjectB() {
+            return this.objectB;
+        }
+    }
+
+    public static final class BulletContactEvent extends Cancellable implements IEvent {
+        public enum ContactType {
+            CONCEIVED,
+            STARTED,
+            PROCESSED,
+            ENDED
+        }
+
+        private final PhysicsCollisionObject objectA;
+        private final PhysicsCollisionObject objectB;
+        private final long manifoldId;
+        private final long pointId;
+        private final ContactType type;
+
+        public BulletContactEvent(ContactType type, PhysicsCollisionObject objectA, PhysicsCollisionObject objectB, long manifoldId, long pointId) {
+            this.type = type;
+            this.objectA = objectA;
+            this.objectB = objectB;
+            this.manifoldId = manifoldId;
+            this.pointId = pointId;
+        }
+
+        public ContactType getType() {
+            return this.type;
+        }
+
+        public PhysicsCollisionObject getObjectA() {
+            return this.objectA;
+        }
+
+        public PhysicsCollisionObject getObjectB() {
+            return this.objectB;
+        }
+
+        public long getManifoldId() {
+            return this.manifoldId;
+        }
+
+        public long getPointId() {
+            return this.pointId;
         }
     }
 
@@ -852,6 +894,42 @@ public abstract class EventBus {
 
         public Run getRun() {
             return this.run;
+        }
+    }
+
+    public static final class OnPauseFromButtonPressEvent extends Cancellable implements IEvent {
+        private final SceneWorld sceneWorld;
+        private final PhysicsWorld physicsWorld;
+
+        public OnPauseFromButtonPressEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld) {
+            this.sceneWorld = sceneWorld;
+            this.physicsWorld = physicsWorld;
+        }
+
+        public SceneWorld getSceneWorld() {
+            return this.sceneWorld;
+        }
+
+        public PhysicsWorld getPhysicsWorld() {
+            return this.physicsWorld;
+        }
+    }
+
+    public static final class OnUnPauseFromButtonPressEvent extends Cancellable implements IEvent {
+        private final SceneWorld sceneWorld;
+        private final PhysicsWorld physicsWorld;
+
+        public OnUnPauseFromButtonPressEvent(SceneWorld sceneWorld, PhysicsWorld physicsWorld) {
+            this.sceneWorld = sceneWorld;
+            this.physicsWorld = physicsWorld;
+        }
+
+        public SceneWorld getSceneWorld() {
+            return this.sceneWorld;
+        }
+
+        public PhysicsWorld getPhysicsWorld() {
+            return this.physicsWorld;
         }
     }
 

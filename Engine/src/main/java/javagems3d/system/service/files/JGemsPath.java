@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
@@ -31,7 +33,7 @@ public record JGemsPath(String fullPath) implements Serializable {
     }
 
     public JGemsPath(String fullPath) {
-        this.fullPath = JGemsPath.concatenate(fullPath);
+        this.fullPath = URLDecoder.decode(JGemsPath.concatenate(fullPath), StandardCharsets.UTF_8);
     }
 
     private static String concatenate(String root, String... other) {

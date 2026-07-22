@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
@@ -23,19 +24,19 @@ public class DefaultPausePanel extends AbstractPanelUI {
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
-        ui.buttonUI(JGems3D.get().I18n("menu.pause.continue"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.pause.continue"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.state().resumeGame();
                     JGems3D.get().getScreen().getWindow().setFocus(true);
                     this.openGamePanel(ui);
                 });
 
-        ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30 + 70), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.ui().openPanel(new DefaultSettingsPanel(this));
                 });
 
-        ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30 + 140), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.DEFAULT_ARGS.MAP_TEST) == Boolean.TRUE) {
                         JGems3D.close(null);

@@ -1,8 +1,8 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.screen.window.IWindow;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
@@ -13,28 +13,34 @@ public class UICarousel extends UIElement {
     private final UIArrow right;
     private final UIText uiText;
     private final UIText uiTitle;
-    private final Vector2i position;
+    private final Vector2f position;
 
-    public UICarousel(@NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingSlot settingIntSlots, float zValue) {
-        super(null, zValue);
+    public UICarousel(IWindow window, @NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2f position, @NotNull SettingSlot settingIntSlots, float zValue) {
+        super(window, null, zValue);
+        //this.getAutoScaleMode().SCALE_AFFECT_POS(false);
+        //this.getAutoScaleMode().SCALE_AFFECT_SIZE(false);
+
         this.position = position;
 
-        this.left = new UIArrow(-1, settingIntSlots, position, zValue);
-        this.right = new UIArrow(1, settingIntSlots, new Vector2i(position.x + this.getSize().x, position.y), zValue);
+        this.left = new UIArrow(window, -1, settingIntSlots, position, zValue);
+        this.right = new UIArrow(window, 1, settingIntSlots, new Vector2f(position.x + this.getScaledSize().x, position.y), zValue);
 
         this.left.setScaling(this.getScaling());
         this.right.setScaling(this.getScaling());
-        this.right.getPosition().sub(this.right.getSize().x, 0);
+        this.right.getPosition().sub(this.right.getScaledSize().x, 0);
 
-        int centerX = (this.left.getPosition().x + this.right.getPosition().x + this.right.getSize().x) / 2;
+        float centerX = (this.left.getPosition().x + this.right.getPosition().x + this.right.getScaledSize().x) / 2;
         int textWidth = JGemsUI.getTextWidth(guiFont, settingIntSlots.getCurrentName());
 
-        this.uiText = new UIText(settingIntSlots.getCurrentName(), guiFont, hexColor, new Vector2i(centerX - textWidth / 2, position.y), zValue);
-        this.uiTitle = new UIText(text, guiFont, hexColor, new Vector2i(position.x + this.getSize().x + 30, position.y), zValue);
+        this.uiText = new UIText(this.getWindow(), settingIntSlots.getCurrentName(), guiFont, hexColor, new Vector2f(centerX - textWidth / 2f, position.y), zValue);
+        this.uiTitle = new UIText(this.getWindow(), text, guiFont, hexColor, new Vector2f(position.x + this.getScaledSize().x + 30, position.y), zValue);
     }
 
     @Override
     public void render(float frameDeltaTicks) {
+        this.uiText.getAutoScaleMode().SCALE_AFFECT_POS_X(true);
+        this.uiTitle.getAutoScaleMode().SCALE_AFFECT_POS_X(false);
+
         this.uiText.render(frameDeltaTicks);
         this.uiTitle.render(frameDeltaTicks);
         this.right.render(frameDeltaTicks);
@@ -58,18 +64,23 @@ public class UICarousel extends UIElement {
     }
 
     @Override
+    public @NotNull Vector2f getOriginalSize() {
+        return new Vector2f(100f, 8f);
+    }
+
+    @Override
+    public @NotNull Vector2f getPosition() {
+        return super.getScaleAffectedUiPos(this.position);
+    }
+
+    @Override
     public Vector2f getScaling() {
-        return super.getScaling().mul(3.0f);
+        return super.getScaleAffectedUiVector(super.getScaling()).mul(3.0f);
     }
 
     @Override
-    public @NotNull Vector2i getSize() {
-        return new Vector2i(100, 8).mul((int) this.getScaling().x, (int) this.getScaling().y);
-    }
-
-    @Override
-    public @NotNull Vector2i getPosition() {
-        return this.position;
+    public @NotNull Vector2f getScaledSize() {
+        return this.getOriginalSize().mul(this.getScaling());
     }
 
     @Override

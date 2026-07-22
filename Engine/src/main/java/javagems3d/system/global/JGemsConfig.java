@@ -108,8 +108,7 @@ public abstract class JGemsConfig {
 
 
         public static int TICKS_TO_CLEAN_UNUSED_UI = 3;
-        public static int GLOBAL_UI_SCALING = 0;
-        public static boolean AUTO_SCREEN_SCALING = false;
+        public static float GLOBAL_UI_PROJECTION_SCALING = 1.0f;
 
         static {
             float positiveExponent = EVSM_POSITIVE_EXPONENT;

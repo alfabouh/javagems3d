@@ -2,6 +2,7 @@ package javagems3d.audio;
 
 import javagems3d.system.global.JGemsConfig;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
@@ -12,19 +13,20 @@ import javagems3d.system.service.synchronizing.SyncManager;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Supplier;
 
 public final class JGemsSoundManager {
+    private static final Queue<SoundRequest> req_queue = new ConcurrentLinkedQueue<>();
     private static final Set<GameSound> sounds = SyncManager.createSyncronisedSet();
-    private final Set<GameSound> tempSet;
+    private final Set<GameSound> tempSetPaused;
     private boolean isSystemCreated;
     private long device;
     private long context;
 
     public JGemsSoundManager() {
-        this.tempSet = SyncManager.createSyncronisedSet();
+        this.tempSetPaused = SyncManager.createSyncronisedSet();
         this.isSystemCreated = false;
     }
 
@@ -76,36 +78,43 @@ public final class JGemsSoundManager {
         Iterator<GameSound> gameSoundIterator = JGemsSoundManager.sounds.iterator();
         while (gameSoundIterator.hasNext()) {
             GameSound gameSound = gameSoundIterator.next();
-            gameSound.stopSound();
-            gameSound.clear();
+            JGemsSoundManager.stop(gameSound);
             gameSoundIterator.remove();
         }
-        this.tempSet.clear();
+        this.tempSetPaused.clear();
     }
 
     public void pauseAllSounds() {
         for (GameSound gameSound : JGemsSoundManager.sounds) {
             if (gameSound.isPlaying()) {
                 if (gameSound.getSoundType() != SoundType.SYSTEM) {
-                    gameSound.pauseSound();
-                    this.tempSet.add(gameSound);
+                    JGemsSoundManager.pause(gameSound);
+                    this.tempSetPaused.add(gameSound);
                 }
             }
         }
     }
 
     public void resumeAllSounds() {
-        Iterator<GameSound> gameSoundIterator = this.tempSet.iterator();
+        Iterator<GameSound> gameSoundIterator = this.tempSetPaused.iterator();
         while (gameSoundIterator.hasNext()) {
             GameSound sound = gameSoundIterator.next();
-            sound.playSound();
+            JGemsSoundManager.play(sound, null);
             gameSoundIterator.remove();
         }
     }
 
+    public void clearCachedSounds() {
+        JGemsSoundManager.req_queue.forEach(e -> e.buffer.stopSound());
+        JGemsSoundManager.sounds.forEach(GameSound::stopSound);
+    }
+
     public void destroy() {
         this.isSystemCreated = false;
-        JGemsSoundManager.sounds.clear();
+        {
+            JGemsSoundManager.sounds.clear();
+            JGemsSoundManager.req_queue.clear();
+        }
         ALC10.alcMakeContextCurrent(MemoryUtil.NULL);
         ALC10.alcCloseDevice(this.getDevice());
         ALC10.alcDestroyContext(this.getContext());
@@ -114,14 +123,16 @@ public final class JGemsSoundManager {
 
     static void register(GameSound gameSound) {
         JGemsSoundManager.sounds.add(gameSound);
-        checkSet();
     }
 
     private static void checkSet() {
         if (JGemsSoundManager.sounds.size() >= JGemsConfig.SYSTEM.MAX_SOUND_BUFFERS) {
             Optional<GameSound> random = JGemsSoundManager.sounds.stream().filter(e -> !e.getSoundType().getSoundData().isLooped() && e.isValid()).findAny();
+            if (random.isEmpty()) {
+                random = JGemsSoundManager.sounds.stream().findAny();
+            }
             if (random.isPresent()) {
-                random.get().clear();
+                random.get().stopSound();
                 Log.get().warn("Got max sound buffers! Killed random.");
             }
         }
@@ -139,32 +150,50 @@ public final class JGemsSoundManager {
             return null;
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, 1.0f, 1.0f, null);
-        gameSound.playSound();
+        JGemsSoundManager.play(gameSound, soundType);
         return gameSound;
     }
 
-    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, Vector3f position) {
+    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, Supplier<@NotNull Vector3f> position) {
+        if (!this.isSystemCreated()) {
+            return null;
+        }
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, null);
+        gameSound.setPosition(position.get());
+        JGemsSoundManager.play(gameSound, soundType);
+        return gameSound;
+    }
+
+    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, @NotNull Vector3f position) {
         if (!this.isSystemCreated()) {
             return null;
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, null);
         gameSound.setPosition(position);
-        gameSound.playSound();
+        JGemsSoundManager.play(gameSound, soundType);
         return gameSound;
     }
 
-    public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, WorldItem worldItem) {
+    public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, @NotNull WorldItem worldItem) {
         if (!this.isSystemCreated()) {
             return null;
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, volume, rollOff, distance, worldItem);
-        gameSound.playSound();
+        JGemsSoundManager.play(gameSound, soundType);
         return gameSound;
     }
 
     public void update() {
         if (!this.isSystemCreated()) {
             return;
+        }
+       // JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.button, SoundType.BACKGROUND_SOUND, 1.0f, 0.2f);
+
+        {
+            JGemsSoundManager.checkSet();
+        }
+        {
+            this.processRequests();
         }
         Iterator<GameSound> gameSoundIterator = JGemsSoundManager.sounds.iterator();
         while (gameSoundIterator.hasNext()) {
@@ -189,6 +218,52 @@ public final class JGemsSoundManager {
         JGemsSoundManager.checkALonErrors();
     }
 
+    private void processRequests() {
+        SoundRequest request;
+        while ((request = JGemsSoundManager.req_queue.poll()) != null) {
+            this.handleRequest(request);
+        }
+    }
+
+    private void handleRequest(SoundRequest request) {
+        switch (request.op()) {
+            case START -> {
+                GameSound sound = request.buffer();
+                if (sound != null) {
+                    sound.playSound();
+                //    JGemsSoundManager.sounds.add(sound);
+                }
+            }
+            case STOP -> {
+                GameSound sound = request.buffer();
+                sound.stopSound();
+            }
+            case PAUSE -> {
+                GameSound sound = request.buffer();
+                sound.pauseSound();
+            }
+        }
+    }
+
+    private static void submit(SoundRequest request) {
+        if (request == null) {
+            return;
+        }
+        JGemsSoundManager.req_queue.offer(request);
+    }
+
+    public static void play(GameSound buffer, SoundType type) {
+        JGemsSoundManager.submit(new SoundRequest(buffer, SoundRequest.Operation.START, type));
+    }
+
+    public static void stop(GameSound buffer) {
+        JGemsSoundManager.submit(new SoundRequest(buffer, SoundRequest.Operation.STOP));
+    }
+
+    public static void pause(GameSound buffer) {
+        JGemsSoundManager.submit(new SoundRequest(buffer, SoundRequest.Operation.PAUSE));
+    }
+
     public long getContext() {
         return this.context;
     }
@@ -199,5 +274,13 @@ public final class JGemsSoundManager {
 
     public boolean isSystemCreated() {
         return this.isSystemCreated;
+    }
+
+    record SoundRequest(GameSound buffer, Operation op, Object... meta) {
+            public enum Operation {
+                STOP,
+                START,
+                PAUSE
+            }
     }
 }

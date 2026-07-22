@@ -7,19 +7,27 @@ import org.lwjgl.openal.AL10;
 import javagems3d.audio.data.SoundType;
 import javagems3d.physics.world.basic.WorldItem;
 import org.lwjgl.openal.ALC10;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
 public class GameSound {
+    public static final Object LOCK = new Object();
     private final SoundType soundType;
     private final SoundBuffer soundBuffer;
-    private int source;
+    private volatile int source;
     private WorldItem attachedTo;
-    private float volume;
-    private float pitch;
-    private float rollOff;
-    private float distance;
+    private volatile float volume;
+    private volatile float pitch;
+    private volatile float rollOff;
+    private volatile float distance;
+    private final Vector3f position;
+    private final Vector3f velocity;
+
+    private volatile boolean isPlaying;
+    private volatile boolean isPaused;
+    private volatile boolean isStopped;
 
     private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, float distance, WorldItem attachedTo) {
         this.soundBuffer = soundBuffer;
@@ -27,11 +35,21 @@ public class GameSound {
         this.attachedTo = attachedTo;
         this.source = AL10.AL_NONE;
 
+        this.position = new Vector3f();
+        this.velocity = new Vector3f();
+
         this.setVolume(volume);
         this.setPitch(pitch);
         this.setDistance(distance);
         this.setRollOff(rollOff);
-        this.setupSound();
+
+        if (this.getAttachedTo() != null) {
+            this.setPosition(this.getAttachedTo().getPosition());
+        } else {
+            this.setPosition(new Vector3f(0.0f));
+        }
+
+        this.setVelocity(new Vector3f(0.0f, 0.0f, 0.0f));
     }
 
     public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, float distance, WorldItem attachedTo) {
@@ -48,7 +66,7 @@ public class GameSound {
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, distance, null);
     }
 
-    private void setupSound() {
+    void setupSound() {
         if (ALC10.alcGetCurrentContext() == MemoryUtil.NULL || ALC10.alcGetContextsDevice(ALC10.alcGetCurrentContext()) == 0) {
             return;
         }
@@ -59,22 +77,13 @@ public class GameSound {
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
         JGemsSoundManager.checkALonErrors();
-
-        if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getPosition());
-        } else {
-            this.setPosition(new Vector3f(0.0f));
-        }
-
-        this.setVelocity(new Vector3f(0.0f, 0.0f, 0.0f));
-
-        JGemsSoundManager.checkALonErrors();
         this.updateParams();
-        JGemsSoundManager.checkALonErrors();
         JGemsSoundManager.register(this);
     }
 
     private void updateParams() {
+        AL10.alSource3f(this.source, AL10.AL_POSITION, this.position.x, this.position.y, this.position.z);
+        AL10.alSource3f(this.source, AL10.AL_VELOCITY, this.velocity.x, this.velocity.y, this.velocity.z);
         AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, this.getDistance());
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
         AL10.alSourcef(this.source, AL10.AL_GAIN, this.getVolume());
@@ -82,143 +91,193 @@ public class GameSound {
         JGemsSoundManager.checkALonErrors();
     }
 
-    public void updateSound() {
-        JGemsSoundManager.checkALonErrors();
-        this.updateParams();
-        if (this.isPaused() || this.isStopped()) {
-            return;
-        }
-        if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getPosition());
-            if (this.getAttachedTo().isDead()) {
-                this.stopSound();
+    void updateSound() {
+        //synchronized (GameSound.LOCK) {
+        if (this.isValid()) {
+            JGemsSoundManager.checkALonErrors();
+            this.updateParams();
+            this.isPlaying = AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+            this.isPaused = AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PAUSED;
+            this.isStopped = AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED;
+            if (this.isPaused || this.isStopped) {
                 return;
             }
+            if (this.getAttachedTo() != null) {
+                this.setPosition(this.getAttachedTo().getPosition());
+                if (this.getAttachedTo().isDead()) {
+                    this.stopSound();
+                    return;
+                }
+            }
+            JGemsSoundManager.checkALonErrors();
         }
-        JGemsSoundManager.checkALonErrors();
+        //}
     }
 
-    @Override
-    protected void finalize() {
-        this.clear();
-    }
+   // @Override
+   // protected void finalize() {
+   //     this.clear();
+   // }
 
     public void setPosition(Vector3f vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_POSITION, vector3f.x, vector3f.y, vector3f.z);
+        synchronized (GameSound.LOCK) {
+            this.position.set(vector3f);
+        }
     }
 
     public void setVelocity(Vector3f vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_VELOCITY, vector3f.x, vector3f.y, vector3f.z);
+        synchronized (GameSound.LOCK) {
+            this.velocity.set(vector3f);
+        }
     }
 
     public float getDistance() {
-        return Math.max(this.distance, 0.0f);
+        //synchronized (GameSound.LOCK) {
+            return Math.max(this.distance, 0.0f);
+        //}
     }
 
     public void setDistance(float distance) {
-        this.distance = distance;
+      //  synchronized (GameSound.LOCK) {
+            this.distance = distance;
+      //  }
     }
 
     public float getRollOff() {
-        return Math.max(this.rollOff, 0.0f);
+      //  synchronized (GameSound.LOCK) {
+            return Math.max(this.rollOff, 0.0f);
+       // }
     }
 
     public void setRollOff(float rollOff) {
-        this.rollOff = rollOff;
+      //  synchronized (GameSound.LOCK) {
+            this.rollOff = rollOff;
+      //  }
     }
 
     public float getVolume() {
-        return Math.max(this.volume, 0.0f);
+      //  synchronized (GameSound.LOCK) {
+            return Math.max(this.volume, 0.0f);
+      //  }
     }
 
     public void setVolume(float gain) {
-        this.volume = gain;
+       // synchronized (GameSound.LOCK) {
+            this.volume = gain;
+       // }
     }
 
     public float getPitch() {
-        return Math.max(this.pitch, 0.0f);
+        //synchronized (GameSound.LOCK) {
+            return Math.max(this.pitch, 0.0f);
+        //}
     }
 
     public void setPitch(float pitch) {
-        this.pitch = pitch;
+        //synchronized (GameSound.LOCK) {
+            this.pitch = pitch;
+        //}
     }
 
     public boolean isPaused() {
         if (!this.isValid()) {
             return false;
         }
-        return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PAUSED;
+        return this.isPaused;
     }
 
     public boolean isStopped() {
-        if (!this.isValid()) {
-            return false;
-        }
-        return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED;
+        //synchronized (GameSound.LOCK) {
+            if (!this.isValid()) {
+                return false;
+            }
+            return this.isStopped;
+        //}
     }
 
     public boolean isPlaying() {
-        if (!this.isValid()) {
-            return false;
-        }
-        return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+        //synchronized (GameSound.LOCK) {
+            if (!this.isValid()) {
+                return false;
+            }
+            return this.isPlaying;
+       // }
     }
 
-    public void playSound() {
+    void playSound() {
         if (JGemsConfig.SYSTEM.DISABLE_SOUNDS) {
             return;
         }
-        if (!this.isValid()) {
-            this.setupSound();
-            JGemsSoundManager.checkALonErrors();
-        }
-        AL10.alSourcePlay(this.source);
-    }
-
-    public void pauseSound() {
-        if (this.isValid()) {
-            AL10.alSourcePause(this.source);
-        }
-    }
-
-    public void stopSound() {
-        if (this.isValid()) {
-            AL10.alSourceStop(this.source);
-        }
-    }
-
-    public void clear() {
-        if (this.isValid()) {
-            AL10.alSourceStop(this.source);
-            int bufferProcessed = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
-            while (bufferProcessed-- > 0) {
-                IntBuffer buffer = IntBuffer.allocate(1);
-                AL10.alSourceUnqueueBuffers(this.source, buffer);
+        //synchronized (GameSound.LOCK) {
+            if (!this.isValid()) {
+                this.setupSound();
+                JGemsSoundManager.checkALonErrors();
             }
-            AL10.alSourcei(this.source, AL10.AL_BUFFER, AL10.AL_NONE);
-            AL10.alDeleteSources(this.source);
+            AL10.alSourcePlay(this.source);
+        //}
+    }
+
+    void pauseSound() {
+        //synchronized (GameSound.LOCK) {
+            if (this.isValid()) {
+                AL10.alSourcePause(this.source);
+            }
+        //}
+    }
+
+    void stopSound() {
+        this.clear();
+    }
+
+    void clear() {
+        synchronized (GameSound.LOCK) {
+            if (this.source == AL10.AL_NONE) {
+                return;
+            }
+            int src = this.source;
             this.source = AL10.AL_NONE;
+            AL10.alSourceStop(src);
+            AL10.alSourcei(src, AL10.AL_BUFFER, AL10.AL_NONE);
+            int queued = AL10.alGetSourcei(src, AL10.AL_BUFFERS_QUEUED);
+            while (queued-- > 0) {
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    IntBuffer buffer = stack.mallocInt(1);
+                    AL10.alSourceUnqueueBuffers(src, buffer);
+                }
+            }
+            AL10.alDeleteSources(src);
             JGemsSoundManager.checkALonErrors();
         }
     }
 
     public WorldItem getAttachedTo() {
-        return this.attachedTo;
+        synchronized (GameSound.LOCK) {
+            return this.attachedTo;
+        }
     }
 
     public void setAttachedTo(WorldItem attachedTo) {
-        this.attachedTo = attachedTo;
+        synchronized (GameSound.LOCK) {
+            this.attachedTo = attachedTo;
+        }
+        this.setPosition(this.getAttachedTo().getPosition());
     }
 
     public SoundBuffer getSoundBuffer() {
-        return this.soundBuffer;
+        //synchronized (GameSound.LOCK) {
+            return this.soundBuffer;
+        //}
     }
 
     public SoundType getSoundType() {
-        return this.soundType;
+        //synchronized (GameSound.LOCK) {
+            return this.soundType;
+        //}
     }
 
     public boolean isValid() {
-        return this.source != AL10.AL_NONE;
+        //synchronized (GameSound.LOCK) {
+            return this.source != AL10.AL_NONE;
+        //}
     }
 }

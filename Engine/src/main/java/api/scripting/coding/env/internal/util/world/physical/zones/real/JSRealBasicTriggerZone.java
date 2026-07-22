@@ -14,7 +14,7 @@ import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
+import javagems3d.physics.world.triggers.zones.AbstractTriggerZone;
 
 @JSCodingClass(binding = "JSRealBasicTriggerZone", description = "Concrete trigger zone with JS callback support.")
 public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone implements JSWorldObjectI {
@@ -25,7 +25,7 @@ public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone impleme
     }
 
     @Override
-    public ITriggerAction onColliding() {
+    public ITriggerAction collisionTriggerFunc() {
         return this.action;
     }
 
@@ -65,7 +65,7 @@ public abstract class JSRealBasicTriggerZone extends AbstractTriggerZone impleme
 
     @JSCodingFunctionOrMethod(description = "Check if trigger is active")
     public boolean isValid() {
-        return this.onColliding() != null;
+        return this.collisionTriggerFunc() != null;
     }
 
     @JSCodingFunctionOrMethod(description = "Destroy trigger")

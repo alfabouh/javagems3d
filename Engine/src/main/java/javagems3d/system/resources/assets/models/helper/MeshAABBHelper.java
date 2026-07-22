@@ -135,13 +135,15 @@ public abstract class MeshAABBHelper {
                                 for (int k = 0; k < positions.size(); k += 3) {
                                     Vector3f tempVertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
                                     Vector3f positionStart = new Vector3f(0.0f);
+                                    SkeletonData skeletonData = mesh.getSkeletonData();
+                                    if (skeletonData == null) {
+                                        localMin.min(tempVertex);
+                                        localMax.max(tempVertex);
+                                        continue;
+                                    }
                                     for (AnimationFrame animationFrame : animation.frameList()) {
-                                        positionStart.set(new Vector3f(0.0f));
+                                        positionStart.set(0.0f);
                                         for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
-                                            SkeletonData skeletonData = mesh.getSkeletonData();
-                                            if (skeletonData == null) {
-                                                throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL");
-                                            }
                                             int vertexIndex = k / 3;
                                             float weight = skeletonData.weights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
                                             if (weight > 0.f) {

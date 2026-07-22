@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
@@ -9,7 +10,7 @@ import javagems3d.system.external.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
@@ -62,13 +63,13 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
         this.renderContent(ui, window, frameDeltaTicks);
 
-        ui.buttonUI("DefaultMap2", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 130), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI("DefaultMap2", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 130), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.map().loadMap(new ManualMapProcessor.DefaultPhysTest());
                     ui.setUiPanel(new DefaultGamePanel(null));
                 });
 
-        ui.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.map().loadMap(new ExternalMapProcessor.Default(JGemsHelper.map().getMapPath("ArcticDemo"), ExternalMapProcessor.Default.getDefaultPlayerConstructor()));
                     ui.setUiPanel(new DefaultGamePanel(null));
@@ -79,12 +80,12 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
       //           ui.setUiPanel(new DefaultGamePanel(null));
       //       });
 
-        ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30 + 70), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.ui().openPanel(new DefaultSettingsPanel(this));
                 });
 
-        ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2f(windowW / 2f - 150, windowH / 2f - 30 + 140), new Vector2f(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.ui().openPanel(new DefaultLeaveConfirmationPanel(this));
                 });
@@ -100,7 +101,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         DefaultMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f));
-        ui.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
+        ui.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2f(10f, windowH - 35f), 0x00ff00, 0.5f);
     }
 
     @Override

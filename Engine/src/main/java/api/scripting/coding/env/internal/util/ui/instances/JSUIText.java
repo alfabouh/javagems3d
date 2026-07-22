@@ -22,7 +22,7 @@ public class JSUIText {
 
     @JSCodingFunctionOrMethod(description = "Get size of text element")
     public JSVector2f getSize() {
-        return new JSVector2f(this.uiText.getSize().x, this.uiText.getSize().y);
+        return new JSVector2f(this.uiText.getScaledSize().x, this.uiText.getScaledSize().y);
     }
 
     @JSCodingFunctionOrMethod(description = "Get underlying UIText")

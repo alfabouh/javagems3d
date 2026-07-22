@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 

@@ -5,7 +5,6 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIDefaultButton;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 
 @JSCodingClass(binding = "JSUIDefaultButton", description = "Wrapper for a default UI button, exposing position, size, event handlers, and underlying Java UIDefaultButton.")
 public class JSUIDefaultButton {
@@ -23,7 +22,7 @@ public class JSUIDefaultButton {
 
     @JSCodingFunctionOrMethod(description = "Get the size of the button as a JSVector2f.")
     public JSVector2f getSize() {
-        return new JSVector2f(this.uiDefaultButton.getSize().x, this.uiDefaultButton.getSize().y);
+        return new JSVector2f(this.uiDefaultButton.getScaledSize().x, this.uiDefaultButton.getScaledSize().y);
     }
 
     @JSCodingFunctionOrMethod(description = "Set the action to execute when the button is unclicked.")

@@ -1,4 +1,4 @@
-package javagems3d.physics.world.triggers.zones.base;
+package javagems3d.physics.world.triggers.zones;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.objects.PhysicsGhostObject;
@@ -56,7 +56,7 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     public void setCollisionGroup(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getGhostObject().setCollisionGroup(i);
     }
@@ -68,7 +68,7 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getGhostObject().setCollideWithGroups(i);
     }

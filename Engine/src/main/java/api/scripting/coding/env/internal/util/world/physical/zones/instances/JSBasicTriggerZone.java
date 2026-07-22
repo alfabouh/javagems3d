@@ -12,7 +12,7 @@ import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
+import javagems3d.physics.world.triggers.zones.AbstractTriggerZone;
 
 @JSCodingClass(binding = "JSBasicTriggerZone", description = "Wrapper around trigger zone using composition (no inheritance).")
 public class JSBasicTriggerZone implements JSWorldObjectI {
@@ -55,8 +55,28 @@ public class JSBasicTriggerZone implements JSWorldObjectI {
 
     @JSCodingFunctionOrMethod(description = "Get trigger action")
     public JSTriggerAction getAction() {
-        ITriggerAction action = this.zone.onColliding();
-        return action != null ? action::action : null;
+        ITriggerAction action = this.zone.collisionTriggerFunc();
+        return action != null ? new JSTriggerAction() {
+            @Override
+            public void contactStarted(Object userObject, long manifoldId) {
+                action.contactStarted(userObject, manifoldId);
+            }
+
+            @Override
+            public void contactContinue(Object object, long pointId) {
+                action.contactContinue(object, pointId);
+            }
+
+            @Override
+            public void contactEnded(Object object, long manifoldId) {
+                action.contactEnded(object, manifoldId);
+            }
+
+            @Override
+            public boolean contactPointCreated(Object object, long pointID, long manifoldID) {
+                return action.contractPointCreated(object, pointID, manifoldID);
+            }
+        } : null;
     }
 
     @JSCodingFunctionOrMethod(description = "Set trigger callback", paramNames = {"action"})

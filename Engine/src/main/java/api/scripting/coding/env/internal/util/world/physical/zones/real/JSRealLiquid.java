@@ -12,7 +12,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 
 @JSCodingClass(binding = "JSRealLiquid", description = "Liquid with JS-defined behavior (inheritance-based).")
 public abstract class JSRealLiquid extends Liquid implements JSWorldObjectI {
@@ -27,9 +27,9 @@ public abstract class JSRealLiquid extends Liquid implements JSWorldObjectI {
     }
 
     @Override
-    protected void onEntityEnteredLiquid(Object e) {
+    protected void onEntityCollideLiquid(Object e, long pointId) {
         if (this.action != null) {
-            this.action.action(e);
+            this.action.contactContinue(e, pointId);
         }
     }
 

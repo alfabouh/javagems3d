@@ -1,13 +1,13 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
@@ -25,8 +25,8 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 public class UIDefaultButton extends UIInteractiveElement {
     private final JGemsGuiFont guiFont;
     private final UIText uiText;
-    private final Vector2i position;
-    private final Vector2i size;
+    private final Vector2f position;
+    private final Vector2f size;
     private Model2D buttonModel;
     private UIAction onEntered;
     private UIAction onLeft;
@@ -34,14 +34,15 @@ public class UIDefaultButton extends UIInteractiveElement {
     private UIAction onUnClick;
     private UIAction onInside;
 
-    public UIDefaultButton(@NotNull String text, @NotNull JGemsGuiFont guiFont, @NotNull Vector2i position, @NotNull Vector2i size, int textColorHex, float zValue) {
-        super(JGemsResourceManager.globalShaderAssets.gui_button, zValue);
+    public UIDefaultButton(IWindow window, @NotNull String text, @NotNull JGemsGuiFont guiFont, @NotNull Vector2f position, @NotNull Vector2f size, int textColorHex, float zValue) {
+        super(window, JGemsResourceManager.globalShaderAssets.gui_button, zValue);
         this.guiFont = guiFont;
         this.position = position;
         this.size = size;
 
-        Vector2i fontOffset = this.getFontPos(text, this.getSize());
-        this.uiText = new UIText(text, guiFont, textColorHex, new Vector2i(this.getPosition()).add(fontOffset), zValue);
+        Vector2f fontOffset = this.getFontPos(text, this.getScaledSize());
+        this.uiText = new UIText(this.getWindow(), text, guiFont, textColorHex, new Vector2f(this.getPosition()).add(fontOffset), zValue);
+        this.uiText.getAutoScaleMode().SCALE_AFFECT_POS_XY(true);
 
         this.onEntered = null;
         this.onLeft = null;
@@ -56,7 +57,9 @@ public class UIDefaultButton extends UIInteractiveElement {
 
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.buttonModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX),
+                this.buttonModel.getPose(),
+                UIElement.getProjection(this.getWindow(), JGemsUI.GET_GLOBAL_UI_SCALING()));
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.BACKGROUND_COLOR), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.SELECTED), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsHelper.render().renderModel2D(this.buttonModel, GL46.GL_TRIANGLES);
@@ -66,14 +69,16 @@ public class UIDefaultButton extends UIInteractiveElement {
 
     @Override
     public void build() {
-        this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(position), new Vector2f(this.getSize().x, this.getSize().y).add(position.x, position.y), this.getZValue());
+        this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(0.0f), new Vector2f(this.getScaledSize().x, this.getScaledSize().y), this.getZValue());
+        this.buttonModel.getPose().setPosition(new Vector2f(this.getPosition().x, this.getPosition().y));
         this.uiText.build();
     }
 
-    private Vector2i getFontPos(String text, Vector2i buttonSize) {
-        int posX = buttonSize.x / 2 - JGemsUI.getTextWidth(this.guiFont, text) / 2;
-        int posY = buttonSize.y / 2 - JGemsUI.getFontHeight(this.guiFont) / 2;
-        return new Vector2i(posX, posY);
+    private Vector2f getFontPos(String text, Vector2f buttonSize) {
+        final float uiAutoFactor = 1.0f;
+        int posX = (int) (buttonSize.x / 2.f - (JGemsUI.getTextWidth(this.guiFont, text) * uiAutoFactor) / 2);
+        int posY = (int) (buttonSize.y / 2.f - (JGemsUI.getFontHeight(this.guiFont) * uiAutoFactor) / 2);
+        return new Vector2f(posX, posY);
     }
 
     @Override
@@ -88,13 +93,23 @@ public class UIDefaultButton extends UIInteractiveElement {
     }
 
     @Override
-    public @NotNull Vector2i getSize() {
-        return new Vector2i((int) (this.size.x * this.getScaling().x), (int) (this.size.y * this.getScaling().y));
+    public @NotNull Vector2f getOriginalSize() {
+        return new Vector2f(this.size);
     }
 
     @Override
-    public @NotNull Vector2i getPosition() {
-        return this.position;
+    public @NotNull Vector2f getPosition() {
+        return super.getScaleAffectedUiPos(this.position);
+    }
+
+    @Override
+    public Vector2f getScaling() {
+        return super.getScaleAffectedUiVector(super.getScaling());
+    }
+
+    @Override
+    public @NotNull Vector2f getScaledSize() {
+        return this.getOriginalSize().mul(this.getScaling());
     }
 
     @Override
@@ -102,7 +117,7 @@ public class UIDefaultButton extends UIInteractiveElement {
         final int prime = 31;
         int result = 1;
         result = prime * result + this.uiText.hashCode();
-        result = prime * result + this.getSize().hashCode();
+        result = prime * result + this.getScaledSize().hashCode();
         result = prime * result + this.getPosition().hashCode();
         return result;
     }

@@ -2,7 +2,9 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +18,8 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 public class UIPictureStaticSelectable extends UIPictureStatic {
     private boolean selected;
 
-    public UIPictureStaticSelectable(@NotNull ITexture2DProgram texture2DProgram, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
-        super(texture2DProgram, position, textureXY, textureWH, zValue);
+    public UIPictureStaticSelectable(IWindow window, @NotNull ITexture2DProgram texture2DProgram, @NotNull Vector2f position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
+        super(window, texture2DProgram, position, textureXY, textureWH, zValue);
     }
 
     public boolean isSelected() {
@@ -39,7 +41,9 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         this.imageModel.getPose().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX),
+                (this.imageModel.getPose()),
+                UIElement.getProjection(this.getWindow(), this.GLOBAL_SCALE_FACTOR()));
         shaderManager.performUniformTexture(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.iImageSample);
         this.getCurrentShader().performUniform(new UniformString(DefaultUniformDefinitions.SELECTED), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsHelper.render().renderModel2D(this.imageModel, GL46.GL_TRIANGLES);

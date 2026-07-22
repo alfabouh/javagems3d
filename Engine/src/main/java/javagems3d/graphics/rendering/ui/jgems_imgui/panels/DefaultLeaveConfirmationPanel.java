@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.screen.window.IWindow;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
@@ -24,13 +25,13 @@ public class DefaultLeaveConfirmationPanel extends AbstractPanelUI {
 
         String text = JGems3D.get().I18n("menu.confirm.text");
         int textSize = JGemsUI.getTextWidth(JGemsResourceManager.globalTextureAssets.standardFont, text);
-        ui.textUI(text, JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 - textSize / 2, windowH / 2 - 60), 0xffffff, 0.5f);
+        ui.textUI(text, JGemsResourceManager.globalTextureAssets.standardFont, new Vector2f(windowW / 2f - textSize / 2f, windowH / 2f - 60), 0xffffff, 0.5f);
 
-        ui.buttonUI(JGems3D.get().I18n("menu.confirm.yes"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 + 5, windowH / 2), new Vector2i(200, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.confirm.yes"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2f(windowW / 2f + 5, windowH / 2f), new Vector2f(200, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.close(null);
                 });
-        ui.buttonUI(JGems3D.get().I18n("menu.confirm.no"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 - 205, windowH / 2), new Vector2i(200, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.confirm.no"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2f(windowW / 2f - 205, windowH / 2f), new Vector2f(200, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     this.goBack(ui);
                 });

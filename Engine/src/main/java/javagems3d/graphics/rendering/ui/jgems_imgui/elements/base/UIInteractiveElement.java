@@ -1,19 +1,20 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base;
 
-import javagems3d.help.JGemsHelper;
+import javagems3d.graphics.screen.window.IWindow;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.base.IController;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import org.joml.Vector2i;
 
 public abstract class UIInteractiveElement extends UIElement {
     private boolean selected;
     private boolean isMLKPressedOutsideButton;
     private boolean wasClickedButton;
 
-    public UIInteractiveElement(JGemsShaderManager currentShader, float zValue) {
-        super(currentShader, zValue);
+    public UIInteractiveElement(@NotNull IWindow window, JGemsShaderManager currentShader, float zValue) {
+        super(window, currentShader, zValue);
     }
 
     public void render(float frameDeltaTicks) {
@@ -28,8 +29,13 @@ public abstract class UIInteractiveElement extends UIElement {
                 this.isMLKPressedOutsideButton = false;
             }
 
+            final Vector2f pos = this.getPosition();
+            final Vector2f size = this.getScaledSize();
             Vector2f mouseCoordinates = mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinatesV2F();
-            if (mouseCoordinates.x >= this.getPosition().x && mouseCoordinates.x <= this.getPosition().x + this.getSize().x && mouseCoordinates.y >= this.getPosition().y && mouseCoordinates.y <= this.getPosition().y + this.getSize().y) {
+            if (mouseCoordinates.x >= pos.x &&
+                    mouseCoordinates.x <= pos.x + size.x &&
+                    mouseCoordinates.y >= pos.y &&
+                    mouseCoordinates.y <= pos.y + size.y) {
                 this.selected = true;
                 this.onMouseEntered();
                 this.onMouseInside(new Vector2f(mouseCoordinates));

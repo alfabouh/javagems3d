@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class GLTF2Node {
+    private final int id;
     private final String name;
     private final GLTF2Mesh mesh;
     private GLTF2Node parent;
@@ -15,7 +16,8 @@ public final class GLTF2Node {
     private Matrix4f localAnimationTransform;
     private int skin;
 
-    public GLTF2Node(String name, @Nullable GLTF2Mesh mesh) {
+    public GLTF2Node(int id, String name, @Nullable GLTF2Mesh mesh) {
+        this.id = id;
         this.name = name;
         this.mesh = mesh;
         this.children = new ArrayList<>();
@@ -77,6 +79,10 @@ public final class GLTF2Node {
     public GLTF2Node setParent(GLTF2Node parent) {
         this.parent = parent;
         return this;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public int getSkin() {

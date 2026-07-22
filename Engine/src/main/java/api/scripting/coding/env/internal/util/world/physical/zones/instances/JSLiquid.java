@@ -6,7 +6,7 @@ import api.scripting.coding.env.internal.util.world.physical.JSPhysicsWorld;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSTriggerAction;
 import api.scripting.coding.env.internal.util.world.physical.zones.properties.JSZone;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 
 @JSCodingClass(binding = "JSLiquid", description = "Wrapper around liquid object.")
 public class JSLiquid {
@@ -27,7 +27,7 @@ public class JSLiquid {
             }
 
             @Override
-            protected void onEntityEnteredLiquid(Object e) {
+            protected void onEntityCollideLiquid(Object e, long pointId) {
                 // default empty
             }
         };

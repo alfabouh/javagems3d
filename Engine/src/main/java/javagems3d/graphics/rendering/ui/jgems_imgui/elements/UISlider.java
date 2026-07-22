@@ -1,9 +1,9 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIScalable;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.JGemsGuiFont;
@@ -12,27 +12,33 @@ import javagems3d.system.settings.objects.SettingFloatBar;
 
 public class UISlider extends UIInteractiveElement implements UIScalable {
     private final SettingFloatBar settingFloatBar;
-    private final Vector2i position;
+    private final Vector2f position;
     private final String title;
     private final float zValue;
     private final JGemsGuiFont guiFont;
     private final int hexColor;
 
-    public UISlider(@NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2i position, @NotNull SettingFloatBar settingFloatBar, float zValue) {
-        super(null, zValue);
+    public UISlider(IWindow window, @NotNull String text, @NotNull JGemsGuiFont guiFont, int hexColor, @NotNull Vector2f position, @NotNull SettingFloatBar settingFloatBar, float zValue) {
+        super(window, null, zValue);
         this.position = position;
         this.title = text;
         this.zValue = zValue;
         this.settingFloatBar = settingFloatBar;
         this.guiFont = guiFont;
         this.hexColor = hexColor;
+        this.getAutoScaleMode().SCALE_AFFECT_POS_XY(false);
+        this.getAutoScaleMode().SCALE_AFFECT_SIZE(false);
     }
 
     @Override
     public void render(float frameDeltaTicks) {
         super.render(frameDeltaTicks);
-        UIPictureStatic line = new UIPictureStatic(JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add(0, (int) (3.0f * this.getScaling().y)), new Vector2f(0.0f, 13.0f), new Vector2f(100.0f, 1.0f), this.getZValue());
-        UIPictureStaticSelectable brick = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
+        UIPictureStatic line = new UIPictureStatic(this.getWindow(), JGemsResourceManager.globalTextureAssets.gui1, new Vector2f(this.getPosition()).add(0, (int) (3.0f * this.getScaling().y)), new Vector2f(0.0f, 13.0f), new Vector2f(100.0f, 1.0f), this.getZValue());
+        line.getAutoScaleMode().COPY(this.getAutoScaleMode());
+
+        UIPictureStaticSelectable brick = new UIPictureStaticSelectable(this.getWindow(), JGemsResourceManager.globalTextureAssets.gui1, new Vector2f(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
+        brick.getAutoScaleMode().COPY(this.getAutoScaleMode());
+
         brick.setSelected(this.isSelected());
 
         line.build();
@@ -47,7 +53,9 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         line.clear();
         brick.clear();
 
-        UIText uiText = new UIText(this.title + " " + (int) (this.getOptionValue() * 100.0f) + "%", guiFont, this.hexColor, new Vector2i(this.getPosition()).add(this.getSize().x + 30, -3), this.zValue);
+        UIText uiText = new UIText(this.getWindow(), this.title + " " + (int) (this.getOptionValue() * 100.0f) + "%", guiFont, this.hexColor, new Vector2f(this.getPosition()).add(this.getScaledSize().x + 30, -3), this.zValue);
+        uiText.getAutoScaleMode().SCALE_AFFECT_POS_X(false);
+        uiText.getAutoScaleMode().SCALE_AFFECT_POS_Y(true);
         uiText.build();
         uiText.render(frameDeltaTicks);
         uiText.clear();
@@ -63,18 +71,23 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    public @NotNull Vector2i getSize() {
-        return new Vector2i((int) (100 * this.getScaling().x), (int) (7 * this.getScaling().y));
-    }
-
-    @Override
-    public @NotNull Vector2i getPosition() {
-        return this.position;
-    }
-
-    @Override
     public Vector2f getScaling() {
-        return super.getScaling().mul(3.0f);
+        return super.getScaleAffectedUiVector(super.getScaling()).mul(3.0f);
+    }
+
+    @Override
+    public @NotNull Vector2f getScaledSize() {
+        return this.getOriginalSize().mul(this.getScaling());
+    }
+
+    @Override
+    public @NotNull Vector2f getOriginalSize() {
+        return new Vector2f(100.0f, 7.0f);
+    }
+
+    @Override
+    public @NotNull Vector2f getPosition() {
+        return super.getScaleAffectedUiPos(this.position);
     }
 
     @Override
@@ -83,7 +96,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         int result = 1;
         result = prime * result + this.hexColor;
         result = prime * result + this.getPosition().hashCode();
-        result = prime * result + this.getSize().hashCode();
+        result = prime * result + this.getScaledSize().hashCode();
         result = prime * result + this.title.hashCode();
         result = prime * result + this.guiFont.hashCode();
         result = prime * result + Float.floatToIntBits(this.zValue);
@@ -128,7 +141,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
 
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
-        float value = JGemsHelper.math().clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
+        float value = JGemsHelper.math().clamp((mouseCoordinates.x - this.getPosition().x) / this.getScaledSize().x, 0.0f, 1.0f);
         this.setOptionValue(value);
     }
 

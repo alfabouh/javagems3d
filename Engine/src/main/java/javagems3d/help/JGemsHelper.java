@@ -41,7 +41,7 @@ import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
+import javagems3d.physics.world.triggers.liquids.Liquid;
 import javagems3d.system.controller.base.IController;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.BindingManager;

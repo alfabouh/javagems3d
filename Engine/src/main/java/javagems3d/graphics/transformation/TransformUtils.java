@@ -101,6 +101,10 @@ public abstract class TransformUtils {
         return viewMat.scale(scaling);
     }
 
+    public static Matrix4f getModelOrthographicMatrix(Matrix4f model, Matrix4f orthographicMatrix) {
+        return new Matrix4f(orthographicMatrix).mul(model);
+    }
+
     public static Matrix4f getModelOrthographicMatrix(Pose2D pose, Matrix4f orthographicMatrix) {
         return new Matrix4f(orthographicMatrix).mul(new Matrix4f().identity().translate(new Vector3f(pose.getPosition(), 0.0f)).rotateZ(-pose.getRotation()).scaleXY(pose.getScale().x, pose.getScale().y));
     }

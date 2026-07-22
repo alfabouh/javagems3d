@@ -1,8 +1,8 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.screen.window.IWindow;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.audio.data.SoundType;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
@@ -13,14 +13,16 @@ public class UIArrow extends UIInteractiveElement {
     private final UIPictureStaticSelectable imageStaticUI;
     private final SettingSlot settingIntSlots;
     private final int vector;
-    private final Vector2i position;
-    private final Vector2i size;
+    private final Vector2f position;
+    private final Vector2f size;
 
-    public UIArrow(int vector, @NotNull SettingSlot settingIntSlots, @NotNull Vector2i position, float zValue) {
-        super(null, zValue);
+    public UIArrow(IWindow window, int vector, @NotNull SettingSlot settingIntSlots, @NotNull Vector2f position, float zValue) {
+        super(window, null, zValue);
+        this.getAutoScaleMode().SCALE_AFFECT_POS_XY(false);
+        this.getAutoScaleMode().SCALE_AFFECT_SIZE(false);
         this.position = position;
-        this.size = new Vector2i(4, 8);
-        this.imageStaticUI = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
+        this.size = new Vector2f(4, 8);
+        this.imageStaticUI = new UIPictureStaticSelectable(window, JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
         this.settingIntSlots = settingIntSlots;
         this.vector = vector;
     }
@@ -28,7 +30,7 @@ public class UIArrow extends UIInteractiveElement {
     @Override
     public void render(float frameDeltaTicks) {
         super.render(frameDeltaTicks);
-
+        this.imageStaticUI.getAutoScaleMode().COPY(this.getAutoScaleMode());
         this.imageStaticUI.setScaling(this.getScaling());
         this.imageStaticUI.setSelected(this.isSelected());
         this.imageStaticUI.render(frameDeltaTicks);
@@ -45,13 +47,23 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    public @NotNull Vector2i getSize() {
-        return new Vector2i((int) (this.size.x * this.getScaling().x), (int) (this.size.y * this.getScaling().y));
+    public @NotNull Vector2f getOriginalSize() {
+        return new Vector2f(this.size);
     }
 
     @Override
-    public @NotNull Vector2i getPosition() {
-        return this.position;
+    public @NotNull Vector2f getPosition() {
+        return super.getScaleAffectedUiPos(this.position);
+    }
+
+    @Override
+    public Vector2f getScaling() {
+        return super.getScaleAffectedUiVector(super.getScaling());
+    }
+
+    @Override
+    public @NotNull Vector2f getScaledSize() {
+        return this.getOriginalSize().mul(this.getScaling());
     }
 
     @Override

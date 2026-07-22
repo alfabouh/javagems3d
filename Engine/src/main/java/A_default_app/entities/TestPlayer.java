@@ -19,22 +19,22 @@ public class TestPlayer extends JGemsKinematicPlayer {
 
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
-        if (JGems3D.DEBUG_MODE) {
-            if (((DefaultBindings) JGemsHelper.controller().getBindingManager()).keyBlock1.isClicked()) {
-             //   JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "A_default_app/horror");
-             //   JGemsHelper.world().addWorldItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
-             //   Vector3f v3 = this.getLookVector().mul(50.0f);
-             //  // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
-             //   entityPropInfo.setScaling(new Vector3f(0.5f));
-             //   entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
+     // if (JGems3D.DEBUG_MODE) {
+     //     if (((DefaultBindings) JGemsHelper.controller().getBindingManager()).keyBlock1.isClicked()) {
+     //      //   JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "A_default_app/horror");
+     //      //   JGemsHelper.world().addWorldItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
+     //      //   Vector3f v3 = this.getLookVector().mul(50.0f);
+     //      //  // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
+     //      //   entityPropInfo.setScaling(new Vector3f(0.5f));
+     //      //   entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
 
-                JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "A_default_app/horror");
-                JGemsHelper.world().addWorldObjectInBothWorlds(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
-                Vector3f v3 = this.getLookVector().mul(50.0f);
-                entityPropInfo.setScaling(new Vector3f(0.95f));
-                entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
-            }
-        }
+     //         JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "A_default_app/horror");
+     //         JGemsHelper.world().addWorldObjectInBothWorlds(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
+     //         Vector3f v3 = this.getLookVector().mul(50.0f);
+     //         entityPropInfo.setScaling(new Vector3f(0.95f));
+     //         entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
+     //     }
+     // }
         super.performController(rotationInput, xyzInput, isFocused);
     }
 }

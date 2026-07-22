@@ -136,6 +136,7 @@ public class WBenchGameProjectManager {
             LoadingInterfaceSwing.invoke();
         }
         this.getGameResourcesManager().refreshModels(this.getGameProject().getProjectAbsolutePath());
+        WBench.get().getResourceManager().loadModelAnimationsInTexture();
         if (showLoadingScreen) {
             LoadingInterfaceSwing.dispose();
             JGems3D.GC();

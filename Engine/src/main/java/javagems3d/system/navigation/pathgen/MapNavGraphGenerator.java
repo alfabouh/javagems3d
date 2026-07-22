@@ -63,7 +63,7 @@ public class MapNavGraphGenerator {
         com.jme3.math.Vector3f vectorCheck2 = new com.jme3.math.Vector3f(pos.x, pos.y - 100.0f, pos.z);
 
         List<PhysicsRayTestResult> rayTestResults = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
-        Optional<PhysicsRayTestResult> optional = rayTestResults.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.getMask()) != 0).findFirst();
+        Optional<PhysicsRayTestResult> optional = rayTestResults.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.mask()) != 0).findFirst();
         PhysicsRayTestResult rayTestResult = optional.orElse(null);
         if (rayTestResult == null) {
             return null;
@@ -81,13 +81,13 @@ public class MapNavGraphGenerator {
         com.jme3.math.Vector3f vectorCheck4 = new com.jme3.math.Vector3f(x, y + 1.0f, z);
 
         List<PhysicsRayTestResult> rayPathToPoint = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3, vectorCheck4);
-        Optional<PhysicsRayTestResult> optional = rayPathToPoint.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.getMask()) != 0).findFirst();
+        Optional<PhysicsRayTestResult> optional = rayPathToPoint.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.mask()) != 0).findFirst();
         PhysicsRayTestResult rayTestResult1 = optional.orElse(null);
 
         //if (rayTestResult1 == null) {
         {
             List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
-            Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.getMask()) != 0).findFirst();
+            Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.mask()) != 0).findFirst();
             PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
             if (rayTestResult2 != null) {
                 com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult2.getHitFraction());
@@ -113,7 +113,7 @@ public class MapNavGraphGenerator {
         com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 0.5f, hitPointHalfWay.z);
 
         List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3_1, vectorCheck3_2);
-        Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.getMask()) != 0).findFirst();
+        Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionType.ST_BODY.mask()) != 0).findFirst();
         PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
         if (rayTestResult2 == null) {
             return null;

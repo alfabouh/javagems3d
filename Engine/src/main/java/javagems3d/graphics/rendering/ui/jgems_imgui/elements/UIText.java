@@ -1,7 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -11,9 +11,7 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
@@ -26,13 +24,14 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 public class UIText extends UIElement {
     private final String text;
     private final int hexColor;
-    private final Vector2i position;
+    private final Vector2f position;
     private final JGemsGuiFont fontTexture;
     private UIText.TextModel textModel;
     private boolean cacheText;
 
-    public UIText(@NotNull String text, @NotNull JGemsGuiFont fontTexture, int hexColor, @NotNull Vector2i position, float zValue) {
-        super(JGemsResourceManager.globalShaderAssets.gui_text, zValue);
+    public UIText(IWindow window, @NotNull String text, @NotNull JGemsGuiFont fontTexture, int hexColor, @NotNull Vector2f position, float zValue) {
+        super(window, JGemsResourceManager.globalShaderAssets.gui_text, zValue);
+        this.getAutoScaleMode().SCALE_AFFECT_POS_XY(false);
         this.fontTexture = fontTexture;
         this.text = text;
         this.hexColor = hexColor;
@@ -42,9 +41,14 @@ public class UIText extends UIElement {
 
     @Override
     public void render(float frameDeltaTicks) {
+        this.textModel.getModel().getPose().setPosition(new Vector2f(this.getPosition()));
+        this.textModel.getModel().getPose().setScale(new Vector2f(this.getScaling()));
+
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        shaderManager.performOrthographicMatrix(new UniformString(DefaultUniformDefinitions.PROJECTION_MODEL_MATRIX),
+                (this.textModel.model.getPose()),
+                UIElement.getProjection(this.getWindow(), this.GLOBAL_SCALE_FACTOR()));
         shaderManager.performUniformTextureBindless(new UniformString(DefaultUniformDefinitions.TEXTURE_MAP), this.getFontTexture().getTexture());
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.COLOR), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsHelper.render().renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
@@ -55,8 +59,6 @@ public class UIText extends UIElement {
     public void build() {
         if (this.getText() != null && !this.getText().isEmpty()) {
             this.textModel = new UIText.TextModel();
-            this.textModel.getModel().getPose().setPosition(new Vector2f(this.getPosition()));
-            this.textModel.getModel().getPose().setScale(new Vector2f(this.getScaling()));
         }
     }
 
@@ -67,17 +69,45 @@ public class UIText extends UIElement {
         }
     }
 
+    /*
+        @Override
     public @NotNull Vector2i getPosition() {
-        return this.position;
+        float scale = JGemsUI.GET_GLOBAL_UI_SCALING();
+
+        Vector2i window = this.getWindow().getWindowSize();
+
+        float centerX = window.x * 0.5f;
+        float centerY = window.y * 0.5f;
+
+        float x = centerX + (this.position.x - centerX) / scale;
+        float y = centerY + (this.position.y - centerY) / scale;
+
+        return new Vector2i((int)x, (int)y);
     }
+     */
 
     public String getText() {
         return this.text;
     }
 
     @Override
-    public @NotNull Vector2i getSize() {
-        return new Vector2i((int) (this.textModel.width * this.getScaling().x), (int) (this.textModel.height * this.getScaling().y));
+    public @NotNull Vector2f getOriginalSize() {
+        return new Vector2f(this.textModel.width, this.textModel.height);
+    }
+
+    @Override
+    public @NotNull Vector2f getPosition() {
+        return super.getScaleAffectedUiPos(this.position);
+    }
+
+    @Override
+    public Vector2f getScaling() {
+        return super.getScaleAffectedUiVector(super.getScaling());
+    }
+
+    @Override
+    public @NotNull Vector2f getScaledSize() {
+        return this.getOriginalSize().mul(this.getScaling());
     }
 
     @Override
@@ -86,7 +116,7 @@ public class UIText extends UIElement {
         int result = 1;
         result = prime * result + this.hexColor;
         result = prime * result + this.getPosition().hashCode();
-        result = prime * result + this.getSize().hashCode();
+        result = prime * result + this.getScaledSize().hashCode();
         if (this.isCacheText()) {
             result = prime * result + this.text.hashCode();
         }

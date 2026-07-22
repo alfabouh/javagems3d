@@ -250,6 +250,7 @@ public final class JGemsCore implements ICore {
                     }
                     JGemsLaunchArgsRegistry.clear();
                     this.getSoundManager().stopAllSounds();
+                    this.getSoundManager().clearCachedSounds();
                     this.getResourceManager().destroy();
                     this.getSoundManager().destroy();
                     this.getPhysics().getPhysicsProcessor().clearResources();

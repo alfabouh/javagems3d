@@ -5,7 +5,6 @@ import api.scripting.coding.env.def.JSCodingFunctionOrMethod;
 import api.scripting.coding.env.def.JSHideFromDoc;
 import api.scripting.coding.env.internal.util.math.JSVector2f;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UICarousel;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UISlider;
 
 @JSCodingClass(binding = "JSUICarousel", description = "UI carousel component with position and size properties.")
 public class JSUICarousel {
@@ -23,7 +22,7 @@ public class JSUICarousel {
 
     @JSCodingFunctionOrMethod(description = "Get current size")
     public JSVector2f getSize() {
-        return new JSVector2f(this.uiCarousel.getSize().x, this.uiCarousel.getSize().y);
+        return new JSVector2f(this.uiCarousel.getScaledSize().x, this.uiCarousel.getScaledSize().y);
     }
 
     @JSCodingFunctionOrMethod(description = "Get the carousel object")

@@ -3,7 +3,6 @@ package javagems3d.physics.world.triggers.liquids;
 import javagems3d.physics.entities.properties.state.EntityState;
 import javagems3d.physics.entities.properties.state.IHasEntityState;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.liquids.base.Liquid;
 
 public class Water extends Liquid {
     public Water(Zone zone) {
@@ -11,7 +10,7 @@ public class Water extends Liquid {
     }
 
     @Override
-    protected void onEntityEnteredLiquid(Object e) {
+    protected void onEntityCollideLiquid(Object e, long pointId) {
         if (e instanceof IHasEntityState entityState) {
             entityState.getEntityState().setState(EntityState.Type.IN_LIQUID);
         }

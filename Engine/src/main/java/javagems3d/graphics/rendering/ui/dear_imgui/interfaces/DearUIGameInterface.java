@@ -31,6 +31,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class DearUIGameInterface implements DearUIInterface {
+    public static float[] param1 = new float[] {0.0f};
+    public static float[] param2 = new float[] {0.0f};
+    public static float[] param3 = new float[] {0.0f};
+
     private boolean snapStop = false;
     private Set<Map.Entry<String, SpeedProfiler.Group>> snapShot = null;
     private static boolean showAllConsoleLines = false;
@@ -114,6 +118,12 @@ public class DearUIGameInterface implements DearUIInterface {
                     this.snapShot = null;
                 }
             }
+        }
+
+        if (ImGui.collapsingHeader("Params")) {
+            ImGui.dragFloat("Param 1", DearUIGameInterface.param1, 0.001f);
+            ImGui.dragFloat("UI Scale", DearUIGameInterface.param2, 0.001f);
+            ImGui.dragFloat("Param 3", DearUIGameInterface.param3, 0.001f);
         }
 
         if (ImGui.collapsingHeader("Scene")) {

@@ -187,10 +187,14 @@ public class GLTF2ModelLoader implements ILoadingHelper {
             if (!node.hasMesh()) {
                 continue;
             }
-            for (GLTF2Primitive primitive : node.getMesh().getPrimitives()) {
+            for (GLTF2Primitive primitive : Objects.requireNonNull(node.getMesh()).getPrimitives()) {
                 int matIdx = primitive.getMaterialId();
                 Material material = (matIdx >= 0 && matIdx < materials.size()) ? materials.get(matIdx) : new Material();
                 SkeletonData skeleton = (primitive.getWEIGHTS_0() != null && primitive.getJOINTS_0() != null) ? new SkeletonData(primitive.getWEIGHTS_0().objects(), primitive.getJOINTS_0().objects()) : null;
+
+             //  if (this.getPathToMainFile().getPath().fullPath().contains("lowpoly") && skeleton != null) {
+             //      System.out.println("F");
+             //  }
 
                 if (renderMeshConsumer != null) {
                     RenderMesh renderMesh = this.createRenderMesh(primitive, skeleton);
@@ -258,11 +262,15 @@ public class GLTF2ModelLoader implements ILoadingHelper {
                         skinId = 0;
                     }
                     final GLTF2Skin skin = gltf2Scene.skins().get(skinId);
-                    int nodeNew = gltf2Scene.skins().get(skinId).getTargetIdJointId().get(nodeId);
-                    if (!timeMap.get(time).containsKey(nodeNew)) {
-                        timeMap.get(time).put(nodeNew, new Pair<>(skin, new HashSet<>()));
+                    if (skin != null) {
+                        if (skin.getTargetIdJointId().containsKey(nodeId)) {
+                            int nodeNew = skin.getTargetIdJointId().get(nodeId);
+                            if (!timeMap.get(time).containsKey(nodeNew)) {
+                                timeMap.get(time).put(nodeNew, new Pair<>(skin, new HashSet<>()));
+                            }
+                            timeMap.get(time).get(nodeNew).second().add(data);
+                        }
                     }
-                    timeMap.get(time).get(nodeNew).second().add(data);
                 }
             }
 

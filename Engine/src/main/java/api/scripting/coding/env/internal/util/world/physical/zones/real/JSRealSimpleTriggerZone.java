@@ -29,7 +29,7 @@ public abstract class JSRealSimpleTriggerZone extends SimpleTriggerZone implemen
     }
 
     @Override
-    public ITriggerAction onColliding() {
+    public ITriggerAction collisionTriggerFunc() {
         return this.action;
     }
 

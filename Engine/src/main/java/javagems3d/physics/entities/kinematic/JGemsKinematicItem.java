@@ -570,7 +570,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     public void setCollisionGroup(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getGhostBody().setCollisionGroup(i);
         this.getPhysicsBody().setCollisionGroup(i);
@@ -583,7 +583,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     public void setCollideWithGroups(CollisionType... collisionTypes) {
         int i = 0;
         for (CollisionType collisionType : collisionTypes) {
-            i |= collisionType.getMask();
+            i |= collisionType.mask();
         }
         this.getGhostBody().setCollideWithGroups(i);
         this.getPhysicsBody().setCollideWithGroups(i);
@@ -718,7 +718,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     if (e.getCollisionObject().equals(ghostObject)) {
                         return true;
                     }
-                    if ((e.getCollisionObject().getCollisionGroup() & CollisionType.PLAYER.getMask()) != 0) {
+                    if ((e.getCollisionObject().getCollisionGroup() & CollisionType.PLAYER.mask()) != 0) {
                         return true;
                     }
                     if ((e.getCollisionObject().collisionFlags() & CollisionFlag.NO_CONTACT_RESPONSE) != 0) {
@@ -766,7 +766,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     if (e.getCollisionObject().equals(ghostObject)) {
                         return true;
                     }
-                    if ((e.getCollisionObject().getCollisionGroup() & CollisionType.PLAYER.getMask()) != 0) {
+                    if ((e.getCollisionObject().getCollisionGroup() & CollisionType.PLAYER.mask()) != 0) {
                         return true;
                     }
                     if ((e.getCollisionObject().collisionFlags() & CollisionFlag.NO_CONTACT_RESPONSE) != 0) {

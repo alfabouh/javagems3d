@@ -1,4 +1,4 @@
-package javagems3d.physics.world.triggers.zones.base;
+package javagems3d.physics.world.triggers.zones;
 
 import javagems3d.physics.entities.properties.collision.IHasCollisionFilter;
 import javagems3d.physics.world.basic.IWorldObject;

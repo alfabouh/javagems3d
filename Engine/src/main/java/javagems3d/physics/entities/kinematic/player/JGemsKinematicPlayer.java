@@ -75,7 +75,7 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-    public ITriggerAction onColliding() {
+    public ITriggerAction collisionTriggerFunc() {
         return null;
     }
 }

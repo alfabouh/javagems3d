@@ -3,7 +3,6 @@ package javagems3d.physics.world.triggers.zones;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
-import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
 
 public class SimpleTriggerZone extends AbstractTriggerZone {
     private ITriggerAction triggerAction;
@@ -14,8 +13,8 @@ public class SimpleTriggerZone extends AbstractTriggerZone {
     }
 
     @Override
-    public ITriggerAction onColliding() {
-        return this.getTriggerAction();
+    public ITriggerAction collisionTriggerFunc() {
+        return this.getTriggerFunc();
     }
 
     @Override
@@ -23,7 +22,7 @@ public class SimpleTriggerZone extends AbstractTriggerZone {
 
     }
 
-    public ITriggerAction getTriggerAction() {
+    public ITriggerAction getTriggerFunc() {
         return this.triggerAction;
     }
 
