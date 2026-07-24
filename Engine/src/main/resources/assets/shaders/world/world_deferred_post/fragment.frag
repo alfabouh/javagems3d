@@ -13,6 +13,7 @@ uniform sampler2D gTexture;
 uniform sampler2D gEmission;
 uniform sampler2D gMetallicRoughness;
 uniform sampler2D ssao_map;
+uniform sampler2D light_map;
 uniform bool showCascades;
 uniform mat4 view_matrix;
 
@@ -29,6 +30,7 @@ void main()
     vec4 g_texture = texture(gTexture, uv_coordinates);
     vec3 emission = texture(gEmission, uv_coordinates).rgb;
     vec2 metallic_roughness = texture(gMetallicRoughness, uv_coordinates).rg;
+    vec3 light = texture(light_map, uv_coordinates).rgb;
 
     mat4 inversed_view = inverse(view_matrix);
 
@@ -49,10 +51,9 @@ void main()
         f1 = pow(AO, (1.0 - gray) * 3.);
     }
 
-    vec3 lights = calc_light(frag_pos, normals, metallic_roughness.g, world_position) * vec3(f1);
-
+    vec3 lights = light * vec3(f1);
     frag_color = g_texture * vec4(lights + emission, 1.0);
-    frag_color = calc_fog(frag_pos.xyz, frag_color, 1.);
+    frag_color = calc_fog(frag_pos.xyz, frag_color, 1.) * f1;
 
     float brightness = dot(frag_color.rgb + emission, vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.rgb + emission, 1.) : vec4(0., 0., 0., 1.);

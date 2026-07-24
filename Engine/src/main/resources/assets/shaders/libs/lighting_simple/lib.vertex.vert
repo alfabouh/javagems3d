@@ -32,6 +32,7 @@ struct SpotLight
     float attenuationFactor;
     vec3 color;
     float cutOff;
+    float clipRadius;
 };
 layout (std430, binding = 15) readonly restrict buffer SpotLights {
     SpotLight s_l[CONST.MAX_SPOT_LIGHTS];

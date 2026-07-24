@@ -94,7 +94,7 @@ void main()
     vec2 gMetallicRoughness = vec2(0.75 + metallic_roughness.x * 0.25, 1. - metallic_roughness.y);
 
     if (useCubeMap) {
-        vec3 refracted_color = refract_cubemap(-normals * vec3(-1), 1.25, model_vertex_pos);
+        vec3 refracted_color = refract_cubemap(-model_vertex_normal, 1.25, model_vertex_pos);
         gColor.rgb = mix(gColor.rgb, refracted_color, gMetallicRoughness.r * 0.625);
     }
 

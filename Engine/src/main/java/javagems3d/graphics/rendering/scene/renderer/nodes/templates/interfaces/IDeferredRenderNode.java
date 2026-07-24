@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public interface IDeferredRenderNode extends IRenderNode {
+    FBOTexture2DProgram getLightBuffer();
     FBOTexture2DProgram getOutGBuffer();
     FBOTexture2DProgram getOutColorBuffer();
     FBOTexture2DProgram getOutSSAOBuffer();

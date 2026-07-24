@@ -202,6 +202,10 @@ public abstract class LightScene implements ILightScene {
             buffer.putFloat(spotLight.getLightColor().z);
 
             buffer.putFloat(spotLight.getCutOff());
+            buffer.putFloat(spotLight.getClipRadius());
+           // buffer.putFloat(0f); //PADDING
+           // buffer.putFloat(0f); //PADDING
+           // buffer.putFloat(0f); //PADDING
         }
         buffer.flip();
 

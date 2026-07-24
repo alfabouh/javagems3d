@@ -11,11 +11,14 @@ in vec4 frag_pos;
 
 struct RenderData {
     vec4 diffuse_color;
+
     vec3 emissive_color;
     int textureId;
+
     float emissionStrength;
     float alpha_discard;
     uvec2 diffuse_map;
+
     ivec2 cellsXY;
     float interpolation;
     int nextFrameId;

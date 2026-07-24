@@ -81,6 +81,17 @@ public class SceneInterfaceComponentM {
         final IDeferredRenderNode deferredRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
         IPostFXRenderNode postFXRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.POST_FX_RENDER_PASS);
         ImGui.image(postFXRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
+        if (ImGui.isItemHovered()) {
+            if (ImGui.isMouseClicked(1)) {
+                ImGui.setWindowFocus();
+            }
+            MapEditorInterface.isCursorInsideSceneAndFocused = true;
+            MapEditorInterface.isCursorInsideScene = true;
+        } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
+            MapEditorInterface.isCursorInsideSceneAndFocused = false;
+        } else {
+            MapEditorInterface.isCursorInsideScene = false;
+        }
         //ImGui.image(deferredRenderNode.getOutGBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
         int imagePosX = (int) ImGui.getItemRectMinX();
         int imagePosY = (int) ImGui.getItemRectMinY();

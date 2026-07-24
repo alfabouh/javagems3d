@@ -31,14 +31,16 @@ import java.util.Collection;
 public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager lightPassShader;
     private final FBOTexture2DProgram gBuffer;
+    private final FBOTexture2DProgram lightBuffer;
     private final FBOTexture2DProgram ssaoBuffer;
     private final DeferredDecalsRenderProcessor deferredDecalsRenderProcessor;
 
-    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull JGemsShaderManager deferredDecalsShaderManager, @Nullable FBOTexture2DProgram gBuffer, @Nullable FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
+    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull JGemsShaderManager deferredDecalsShaderManager, @Nullable FBOTexture2DProgram gBuffer, @Nullable FBOTexture2DProgram lightBuffer, @Nullable FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager postColorPassShader) {
         super(openGLRenderer);
         this.deferredDecalsRenderProcessor = new DeferredDecalsRenderProcessor(deferredDecalsShaderManager);
-        this.lightPassShader = lightPassShader;
+        this.lightPassShader = postColorPassShader;
         this.gBuffer = gBuffer;
+        this.lightBuffer = lightBuffer;
         this.ssaoBuffer = ssaoBuffer;
     }
 
@@ -80,6 +82,7 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_TEXTURE), gBuffer.getTextureByIndex(2));
         deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_EMISSION), gBuffer.getTextureByIndex(3));
         deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.G_METALLIC_ROUGHNESS), gBuffer.getTextureByIndex(4));
+        deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.LIGHT_MAP), this.getLightBuffer().getTextureByIndex(0));
         if (ssaoBuffer != null) {
             deferredShader.performUniformTexture(new UniformString(DefaultUniformDefinitions.SSAO_MAP), ssaoBuffer.getTextureByIndex(0));
             deferredShader.performUniform(new UniformString(DefaultUniformDefinitions.IS_SSAO_VALID), UniformFunctions.BOOLEAN(true));
@@ -94,6 +97,10 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
 
     protected FBOTexture2DProgram getGBuffer() {
         return this.gBuffer;
+    }
+
+    public FBOTexture2DProgram getLightBuffer() {
+        return this.lightBuffer;
     }
 
     protected @Nullable FBOTexture2DProgram getSsaoBuffer() {

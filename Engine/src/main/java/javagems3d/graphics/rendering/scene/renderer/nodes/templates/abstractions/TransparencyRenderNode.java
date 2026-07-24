@@ -11,6 +11,7 @@ import api.scripting.coding.env.internal.util.world.render.processing.JSOpenGLRe
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -26,11 +27,15 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.DefaultUniformDefinitions;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +45,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class TransparencyRenderNode extends IRenderNode.Template implements ITransparencyRenderNode {
     private final FBOTexture2DProgram outColor;
@@ -138,7 +144,7 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
             shaderManager.enableWarns();
             JGemsHelper.render().performShadowsInfo(this.getWorld().getEnvironment(), shaderManager);
         };
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this::getAnimationsTexture, this.getWorld());
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = TransparencyRenderNode.getDefaultConsumerForDirectObjects(this::getAnimationsTexture, this.getWorld());
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
         this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
@@ -146,6 +152,18 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         this.getIndirectGeometryRenderProcessor().createResources();
     }
 
+    public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(Supplier<ITexture2DProgram> animations, IRenderWorld renderWorld) {
+        return (pair) -> {
+            pair.first().disableWarns();
+            pair.first().performUniformTexture(new UniformString(DefaultUniformDefinitions.ANIMATIONS_MATRIX), animations.get());
+            pair.first().enableWarns();
+            JGemsHelper.render().performShadowsInfo(renderWorld.getEnvironment(), pair.first());
+            JGemsHelper.render().performDefaultModelMaterialOnShader(renderWorld.getEnvironment(), pair.first(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)),
+                    pair.second().getRenderAttributes().getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT),
+                    pair.second().getRenderAttributes().getProperties().getInt(JGemsRenderProperties.KEY_GBUFFER_DECAL_LAYER_ID, 0)
+            );
+        };
+    }
     public abstract @NotNull ITexture2DProgram getAnimationsTexture();
     public abstract @NotNull ShaderStorageBufferObject getIndirectBufferData();
     public abstract @NotNull ShaderStorageBufferObject getPropertiesData();

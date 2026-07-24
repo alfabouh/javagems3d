@@ -38,7 +38,11 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager world_gbuffer;
     public JGemsShaderManager world_gbuffer_indirect;
     public JGemsShaderManager world_ssao;
-    public JGemsShaderManager world_deferred;
+    public JGemsShaderManager world_deferred_POST;
+    public JGemsShaderManager world_deferred_SUNLIGHT;
+    public JGemsShaderManager world_deferred_POINTLIGHT;
+    public JGemsShaderManager world_deferred_SPOTLIGHT;
+
     public JGemsShaderManager weighted_oit;
     public JGemsShaderManager weighted_oit_indirect;
     public JGemsShaderManager weighted_liquid_oit;
@@ -201,7 +205,12 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"), ISource.Source.INSIDE_JAR));
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"), ISource.Source.INSIDE_JAR));
         this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"), ISource.Source.INSIDE_JAR));
-        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred_post"), ISource.Source.INSIDE_JAR));
+
+        this.world_deferred_POST = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred_post"), ISource.Source.INSIDE_JAR));
+        this.world_deferred_SUNLIGHT = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred_lightSun"), ISource.Source.INSIDE_JAR));
+        this.world_deferred_POINTLIGHT = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred_lightPoint"), ISource.Source.INSIDE_JAR));
+        this.world_deferred_SPOTLIGHT = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred_lightSpot"), ISource.Source.INSIDE_JAR));
+
         this.menu = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/menu"), ISource.Source.INSIDE_JAR));
         this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple_gbuffer"), ISource.Source.INSIDE_JAR));
         this.simple = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple"), ISource.Source.INSIDE_JAR));

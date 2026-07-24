@@ -32,6 +32,7 @@ struct SpotLight
     float attenuationFactor;
     vec3 color;
     float cutOff;
+    float clipRadius;
 };
 layout (std430, binding = 15) readonly restrict buffer SpotLights {
     SpotLight s_l[CONST.MAX_SPOT_LIGHTS];
@@ -61,16 +62,29 @@ vec3 calc_sun_light(vec3 position, vec3 vPos, vec3 vNormal, float specularFactor
 vec3 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright, float specularFactor) {
     vec3 pos = light.view_position;
     vec3 light_dir = pos - vPos;
+    float dist = length(light_dir);
+    if (dist > light.clipRadius) {
+        discard;
+    }
+    float x = dist / light.clipRadius;
+    float attenuation = (1.0 - x * x);
+    attenuation *= attenuation;
     vec3 to_light = normalize(light_dir);
     vec3 light_c = calc_light_factor(light.color, bright, vPos, to_light, vNormal, specularFactor);
-    float dist = length(light_dir);
     float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);
-    return light_c / attenuation_factor;
+    return (light_c * attenuation) / attenuation_factor;
 }
 
 vec3 calc_spot_light(SpotLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright, float specularFactor) {
     vec3 pos = light.view_position;
     vec3 light_dir = pos - vPos;
+    float dist = length(light_dir);
+    if (dist > light.clipRadius) {
+        discard;
+    }
+    float x = dist / light.clipRadius;
+    float attenuation = (1.0 - x * x);
+    attenuation *= attenuation;
     vec3 to_light = normalize(light_dir);
     float theta = dot(to_light, -light.direction);
     if (theta < light.cutOff)
@@ -80,9 +94,8 @@ vec3 calc_spot_light(SpotLight light, vec3 vPos, vec3 vNormal, float at_base, fl
     float innerCutOffInt = light.cutOff * (max(1.22 - light.brightness * 0.005, 1.01));
     float innerCutoff = smoothstep(light.cutOff, innerCutOffInt, theta);
     vec3 light_c = calc_light_factor(light.color, bright, vPos, to_light, vNormal, specularFactor);
-    float dist = length(light_dir);
     float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2) / light.attenuationFactor;
-    return (light_c / attenuation_factor) * innerCutoff;
+    return ((light_c * attenuation) / attenuation_factor) * innerCutoff;
 }
 
 vec3 getParams(float brightness) {

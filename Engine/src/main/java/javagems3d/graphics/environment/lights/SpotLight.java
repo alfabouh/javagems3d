@@ -13,19 +13,21 @@ public class SpotLight extends Light implements ILightAttachable {
     private float brightness;
     private Vector3f direction;
    // private float innerCutoff;
-    private float cutOff;
+    public float cutOff;
     private float attenuationFactor;
     private IObjectWithLights lighted;
     private ActionOnDetach actionOnDetach;
+    private float clipRadius;
 
     public SpotLight() {
         super();
         this.brightness = 1.0f;
         this.direction = new Vector3f(0.0f, 0.0f, 0.0f);
        // this.innerCutoff = (float) Math.cos(Math.toRadians(12.5f));
-        this.cutOff = (float) Math.cos(Math.toRadians(17.5f));
+        this.cutOff = 17.5f;
         this.actionOnDetach = ActionOnDetach.DESTROY;
         this.attenuationFactor = 64.0f;
+        this.clipRadius = PointLight.calcLightClipRadius(this.getBrightness(), this.getLightColor(), SpotLight.EPS(), this.getAttenuationFactor());
     }
 
     public SpotLight(Vector3f lightPos, Vector3f lightColor, Vector3f offset) {
@@ -33,8 +35,13 @@ public class SpotLight extends Light implements ILightAttachable {
         this.brightness = 1.0f;
         this.direction = new Vector3f(0.0f, 0.0f, 0.0f);
         //this.innerCutoff = (float) Math.cos(Math.toRadians(12.5f));
-        this.cutOff = (float) Math.cos(Math.toRadians(17.5f));
+        this.cutOff = 17.5f;
         this.actionOnDetach = ActionOnDetach.DESTROY;
+        this.clipRadius = PointLight.calcLightClipRadius(this.getBrightness(), this.getLightColor(), SpotLight.EPS(), this.getAttenuationFactor());
+    }
+
+    public static float EPS() {
+        return 256.0f / 32.0f;
     }
 
     public Vector3f getLightAngle() {
@@ -71,6 +78,10 @@ public class SpotLight extends Light implements ILightAttachable {
         return (float) Math.toRadians(this.cutOff * 2.0f);
     }
 
+    public float getCutOffDegrees() {
+        return (float) this.cutOff;
+    }
+
     public float getCutOff() {
         return (float) Math.cos(Math.toRadians(this.cutOff));
     }
@@ -94,12 +105,14 @@ public class SpotLight extends Light implements ILightAttachable {
     }
 
     public SpotLight setBrightness(float brightness) {
+        this.clipRadius = PointLight.calcLightClipRadius(brightness, this.getLightColor(), SpotLight.EPS(), this.getAttenuationFactor());
         this.brightness = brightness;
         return this;
     }
 
     @Override
     public SpotLight setLightColor(Vector3f lightColor) {
+        this.clipRadius = PointLight.calcLightClipRadius(this.getBrightness(), lightColor, SpotLight.EPS(), this.getAttenuationFactor());
         super.setLightColor(lightColor);
         return this;
     }
@@ -124,6 +137,7 @@ public class SpotLight extends Light implements ILightAttachable {
     }
 
     public SpotLight setAttenuationFactor(float attenuationFactor) {
+        this.clipRadius = PointLight.calcLightClipRadius(this.getBrightness(), this.getLightColor(), SpotLight.EPS(), attenuationFactor);
         this.attenuationFactor = attenuationFactor;
         return this;
     }
@@ -146,6 +160,10 @@ public class SpotLight extends Light implements ILightAttachable {
     @Override
     public ActionOnDetach getActionOnDeath() {
         return this.actionOnDetach;
+    }
+
+    public float getClipRadius() {
+        return this.clipRadius;
     }
 
     @Override

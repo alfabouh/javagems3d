@@ -5,6 +5,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.DeferredRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredLightRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
@@ -64,8 +65,18 @@ public class JGemsDeferredRenderNode extends DeferredRenderNode {
     }
 
     @Override
-    public @NotNull JGemsShaderManager getDeferredRendererShader() {
-        return JGemsResourceManager.globalShaderAssets.world_deferred;
+    public @NotNull JGemsShaderManager getDeferredColorRendererShader() {
+        return JGemsResourceManager.globalShaderAssets.world_deferred_POST;
+    }
+
+    @Override
+    public @NotNull DeferredLightRenderProcessor.DeferredShaders getDeferredLightRendererShaders() {
+        return new DeferredLightRenderProcessor.DeferredShaders
+                (
+                    JGemsResourceManager.globalShaderAssets.world_deferred_SUNLIGHT,
+                    JGemsResourceManager.globalShaderAssets.world_deferred_POINTLIGHT,
+                    JGemsResourceManager.globalShaderAssets.world_deferred_SPOTLIGHT
+                );
     }
 
     @Override

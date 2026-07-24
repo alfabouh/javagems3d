@@ -47,6 +47,7 @@ public enum DefaultUniformDefinitions {
     SSAO_RADIUS("ssao_radius"),
     SSAO_RANGE("ssao_range"),
     SSAO_MAP("ssao_map"),
+    LIGHT_MAP("light_map"),
     SSAO_NOISE("ssaoNoise"),
     SSAO_KERNEL("ssaoKernel"),
     ACCUMULATED_ALPHA("accumulated_alpha"),

@@ -110,6 +110,10 @@ public abstract class IndirectParticlesRenderer {
     }
 
     protected void passPropertiesInBuffer(ParticleFX particleFX, ByteBuffer properties) {
+       // final Vector3f sunFactor = new Vector3f();
+       // final Vector3f pointLightFactor = new Vector3f();
+       // final Vector3f spotLightFactor = new Vector3f();
+
         ParticleFXRenderConfig config = particleFX.getParticleFXRenderConfig();
         {
             Vector4f c = config.getDiffuseColor().color();
@@ -153,6 +157,27 @@ public abstract class IndirectParticlesRenderer {
         {
             properties.putInt(particleFX.getInterpolateWithTextureID());
         }
+
+      //  {
+      //      properties.putFloat(sunFactor.x);
+      //      properties.putFloat(sunFactor.y);
+      //      properties.putFloat(sunFactor.z);
+      //  }
+      //  properties.putInt(0); //PADDING
+//
+      //  {
+      //      properties.putFloat(pointLightFactor.x);
+      //      properties.putFloat(pointLightFactor.y);
+      //      properties.putFloat(pointLightFactor.z);
+      //  }
+      //  properties.putInt(0); //PADDING
+//
+      //  {
+      //      properties.putFloat(spotLightFactor.x);
+      //      properties.putFloat(spotLightFactor.y);
+      //      properties.putFloat(spotLightFactor.z);
+      //  }
+      //  properties.putInt(0); //PADDING
     }
 
     public IndirectSceneObjectsRenderer.IRenderingFunction getRenderingFunction() {

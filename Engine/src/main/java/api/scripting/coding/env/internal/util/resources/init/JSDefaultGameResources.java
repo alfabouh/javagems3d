@@ -176,7 +176,7 @@ public final class JSDefaultGameResources implements JSGlobalVarFactory<JSDefaul
         JSDefaultGameResources.jsDefaultGameResources.weighted_oit_indirect = new JSShader(JGemsResourceManager.globalShaderAssets.weighted_oit_indirect);
         JSDefaultGameResources.jsDefaultGameResources.world_gbuffer = new JSShader(JGemsResourceManager.globalShaderAssets.world_gbuffer);
         JSDefaultGameResources.jsDefaultGameResources.world_gbuffer_indirect = new JSShader(JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect);
-        JSDefaultGameResources.jsDefaultGameResources.world_deferred = new JSShader(JGemsResourceManager.globalShaderAssets.world_deferred);
+        JSDefaultGameResources.jsDefaultGameResources.world_deferred = new JSShader(JGemsResourceManager.globalShaderAssets.world_deferred_POST);
         JSDefaultGameResources.jsDefaultGameResources.menu = new JSShader(JGemsResourceManager.globalShaderAssets.menu);
         JSDefaultGameResources.jsDefaultGameResources.simple_gbuffer = new JSShader(JGemsResourceManager.globalShaderAssets.simple_gbuffer);
         JSDefaultGameResources.jsDefaultGameResources.simple = new JSShader(JGemsResourceManager.globalShaderAssets.simple);

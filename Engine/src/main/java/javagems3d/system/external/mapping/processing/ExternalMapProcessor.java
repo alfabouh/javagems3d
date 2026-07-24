@@ -249,7 +249,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     protected void processDefaultMarkers(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap) {
-        if (template.checkGroupName(IAPIWBenchDataManager.BOX_WATER, MapObjectsIdentifiers.MARKER + IAPIWBenchDataManager.BOX_WATER)) {
+        if (template.checkGroupName(IAPIWBenchDataManager.GENERIC_MARKER, MapObjectsIdentifiers.MARKER, IAPIWBenchDataManager.BOX_WATER)) {
             Vector3f pos = template.getPosition();
             Vector3f scale = template.getScaling();
             Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
@@ -606,7 +606,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     public static class Default extends ExternalMapProcessor {
-        private IGameMap.IPlayerConstructor playerConstructor;
+        private final IGameMap.IPlayerConstructor playerConstructor;
 
         public Default(JGemsPath pathToJG3DFile, @Nullable IGameMap.IPlayerConstructor playerConstructor) {
             super(new JGemsPathSource(pathToJG3DFile, ISource.Source.OUTSIDE_JAR));

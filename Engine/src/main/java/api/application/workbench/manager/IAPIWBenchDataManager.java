@@ -249,7 +249,7 @@ public interface IAPIWBenchDataManager {
         {
             this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.POINT_LIGHT, () -> {
                 final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
-                final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+                final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 86.0f));
                 final Tag<TagCheckBoolean> enableShadowMap = Tag.create(TagID.DEFAULT.SHADOW_MAP, new TagCheckBoolean(false));
                 final Tag<TagVector> offset = Tag.create(new TagID(TagID.DEFAULT.FLOAT3, "Offset"), new TagVector(VectorMode.VEC3F, new Vector4f(0.0f), -32.0f, 32.0f));
 
@@ -265,9 +265,9 @@ public interface IAPIWBenchDataManager {
         {
             this.addResourceMarker(IAPIWBenchDataManager.GENERIC_MARKER, IAPIWBenchDataManager.SPOT_LIGHT, () -> {
                 final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
-                final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+                final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 86.0f));
                 final Tag<TagFloat> cutOff = Tag.create(TagID.DEFAULT.CUT_OFF, new TagFloat(17.5f, 1.0f, 60.0f));
-                final Tag<TagFloat> attFactor = Tag.create(TagID.DEFAULT.ATTENUATION_FACTOR, new TagFloat(16.0f, 0.0f, 256.0f));
+                final Tag<TagFloat> attFactor = Tag.create(TagID.DEFAULT.ATTENUATION_FACTOR, new TagFloat(16.0f, 0.0f, 196.0f));
                 final Tag<TagCheckBoolean> enableShadowMap = Tag.create(TagID.DEFAULT.SHADOW_MAP, new TagCheckBoolean(false));
                 final Tag<TagVector> offset = Tag.create(new TagID(TagID.DEFAULT.FLOAT3, "Offset"), new TagVector(VectorMode.VEC3F, new Vector4f(0.0f), -32.0f, 32.0f));
 

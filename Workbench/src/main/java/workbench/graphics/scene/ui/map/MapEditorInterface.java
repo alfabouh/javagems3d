@@ -85,6 +85,7 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
     }
 
     public void resetSelected() {
+        this.getSelectedObjectsManager().clear();
         this.currentSelectedTemplate = null;
         this.selectedObjectsManager.clear();
     }
@@ -323,18 +324,6 @@ public class MapEditorInterface implements DearUIInterface, ISnapshotCompatible<
             ImGui.text(" ( FPS: " + WBenchScreen.RENDER_FPS + " | Cam: " + "[" + String.format("%.2f", camPos.x) + "; " + String.format("%.2f", camPos.y) + "; " + String.format("%.2f", camPos.z) + "] )");
         }
         ImGui.endMenuBar();
-
-        if (ImGui.isWindowHovered()) {
-            if (ImGui.isMouseClicked(1)) {
-                ImGui.setWindowFocus();
-            }
-            MapEditorInterface.isCursorInsideSceneAndFocused = true;
-            MapEditorInterface.isCursorInsideScene = true;
-        } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
-            MapEditorInterface.isCursorInsideSceneAndFocused = false;
-        } else {
-            MapEditorInterface.isCursorInsideScene = false;
-        }
 
         int posX = (int) sceneWindowOffset;
         int posY = (int) YOffset;

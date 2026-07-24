@@ -37,12 +37,12 @@ public abstract class JGemsConfig {
         public static final double RENDER_TICKS_UPD_RATE = 60.0d;
         public static float FOV = (float) Math.toRadians(60.0f);
         public static float Z_NEAR = 0.1f;
-        public static float Z_FAR = (float) JGems3D.MAP_MAX_SIZE * 2.0f;
+        public static float Z_FAR = (float) JGems3D.MAP_MAX_SIZE * 8.0f;
         public static float DEFAULT_ALPHA_DISCARD = 0.7f;
 
         public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
-        public static final int MAX_POINT_LIGHTS = 128;
-        public static final int MAX_SPOT_LIGHTS = 64;
+        public static final int MAX_POINT_LIGHTS = 256;
+        public static final int MAX_SPOT_LIGHTS = 128;
         public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
         public static final int MAX_SPOT_LIGHTS_SHADOWS = 3;
         public static final int SUN_SHADOW_CASCADES = 3;
@@ -54,8 +54,8 @@ public abstract class JGemsConfig {
         public static final float SSAO_RANGE = 1.25f;
 
         public static float _LIGHT_CONSTANT_ATT = 1.0f;
-        public static float LIGHT_LINEAR_ATT = 0.14f;
-        public static float LIGHT_EXP_ATT = 0.07f;
+        public static float LIGHT_LINEAR_ATT = 0.22f;
+        public static float LIGHT_EXP_ATT = 0.2f;
 
         public static float EVSM_POSITIVE_EXPONENT = 60.0f;
         public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
@@ -65,7 +65,7 @@ public abstract class JGemsConfig {
 
         public static int POINT_LIGHT_STRUCT_SIZE = 12;
         public static int POINT_LIGHT_BUFFER_PACK_SIZE = (SYSTEM.POINT_LIGHT_STRUCT_SIZE * SYSTEM.MAX_POINT_LIGHTS);
-        public static int SPOT_LIGHT_STRUCT_SIZE = 16;
+        public static int SPOT_LIGHT_STRUCT_SIZE = (16) + 1;
         public static int SPOT_LIGHT_BUFFER_PACK_SIZE = (SYSTEM.SPOT_LIGHT_STRUCT_SIZE * SYSTEM.MAX_SPOT_LIGHTS);
         public static int SUN_LIGHT_BUFFER_PACK_SIZE = 8;
         public static int FOG_BUFFER_PACK_SIZE = 8 + (1);

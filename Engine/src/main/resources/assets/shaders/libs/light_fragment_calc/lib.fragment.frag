@@ -22,15 +22,11 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 frag_worl
     vec3 spot_light_factor = vec3(0.0);
     for (int i = 0; i < total_slights; i++) {
         SpotLight s = s_l[i];
-        //vec3 delta = p.view_position - frag_pos;
-        //float distSq = dot(delta, delta);
-        //if (distSq <= p.clipRadius * p.clipRadius) {
         float s_brightness = s.brightness;
         vec3 params = getParams(s_brightness);
         float s_id = s.attachedShadowSceneId;
         float shadow = s_id >= 0 ? calculate_spot_light_shadows(int(s_id), frag_world_position, s.position.xyz) : 1.;
         spot_light_factor += calc_spot_light(s, frag_pos, normal, params.x, params.y, params.z, s_brightness, specularFactor) * shadow;
-        //}
     }
 
     float brightness = dot(point_light_factor.rgb + spot_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
