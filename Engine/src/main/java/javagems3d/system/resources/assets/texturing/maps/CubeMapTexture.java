@@ -42,7 +42,7 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
         if (properties != null && update) {
             this.properties = properties;
         }
-        CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) this.getProperties();
+        CubeMapTexture.Properties properties1 = properties == null ? (CubeMapTexture.Properties) this.getProperties() : (CubeMapTexture.Properties) properties;
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
         }

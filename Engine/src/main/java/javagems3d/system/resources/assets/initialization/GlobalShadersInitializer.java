@@ -46,6 +46,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager weighted_oit;
     public JGemsShaderManager weighted_oit_indirect;
     public JGemsShaderManager weighted_liquid_oit;
+    public JGemsShaderManager world_liquid;
     public JGemsShaderManager simple;
     public JGemsShaderManager simple_gbuffer;
     public JGemsShaderManager depth_sun;
@@ -201,6 +202,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.background_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"), ISource.Source.INSIDE_JAR));
         this.world_ssao = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/screen_ssao"), ISource.Source.INSIDE_JAR));
         this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"), ISource.Source.INSIDE_JAR));
+        this.world_liquid = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_liquid"), ISource.Source.INSIDE_JAR));
         this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"), ISource.Source.INSIDE_JAR));
         this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"), ISource.Source.INSIDE_JAR));
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPathSource(new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"), ISource.Source.INSIDE_JAR));

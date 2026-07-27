@@ -86,6 +86,9 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
         return this.ssaoBuffer;
     }
 
+    protected void renderInGBuffer() {
+    }
+
     @Override
     public void onRender(FrameTicking frameTicking) {
         //for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
@@ -102,6 +105,8 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         }
         if (!EventLauncher.pushEvent(new EventBus.DeferredOGLRenderInMainFBOEvent(this.getOpenGLRenderer(), this, frameTicking, EventBus.Run.PRE), null).isCancelled()) {
+            this.renderInGBuffer();
+
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
             this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 //MODEL MATRIX PROBLEM

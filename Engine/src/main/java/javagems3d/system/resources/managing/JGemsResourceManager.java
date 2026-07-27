@@ -8,6 +8,7 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
+import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -15,6 +16,7 @@ import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class JGemsResourceManager extends ResourceManager {
     public static GlobalShadersInitializer globalShaderAssets = null;
@@ -74,7 +76,13 @@ public final class JGemsResourceManager extends ResourceManager {
         this.getLocalResources().destroy();
     }
 
-    private Function<ISample.IProperties, ISample.IProperties> getTexturePropertiesProcessing() {
+    public static Supplier<ImageTexture.Properties> getDefaultImageTexturePropertiesPreProcessor(ImageTexture.Properties raw) {
+        boolean linear = raw.linearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = raw.anisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+        return () -> new ImageTexture.Properties(raw.mipMap(), linear, raw.shouldBeRepeated(), anisotropic, raw.qualityAffected());
+    }
+
+    public static Function<IPropertiesSample, ISample.IProperties> getDefaultTexturePropertiesPreProcessor() {
         return (e) -> {
             if (e instanceof ImageTexture imageTexture) {
                 ImageTexture.Properties properties = (ImageTexture.Properties) imageTexture.getProperties();
@@ -87,11 +95,11 @@ public final class JGemsResourceManager extends ResourceManager {
     }
 
     public void reloadTexturesInGlobalCache() {
-        this.getGlobalResources().reloadSamplesInCache(this.getTexturePropertiesProcessing(), false);
+        this.getGlobalResources().reloadSamplesInCache(JGemsResourceManager.getDefaultTexturePropertiesPreProcessor(), false);
     }
 
     public void reloadTexturesInLocalCache() {
-        this.getLocalResources().reloadSamplesInCache(this.getTexturePropertiesProcessing(), false);
+        this.getLocalResources().reloadSamplesInCache(JGemsResourceManager.getDefaultTexturePropertiesPreProcessor(), false);
     }
 
     public void recreateTexturesInAllCaches() {

@@ -7,7 +7,7 @@ import api.application.workbench.resources.ApiResourceEntity;
 import api.application.workbench.resources.ApiResourceMarker;
 import api.application.workbench.resources.ApiResourceProp;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
-import api.application.workbench.resources.data.jgems.JGemsMarkerData;
+import api.application.workbench.resources.data.jgems.JGemsVoidData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
@@ -163,7 +163,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     protected abstract @Nullable SceneProp onProcessBackgroundProp(RowMapObjectData template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background);
     protected abstract @Nullable SceneProp onProcessProp(RowMapObjectData template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract @Nullable Pair<WorldItem, SceneObject> onProcessEntity(RowMapObjectData template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap);
+    protected abstract void onProcessMarker(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap);
 
     protected abstract void preProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
@@ -184,7 +184,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     protected void onProcessing(Set<RowMapObjectData> backgroundPropObjects, Set<RowMapObjectData> propObjects, Set<RowMapObjectData> markerObjects, Set<RowMapObjectData> entityObjects, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         final ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> resourcePropMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getProps();
         final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getEntities();
-        final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getMarkers();
+        //final ApiResourceObjectsFolder<WBenchMarkerData, JGemsVoidData, ApiResourceMarker> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getMarkers();
 
         final Map<Integer, IWorldObject> mainScene_idMap = new HashMap<>();
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
@@ -235,16 +235,15 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             }
         });
 
-        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> {
+        for (RowMapObjectData template : markerObjects) {
             this.processDefaultMarkers(template, physicsWorld, sceneWorld, mainScene_idMap);
-            EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(this.getMapName(), sceneWorld, physicsWorld, template, data, mainScene_idMap);
+            EventBus.MapMarkerConvertEvent event = new EventBus.MapMarkerConvertEvent(this.getMapName(), sceneWorld, physicsWorld, template, mainScene_idMap);
             EventLauncher.pushEvent(event, new Pair<>(new JSMapMarkerConvertEvent(new JSSceneWorld(sceneWorld), new JSPhysicsWorld(physicsWorld), new JSRowMapObjectData(template)), JavaToJsAPI.Target.Map));
             if (event.isCancelled()) {
                 return;
             }
-
-            this.onProcessMarker(template, data, physicsWorld, sceneWorld, mainScene_idMap);
-        });
+            this.onProcessMarker(template, physicsWorld, sceneWorld, mainScene_idMap);
+        }
         //this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, data, physicsWorld, sceneWorld));
     }
 
@@ -690,7 +689,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         @Override
-        protected void onProcessMarker(RowMapObjectData template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap) {
+        protected void onProcessMarker(RowMapObjectData template, PhysicsWorld physicsWorld, SceneWorld sceneWorld, Map<Integer, IWorldObject> mainScene_idMap) {
         }
 
         @Override

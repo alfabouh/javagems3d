@@ -37,6 +37,9 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
         super.renderContent(frameTicking);
 
         for (SceneWorldLiquid sceneWorldLiquid : this.worldLiquid) {
+            if (sceneWorldLiquid.getModel().getMeshStructure().getBlendedTransparencyNodes().isEmpty()) {
+                continue;
+            }
             this.renderLiquid(sceneWorldLiquid);
         }
     }
@@ -54,11 +57,11 @@ public class JGemsTransparencyRenderNode extends TransparencyRenderNode {
         shaderManager.performMatrix4(new UniformString(DefaultUniformDefinitions.VIEW_MATRIX), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.TEXTURE_SCALING), UniformFunctions.VEC2F(sceneWorldLiquid.getTextureScaling()));
         shaderManager.performUniform(new UniformString(DefaultUniformDefinitions.CAMERA_POS), UniformFunctions.VEC3F(this.getOpenGLRenderer().getCamera().getCamPosition()));
-        this.renderMeshList3D(this.getOpenGLRenderer(), shaderManager, sceneWorldLiquid.getModel(), MeshStructure3D.TRANSPARENCY_LAYER);
+        JGemsTransparencyRenderNode.renderMeshList3D_Liquid(this.getOpenGLRenderer(), shaderManager, sceneWorldLiquid.getModel(), MeshStructure3D.TRANSPARENCY_LAYER);
         shaderManager.endShading();
     }
 
-    public void renderMeshList3D(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
+    public static void renderMeshList3D_Liquid(OpenGLRenderer openGLRenderer, JGemsShaderManager shaderManager, Model3D model3D, int layer) {
         for (MeshNode3D<RenderMesh> meshNode3D : DefaultDirectRenderFabric.getNodes(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), model3D.getPose(), openGLRenderer, model3D.getMeshStructureCast())) {
             JGemsHelper.render().performDefaultModelMaterialOnShader(openGLRenderer.getWorld().getEnvironment(), shaderManager, meshNode3D.getMaterial(), 1.0f, 0);
             JGemsHelper.render().performShadowsInfo(openGLRenderer.getWorld().getEnvironment(), shaderManager);

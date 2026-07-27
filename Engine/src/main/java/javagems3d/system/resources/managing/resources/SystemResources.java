@@ -242,9 +242,9 @@ public abstract class SystemResources implements ISystemResources {
         JGems3D.GC();
     }
 
-    public void reloadSamplesInCache(@Nullable Function<ISample.IProperties, ISample.IProperties> processProperties, boolean updateProperties) {
+    public void reloadSamplesInCache(@Nullable Function<IPropertiesSample, ISample.IProperties> processProperties, boolean updateProperties) {
         for (IPropertiesSample cached : this.getResourceCache().getAllCachedObjectsCollection(IPropertiesSample.class)) {
-            cached.reload(processProperties == null ? null : processProperties.apply(cached.getProperties()), updateProperties);
+            cached.reload(processProperties == null ? null : processProperties.apply(cached), updateProperties);
         }
     }
 

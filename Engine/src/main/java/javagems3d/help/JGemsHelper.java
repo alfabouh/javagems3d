@@ -775,6 +775,7 @@ public final class JGemsHelper {
             if (JGemsHelper.map().isCurrentGameMapValid()) {
                 JGems3D.get().getScreen().refreshSceneResources();
             }
+            JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
             this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
             JGems3D.get().getScreen().removeLoadingScreen();
         }

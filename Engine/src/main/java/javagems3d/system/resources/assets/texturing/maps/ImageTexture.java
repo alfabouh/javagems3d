@@ -2,8 +2,10 @@ package javagems3d.system.resources.assets.texturing.maps;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.cache.ICached;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -26,7 +28,7 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         this.textureId = 0;
         this.samplerId = 0;
         this.properties = new Properties();
-        this.init(textureProperties, data);
+        this.init(textureProperties == null ? null : JGemsResourceManager.getDefaultImageTexturePropertiesPreProcessor(textureProperties).get(), data);
     }
 
     private void init(IProperties properties, @NotNull Data data) {
@@ -52,10 +54,10 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         if (properties != null && update) {
             this.properties = properties;
         }
-        Properties properties1 = (Properties) this.getProperties();
+        final Properties properties1 = properties == null ? (Properties) this.getProperties() : (Properties) properties;
         //int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
-        boolean linear = properties1.linearFiltration();
-        boolean anisotropic = properties1.anisotropicFiltration();
+        final boolean linear = properties1.linearFiltration();
+        final boolean anisotropic = properties1.anisotropicFiltration();
 
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());

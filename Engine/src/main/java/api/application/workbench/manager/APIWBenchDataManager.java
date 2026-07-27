@@ -5,13 +5,12 @@ import api.application.workbench.resources.ApiResourceEntity;
 import api.application.workbench.resources.ApiResourceMarker;
 import api.application.workbench.resources.ApiResourceProp;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
-import api.application.workbench.resources.data.jgems.JGemsMarkerData;
+import api.application.workbench.resources.data.jgems.JGemsVoidData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.application.workbench.resources.data.wbench.ext.WBenchObjectInstanceExtension;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.files.VirtualObjectsFolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +24,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
 
     private final ApiResourceObjectsFolder<WBenchObjectData, JGemsEntityData, ApiResourceEntity> entityApiResourceObjectsFolder;
     private final ApiResourceObjectsFolder<WBenchObjectData, JGemsPropData, ApiResourceProp> propApiResourceObjectsFolder;
-    private final ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> markerApiResourceObjectsFolder;
+    private final ApiResourceObjectsFolder<WBenchMarkerData, JGemsVoidData, ApiResourceMarker> markerApiResourceObjectsFolder;
     private final Map<String, ICubeMapProgram.CMTextures> skyBoxesMap;
 
     public APIWBenchDataManager() {
@@ -89,7 +88,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
         return this.propApiResourceObjectsFolder;
     }
 
-    public ApiResourceObjectsFolder<WBenchMarkerData, JGemsMarkerData, ApiResourceMarker> getMarkers() {
+    public ApiResourceObjectsFolder<WBenchMarkerData, JGemsVoidData, ApiResourceMarker> getMarkers() {
         return this.markerApiResourceObjectsFolder;
     }
 }

@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.external.gaming.def.misc.GameResourceSkyboxAsset;
 import javagems3d.system.external.gaming.def.util.GameResourceAssetsFolder;
 import javagems3d.system.external.gaming.def.world.GameResourceEntityObjectAsset;
+import javagems3d.system.external.gaming.def.world.GameResourceMarkerObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourcePropObjectAsset;
 import javagems3d.system.external.gaming.def.world.GameResourceWorldObjectAsset;
 import javagems3d.system.external.mapping.tags.TagsContainer;

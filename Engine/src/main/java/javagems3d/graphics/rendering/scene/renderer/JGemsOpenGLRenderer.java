@@ -331,6 +331,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         forwardRenderNode.setFilteredParticlesToRender(toRenderParticles);
         deferredRenderNode.setFilteredDecalsToRender(toRenderDecals);
 
+        if (deferredRenderNode instanceof JGemsDeferredRenderNode deferredRenderNode1) {
+            deferredRenderNode1.setWorldLiquid(toRenderLiquids);
+        }
+
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, deferredRenderNode);
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, forwardRenderNode);
 

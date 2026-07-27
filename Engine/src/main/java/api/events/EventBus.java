@@ -1,7 +1,6 @@
 package api.events;
 
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
-import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -1007,15 +1006,13 @@ public abstract class EventBus {
         private final SceneWorld sceneWorld;
         private final PhysicsWorld physicsWorld;
         private final RowMapObjectData template;
-        private final JGemsMarkerData markerData;
         private final Map<Integer, IWorldObject> mainScene_idMap;
         private final String mapName;
 
-        public MapMarkerConvertEvent(String mapName, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, JGemsMarkerData markerData, Map<Integer, IWorldObject> mainScene_idMap) {
+        public MapMarkerConvertEvent(String mapName, SceneWorld sceneWorld, PhysicsWorld physicsWorld, RowMapObjectData template, Map<Integer, IWorldObject> mainScene_idMap) {
             this.sceneWorld = sceneWorld;
             this.physicsWorld = physicsWorld;
             this.template = template;
-            this.markerData = markerData;
             this.mainScene_idMap = mainScene_idMap;
             this.mapName = mapName;
         }
@@ -1038,10 +1035,6 @@ public abstract class EventBus {
 
         public RowMapObjectData getTemplate() {
             return this.template;
-        }
-
-        public JGemsMarkerData getMarkerData() {
-            return this.markerData;
         }
     }
 
